@@ -18,6 +18,7 @@ import static io.microconfig.osdf.commands.UpdateCommand.updateCommand;
 import static io.microconfig.osdf.components.checker.LogHealthChecker.logHealthChecker;
 import static io.microconfig.osdf.microconfig.properties.HealthCheckProperties.properties;
 import static io.microconfig.osdf.microconfig.properties.PropertyGetter.propertyGetter;
+import static io.microconfig.osdf.printer.ColumnPrinter.printer;
 import static io.microconfig.osdf.state.OSDFVersion.fromJar;
 
 @RequiredArgsConstructor
@@ -47,7 +48,7 @@ public class OSDFApiImpl implements OSDFApi {
 
     @Override
     public void status(List<String> components) {
-        new StatusCommand(paths, oc, getLogHealthChecker()).run(components);
+        new StatusCommand(paths, oc, getLogHealthChecker(), printer()).run(components);
     }
 
     @Override
@@ -72,7 +73,7 @@ public class OSDFApiImpl implements OSDFApi {
 
     @Override
     public void pods(List<String> components) {
-        new PodsCommand(paths, oc, getLogHealthChecker()).show(components);
+        new PodsCommand(paths, oc, getLogHealthChecker(), printer()).show(components);
     }
 
     @Override

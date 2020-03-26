@@ -19,7 +19,6 @@ import static io.microconfig.osdf.components.info.DeploymentStatus.NOT_FOUND;
 import static io.microconfig.osdf.components.info.DeploymentStatus.UNKNOWN;
 import static io.microconfig.osdf.components.loader.ComponentsLoaderImpl.componentsLoader;
 import static io.microconfig.osdf.openshift.OpenShiftProject.create;
-import static io.microconfig.osdf.printer.ColumnPrinter.printer;
 import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
@@ -27,10 +26,11 @@ public class StatusCommand {
     private final OSDFPaths paths;
     private final OCExecutor oc;
     private final HealthChecker healthChecker;
+    private final ColumnPrinter printer;
 
     public void run(List<String> components) {
         try (OpenShiftProject ignored = create(paths, oc).connect()) {
-            ColumnPrinter printer = printer("COMPONENT", "STATUS", "REPLICAS", "VERSION", "CONFIGS");
+            printer.addColumns("COMPONENT", "STATUS", "REPLICAS", "VERSION", "CONFIGS");
             ComponentsLoaderImpl componentsLoader = componentsLoader(paths.componentsPath(), components, oc);
 
             componentsLoader.load(JobComponent.class).forEach(component -> addJobInfo(printer, component));

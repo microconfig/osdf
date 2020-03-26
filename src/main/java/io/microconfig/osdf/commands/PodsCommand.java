@@ -13,17 +13,17 @@ import java.util.List;
 
 import static io.microconfig.osdf.components.loader.ComponentsLoaderImpl.componentsLoader;
 import static io.microconfig.osdf.openshift.OpenShiftProject.create;
-import static io.microconfig.osdf.printer.ColumnPrinter.printer;
 
 @RequiredArgsConstructor
 public class PodsCommand {
     private final OSDFPaths paths;
     private final OCExecutor oc;
     private final HealthChecker healthChecker;
+    private final ColumnPrinter printer;
 
     public void show(List<String> components) {
         try (OpenShiftProject ignored = create(paths, oc).connect()) {
-            ColumnPrinter printer = printer("COMPONENT", "POD", "HEALTH");
+            printer.addColumns("COMPONENT", "POD", "HEALTH");
 
             componentsLoader(paths.componentsPath(), components, oc)
                     .load(DeploymentComponent.class)
