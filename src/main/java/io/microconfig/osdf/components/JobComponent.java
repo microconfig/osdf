@@ -24,7 +24,7 @@ public class JobComponent extends AbstractOpenShiftComponent {
     }
 
     public JobStatus status() {
-        return jobInfo(name).getStatus();
+        return jobInfo(name, oc).getStatus();
     }
 
     public boolean waitUntilCompleted() {
@@ -40,6 +40,6 @@ public class JobComponent extends AbstractOpenShiftComponent {
     }
 
     public JobInfo info() {
-        return jobInfo(name);
+        return jobInfo(name, oc);
     }
 }

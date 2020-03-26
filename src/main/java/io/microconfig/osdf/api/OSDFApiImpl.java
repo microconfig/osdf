@@ -1,11 +1,13 @@
 package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.commands.*;
+import io.microconfig.osdf.components.checker.LogHealthChecker;
 import io.microconfig.osdf.config.OSDFPaths;
 import io.microconfig.osdf.nexus.NexusArtifact;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.state.ConfigSource;
 import io.microconfig.osdf.state.Credentials;
+import io.microconfig.osdf.state.OSDFState;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
@@ -13,6 +15,9 @@ import java.util.List;
 
 import static io.microconfig.osdf.api.OSDFApiInfo.printHelpForMethod;
 import static io.microconfig.osdf.commands.UpdateCommand.updateCommand;
+import static io.microconfig.osdf.components.checker.LogHealthChecker.logHealthChecker;
+import static io.microconfig.osdf.microconfig.properties.HealthCheckProperties.properties;
+import static io.microconfig.osdf.microconfig.properties.PropertyGetter.propertyGetter;
 import static io.microconfig.osdf.state.OSDFVersion.fromJar;
 
 @RequiredArgsConstructor
@@ -42,7 +47,7 @@ public class OSDFApiImpl implements OSDFApi {
 
     @Override
     public void status(List<String> components) {
-        new StatusCommand(paths, oc).run(components);
+        new StatusCommand(paths, oc, getLogHealthChecker()).run(components);
     }
 
     @Override
@@ -67,7 +72,7 @@ public class OSDFApiImpl implements OSDFApi {
 
     @Override
     public void pods(List<String> components) {
-        new PodsCommand(paths, oc).show(components);
+        new PodsCommand(paths, oc, getLogHealthChecker()).show(components);
     }
 
     @Override
@@ -98,5 +103,10 @@ public class OSDFApiImpl implements OSDFApi {
     @Override
     public void howToStart() {
         new HowToStartCommand().show();
+    }
+
+    private LogHealthChecker getLogHealthChecker() {
+        String env = OSDFState.fromFile(paths.stateSavePath()).getEnv();
+        return logHealthChecker(properties(propertyGetter(env, paths.configPath())));
     }
 }

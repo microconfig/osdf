@@ -10,12 +10,13 @@ import java.io.IOException;
 import static java.lang.Thread.currentThread;
 
 @RequiredArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"oc"})
 public class Pod implements Comparable<Pod> {
     private static final String TMP_LOG_FILE = "/tmp/osdf_logs.log";
 
     @Getter
     private final String name;
+    @Getter
     private final String componentName;
     private final OCExecutor oc;
 

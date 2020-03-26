@@ -2,27 +2,22 @@ package io.microconfig.osdf.commands;
 
 import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.components.JobComponent;
+import io.microconfig.osdf.components.checker.HealthChecker;
 import io.microconfig.osdf.components.info.DeploymentInfo;
 import io.microconfig.osdf.components.info.JobInfo;
 import io.microconfig.osdf.components.loader.ComponentsLoaderImpl;
 import io.microconfig.osdf.config.OSDFPaths;
-import io.microconfig.osdf.microconfig.properties.HealthCheckProperties;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.OpenShiftProject;
 import io.microconfig.osdf.printer.ColumnPrinter;
-import io.microconfig.osdf.state.OSDFState;
 import io.microconfig.utils.Logger;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.osdf.components.checker.LogHealthChecker.logHealthChecker;
-import static io.microconfig.osdf.components.info.DeploymentInfo.info;
 import static io.microconfig.osdf.components.info.DeploymentStatus.NOT_FOUND;
 import static io.microconfig.osdf.components.info.DeploymentStatus.UNKNOWN;
 import static io.microconfig.osdf.components.loader.ComponentsLoaderImpl.componentsLoader;
-import static io.microconfig.osdf.microconfig.properties.HealthCheckProperties.properties;
-import static io.microconfig.osdf.microconfig.properties.PropertyGetter.propertyGetter;
 import static io.microconfig.osdf.openshift.OpenShiftProject.create;
 import static io.microconfig.osdf.printer.ColumnPrinter.printer;
 import static java.util.stream.Collectors.toList;
@@ -31,16 +26,15 @@ import static java.util.stream.Collectors.toList;
 public class StatusCommand {
     private final OSDFPaths paths;
     private final OCExecutor oc;
+    private final HealthChecker healthChecker;
 
     public void run(List<String> components) {
         try (OpenShiftProject ignored = create(paths, oc).connect()) {
             ColumnPrinter printer = printer("COMPONENT", "STATUS", "REPLICAS", "VERSION", "CONFIGS");
             ComponentsLoaderImpl componentsLoader = componentsLoader(paths.componentsPath(), components, oc);
-            String env = OSDFState.fromFile(paths.stateSavePath()).getEnv();
-            HealthCheckProperties properties = properties(propertyGetter(env, paths.configPath()));
 
             componentsLoader.load(JobComponent.class).forEach(component -> addJobInfo(printer, component));
-            addDeploymentComponents(printer, properties, componentsLoader.load(DeploymentComponent.class));
+            addDeploymentComponents(printer, componentsLoader.load(DeploymentComponent.class));
 
             printer.print();
         }
@@ -51,10 +45,10 @@ public class StatusCommand {
         printer.addRow(component.getName(), info.getStatus().toString(), "patcher", info.getProjectVersion(), info.getConfigVersion());
     }
 
-    private void addDeploymentComponents(ColumnPrinter printer, HealthCheckProperties properties, List<DeploymentComponent> components) {
+    private void addDeploymentComponents(ColumnPrinter printer, List<DeploymentComponent> components) {
         List<DeploymentInfo> infos = components
                 .parallelStream()
-                .map(component -> info(component, logHealthChecker(component, properties)))
+                .map(component -> component.info(healthChecker))
                 .collect(toList());
 
         for (int i = 0; i < infos.size(); i++) {
