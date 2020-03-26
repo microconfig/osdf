@@ -30,7 +30,7 @@ class PodsCommandTest {
     @Test
     void statusOk() {
         defaultInstallInit(configsPath, osdfPath, paths);
-        OCExecutor oc = mock(OCExecutor.class, withSettings().verboseLogging());
+        OCExecutor oc = mock(OCExecutor.class);
         when(oc.executeAndReadLines("oc get pods --selector name=helloworld-springboot -o name")).thenReturn(List.of(
                 "pod/pod"
         ));
@@ -38,7 +38,7 @@ class PodsCommandTest {
         HealthChecker healthChecker = mock(HealthChecker.class);
         when(healthChecker.check(any())).thenReturn(true);
 
-        ColumnPrinter printer = mock(ColumnPrinter.class, withSettings().verboseLogging());
+        ColumnPrinter printer = mock(ColumnPrinter.class);
 
 
         new PodsCommand(paths, oc, healthChecker, printer).show(List.of("helloworld-springboot"));
