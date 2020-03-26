@@ -1,6 +1,5 @@
 package io.microconfig.osdf.components.checker;
 
-import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.microconfig.properties.HealthCheckProperties;
 import io.microconfig.osdf.openshift.Pod;
 import lombok.RequiredArgsConstructor;
@@ -14,24 +13,16 @@ import static java.lang.Runtime.getRuntime;
 import static java.lang.System.currentTimeMillis;
 
 @RequiredArgsConstructor
-public class LogHealthChecker {
-    private final DeploymentComponent component;
-    private final String marker;
-    private final int timeoutInSec;
+public class LogHealthChecker implements HealthChecker {
+    private final HealthCheckProperties properties;
 
-    public static LogHealthChecker logHealthChecker(DeploymentComponent component, HealthCheckProperties properties) {
-        return new LogHealthChecker(component, properties.marker(component.getName()), properties.timeoutInSec(component.getName()));
+    public static LogHealthChecker logHealthChecker(HealthCheckProperties properties) {
+        return new LogHealthChecker(properties);
     }
 
-    public boolean check() {
-        return component
-                .pods()
-                .stream()
-                .parallel()
-                .allMatch(this::checkPod);
-    }
-
-    public boolean checkPod(Pod pod) {
+    public boolean check(Pod pod) {
+        String marker = properties.marker(pod.getComponentName());
+        int timeoutInSec = properties.timeoutInSec(pod.getComponentName());
         try {
             Process process = getRuntime().exec("oc logs -f " + pod.getName());
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));

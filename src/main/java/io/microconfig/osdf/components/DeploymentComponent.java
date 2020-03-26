@@ -1,6 +1,6 @@
 package io.microconfig.osdf.components;
 
-import io.microconfig.osdf.components.checker.LogHealthChecker;
+import io.microconfig.osdf.components.checker.HealthChecker;
 import io.microconfig.osdf.components.info.DeploymentInfo;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.Pod;
@@ -63,7 +63,7 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
                 .orElse(null);
     }
 
-    public DeploymentInfo info(LogHealthChecker logHealthChecker) {
-        return DeploymentInfo.info(this, logHealthChecker);
+    public DeploymentInfo info(HealthChecker healthChecker) {
+        return DeploymentInfo.info(this, oc, healthChecker);
     }
 }

@@ -20,8 +20,12 @@ public class ColumnPrinter {
     private final List<List<String>> rows;
     private final List<Consumer<String>> printers;
 
-    public static ColumnPrinter printer(String... columns) {
-        return new ColumnPrinter(of(columns), new ArrayList<>(), new ArrayList<>());
+    public static ColumnPrinter printer() {
+        return new ColumnPrinter(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    }
+
+    public void addColumns(String... columns) {
+        this.columns.addAll(of(columns));
     }
 
     public void addRow(String... row) {

@@ -1,12 +1,12 @@
 package io.microconfig.osdf.components.info;
 
+import io.microconfig.osdf.openshift.OCExecutor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 import static io.microconfig.osdf.components.info.JobStatus.*;
-import static io.microconfig.osdf.utils.CommandLineExecutor.executeAndReadLines;
 import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 
 @RequiredArgsConstructor
@@ -20,11 +20,11 @@ public class JobInfo {
         return new JobInfo("?", "?", NOT_EXECUTED);
     }
 
-    public static JobInfo jobInfo(String name) {
-        List<String> lines = executeAndReadLines("oc get job " + name + " -o custom-columns=" +
+    public static JobInfo jobInfo(String name, OCExecutor oc) {
+        List<String> lines = oc.executeAndReadLines("oc get job " + name + " -o custom-columns=" +
                 "failed:.status.failed," +
                 "succeeded:.status.succeeded," +
-                "completed:.status.active," +
+                "active:.status.active," +
                 "projectVersion:.metadata.labels.projectVersion," +
                 "configVersion:.metadata.labels.configVersion", true);
 

@@ -14,7 +14,9 @@ class ColumnPrinterTest {
     void basicTest() {
         Consumer<String> stringConsumer = mock(Consumer.class);
 
-        ColumnPrinter printer = printer("C1", "C2");
+        ColumnPrinter printer = printer();
+        printer.addColumns("C1", "C2");
+
         printer.addRow(stringConsumer, "a1", "a2");
         printer.addRow(stringConsumer, "b1", "b2");
         printer.print();
