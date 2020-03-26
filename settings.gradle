@@ -1,0 +1,10 @@
+pluginManagement {
+    repositories {
+        maven {
+            url 'http://nexus.sigma.sbrf.ru:8099/nexus/content/groups/public'
+        }
+    }
+}
+
+rootProject.name = 'osdf'
+

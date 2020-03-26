@@ -1,0 +1,32 @@
+Prerequisites:
+    In your microconfigs:
+        - component deploy with following parameters:
+            - cluster.url.api (openshift cluster api url. example: https://api.dev-gen.sigma.sbrf.ru:6443)
+            - project (openshift project/namespace. example: my_openshift_project)
+        - component at path components/system/versions/project-version.proc with project.version parameter
+        - optionally, for updating osdf, create component osdf-version with following parameters:
+            - osdf.url
+            - osdf.group
+            - osdf.artifact
+            - osdf.version
+
+            osdf will check this and update itself if necessary
+        - after microconfig build stage, every component must have:
+            - folder openshift with .yaml openshift resources inside
+            - deployment.yaml or job.yaml inside openshift folder
+
+Next, use <osdf init> to initialize osdf.
+You can just type <osdf init> and it will tell you what parameters are needed.
+Or use <osdf help init> to see full list of parameters.
+What you'll need to provide:
+    - Config source. Onf of:
+        - git (git clone url with credentials, config version (branch))
+        - nexus (nexus url, nexus credentials, nexus config artifact, config version (artifact version))
+        - local (path to folder with microconfigs)
+      Config source must contain folder repo
+    - OpenShift credentials
+    - Config parameters:
+        - microconfig environment
+        - optionally, microconfig group. Default - all groups.
+        - optionally, list of microconfig components. Default - all components.
+        - optionally, project version. Will be used as image version for containers.
