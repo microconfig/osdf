@@ -1,9 +1,11 @@
 plugins {
     id 'java'
     id 'jacoco'
+    id 'maven-publish'
+    id 'signing'
 }
 
-group 'io.microconfig.osdf'
+group 'io.microconfig'
 version '1.1.2'
 
 sourceCompatibility = 12
@@ -19,12 +21,57 @@ jar {
     }
 }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven {
-        url "http://nexus.sigma.sbrf.ru:8099/nexus/content/groups/public"
+publishing {
+    publications {
+        nexus(MavenPublication) {
+            pom {
+                name = 'OSDF'
+                description = 'OpenShift deploy tool based on Microconfig'
+                url = 'https://github.com/microconfig/osdf'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/microconfig/osdf.git'
+                    developerConnection = 'scm:git:https://github.com/microconfig/osdf.git'
+                    url = 'https://github.com/microconfig/osdf'
+                }
+                developers {
+                    developer {
+                        id = 'amatorin'
+                        name = 'Alexander Matorin'
+                        email = 'alx.matorin@gmail.com'
+                    }
+                    developer {
+                        id = 'apavlov'
+                        name = 'Artem Pavlov'
+                        email = 'admpavlov@yandex.ru'
+                    }
+                }
+            }
+            from components.java
+        }
     }
+    repositories {
+        maven {
+            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username ossrhUsername
+                password ossrhPassword
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.nexus
+}
+
+repositories {
+    mavenCentral()
 }
 
 jacocoTestReport {
@@ -40,6 +87,7 @@ dependencies {
     implementation 'commons-io:commons-io:2.5'
     implementation 'commons-cli:commons-cli:1.4'
     implementation 'io.microconfig:microconfig-core:3.12.0'
+    implementation 'io.microconfig:utils:3.12.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.0.1'
 
     compileOnly 'org.projectlombok:lombok:1.18.10'
