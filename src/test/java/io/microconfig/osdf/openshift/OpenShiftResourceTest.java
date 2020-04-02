@@ -20,8 +20,8 @@ import static org.mockito.Mockito.when;
 
 class OpenShiftResourceTest {
     private OSDFPaths paths;
-    private Path configsPath = of("/tmp/configs");
-    private Path osdfPath = of("/tmp/osdf");
+    private final Path configsPath = of("/tmp/configs");
+    private final Path osdfPath = of("/tmp/osdf");
 
     @BeforeEach
     void createConfigs() throws IOException {
@@ -47,7 +47,7 @@ class OpenShiftResourceTest {
     void testFromPath() throws IllegalAccessException, NoSuchFieldException {
         defaultInstallInit(configsPath, osdfPath, paths);
         OpenShiftResource resource = fromPath(of(paths.componentsPath() + "/helloworld-springboot/openshift/deployment.yaml"), null);
-        checkKindAndName(resource, "deploymentconfig", "helloworld-springboot");
+        checkKindAndName(resource, "deploymentconfig", "helloworld-springboot.latest");
     }
 
     @Test

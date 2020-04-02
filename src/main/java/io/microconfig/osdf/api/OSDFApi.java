@@ -33,7 +33,12 @@ public interface OSDFApi {
               @ConsoleParam(ComponentsParameter.class) List<String> components);
 
     @ApiCommand(description = "Deploy services to OpenShift", order = 5)
-    void deploy(@ConsoleParam(ComponentsParameter.class) List<String> components);
+    void deploy(@ConsoleParam(ComponentsParameter.class) List<String> components,
+                @ConsoleParam(ModeParameter.class) String mode);
+
+    @ApiCommand(description = "Set up routing rules", order = 6)
+    void route(@ConsoleParam(value = ComponentParameter.class, type = REQUIRED) String component,
+               @ConsoleParam(value = RoutingRuleParameter.class, type = REQUIRED) String rule);
 
     @ApiCommand(description = "Show status info of services from OpenShift", order = 6)
     void status(@ConsoleParam(ComponentsParameter.class) List<String> components);

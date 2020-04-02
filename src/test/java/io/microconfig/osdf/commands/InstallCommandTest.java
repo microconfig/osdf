@@ -12,7 +12,7 @@ import static java.nio.file.Path.of;
 
 class InstallCommandTest {
     private OSDFPaths paths;
-    private Path osdfPath = of("/tmp/osdf");
+    private final Path osdfPath = of("/tmp/osdf");
 
     @BeforeEach
     void createConfigs() {

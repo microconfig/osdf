@@ -14,6 +14,7 @@ import static io.microconfig.osdf.api.argsproducer.ConsoleArgs.consoleArgs;
 import static io.microconfig.osdf.commands.UpdateCommand.updateCommand;
 import static io.microconfig.osdf.config.OSDFPaths.paths;
 import static io.microconfig.osdf.openshift.OCExecutor.oc;
+import static io.microconfig.osdf.state.OSDFState.fromFile;
 import static java.util.Arrays.copyOfRange;
 
 @RequiredArgsConstructor
@@ -22,7 +23,20 @@ public class OpenShiftDeployStarter {
     private final OCExecutor oc;
 
     public static void main(String[] args) {
-        new OpenShiftDeployStarter(paths(), oc()).run(args);
+        OSDFPaths paths = paths();
+        new OpenShiftDeployStarter(paths, getOcExecutor(paths)).run(args);
+    }
+
+    private static OCExecutor getOcExecutor(OSDFPaths paths) {
+        return oc(getEnv(paths), paths.configPath());
+    }
+
+    private static String getEnv(OSDFPaths paths) {
+        try {
+            return fromFile(paths.stateSavePath()).getEnv();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public void run(String[] args) {

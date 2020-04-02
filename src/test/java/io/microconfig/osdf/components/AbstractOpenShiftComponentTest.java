@@ -14,17 +14,17 @@ import static org.mockito.Mockito.*;
 class AbstractOpenShiftComponentTest {
     private OCExecutor oc;
     private DeploymentComponent component;
-    private Map<String, String> commands = new HashMap<>();
+    private final Map<String, String> commands = new HashMap<>();
 
     @BeforeEach
     void setUp() {
         oc = mock(OCExecutor.class);
-        component = new DeploymentComponent("test-name", Path.of("/tmp/components/test-name"), Path.of("/tmp/components/test-name/openshift"), oc);
+        component = new DeploymentComponent("test-name", "v1", Path.of("/tmp/components/test-name"), oc);
 
         commands.put("upload", "oc apply -f /tmp/components/test-name/openshift");
-        commands.put("delete", "oc delete all,configmap --selector application=test-name");
-        commands.put("createConfigMap", "oc create configmap test-name --from-file=/tmp/components/test-name");
-        commands.put("labelConfigMap", "oc label configmap test-name application=test-name");
+        commands.put("delete", "oc delete all,configmap -l \"application in (test-name), projectVersion in (v1)\"");
+        commands.put("createConfigMap", "oc create configmap test-name.v1 --from-file=/tmp/components/test-name");
+        commands.put("labelConfigMap", "oc label configmap test-name.v1 application=test-name projectVersion=v1");
 
         when(oc.executeAndReadLines(commands.get("upload"))).thenReturn(of("resource1 configured", "resource2 configured"));
         when(oc.execute(commands.get("createConfigMap"))).thenReturn("created");

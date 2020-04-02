@@ -15,7 +15,7 @@ import static org.mockito.Mockito.*;
 class JobComponentTest {
     private OCExecutor oc;
     private JobComponent component;
-    private Map<String, String> commands = new HashMap<>();
+    private final Map<String, String> commands = new HashMap<>();
 
     @BeforeEach
     void setUp() {

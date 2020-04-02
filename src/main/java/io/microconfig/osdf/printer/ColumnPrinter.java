@@ -28,13 +28,18 @@ public class ColumnPrinter {
         this.columns.addAll(of(columns));
     }
 
-    public void addRow(String... row) {
+    public synchronized void addRow(String... row) {
         addRow(Logger::announce, row);
     }
 
-    public void addRow(Consumer<String> printer, String... row) {
+    public synchronized void addRow(Consumer<String> printer, String... row) {
         rows.add(of(row));
         printers.add(printer);
+    }
+
+    public synchronized void addRows(ColumnPrinter other) {
+        rows.addAll(other.rows);
+        printers.addAll(other.printers);
     }
 
     public void print() {
@@ -43,6 +48,12 @@ public class ColumnPrinter {
         for (int i = 0; i < rows.size(); i++) {
             printers.get(i).accept(formattedRow(rows.get(i), pads));
         }
+    }
+
+    public ColumnPrinter newPrinter() {
+        ColumnPrinter printer = printer();
+        printer.addColumns(columns.toArray(new String[0]));
+        return printer;
     }
 
     public String formattedRow(List<String> row, List<Integer> pads) {

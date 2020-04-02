@@ -24,7 +24,7 @@ public class LogHealthChecker implements HealthChecker {
         String marker = properties.marker(pod.getComponentName());
         int timeoutInSec = properties.timeoutInSec(pod.getComponentName());
         try {
-            Process process = getRuntime().exec("oc logs -f " + pod.getName());
+            Process process = getRuntime().exec("oc logs -f " + pod.getName() + " -c " + pod.getComponentName());
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             long startTime = currentTimeMillis();
             StringBuilder logContent = new StringBuilder();

@@ -25,34 +25,39 @@ import static java.util.stream.Collectors.toList;
 public abstract class AbstractOpenShiftComponent {
     @Getter
     protected final String name;
+    @Getter
+    protected final String version;
     protected final Path configDir;
-    protected final Path openShiftConfigDir;
     protected final OCExecutor oc;
 
-    public static AbstractOpenShiftComponent fromPath(Path configDir, OCExecutor oc) {
-        var openShiftConfigDir = of(configDir + "/openshift");
+    public static AbstractOpenShiftComponent fromPath(Path configDir, String version, OCExecutor oc) {
         for (ComponentType type : values()) {
-            if (type.checkDir(openShiftConfigDir)) {
-                return type.component(configDir.getFileName().toString(), configDir, openShiftConfigDir, oc);
+            if (type.checkDir(of(configDir + "/openshift"))) {
+                return type.component(configDir.getFileName().toString(), version, configDir, oc);
             }
         }
         return null;
     }
 
     public void upload() {
-        oc.executeAndReadLines("oc apply -f " + openShiftConfigDir)
+        oc.executeAndReadLines("oc apply -f " + configDir + "/openshift")
                 .forEach(line -> info("oc: " + line));
     }
 
     public void delete() {
-        oc.execute("oc delete all,configmap --selector application=" + name);
+        oc.execute("oc delete all,configmap " + label());
+        announce("Deleted " + fullName());
+    }
+
+    public void deleteAll() {
+        oc.execute("oc delete all,configmap -l application=" + name);
         announce("Deleted " + name);
     }
 
     public void createConfigMap() {
         info("Creating configmap");
-        var createCommand = "oc create configmap " + name + " --from-file=" + configDir;
-        var labelCommand = "oc label configmap " + name + " application=" + name;
+        var createCommand = "oc create configmap " + fullName() + " --from-file=" + configDir;
+        var labelCommand = "oc label configmap " + fullName() + " application=" + name + " projectVersion=" + version;
         String output = oc.execute(createCommand);
         info("oc: " + output);
         oc.execute(labelCommand);
@@ -71,13 +76,17 @@ public abstract class AbstractOpenShiftComponent {
         return collector(configDir).collect();
     }
 
+    public String fullName() {
+        return name + "." + version;
+    }
+
     protected List<OpenShiftResource> getOpenShiftResources() {
-        var command = "oc get all,configmap --selector application=" + name + " -o name";
+        var command = "oc get all,configmap " + label() + " -o name";
         return fromOpenShiftNotations(oc.executeAndReadLines(command), oc);
     }
 
     private List<OpenShiftResource> getLocalResources() {
-        try (Stream<Path> stream = list(openShiftConfigDir)) {
+        try (Stream<Path> stream = list(of(configDir + "/openshift"))) {
             return stream.filter(path -> path.toString().endsWith(".yml") || path.toString().endsWith(".yaml"))
                     .map(path -> OpenShiftResource.fromPath(path, oc))
                     .collect(toList());
@@ -86,8 +95,12 @@ public abstract class AbstractOpenShiftComponent {
         }
     }
 
+    protected String label() {
+        return "-l \"application in (" + name + "), projectVersion in (" + version +  ")\"";
+    }
+
     @Override
     public String toString() {
-        return name;
+        return fullName();
     }
 }

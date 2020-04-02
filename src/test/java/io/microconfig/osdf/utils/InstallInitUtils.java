@@ -16,6 +16,6 @@ public class InstallInitUtils {
         new InstallCommand(paths, OSDFVersion.fromString("1.0.0")).install();
         new InitCommand(paths).run(null, null, null, configsPath,
                 null, Credentials.of("test:test"), null, "dev",
-                null, null, null, null);
+                null, "helloworld", null, null);
     }
 }

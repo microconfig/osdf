@@ -37,7 +37,7 @@ public class DeploymentInfo {
     }
 
     public static DeploymentInfo info(DeploymentComponent component, OCExecutor oc, HealthChecker healthChecker) {
-        List<String> lines = oc.executeAndReadLines("oc get dc " + component.getName() + " -o custom-columns=" +
+        List<String> lines = oc.executeAndReadLines("oc get dc " + component.getName() + "." + component.getVersion() + " -o custom-columns=" +
                 "replicas:.spec.replicas," +
                 "current:.status.replicas," +
                 "available:.status.availableReplicas," +

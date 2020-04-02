@@ -14,7 +14,7 @@ import static java.nio.file.Path.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PropertyGetterSetterTest {
-    private Path configsPath = of("/tmp/configs");
+    private final Path configsPath = of("/tmp/configs");
 
 
     @BeforeEach

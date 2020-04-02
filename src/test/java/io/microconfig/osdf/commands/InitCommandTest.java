@@ -18,8 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class InitCommandTest {
     private OSDFPaths paths;
-    private Path configsPath = of("/tmp/configs");
-    private Path osdfPath = of("/tmp/osdf");
+    private final Path configsPath = of("/tmp/configs");
+    private final Path osdfPath = of("/tmp/osdf");
 
     @BeforeEach
     void createConfigs() throws IOException {
@@ -39,7 +39,7 @@ class InitCommandTest {
         assertNull(osdfState.getConfigsNexusArtifact());
         assertNull(osdfState.getNexusCredentials());
         assertNull(osdfState.getConfigVersion());
-        assertNull(osdfState.getGroup());
+        assertEquals("helloworld", osdfState.getGroup());
         assertNull(osdfState.getProjectVersion());
         assertNull(osdfState.getComponents());
     }

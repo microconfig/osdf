@@ -14,14 +14,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MicroConfigFilesStateTest {
-    private Path configsPath = of("/tmp/configs");
-    private Path osdfPath = of("/tmp/osdf");
+    private final Path configsPath = of("/tmp/configs");
+    private final Path osdfPath = of("/tmp/osdf");
 
     @Test
     void testOldFilesAndFoldersGetDeleted() {
         OSDFPaths paths = new OSDFPaths(osdfPath);
         defaultInstallInit(configsPath, osdfPath, paths);
-        execute("rm -rf " + configsPath + "/repo/components/core/helloworld-springboot/os.deploy");
+        execute("rm -rf " + configsPath + "/repo/components/core/helloworld/helloworld-springboot/os.deploy");
         new InitCommand(paths).run(null, null, null, null,
                 null, null, null, null,
                 null, null, null, null);

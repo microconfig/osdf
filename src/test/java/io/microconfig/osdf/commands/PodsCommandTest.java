@@ -18,8 +18,8 @@ import static org.mockito.Mockito.*;
 
 class PodsCommandTest {
     private OSDFPaths paths;
-    private Path configsPath = of("/tmp/configs");
-    private Path osdfPath = of("/tmp/osdf");
+    private final Path configsPath = of("/tmp/configs");
+    private final Path osdfPath = of("/tmp/osdf");
 
     @BeforeEach
     void createConfigs() throws IOException {
@@ -31,7 +31,7 @@ class PodsCommandTest {
     void statusOk() {
         defaultInstallInit(configsPath, osdfPath, paths);
         OCExecutor oc = mock(OCExecutor.class);
-        when(oc.executeAndReadLines("oc get pods --selector name=helloworld-springboot -o name")).thenReturn(List.of(
+        when(oc.executeAndReadLines("oc get pods -l \"application in (helloworld-springboot), projectVersion in (latest)\" -o name")).thenReturn(List.of(
                 "pod/pod"
         ));
 

@@ -11,6 +11,7 @@ import java.util.List;
 
 import static io.microconfig.osdf.api.OSDFApiInfo.paramsFromAnnotations;
 import static io.microconfig.osdf.utils.ReflectionUtils.annotations;
+import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.copyOfRange;
 
@@ -46,6 +47,11 @@ public class ApiArgsGetter {
             if (ind >= args.length) return result;
             if (String.class.isAssignableFrom(type)) {
                 result.add(args[ind]);
+                ind++;
+            } else if (Integer.class.isAssignableFrom(type)) {
+                Integer integer = castToInteger(args[ind]);
+                if (integer == null) throw new RuntimeException("Bad integer format " + args[ind]);
+                result.add(integer);
                 ind++;
             } else if (List.class.isAssignableFrom(type)) {
                 result.add(asList(copyOfRange(args, ind, args.length)));

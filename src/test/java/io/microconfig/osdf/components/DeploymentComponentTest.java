@@ -18,15 +18,15 @@ import static org.mockito.Mockito.*;
 class DeploymentComponentTest {
     private OCExecutor oc;
     private DeploymentComponent component;
-    private Map<String, String> commands = new HashMap<>();
+    private final Map<String, String> commands = new HashMap<>();
 
     @BeforeEach
     void setUp() {
         oc = mock(OCExecutor.class);
-        component = new DeploymentComponent("test-name", null, Path.of("/tmp/components/test-name/openshift"), oc);
+        component = new DeploymentComponent("test-name", "v1", Path.of("/tmp/components/test-name"), oc);
 
-        commands.put("stop", "oc scale dc test-name --replicas=0");
-        commands.put("pods", "oc get pods --selector name=test-name -o name");
+        commands.put("stop", "oc scale dc test-name.v1 --replicas=0");
+        commands.put("pods", "oc get pods -l \"application in (test-name), projectVersion in (v1)\" -o name");
         commands.put("upload", "oc apply -f /tmp/components/test-name/openshift");
 
         when(oc.execute(commands.get("stop"))).thenReturn("scaled");

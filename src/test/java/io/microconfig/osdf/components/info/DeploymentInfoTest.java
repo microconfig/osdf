@@ -7,11 +7,14 @@ import io.microconfig.osdf.openshift.Pod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
+
 import static io.microconfig.osdf.components.info.DeploymentInfo.info;
 import static io.microconfig.osdf.components.info.DeploymentStatus.*;
 import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DeploymentInfoTest {
     private OCExecutor oc;
@@ -23,7 +26,7 @@ class DeploymentInfoTest {
     @BeforeEach
     void setUp() {
         oc = mock(OCExecutor.class);
-        command = "oc get dc test-name -o custom-columns=" +
+        command = "oc get dc test-name.v1 -o custom-columns=" +
                 "replicas:.spec.replicas," +
                 "current:.status.replicas," +
                 "available:.status.availableReplicas," +
@@ -34,13 +37,13 @@ class DeploymentInfoTest {
                 "replicas   current   available   unavailable   projectVersion   configVersion",
                 "2          2         2           0             latest           local"
         ));
-        when(oc.executeAndReadLines("oc get pods --selector name=test-name -o name")).thenReturn(of(
+        when(oc.executeAndReadLines("oc get pods -l \"application in (test-name), projectVersion in (v1)\" -o name")).thenReturn(of(
                 "pod/pod1",
                 "pod/pod2"
         ));
         pod1 = new Pod("pod1", "test-name", oc);
         pod2 = new Pod("pod2", "test-name", oc);
-        component = new DeploymentComponent("test-name", null, null, oc);
+        component = new DeploymentComponent("test-name", "v1", Path.of("/tmp/components/test-name"), oc);
     }
 
     @Test

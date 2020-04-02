@@ -12,7 +12,7 @@ import static org.mockito.Mockito.verify;
 class OpenShiftProjectTest {
     private OCExecutor oc;
     private OpenShiftProject project;
-    private Map<String, String> commands = new HashMap<>();
+    private final Map<String, String> commands = new HashMap<>();
 
     @BeforeEach
     void setUp() {

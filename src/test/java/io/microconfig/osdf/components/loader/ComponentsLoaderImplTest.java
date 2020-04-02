@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ComponentsLoaderImplTest {
     private OSDFPaths paths;
-    private Path configsPath = of("/tmp/configs");
-    private Path osdfPath = of("/tmp/osdf");
+    private final Path configsPath = of("/tmp/configs");
+    private final Path osdfPath = of("/tmp/osdf");
 
 
     @BeforeEach
