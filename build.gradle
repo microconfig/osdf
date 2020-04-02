@@ -1,6 +1,8 @@
 plugins {
     id 'java'
     id 'jacoco'
+    id 'maven-publish'
+    id 'signing'
 }
 
 group 'io.microconfig.osdf'
@@ -17,11 +19,62 @@ jar {
     }
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        nexus(MavenPublication) {
+            pom {
+                name = 'OSDF'
+                description = 'OpenShift deploy tool based on Microconfig'
+                url = 'https://github.com/microconfig/osdf'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/microconfig/osdf.git'
+                    developerConnection = 'scm:git:https://github.com/microconfig/osdf.git'
+                    url = 'https://github.com/microconfig/osdf'
+                }
+                developers {
+                    developer {
+                        id = 'amatorin'
+                        name = 'Alexander Matorin'
+                        email = 'alx.matorin@gmail.com'
+                    }
+                    developer {
+                        id = 'apavlov'
+                        name = 'Artem Pavlov'
+                        email = 'admpavlov@yandex.ru'
+                    }
+                }
+            }
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username ossrhUsername
+                password ossrhPassword
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.nexus
+}
+
 repositories {
     mavenCentral()
-    maven {
-        url "http://nexus.sigma.sbrf.ru:8099/nexus/content/groups/public"
-    }
 }
 
 jacocoTestReport {
