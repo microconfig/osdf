@@ -59,6 +59,8 @@ public class VirtualService {
     }
 
     public VirtualService setHeader() {
+        if (virtualService == null) throw new RuntimeException("Virtual Service not found");
+
         HeaderRule headerRule = headerRule(destination(getHost(), component.getVersion()), "route-version", component.getVersion());
 
         RuleSet ruleSet = RuleSet.from(getRules());
