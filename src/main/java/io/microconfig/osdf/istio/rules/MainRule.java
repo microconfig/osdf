@@ -47,31 +47,29 @@ public class MainRule {
 
     public void setMirror(String subset) {
         WeightRoute otherRoute = getOtherRoute(subset);
-        routes = of (
-                weightRoute(otherRoute.getDestination(), 100)
-        );
+        routes = of(weightRoute(otherRoute.getDestination(), 100));
         mirror = destination(otherRoute.getDestination().getHost(), subset);
     }
 
     public void deleteSubset(String subset) {
-        if (mirror != null && mirror.getSubset().equals(subset)) mirror = null;
-        List<WeightRoute> otherRoutes = getOtherRoutes(subset);
-        if (otherRoutes.size() == 1) {
-            routes = of(
-                    weightRoute(otherRoutes.get(0).getDestination(), 100)
-            );
-        } else if (otherRoutes.size() == 0) {
+        if (mirror != null && mirror.getSubset().equals(subset)) {
+            mirror = null;
+        }
+
+        WeightRoute otherRoute = getOtherRoute(subset);
+        if (otherRoute != null) {
+            routes = of(weightRoute(otherRoute.getDestination(), 100));
+        } else {
             routes = of();
         }
     }
 
     public int getWeight(String subset) {
-        for (WeightRoute route : routes) {
-            if (route.getDestination().getSubset().equals(subset)) {
-                return route.getWeight();
-            }
-        }
-        return 0;
+        return routes.stream()
+                .filter(route -> route.getDestination().getSubset().equals(subset))
+                .findFirst()
+                .map(WeightRoute::getWeight)
+                .orElse(0);
     }
 
     public String mirrorSubset() {
@@ -83,16 +81,13 @@ public class MainRule {
     }
 
     private WeightRoute getOtherRoute(String subset) {
-        List<WeightRoute> otherRoutes = getOtherRoutes(subset);
-        if (otherRoutes.size() != 1) throw new RuntimeException("Only one other version must exist");
-        return otherRoutes.get(0);
-    }
-
-    private List<WeightRoute> getOtherRoutes(String subset) {
-        return routes
+        List<WeightRoute> otherRoutes = routes
                 .stream()
                 .filter(r -> !r.getDestination().getSubset().equals(subset))
                 .collect(toList());
+        if (otherRoutes.size() == 0) return null;
+        if (otherRoutes.size() != 1) throw new RuntimeException("Only one other version must exist");
+        return otherRoutes.get(0);
     }
 
     public Object toYaml() {

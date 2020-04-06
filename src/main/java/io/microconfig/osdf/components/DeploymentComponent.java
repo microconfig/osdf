@@ -17,6 +17,7 @@ import static io.microconfig.osdf.openshift.Pod.fromOpenShiftNotation;
 import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 import static java.util.List.of;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 public class DeploymentComponent extends AbstractOpenShiftComponent {
     @Getter
@@ -48,7 +49,9 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
 
     @Override
     public void delete() {
-        if (istioService) virtualService(oc, this).deleteRulesForVersion(version);
+        if (istioService) {
+            virtualService(oc, this).deleteRulesForVersion(version);
+        }
         super.delete();
     }
 
@@ -100,6 +103,6 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
                 .stream()
                 .filter(line -> line.length() > 0)
                 .map(notation -> fromNotation(notation, configDir, oc))
-                .collect(toList());
+                .collect(toUnmodifiableList());
     }
 }

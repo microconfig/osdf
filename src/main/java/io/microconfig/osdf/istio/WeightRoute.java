@@ -2,6 +2,7 @@ package io.microconfig.osdf.istio;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import static java.util.Map.of;
 @AllArgsConstructor
 @Getter
 public class WeightRoute {
+    @NonNull
     private final Destination destination;
     private int weight;
 

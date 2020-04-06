@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -31,12 +32,11 @@ public abstract class AbstractOpenShiftComponent {
     protected final OCExecutor oc;
 
     public static AbstractOpenShiftComponent fromPath(Path configDir, String version, OCExecutor oc) {
-        for (ComponentType type : values()) {
-            if (type.checkDir(of(configDir + "/openshift"))) {
-                return type.component(configDir.getFileName().toString(), version, configDir, oc);
-            }
-        }
-        return null;
+        return Arrays.stream(values())
+                .filter(type -> type.checkDir(of(configDir + "/openshift")))
+                .findFirst()
+                .map(type -> type.component(configDir.getFileName().toString(), version, configDir, oc))
+                .orElse(null);
     }
 
     public void upload() {
