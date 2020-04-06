@@ -25,18 +25,20 @@ public class LogHealthChecker implements HealthChecker {
         int timeoutInSec = properties.timeoutInSec(pod.getComponentName());
         try {
             Process process = getRuntime().exec("oc logs -f " + pod.getName() + " -c " + pod.getComponentName());
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            long startTime = currentTimeMillis();
-            StringBuilder logContent = new StringBuilder();
-            while (true) {
-                if (reader.ready())  {
-                    logContent.append(reader.readLine());
-                    if (logContent.indexOf(marker) >= 0) return true;
-                    if (logContent.length() > marker.length()) logContent.delete(0, logContent.length() - marker.length());
-                    continue;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                long startTime = currentTimeMillis();
+                StringBuilder logContent = new StringBuilder();
+                while (true) {
+                    if (reader.ready()) {
+                        logContent.append(reader.readLine());
+                        if (logContent.indexOf(marker) >= 0) return true;
+                        if (logContent.length() > marker.length())
+                            logContent.delete(0, logContent.length() - marker.length());
+                        continue;
+                    }
+                    if (calcSecFrom(startTime) > timeoutInSec) return false;
+                    sleepSec(1);
                 }
-                if (calcSecFrom(startTime) > timeoutInSec) return false;
-                sleepSec(1);
             }
         } catch (Exception e) {
             return false;
