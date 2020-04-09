@@ -15,7 +15,7 @@ import static io.microconfig.utils.Logger.info;
 import static java.nio.file.Files.newBufferedWriter;
 import static java.util.List.of;
 import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 @EqualsAndHashCode
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class OpenShiftResource {
                 .stream()
                 .filter(not(String::isEmpty))
                 .map(notation -> fromOpenShiftNotation(notation, oc))
-                .collect(toList());
+                .collect(toUnmodifiableList());
     }
 
     public static OpenShiftResource fromOpenShiftNotation(String notation, OCExecutor oc) {

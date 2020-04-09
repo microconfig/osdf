@@ -14,6 +14,7 @@ import static io.microconfig.osdf.utils.ReflectionUtils.annotations;
 import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.copyOfRange;
+import static java.util.stream.IntStream.range;
 
 @RequiredArgsConstructor
 public class ApiArgsGetter {
@@ -65,9 +66,9 @@ public class ApiArgsGetter {
     }
 
     private int plainCallSplitIndex(String[] args) {
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("-")) return i;
-        }
-        return args.length;
+        return range(0, args.length)
+                .filter(i -> args[i].startsWith("-"))
+                .findFirst()
+                .orElse(args.length);
     }
 }

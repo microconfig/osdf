@@ -23,13 +23,11 @@ public class PropertiesDiffCommand {
     }
 
     private void showDiff(AbstractOpenShiftComponent component) {
-        for (Path file : component.diffFiles()) {
-            announce(file.toString());
-            printDiffFile(file);
-        }
+        component.diffFiles().forEach(this::printDiffFile);
     }
 
     private void printDiffFile(Path file) {
+        announce(file.toString());
         try {
             info(IOUtils.toString(newInputStream(file), UTF_8.name()));
         } catch (IOException e) {

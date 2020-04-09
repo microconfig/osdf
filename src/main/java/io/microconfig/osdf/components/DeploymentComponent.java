@@ -17,7 +17,6 @@ import static io.microconfig.osdf.istio.VirtualService.virtualService;
 import static io.microconfig.osdf.openshift.Pod.fromOpenShiftNotation;
 import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 import static java.util.List.of;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @Getter
@@ -81,7 +80,7 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
                 .filter(line -> line.length() > 0)
                 .map(notation -> fromOpenShiftNotation(notation, name, oc))
                 .sorted()
-                .collect(toList());
+                .collect(toUnmodifiableList());
     }
 
     public Pod pod(String podName) {
@@ -95,7 +94,7 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
         return pods.stream()
                 .filter(pod -> pod.getName().equals(podName))
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new RuntimeException("Pod not found"));
     }
 
     public CanaryProperties canaryProperties() {

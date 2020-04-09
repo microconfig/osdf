@@ -29,11 +29,16 @@ public class HeaderRule {
 
         List<Object> matches = getList(rule, "match");
         Map<String, Object> headers = getMap((Map<String, Object>) matches.get(0), "headers");
-        for (Map.Entry<String, Object> entry : headers.entrySet()) {
-            String value = getString((Map<String, Object>) entry.getValue(), "exact");
-            return new HeaderRule(destination, entry.getKey(), value);
-        }
-        throw new RuntimeException("Empty headers");
+        return headers.entrySet().stream()
+                .map(entry -> yamlEntryToHeaderRule(destination, entry))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Empty headers"));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static HeaderRule yamlEntryToHeaderRule(Destination destination, Map.Entry<String, Object> entry) {
+        String value = getString((Map<String, Object>) entry.getValue(), "exact");
+        return new HeaderRule(destination, entry.getKey(), value);
     }
 
     public Object toYaml() {

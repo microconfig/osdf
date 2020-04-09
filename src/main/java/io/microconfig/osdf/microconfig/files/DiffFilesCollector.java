@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 import static java.nio.file.Files.isDirectory;
 import static java.nio.file.Files.walk;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
 public class DiffFilesCollector {
@@ -24,7 +24,7 @@ public class DiffFilesCollector {
             return files
                     .filter(p -> !isDirectory(p))
                     .filter(p -> p.getFileName().toString().startsWith("diff-"))
-                    .collect(toList());
+                    .collect(toUnmodifiableList());
         } catch (IOException e) {
             throw new RuntimeException("Can't collect diff files in " + root, e);
         }

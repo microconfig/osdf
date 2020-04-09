@@ -110,7 +110,6 @@ public class CanaryDeployer implements Deployer {
         int maxTime = component.deployProperties().getPodStartTime();
         while (time < maxTime) {
             DeploymentStatus status = component.info(healthChecker).getStatus();
-            System.out.println(status.toString());
             if (status == BAD_HEALTHCHECK) throw new RuntimeException("Bad healthcheck");
             if (status == RUNNING) return;
             info("Waiting(status=" + status + ")");

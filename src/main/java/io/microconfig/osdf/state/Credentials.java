@@ -15,8 +15,7 @@ public class Credentials {
 
     public static Credentials of(String credentialsString) {
         String[] split = credentialsString.split(":");
-        if (split.length != 2) return null;
-
+        if (split.length != 2) throw new RuntimeException("Bad credentials format " + credentialsString);
         return new Credentials(split[0], split[1], credentialsString);
     }
 }

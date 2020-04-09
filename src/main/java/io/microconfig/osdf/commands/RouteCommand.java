@@ -21,12 +21,8 @@ public class RouteCommand {
     public void set(String componentName, String rule) {
         DeploymentComponent component = component(componentName, paths.componentsPath(), oc);
         try (OpenShiftProject ignored = create(paths, oc).connect()) {
-            for (RoutingRuleSetter ruleSetter : ruleSetters) {
-                if (ruleSetter.set(component, rule)) {
-                    return;
-                }
-            }
+            boolean ruleIsSet = ruleSetters.stream().anyMatch(setter -> setter.set(component, rule));
+            if (!ruleIsSet) throw new RuntimeException("Unknown routing rule");
         }
-        throw new RuntimeException("Unknown routing rule");
     }
 }

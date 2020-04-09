@@ -11,7 +11,7 @@ import java.util.Map;
 import static io.microconfig.osdf.metrics.Metric.metric;
 import static io.microconfig.osdf.utils.YamlUtils.*;
 import static java.nio.file.Path.of;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
 @Getter
@@ -39,6 +39,6 @@ public class CanaryProperties {
         return list.stream()
                 .map(obj -> (Map<String, Object>) obj)
                 .map(m -> metric(getString(m, "key"), getString(m, "deviation")))
-                .collect(toList());
+                .collect(toUnmodifiableList());
     }
 }

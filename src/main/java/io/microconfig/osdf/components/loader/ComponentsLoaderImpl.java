@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 import static io.microconfig.osdf.components.AbstractOpenShiftComponent.fromPath;
 import static io.microconfig.osdf.components.properties.DeployProperties.deployProperties;
 import static io.microconfig.osdf.utils.FileUtils.getPathsInDir;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
 public class ComponentsLoaderImpl implements ComponentsLoader {
@@ -36,7 +36,7 @@ public class ComponentsLoaderImpl implements ComponentsLoader {
                 .filter(Objects::nonNull)
                 .filter(clazz::isInstance)
                 .map(clazz::cast)
-                .collect(toList());
+                .collect(toUnmodifiableList());
     }
 
     private Stream<AbstractOpenShiftComponent> components() {

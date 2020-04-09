@@ -20,7 +20,7 @@ import static io.microconfig.utils.Logger.info;
 import static java.nio.file.Files.list;
 import static java.nio.file.Path.of;
 import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
 public abstract class AbstractOpenShiftComponent {
@@ -89,7 +89,7 @@ public abstract class AbstractOpenShiftComponent {
         try (Stream<Path> stream = list(of(configDir + "/openshift"))) {
             return stream.filter(path -> path.toString().endsWith(".yml") || path.toString().endsWith(".yaml"))
                     .map(path -> OpenShiftResource.fromPath(path, oc))
-                    .collect(toList());
+                    .collect(toUnmodifiableList());
         } catch (IOException e) {
             throw new UncheckedIOException("Couldn't load files from " + configDir, e);
         }

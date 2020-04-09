@@ -14,8 +14,7 @@ import java.util.Map;
 
 import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
 import static java.util.List.of;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class DeploymentComponentTest {
@@ -85,9 +84,8 @@ class DeploymentComponentTest {
                 "pod/pod2"
         ));
 
-        Pod pod = component.pod("pod3");
+        assertThrows(RuntimeException.class, () -> component.pod("pod3"));
         verify(oc).executeAndReadLines(commands.get("pods"));
-        assertNull(pod);
     }
 
     @Test

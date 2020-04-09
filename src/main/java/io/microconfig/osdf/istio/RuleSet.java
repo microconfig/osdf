@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static io.microconfig.osdf.istio.rules.MainRule.fromYaml;
 import static java.lang.String.join;
@@ -22,14 +23,19 @@ public class RuleSet {
 
     public static RuleSet from(List<Object> rules) {
         MainRule mainRule = fromYaml(rules.get(rules.size() - 1));
-        List<HeaderRule> headerRules = new ArrayList<>();
-        for (Object ruleObj : rules) {
-            try {
-                headerRules.add(HeaderRule.fromYaml(ruleObj));
-            } catch (Exception ignored) {
-            }
-        }
+        List<HeaderRule> headerRules = rules.stream()
+                .map(RuleSet::parseHeaderRule)
+                .filter(Objects::nonNull)
+                .collect(toList());
         return new RuleSet(mainRule, headerRules);
+    }
+
+    private static HeaderRule parseHeaderRule(Object ruleObj) {
+        try {
+            return HeaderRule.fromYaml(ruleObj);
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     public void addHeaderRule(HeaderRule headerRule) {
@@ -37,10 +43,7 @@ public class RuleSet {
     }
 
     public void deleteHeaderRule(String subset) {
-        headerRules = headerRules
-                .stream()
-                .filter(r -> !r.getDestination().getSubset().equals(subset))
-                .collect(toList());
+        headerRules.removeIf(r -> r.getDestination().getSubset().equals(subset));
     }
 
     public String getTrafficStatus(String subset) {
@@ -52,10 +55,8 @@ public class RuleSet {
         if (subset.equals(mainRule.mirrorSubset())) {
             types.add("mirror");
         }
-        for (HeaderRule headerRule : headerRules) {
-            if (headerRule.getDestination().getSubset().equals(subset)) {
-                types.add("header");
-            }
+        if (headerRules.stream().anyMatch(headerRule -> headerRule.getDestination().getSubset().equals(subset))) {
+            types.add("header");
         }
         String status = join(",", types);
         return status.length() > 0 ? status : "-";

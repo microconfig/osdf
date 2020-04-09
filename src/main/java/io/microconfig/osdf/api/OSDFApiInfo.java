@@ -14,32 +14,30 @@ import static io.microconfig.osdf.utils.ReflectionUtils.processAnnotation;
 import static io.microconfig.osdf.utils.StringUtils.pad;
 import static io.microconfig.utils.Logger.announce;
 import static java.util.Arrays.sort;
+import static java.util.Arrays.stream;
 import static java.util.Comparator.comparingInt;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static java.util.stream.Stream.of;
 
 public class OSDFApiInfo {
     public static List<String> commands() {
         return of(getOrderedMethods())
                 .map(Method::getName)
-                .collect(toList());
+                .collect(toUnmodifiableList());
     }
 
     public static Method methodByName(String name) {
-        Method[] methods = OSDFApi.class.getMethods();
-        for (Method method : methods) {
-            if (method.getName().equals(name)) {
-                return method;
-            }
-        }
-        throw new RuntimeException("Unknown method " + name);
+        return of(OSDFApi.class.getMethods())
+                .filter(method -> method.getName().equals(name))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Unknown method " + name));
     }
 
     public static void printCommandInfos() {
-        for (Method method : getOrderedMethods()) {
+        stream(getOrderedMethods()).forEach(method -> {
             String help = method.getAnnotation(ApiCommand.class).description();
             announce(pad(method.getName(), 50) + help);
-        }
+        });
     }
 
     public static void printHelpForMethod(String methodName) {

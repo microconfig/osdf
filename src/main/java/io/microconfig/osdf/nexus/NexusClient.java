@@ -18,9 +18,11 @@ public class NexusClient {
 
     public void download(NexusArtifact artifact, Path destination) {
         String url = artifact.getDownloadUrl(nexusUrl);
+        execute(withCredentials("curl " + url + " --output " + destination));
+    }
 
-        String command = "curl " + url + " --output " + destination;
-        if (credentials != null) command += " -n " + credentials.getCredentialsString();
-        execute(command);
+    private String withCredentials(String command) {
+        if (credentials == null) return command;
+        return command + " -n " + credentials.getCredentialsString();
     }
 }

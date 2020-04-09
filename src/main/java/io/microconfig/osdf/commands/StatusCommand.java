@@ -71,10 +71,7 @@ public class StatusCommand {
 
     private void addComponentHeader(DeploymentComponent component, ColumnPrinter localPrinter, List<DeploymentComponent> deployedComponents) {
         boolean deployed = deployedComponents.stream().map(DeploymentComponent::getVersion).anyMatch(v -> v.equals(component.getVersion()));
-        String fullName = component.getName() + "{" + component.getVersion() + "}";
-        if (!deployed) {
-            fullName += "(not deployed)";
-        }
+        String fullName = component.getName() + "{" + component.getVersion() + "}" + (deployed ? "" : "(not deployed)");
         localPrinter.addRow(fullName, "", "", "", "");
     }
 }

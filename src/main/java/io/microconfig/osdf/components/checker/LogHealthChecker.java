@@ -28,16 +28,18 @@ public class LogHealthChecker implements HealthChecker {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 long startTime = currentTimeMillis();
                 StringBuilder logContent = new StringBuilder();
+                boolean gotLogs = false;
                 while (true) {
                     if (reader.ready()) {
+                        gotLogs = true;
                         String str = reader.readLine();
-                        System.out.println("Line: " +  str);
                         logContent.append(str);
                         if (logContent.indexOf(marker) >= 0) return true;
                         if (logContent.length() > marker.length())
                             logContent.delete(0, logContent.length() - marker.length());
                         continue;
                     }
+                    if (!gotLogs && calcSecFrom(startTime) > 10) return false;
                     if (calcSecFrom(startTime) > timeoutInSec) return false;
                     sleepSec(1);
                 }

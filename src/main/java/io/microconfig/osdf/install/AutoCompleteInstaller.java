@@ -11,7 +11,7 @@ import static io.microconfig.osdf.components.loader.ComponentsLoaderImpl.compone
 import static io.microconfig.osdf.utils.FileUtils.writeStringToFile;
 import static java.lang.String.join;
 import static java.nio.file.Path.of;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.apache.commons.io.FileUtils.getUserDirectoryPath;
 
 @RequiredArgsConstructor
@@ -56,7 +56,7 @@ public class AutoCompleteInstaller {
         List<String> components = componentsLoader(componentsPath, null, null).load()
                 .stream()
                 .map(AbstractOpenShiftComponent::getName)
-                .collect(toList());
+                .collect(toUnmodifiableList());
         return join(" ", components);
     }
 }

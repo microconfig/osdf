@@ -12,7 +12,7 @@ import static io.microconfig.osdf.istio.Destination.destination;
 import static io.microconfig.osdf.istio.WeightRoute.weightRoute;
 import static io.microconfig.osdf.utils.YamlUtils.getList;
 import static java.util.List.of;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 @AllArgsConstructor
 public class MainRule {
@@ -27,8 +27,10 @@ public class MainRule {
         if (rule.containsKey("mirror")) {
             mirror = Destination.fromYaml(rule.get("mirror"));
         }
-        List<WeightRoute> routes = getList(rule, "route").stream().map(WeightRoute::fromYaml).collect(toList());
-
+        List<WeightRoute> routes = getList(rule, "route")
+                .stream()
+                .map(WeightRoute::fromYaml)
+                .collect(toUnmodifiableList());
         return new MainRule(routes, mirror);
     }
 
@@ -42,7 +44,7 @@ public class MainRule {
                 weightRoute(destination, weight)
         ).stream()
                 .filter(r -> r.getWeight() != 0)
-                .collect(toList());
+                .collect(toUnmodifiableList());
 
         deleteMirrorIfExists(subset);
     }
@@ -97,13 +99,13 @@ public class MainRule {
         return routes
                     .stream()
                     .filter(r -> !r.getDestination().getSubset().equals(subset))
-                    .collect(toList());
+                    .collect(toUnmodifiableList());
     }
 
     public Object toYaml() {
         Map<String, Object> route = new HashMap<>();
 
-        route.put("route", routes.stream().map(WeightRoute::toYaml).collect(toList()));
+        route.put("route", routes.stream().map(WeightRoute::toYaml).collect(toUnmodifiableList()));
         if (mirror != null) {
             route.put("mirror", mirror.toYaml());
         }

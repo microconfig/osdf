@@ -12,7 +12,6 @@ import java.util.List;
 import static io.microconfig.osdf.components.DeploymentComponent.component;
 import static io.microconfig.osdf.openshift.OpenShiftProject.create;
 import static io.microconfig.utils.Logger.announce;
-import static io.microconfig.utils.Logger.warn;
 
 @RequiredArgsConstructor
 public class DeletePodCommand {
@@ -28,14 +27,9 @@ public class DeletePodCommand {
 
     private void deletePods(DeploymentComponent component, List<String> podNames) {
         List<Pod> pods = component.pods();
-        for (String podName : podNames) {
-            Pod pod = component.pod(pods, podName);
-            if (pod == null) {
-                warn("Pod " + podName + " not found");
-                continue;
-            }
-            deletePod(pod);
-        }
+        podNames.stream()
+                .map(podName -> component.pod(pods, podName))
+                .forEach(this::deletePod);
     }
 
     private void deletePod(Pod pod) {
