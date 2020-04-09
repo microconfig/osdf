@@ -17,13 +17,9 @@ public class HiddenDeployer implements Deployer {
 
     @Override
     public void deploy(DeploymentComponent component) {
-        if (alreadyDeployed(component)) throw new RuntimeException("Component already deployed");
+        if (component.deployed()) throw new RuntimeException("Component already deployed");
         if (!virtualServiceExists(component)) throw new RuntimeException("Virtual service doesn't exist");
         basicDeployer().deploy(component);
-    }
-
-    private boolean alreadyDeployed(DeploymentComponent component) {
-        return !oc.execute("oc get dc " + component.fullName(), true).contains("not found");
     }
 
     private boolean virtualServiceExists(DeploymentComponent component) {

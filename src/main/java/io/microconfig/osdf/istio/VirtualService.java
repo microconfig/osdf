@@ -25,7 +25,7 @@ public class VirtualService {
 
     public static VirtualService virtualService(OCExecutor oc, DeploymentComponent component) {
         String yaml = oc.execute("oc get virtualservice " + component.getName() + " -o yaml", true);
-        return new VirtualService(oc, component, yaml.contains("not found") ? null : new Yaml().load(yaml));
+        return new VirtualService(oc, component, yaml.contains("not found") || yaml.contains("error") ? null : new Yaml().load(yaml));
     }
 
     public void createEmpty() {

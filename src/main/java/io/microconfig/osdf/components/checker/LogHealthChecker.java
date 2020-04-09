@@ -30,7 +30,9 @@ public class LogHealthChecker implements HealthChecker {
                 StringBuilder logContent = new StringBuilder();
                 while (true) {
                     if (reader.ready()) {
-                        logContent.append(reader.readLine());
+                        String str = reader.readLine();
+                        System.out.println("Line: " +  str);
+                        logContent.append(str);
                         if (logContent.indexOf(marker) >= 0) return true;
                         if (logContent.length() > marker.length())
                             logContent.delete(0, logContent.length() - marker.length());

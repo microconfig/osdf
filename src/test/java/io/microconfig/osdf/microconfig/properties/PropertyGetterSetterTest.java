@@ -5,31 +5,28 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 import static io.microconfig.factory.configtypes.StandardConfigTypes.PROCESS;
 import static io.microconfig.osdf.microconfig.properties.PropertyGetter.propertyGetter;
 import static io.microconfig.osdf.microconfig.properties.PropertySetter.propertySetter;
+import static io.microconfig.osdf.utils.InstallInitUtils.DEFAULT_CONFIGS_PATH;
 import static java.nio.file.Path.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PropertyGetterSetterTest {
-    private final Path configsPath = of("/tmp/configs");
-
-
     @BeforeEach
     void createConfigs() throws IOException {
-        ConfigUnzipper.unzip("configs.zip", configsPath);
+        ConfigUnzipper.unzip("configs.zip", DEFAULT_CONFIGS_PATH);
     }
 
     @Test
     void getSetGet() {
-        String oldVersion = propertyGetter("dev", of(configsPath + "/repo")).get(PROCESS, "versions", "project.version");
+        String oldVersion = propertyGetter("dev", of(DEFAULT_CONFIGS_PATH + "/repo")).get(PROCESS, "versions", "project.version");
         assertEquals("latest", oldVersion);
 
-        propertySetter().setIfNecessary(of(configsPath + "/repo/components/system/versions/project-version.proc"), "project.version", "v2");
+        propertySetter().setIfNecessary(of(DEFAULT_CONFIGS_PATH + "/repo/components/system/versions/project-version.proc"), "project.version", "v2");
 
-        String newVersion = propertyGetter("dev", of(configsPath + "/repo")).get(PROCESS, "versions", "project.version");
+        String newVersion = propertyGetter("dev", of(DEFAULT_CONFIGS_PATH + "/repo")).get(PROCESS, "versions", "project.version");
         assertEquals("v2", newVersion);
     }
 }

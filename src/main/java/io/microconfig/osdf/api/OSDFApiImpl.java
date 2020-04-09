@@ -18,11 +18,13 @@ import java.util.List;
 import static io.microconfig.osdf.api.OSDFApiInfo.printHelpForMethod;
 import static io.microconfig.osdf.commands.UpdateCommand.updateCommand;
 import static io.microconfig.osdf.components.checker.LogHealthChecker.logHealthChecker;
+import static io.microconfig.osdf.deployers.CanaryDeployer.canaryDeployer;
 import static io.microconfig.osdf.deployers.HiddenDeployer.hiddenDeployer;
 import static io.microconfig.osdf.deployers.ReplaceDeployer.replaceDeployer;
 import static io.microconfig.osdf.istio.rulesetters.HeaderRuleSetter.headerRule;
 import static io.microconfig.osdf.istio.rulesetters.MirrorRuleSetter.mirrorRule;
 import static io.microconfig.osdf.istio.rulesetters.WeightRuleSetter.weightRule;
+import static io.microconfig.osdf.metrics.formats.PrometheusParser.prometheusParser;
 import static io.microconfig.osdf.microconfig.properties.HealthCheckProperties.properties;
 import static io.microconfig.osdf.microconfig.properties.PropertyGetter.propertyGetter;
 import static io.microconfig.osdf.printer.ColumnPrinter.printer;
@@ -130,11 +132,15 @@ public class OSDFApiImpl implements OSDFApi {
     private Deployer deployer(String mode) {
         if (mode == null || mode.equals("replace")) {
             return replaceDeployer(oc);
-        } else if (mode.equals("hidden")) {
-            return hiddenDeployer(oc);
-        } else {
-            throw new RuntimeException("Unknown deploy mode");
         }
+        if (mode.equals("hidden")) {
+            return hiddenDeployer(oc);
+        }
+        if (mode.equals("canary")) {
+            return canaryDeployer(oc, prometheusParser(), getLogHealthChecker());
+        }
+
+        throw new RuntimeException("Unknown deploy mode");
     }
 
     private LogHealthChecker getLogHealthChecker() {

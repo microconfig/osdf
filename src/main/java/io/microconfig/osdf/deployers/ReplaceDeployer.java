@@ -24,6 +24,7 @@ public class ReplaceDeployer implements Deployer {
     }
 
     public void uploadVirtualService(DeploymentComponent component) {
+        if (!component.isIstioService()) return;
         VirtualService virtualService = virtualService(oc, component);
         virtualService.createEmpty();
         virtualService.upload();

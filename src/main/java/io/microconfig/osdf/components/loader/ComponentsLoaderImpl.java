@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import static io.microconfig.osdf.components.AbstractOpenShiftComponent.fromPath;
-import static io.microconfig.osdf.components.loader.ComponentDeployProperties.deployProperties;
+import static io.microconfig.osdf.components.properties.DeployProperties.deployProperties;
 import static io.microconfig.osdf.utils.FileUtils.getPathsInDir;
 import static java.util.stream.Collectors.toList;
 
@@ -44,33 +44,24 @@ public class ComponentsLoaderImpl implements ComponentsLoader {
             return requiredComponentsNames
                     .stream()
                     .map(this::nameToComponent);
-        } else {
-            return getPathsInDir(dir)
-                    .filter(Files::isDirectory)
-                    .filter(this::isComponentDir)
-                    .map(dir -> fromPath(dir, componentVersion(dir), oc));
         }
+        return getPathsInDir(dir)
+                .filter(Files::isDirectory)
+                .filter(this::isComponentDir)
+                .map(dir -> fromPath(dir, deployProperties(dir).getVersion(), oc));
     }
 
     private AbstractOpenShiftComponent nameToComponent(String name) {
         if (name.contains("{")) {
             String[] split = name.split("([{}])");
             return fromPath(componentPath(split[0]), split[1], oc);
-        } else {
-            Path componentPath = componentPath(name);
-            return fromPath(componentPath, componentVersion(componentPath), oc);
         }
+        Path componentPath = componentPath(name);
+        return fromPath(componentPath, deployProperties(componentPath).getVersion(), oc);
     }
 
     private Path componentPath(String componentName) {
         return Path.of(dir + "/" + componentName);
-    }
-
-    private String componentVersion(Path dir) {
-        ComponentDeployProperties properties = deployProperties(dir);
-        String version = properties.getOrNull("version");
-        if (version != null) return version;
-        return properties.get("image", "version");
     }
 
     private boolean isComponentDir(Path path) {

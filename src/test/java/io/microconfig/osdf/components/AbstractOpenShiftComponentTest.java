@@ -1,30 +1,34 @@
 package io.microconfig.osdf.components;
 
+import io.microconfig.osdf.config.OSDFPaths;
 import io.microconfig.osdf.openshift.OCExecutor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
 import static java.util.List.of;
 import static org.mockito.Mockito.*;
 
 class AbstractOpenShiftComponentTest {
+    private final Map<String, String> commands = new HashMap<>();
     private OCExecutor oc;
     private DeploymentComponent component;
-    private final Map<String, String> commands = new HashMap<>();
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
+        OSDFPaths paths = createConfigsAndInstallInit();
         oc = mock(OCExecutor.class);
-        component = new DeploymentComponent("test-name", "v1", Path.of("/tmp/components/test-name"), oc);
+        component = new DeploymentComponent("helloworld-springboot", "latest", Path.of(paths.componentsPath() + "/helloworld-springboot"), oc);
 
-        commands.put("upload", "oc apply -f /tmp/components/test-name/openshift");
-        commands.put("delete", "oc delete all,configmap -l \"application in (test-name), projectVersion in (v1)\"");
-        commands.put("createConfigMap", "oc create configmap test-name.v1 --from-file=/tmp/components/test-name");
-        commands.put("labelConfigMap", "oc label configmap test-name.v1 application=test-name projectVersion=v1");
+        commands.put("upload", "oc apply -f " + paths.componentsPath() + "/helloworld-springboot/openshift");
+        commands.put("delete", "oc delete all,configmap -l \"application in (helloworld-springboot), projectVersion in (latest)\"");
+        commands.put("createConfigMap", "oc create configmap helloworld-springboot.latest --from-file=" + paths.componentsPath() + "/helloworld-springboot");
+        commands.put("labelConfigMap", "oc label configmap helloworld-springboot.latest application=helloworld-springboot projectVersion=latest");
 
         when(oc.executeAndReadLines(commands.get("upload"))).thenReturn(of("resource1 configured", "resource2 configured"));
         when(oc.execute(commands.get("createConfigMap"))).thenReturn("created");

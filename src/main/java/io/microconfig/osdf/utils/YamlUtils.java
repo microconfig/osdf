@@ -3,6 +3,8 @@ package io.microconfig.osdf.utils;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -21,6 +23,14 @@ public class YamlUtils {
         }
     }
 
+    public static Map<String, Object> loadFromPath(Path path) {
+        try {
+            return new Yaml().load(new FileInputStream(path.toString()));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Couldn't load yaml from path " + path);
+        }
+    }
+
     public static String getOrNull(Map<String, Object> yaml, String... properties) {
         try {
             return getString(yaml, properties);
@@ -33,8 +43,12 @@ public class YamlUtils {
         return (String) getObjectOrNull(yaml, properties);
     }
 
-    public static int getInt(Map<String, Object> yaml, String... properties) {
-        return (int) getObjectOrNull(yaml, properties);
+    public static Integer getInt(Map<String, Object> yaml, String... properties) {
+        return (Integer) getObjectOrNull(yaml, properties);
+    }
+
+    public static float getFloat(Map<String, Object> yaml, String... properties) {
+        return (float) getObjectOrNull(yaml, properties);
     }
 
     @SuppressWarnings("unchecked")

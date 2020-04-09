@@ -2,6 +2,8 @@ package io.microconfig.osdf.components;
 
 import io.microconfig.osdf.components.checker.HealthChecker;
 import io.microconfig.osdf.components.info.DeploymentInfo;
+import io.microconfig.osdf.components.properties.CanaryProperties;
+import io.microconfig.osdf.components.properties.DeployProperties;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.Pod;
 import io.microconfig.utils.Logger;
@@ -10,7 +12,6 @@ import lombok.Getter;
 import java.nio.file.Path;
 import java.util.List;
 
-import static io.microconfig.osdf.components.loader.ComponentDeployProperties.deployProperties;
 import static io.microconfig.osdf.components.loader.ComponentsLoaderImpl.componentsLoader;
 import static io.microconfig.osdf.istio.VirtualService.virtualService;
 import static io.microconfig.osdf.openshift.Pod.fromOpenShiftNotation;
@@ -19,14 +20,13 @@ import static java.util.List.of;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
+@Getter
 public class DeploymentComponent extends AbstractOpenShiftComponent {
-    @Getter
     private final boolean istioService;
 
     public DeploymentComponent(String name, String version, Path configDir, OCExecutor oc) {
         super(name, version, configDir, oc);
-        String componentType = deployProperties(configDir).getOrNull("component", "type");
-        this.istioService = "istio".equals(componentType);
+        this.istioService = "istio".equals(deployProperties().getType());
     }
 
     public static DeploymentComponent component(String name, Path componentsPath, OCExecutor oc) {
@@ -71,6 +71,10 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
         upload();
     }
 
+    public boolean deployed() {
+        return !oc.execute("oc get dc " + fullName(), true).contains("not found");
+    }
+
     public List<Pod> pods() {
         return oc.executeAndReadLines("oc get pods " + label() + " -o name")
                 .stream()
@@ -92,6 +96,14 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
                 .filter(pod -> pod.getName().equals(podName))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public CanaryProperties canaryProperties() {
+        return CanaryProperties.canaryProperties(configDir);
+    }
+
+    public DeployProperties deployProperties() {
+        return DeployProperties.deployProperties(configDir);
     }
 
     public DeploymentInfo info(HealthChecker healthChecker) {

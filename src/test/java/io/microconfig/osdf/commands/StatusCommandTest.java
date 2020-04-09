@@ -4,34 +4,27 @@ import io.microconfig.osdf.components.checker.HealthChecker;
 import io.microconfig.osdf.config.OSDFPaths;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.printer.ColumnPrinter;
-import io.microconfig.osdf.utils.ConfigUnzipper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static io.microconfig.osdf.utils.InstallInitUtils.defaultInstallInit;
-import static java.nio.file.Path.of;
+import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
 import static org.mockito.Mockito.*;
 
 class StatusCommandTest {
     private OSDFPaths paths;
-    private final Path configsPath = of("/tmp/configs");
-    private final Path osdfPath = of("/tmp/osdf");
 
     @BeforeEach
     void createConfigs() throws IOException {
-        ConfigUnzipper.unzip("configs.zip", configsPath);
-        paths = new OSDFPaths(osdfPath);
+        paths = createConfigsAndInstallInit();
     }
 
     @Test
     void statusOk() {
-        defaultInstallInit(configsPath, osdfPath, paths);
         OCExecutor oc = mock(OCExecutor.class, withSettings().verboseLogging());
         when(oc.executeAndReadLines("oc get dc -l application=helloworld-springboot -o name")).thenReturn(
                 List.of("deployment/helloworld-springboot.latest")

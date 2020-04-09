@@ -2,30 +2,22 @@ package io.microconfig.osdf.components.loader;
 
 import io.microconfig.osdf.components.AbstractOpenShiftComponent;
 import io.microconfig.osdf.config.OSDFPaths;
-import io.microconfig.osdf.utils.ConfigUnzipper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 
 import static io.microconfig.osdf.components.loader.ComponentsLoaderImpl.componentsLoader;
-import static io.microconfig.osdf.utils.InstallInitUtils.defaultInstallInit;
-import static java.nio.file.Path.of;
+import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ComponentsLoaderImplTest {
     private OSDFPaths paths;
-    private final Path configsPath = of("/tmp/configs");
-    private final Path osdfPath = of("/tmp/osdf");
-
 
     @BeforeEach
     void createConfigs() throws IOException {
-        ConfigUnzipper.unzip("configs.zip", configsPath);
-        paths = new OSDFPaths(osdfPath);
-        defaultInstallInit(configsPath, osdfPath, paths);
+        paths = createConfigsAndInstallInit();
     }
 
     @Test

@@ -1,18 +1,16 @@
 package io.microconfig.osdf.openshift;
 
 import io.microconfig.osdf.config.OSDFPaths;
-import io.microconfig.osdf.utils.ConfigUnzipper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.file.Path;
 import java.util.List;
 
 import static io.microconfig.osdf.openshift.OpenShiftResource.*;
-import static io.microconfig.osdf.utils.InstallInitUtils.defaultInstallInit;
+import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
 import static java.nio.file.Path.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -20,13 +18,10 @@ import static org.mockito.Mockito.when;
 
 class OpenShiftResourceTest {
     private OSDFPaths paths;
-    private final Path configsPath = of("/tmp/configs");
-    private final Path osdfPath = of("/tmp/osdf");
 
     @BeforeEach
     void createConfigs() throws IOException {
-        ConfigUnzipper.unzip("configs.zip", configsPath);
-        paths = new OSDFPaths(osdfPath);
+        paths = createConfigsAndInstallInit();
     }
 
     @Test
@@ -45,7 +40,6 @@ class OpenShiftResourceTest {
 
     @Test
     void testFromPath() throws IllegalAccessException, NoSuchFieldException {
-        defaultInstallInit(configsPath, osdfPath, paths);
         OpenShiftResource resource = fromPath(of(paths.componentsPath() + "/helloworld-springboot/openshift/deployment.yaml"), null);
         checkKindAndName(resource, "deploymentconfig", "helloworld-springboot.latest");
     }
