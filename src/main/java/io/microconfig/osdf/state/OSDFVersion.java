@@ -40,7 +40,7 @@ public class OSDFVersion {
         Integer major = castToInteger(split[0]);
         Integer minor = castToInteger(split[1]);
         Integer patch = castToInteger(split[2]);
-        if (major == null || minor == null || patch == null) throw exception(s);;
+        if (major == null || minor == null || patch == null) throw exception(s);
         return new OSDFVersion(major, minor, patch);
     }
 
