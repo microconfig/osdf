@@ -2,15 +2,16 @@ package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.api.annotation.ApiCommand;
 import io.microconfig.osdf.api.annotation.ConsoleParam;
-import io.microconfig.osdf.nexus.NexusArtifact;
+import io.microconfig.osdf.api.annotation.Hidden;
 import io.microconfig.osdf.api.parameter.*;
+import io.microconfig.osdf.nexus.NexusArtifact;
 import io.microconfig.osdf.state.ConfigSource;
 import io.microconfig.osdf.state.Credentials;
 
 import java.nio.file.Path;
 import java.util.List;
 
-import static io.microconfig.osdf.parameters.ParamType.*;
+import static io.microconfig.osdf.parameters.ParamType.REQUIRED;
 
 public interface OSDFApi {
     @ApiCommand(description = "Install osdf commandline tool", order = 1)
@@ -36,6 +37,7 @@ public interface OSDFApi {
     void deploy(@ConsoleParam(ComponentsParameter.class) List<String> components,
                 @ConsoleParam(ModeParameter.class) String mode);
 
+    @Hidden
     @ApiCommand(description = "Set up routing rules", order = 6)
     void route(@ConsoleParam(value = ComponentParameter.class, type = REQUIRED) String component,
                @ConsoleParam(value = RoutingRuleParameter.class, type = REQUIRED) String rule);
