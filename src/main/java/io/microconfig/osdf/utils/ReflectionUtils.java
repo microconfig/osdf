@@ -19,8 +19,7 @@ public class ReflectionUtils {
         for (Annotation[] parameterAnnotation : method.getParameterAnnotations()) {
             for (Annotation annotation : parameterAnnotation) {
                 if (annotationClazz.isInstance(annotation)) {
-                    T annotationInstance = annotationClazz.cast(annotation);
-                    process.accept(annotationInstance);
+                    process.accept(annotationClazz.cast(annotation));
                 }
             }
         }
@@ -31,8 +30,7 @@ public class ReflectionUtils {
         for (int i = 0; i < parameterAnnotations.length; ++i) {
             for (Annotation annotation : parameterAnnotations[i]) {
                 if (annotationClazz.isInstance(annotation)) {
-                    T annotationInstance = annotationClazz.cast(annotation);
-                    process.accept(annotationInstance, i);
+                    process.accept(annotationClazz.cast(annotation), i);
                 }
             }
         }

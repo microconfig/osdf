@@ -5,7 +5,6 @@ import io.microconfig.osdf.components.checker.HealthChecker;
 import io.microconfig.osdf.config.OSDFPaths;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.OpenShiftProject;
-import io.microconfig.osdf.openshift.Pod;
 import io.microconfig.osdf.printer.ColumnPrinter;
 import lombok.RequiredArgsConstructor;
 
@@ -34,10 +33,6 @@ public class PodsCommand {
     }
 
     private void getPodsInfo(HealthChecker healthChecker, ColumnPrinter printer, DeploymentComponent component) {
-        List<Pod> pods = component.pods();
-        for (Pod pod : pods) {
-            boolean status = healthChecker.check(pod);
-            printer.addRow(component.getName(), pod.getName(), status ? "OK" : "BAD");
-        }
+        component.pods().forEach(pod -> printer.addRow(component.getName(), pod.getName(), healthChecker.check(pod) ? "OK" : "BAD"));
     }
 }

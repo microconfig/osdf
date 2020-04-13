@@ -13,8 +13,6 @@ public class OpenShiftCredentialsParameter extends AbstractParameter<Credentials
     @Override
     public Credentials get() {
         if (getValue() == null) return null;
-        Credentials credentials = of(getValue());
-        if (credentials == null) throw new RuntimeException("Bad format for credentials");
-        return credentials;
+        return of(getValue());
     }
 }

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.List;
 
 import static io.microconfig.utils.Logger.error;
-import static java.lang.Runtime.getRuntime;
 import static java.lang.Thread.currentThread;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.List.of;
@@ -26,7 +25,7 @@ public class CommandLineExecutor {
 
     public static String execute(String command, boolean allowErrors) {
         try {
-            Process process = getRuntime().exec(command);
+            Process process = new ProcessBuilder("/bin/sh", "-c", command).start();
             process.waitFor();
 
             if (process.exitValue() != 0) {

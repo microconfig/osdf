@@ -20,6 +20,7 @@ import static io.microconfig.osdf.utils.FileUtils.readAll;
 import static io.microconfig.osdf.utils.FileUtils.writeStringToFile;
 import static io.microconfig.osdf.utils.JarUtils.jarPath;
 import static io.microconfig.utils.Logger.warn;
+import static java.nio.file.Files.exists;
 import static java.nio.file.Path.of;
 import static org.apache.commons.io.FileUtils.getUserDirectoryPath;
 
@@ -60,7 +61,7 @@ public class OSDFInstaller {
         } else {
             replaceJarAndUseOldState(scriptPath, tmpScriptPath, newVersion);
         }
-        if (oldVersion == null) addScriptToBashrc();
+        addScriptToBashrc();
         if (!newVersion.equals(oldVersion)) deleteOldJar(oldVersion);
     }
 
@@ -106,11 +107,14 @@ public class OSDFInstaller {
         String newEntry = "PATH=$PATH:" + paths.scriptFolder() + "/";
 
         Path bashrc = of(getUserDirectoryPath() + "/.bashrc");
-        String bashrcContent = readAll(bashrc);
+        if (!exists(bashrc)) {
+            writeStringToFile(bashrc, newEntry);
+            return;
+        }
 
+        String bashrcContent = readAll(bashrc);
         if (!bashrcContent.contains(newEntry)) {
-            bashrcContent += "\n" + newEntry + "\n";
-            writeStringToFile(bashrc, bashrcContent);
+            writeStringToFile(bashrc, bashrcContent + "\n" + newEntry + "\n");
         }
     }
 

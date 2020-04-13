@@ -12,7 +12,7 @@ import java.util.List;
 import static io.microconfig.osdf.components.info.DeploymentStatus.*;
 import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 @Getter
 @RequiredArgsConstructor
@@ -37,7 +37,7 @@ public class DeploymentInfo {
     }
 
     public static DeploymentInfo info(DeploymentComponent component, OCExecutor oc, HealthChecker healthChecker) {
-        List<String> lines = oc.executeAndReadLines("oc get dc " + component.getName() + " -o custom-columns=" +
+        List<String> lines = oc.executeAndReadLines("oc get dc " + component.getName() + "." + component.getVersion() + " -o custom-columns=" +
                 "replicas:.spec.replicas," +
                 "current:.status.replicas," +
                 "available:.status.availableReplicas," +
@@ -77,6 +77,6 @@ public class DeploymentInfo {
     }
 
     private List<Boolean> podsHealth(HealthChecker healthChecker, List<Pod> pods) {
-        return pods.parallelStream().map(healthChecker::check).collect(toList());
+        return pods.parallelStream().map(healthChecker::check).collect(toUnmodifiableList());
     }
 }

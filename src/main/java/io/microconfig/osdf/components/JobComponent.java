@@ -15,8 +15,8 @@ import static io.microconfig.osdf.utils.ThreadUtils.sleepSec;
 public class JobComponent extends AbstractOpenShiftComponent {
     private static final int WAIT_LIMIT = 30;
 
-    public JobComponent(String name, Path configDir, Path openShiftConfigDir, OCExecutor oc) {
-        super(name, configDir, openShiftConfigDir, oc);
+    public JobComponent(String name, String version, Path configDir, OCExecutor oc) {
+        super(name, version, configDir, oc);
     }
 
     public boolean exists() {

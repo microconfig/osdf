@@ -2,16 +2,22 @@ package io.microconfig.osdf.components.info;
 
 import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.components.checker.HealthChecker;
+import io.microconfig.osdf.config.OSDFPaths;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.Pod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
 import static io.microconfig.osdf.components.info.DeploymentInfo.info;
 import static io.microconfig.osdf.components.info.DeploymentStatus.*;
+import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
 import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DeploymentInfoTest {
     private OCExecutor oc;
@@ -21,9 +27,10 @@ class DeploymentInfoTest {
     private String command;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
+        OSDFPaths paths = createConfigsAndInstallInit();
         oc = mock(OCExecutor.class);
-        command = "oc get dc test-name -o custom-columns=" +
+        command = "oc get dc helloworld-springboot.latest -o custom-columns=" +
                 "replicas:.spec.replicas," +
                 "current:.status.replicas," +
                 "available:.status.availableReplicas," +
@@ -34,13 +41,13 @@ class DeploymentInfoTest {
                 "replicas   current   available   unavailable   projectVersion   configVersion",
                 "2          2         2           0             latest           local"
         ));
-        when(oc.executeAndReadLines("oc get pods --selector name=test-name -o name")).thenReturn(of(
+        when(oc.executeAndReadLines("oc get pods -l \"application in (helloworld-springboot), projectVersion in (latest)\" -o name")).thenReturn(of(
                 "pod/pod1",
                 "pod/pod2"
         ));
-        pod1 = new Pod("pod1", "test-name", oc);
-        pod2 = new Pod("pod2", "test-name", oc);
-        component = new DeploymentComponent("test-name", null, null, oc);
+        pod1 = new Pod("pod1", "helloworld-springboot", oc);
+        pod2 = new Pod("pod2", "helloworld-springboot", oc);
+        component = new DeploymentComponent("helloworld-springboot", "latest", Path.of(paths.componentsPath() + "/helloworld-springboot"), oc);
     }
 
     @Test

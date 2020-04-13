@@ -6,19 +6,21 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
 import static io.microconfig.utils.Logger.info;
+import static java.nio.file.Files.newBufferedWriter;
 import static java.util.List.of;
 import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class OpenShiftResource {
-    private static final List<String> SYSTEM_RESOURCES = of("replicationcontroller");
+    private static final List<String> SYSTEM_RESOURCES = of("replicationcontroller", "pod");
 
     private final String kind;
     private final String name;
@@ -29,7 +31,7 @@ public class OpenShiftResource {
                 .stream()
                 .filter(not(String::isEmpty))
                 .map(notation -> fromOpenShiftNotation(notation, oc))
-                .collect(toList());
+                .collect(toUnmodifiableList());
     }
 
     public static OpenShiftResource fromOpenShiftNotation(String notation, OCExecutor oc) {
@@ -58,6 +60,16 @@ public class OpenShiftResource {
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Couldn't find resource at " + path, e);
         }
+    }
+
+    public static void uploadResource(OCExecutor oc, Object resource) {
+        Path tmpPath = Path.of("/tmp/resource.yaml");
+        try {
+            new Yaml().dump(resource, newBufferedWriter(tmpPath));
+        } catch (IOException e) {
+            throw new RuntimeException("Error writing resource", e);
+        }
+        oc.execute("oc apply -f " + tmpPath);
     }
 
     public void delete() {

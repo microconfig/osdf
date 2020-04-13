@@ -22,9 +22,10 @@ public class ParamsContainer {
 
     public void printHelp() {
         Options options = new Options();
-        for (CommandLineParameter<?> parameter : parameters) {
-            options.addOption(parameter.toOption());
-        }
+        parameters
+                .stream()
+                .map(CommandLineParameter::toOption)
+                .forEach(options::addOption);
         new HelpFormatter().printHelp("osdf " + methodName, options, true);
     }
 }

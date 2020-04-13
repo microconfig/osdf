@@ -24,19 +24,25 @@ public class LogHealthChecker implements HealthChecker {
         String marker = properties.marker(pod.getComponentName());
         int timeoutInSec = properties.timeoutInSec(pod.getComponentName());
         try {
-            Process process = getRuntime().exec("oc logs -f " + pod.getName());
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            long startTime = currentTimeMillis();
-            StringBuilder logContent = new StringBuilder();
-            while (true) {
-                if (reader.ready())  {
-                    logContent.append(reader.readLine());
-                    if (logContent.indexOf(marker) >= 0) return true;
-                    if (logContent.length() > marker.length()) logContent.delete(0, logContent.length() - marker.length());
-                    continue;
+            Process process = getRuntime().exec("oc logs -f " + pod.getName() + " -c " + pod.getComponentName());
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                long startTime = currentTimeMillis();
+                StringBuilder logContent = new StringBuilder();
+                boolean gotLogs = false;
+                while (true) {
+                    if (reader.ready()) {
+                        gotLogs = true;
+                        String str = reader.readLine();
+                        logContent.append(str);
+                        if (logContent.indexOf(marker) >= 0) return true;
+                        if (logContent.length() > marker.length())
+                            logContent.delete(0, logContent.length() - marker.length());
+                        continue;
+                    }
+                    if (!gotLogs && calcSecFrom(startTime) > 10) return false;
+                    if (calcSecFrom(startTime) > timeoutInSec) return false;
+                    sleepSec(1);
                 }
-                if (calcSecFrom(startTime) > timeoutInSec) return false;
-                sleepSec(1);
             }
         } catch (Exception e) {
             return false;

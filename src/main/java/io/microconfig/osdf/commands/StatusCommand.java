@@ -15,11 +15,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.osdf.components.info.DeploymentStatus.NOT_FOUND;
-import static io.microconfig.osdf.components.info.DeploymentStatus.UNKNOWN;
 import static io.microconfig.osdf.components.loader.ComponentsLoaderImpl.componentsLoader;
+import static io.microconfig.osdf.istio.VirtualService.virtualService;
 import static io.microconfig.osdf.openshift.OpenShiftProject.create;
-import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 public class StatusCommand {
@@ -30,7 +28,7 @@ public class StatusCommand {
 
     public void run(List<String> components) {
         try (OpenShiftProject ignored = create(paths, oc).connect()) {
-            printer.addColumns("COMPONENT", "STATUS", "REPLICAS", "VERSION", "CONFIGS");
+            printer.addColumns("COMPONENT", "VERSION", "TRAFFIC", "STATUS", "REPLICAS");
             ComponentsLoaderImpl componentsLoader = componentsLoader(paths.componentsPath(), components, oc);
 
             componentsLoader.load(JobComponent.class).forEach(component -> addJobInfo(printer, component));
@@ -42,25 +40,38 @@ public class StatusCommand {
 
     private void addJobInfo(ColumnPrinter printer, JobComponent component) {
         JobInfo info = component.info();
-        printer.addRow(component.getName(), info.getStatus().toString(), "patcher", info.getProjectVersion(), info.getConfigVersion());
+        printer.addRow(component.getName(), component.getVersion(), "-", info.getStatus().toString(), "job");
     }
 
     private void addDeploymentComponents(ColumnPrinter printer, List<DeploymentComponent> components) {
-        List<DeploymentInfo> infos = components
-                .parallelStream()
-                .map(component -> component.info(healthChecker))
-                .collect(toList());
-
-        for (int i = 0; i < infos.size(); i++) {
-            addDeploymentComponent(printer, components.get(i), infos.get(i));
-        }
+        components.parallelStream().forEach(component -> addDeploymentComponent(printer, component));
     }
 
-    private void addDeploymentComponent(ColumnPrinter printer, DeploymentComponent component, DeploymentInfo info) {
-        String replicasInfo = (info.getStatus() == UNKNOWN || info.getStatus() == NOT_FOUND) ? "?/?" : info.getAvailableReplicas() + "/" + info.getReplicas();
-        printer.addRow(component.getName(), info.getStatus().toString(), replicasInfo, info.getProjectVersion(), info.getConfigVersion());
-        for (int i = 0; i < info.getPods().size(); i++) {
-            printer.addRow(Logger::info, " - " + info.getPods().get(i).getName(), info.getPodsHealth().get(i) ? "OK" : "NOT_READY", "", "", "");
+    private void addDeploymentComponent(ColumnPrinter printer, DeploymentComponent component) {
+        List<DeploymentComponent> deployedComponents = component.getDeployedComponents();
+        if (deployedComponents.isEmpty()) {
+            printer.addRow(component.getName(),component.getVersion(), "-", "NOT_DEPLOYED", "-");
+            return;
         }
+
+        ColumnPrinter localPrinter = printer.newPrinter();
+        addComponentHeader(component, localPrinter, deployedComponents);
+        deployedComponents.parallelStream().forEach(c -> addDeployedComponent(localPrinter, c));
+        printer.addRows(localPrinter);
+    }
+
+    private void addDeployedComponent(ColumnPrinter printer, DeploymentComponent component) {
+        DeploymentInfo info = component.info(healthChecker);
+        printer.addRow(Logger::info, "",
+                component.getVersion(),
+                virtualService(oc, component).getTrafficStatus(),
+                info.getStatus().toString(),
+                info.getAvailableReplicas() + "/" + info.getReplicas());
+    }
+
+    private void addComponentHeader(DeploymentComponent component, ColumnPrinter localPrinter, List<DeploymentComponent> deployedComponents) {
+        boolean deployed = deployedComponents.stream().map(DeploymentComponent::getVersion).anyMatch(v -> v.equals(component.getVersion()));
+        String fullName = component.getName() + "{" + component.getVersion() + "}" + (deployed ? "" : "(not deployed)");
+        localPrinter.addRow(fullName, "", "", "", "");
     }
 }

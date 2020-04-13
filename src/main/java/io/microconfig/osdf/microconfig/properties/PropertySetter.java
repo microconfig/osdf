@@ -35,19 +35,16 @@ public class PropertySetter {
         try (InputStream inputStream = newInputStream(file)) {
             Scanner scanner = new Scanner(inputStream);
             while (scanner.hasNextLine()) {
-                String line = scanner.nextLine().strip();
-                if (line.startsWith(key + "=")) {
-                    if (newValue.startsWith("-")) {
-                        line += newValue;
-                    } else {
-                        line = key + "=" + newValue;
-                    }
-                }
-                result.append(line).append("\n");
+                result.append(newLine(key, newValue, scanner.nextLine().strip())).append("\n");
             }
         } catch (IOException e) {
             throw new RuntimeException("Error reading project version file: " + file, e);
         }
         return result.toString();
+    }
+
+    private String newLine(String key, String newValue, String line) {
+        if (!line.startsWith(key + "=")) return line;
+        return newValue.startsWith("-") ? line + newValue : key + "=" + newValue;
     }
 }

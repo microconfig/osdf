@@ -1,5 +1,6 @@
 package io.microconfig.osdf.utils;
 
+import static java.lang.Integer.parseInt;
 import static java.lang.Integer.valueOf;
 import static java.lang.Math.max;
 import static java.util.Arrays.stream;
@@ -19,6 +20,14 @@ public class StringUtils {
             return valueOf(s);
         } catch (NumberFormatException e) {
             return null;
+        }
+    }
+
+    public static int castToInt(String s) {
+        try {
+            return parseInt(s);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Can't cast to int", e);
         }
     }
 

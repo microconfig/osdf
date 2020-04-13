@@ -10,14 +10,14 @@ import static java.nio.file.Path.*;
 public enum ComponentType {
     JOB {
         @Override
-        public AbstractOpenShiftComponent component(String name, Path configDir, Path openShiftConfigDir, OCExecutor oc) {
-            return new JobComponent(name, configDir, openShiftConfigDir, oc);
+        public AbstractOpenShiftComponent component(String name, String version, Path configDir, OCExecutor oc) {
+            return new JobComponent(name, version, configDir, oc);
         }
     },
     DEPLOYMENT {
         @Override
-        public AbstractOpenShiftComponent component(String name, Path configDir, Path openShiftConfigDir, OCExecutor oc) {
-            return new DeploymentComponent(name, configDir, openShiftConfigDir, oc);
+        public AbstractOpenShiftComponent component(String name, String version, Path configDir, OCExecutor oc) {
+            return new DeploymentComponent(name, version, configDir, oc);
         }
     };
 
@@ -25,5 +25,5 @@ public enum ComponentType {
         return exists(of(dir + "/" + toString().toLowerCase() + ".yaml"));
     }
 
-    public abstract AbstractOpenShiftComponent component(String name, Path configDir, Path openShiftConfigDir, OCExecutor oc);
+    public abstract AbstractOpenShiftComponent component(String name, String version, Path configDir, OCExecutor oc);
 }

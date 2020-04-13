@@ -4,17 +4,16 @@ import io.microconfig.osdf.components.AbstractOpenShiftComponent;
 import io.microconfig.osdf.openshift.OCExecutor;
 import lombok.RequiredArgsConstructor;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static io.microconfig.osdf.components.AbstractOpenShiftComponent.*;
-import static java.nio.file.Files.list;
-import static java.util.stream.Collectors.toList;
+import static io.microconfig.osdf.components.AbstractOpenShiftComponent.fromPath;
+import static io.microconfig.osdf.components.properties.DeployProperties.deployProperties;
+import static io.microconfig.osdf.utils.FileUtils.getPathsInDir;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
 public class ComponentsLoaderImpl implements ComponentsLoader {
@@ -33,27 +32,40 @@ public class ComponentsLoaderImpl implements ComponentsLoader {
 
     @Override
     public <T extends AbstractOpenShiftComponent> List<T> load(Class<T> clazz) {
-        return getPathsInDir()
-                .filter(Files::isDirectory)
-                .filter(path -> isComponentDir(path, requiredComponentsNames))
-                .map(dir -> fromPath(dir, oc))
+        return components()
                 .filter(Objects::nonNull)
                 .filter(clazz::isInstance)
                 .map(clazz::cast)
-                .collect(toList());
+                .collect(toUnmodifiableList());
     }
 
-    private boolean isComponentDir(Path path, List<String> required) {
-        String strPath = path.getFileName().toString();
-        boolean isRequired = required == null || required.isEmpty() || required.contains(strPath);
-        return !strPath.startsWith(".") && !strPath.equals("openshift") && isRequired;
-    }
-
-    private Stream<Path> getPathsInDir() {
-        try {
-            return list(dir);
-        } catch (IOException e) {
-            throw new UncheckedIOException("Couldn't open dir at " + dir, e);
+    private Stream<AbstractOpenShiftComponent> components() {
+        if (requiredComponentsNames != null && requiredComponentsNames.size() > 0) {
+            return requiredComponentsNames
+                    .stream()
+                    .map(this::nameToComponent);
         }
+        return getPathsInDir(dir)
+                .filter(Files::isDirectory)
+                .filter(this::isComponentDir)
+                .map(dir -> fromPath(dir, deployProperties(dir).getVersion(), oc));
+    }
+
+    private AbstractOpenShiftComponent nameToComponent(String name) {
+        if (name.contains("{")) {
+            String[] split = name.split("([{}])");
+            return fromPath(componentPath(split[0]), split[1], oc);
+        }
+        Path componentPath = componentPath(name);
+        return fromPath(componentPath, deployProperties(componentPath).getVersion(), oc);
+    }
+
+    private Path componentPath(String componentName) {
+        return Path.of(dir + "/" + componentName);
+    }
+
+    private boolean isComponentDir(Path path) {
+        String strPath = path.getFileName().toString();
+        return !strPath.startsWith(".") && !strPath.equals("openshift");
     }
 }

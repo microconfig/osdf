@@ -5,19 +5,16 @@ import io.microconfig.osdf.state.OSDFVersion;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Path;
-
 import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
-import static java.nio.file.Path.of;
+import static io.microconfig.osdf.utils.InstallInitUtils.DEFAULT_OSDF_PATH;
 
 class InstallCommandTest {
     private OSDFPaths paths;
-    private Path osdfPath = of("/tmp/osdf");
 
     @BeforeEach
     void createConfigs() {
-        execute("rm -rf " + osdfPath);
-        paths = new OSDFPaths(osdfPath);
+        execute("rm -rf " + DEFAULT_OSDF_PATH);
+        paths = new OSDFPaths(DEFAULT_OSDF_PATH);
     }
 
     @Test

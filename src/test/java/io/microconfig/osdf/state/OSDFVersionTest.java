@@ -16,13 +16,7 @@ class OSDFVersionTest {
     }
 
     private void assertBadFormat(String format) {
-        OSDFVersion badVersion;
-        try {
-            badVersion = fromString(format);
-        } catch (RuntimeException ignored) {
-            return;
-        }
-        assertNull(badVersion);
+        assertThrows(RuntimeException.class, () -> fromString(format));
     }
 
     @Test

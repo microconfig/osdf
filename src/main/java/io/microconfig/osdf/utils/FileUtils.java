@@ -57,4 +57,13 @@ public class FileUtils {
             }
         }
     }
+
+
+    public static Stream<Path> getPathsInDir(Path dir) {
+        try {
+            return list(dir);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Couldn't open dir at " + dir, e);
+        }
+    }
 }

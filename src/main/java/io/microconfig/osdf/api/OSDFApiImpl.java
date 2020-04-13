@@ -3,6 +3,8 @@ package io.microconfig.osdf.api;
 import io.microconfig.osdf.commands.*;
 import io.microconfig.osdf.components.checker.LogHealthChecker;
 import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.deployers.Deployer;
+import io.microconfig.osdf.istio.rulesetters.RoutingRuleSetter;
 import io.microconfig.osdf.nexus.NexusArtifact;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.state.ConfigSource;
@@ -16,10 +18,18 @@ import java.util.List;
 import static io.microconfig.osdf.api.OSDFApiInfo.printHelpForMethod;
 import static io.microconfig.osdf.commands.UpdateCommand.updateCommand;
 import static io.microconfig.osdf.components.checker.LogHealthChecker.logHealthChecker;
+import static io.microconfig.osdf.deployers.CanaryDeployer.canaryDeployer;
+import static io.microconfig.osdf.deployers.HiddenDeployer.hiddenDeployer;
+import static io.microconfig.osdf.deployers.ReplaceDeployer.replaceDeployer;
+import static io.microconfig.osdf.istio.rulesetters.HeaderRuleSetter.headerRule;
+import static io.microconfig.osdf.istio.rulesetters.MirrorRuleSetter.mirrorRule;
+import static io.microconfig.osdf.istio.rulesetters.WeightRuleSetter.weightRule;
+import static io.microconfig.osdf.metrics.formats.PrometheusParser.prometheusParser;
 import static io.microconfig.osdf.microconfig.properties.HealthCheckProperties.properties;
 import static io.microconfig.osdf.microconfig.properties.PropertyGetter.propertyGetter;
 import static io.microconfig.osdf.printer.ColumnPrinter.printer;
 import static io.microconfig.osdf.state.OSDFVersion.fromJar;
+import static java.util.List.of;
 
 @RequiredArgsConstructor
 public class OSDFApiImpl implements OSDFApi {
@@ -42,8 +52,13 @@ public class OSDFApiImpl implements OSDFApi {
     }
 
     @Override
-    public void deploy(List<String> components) {
-        new DeployCommand(paths, oc).run(components);
+    public void deploy(List<String> components, String mode) {
+        new DeployCommand(paths, oc, deployer(mode)).run(components);
+    }
+
+    @Override
+    public void route(String componentName, String rule) {
+        new RouteCommand(paths, oc, routingRules(oc)).set(componentName, rule);
     }
 
     @Override
@@ -104,6 +119,28 @@ public class OSDFApiImpl implements OSDFApi {
     @Override
     public void howToStart() {
         new HowToStartCommand().show();
+    }
+
+    private List<RoutingRuleSetter> routingRules(OCExecutor oc) {
+        return of(
+                weightRule(oc),
+                mirrorRule(oc),
+                headerRule(oc)
+        );
+    }
+
+    private Deployer deployer(String mode) {
+        if (mode == null || mode.equals("replace")) {
+            return replaceDeployer(oc);
+        }
+        if (mode.equals("hidden")) {
+            return hiddenDeployer(oc);
+        }
+        if (mode.equals("canary")) {
+            return canaryDeployer(oc, prometheusParser(), getLogHealthChecker());
+        }
+
+        throw new RuntimeException("Unknown deploy mode");
     }
 
     private LogHealthChecker getLogHealthChecker() {

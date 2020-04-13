@@ -1,10 +1,10 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.components.AbstractOpenShiftComponent;
 import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.components.JobComponent;
 import io.microconfig.osdf.components.loader.ComponentsLoaderImpl;
 import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.deployers.Deployer;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.OpenShiftProject;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import static io.microconfig.utils.Logger.error;
 public class DeployCommand {
     private final OSDFPaths paths;
     private final OCExecutor oc;
-
+    private final Deployer deployer;
 
     public void run(List<String> components) {
         ComponentsLoaderImpl componentsLoader = componentsLoader(paths.componentsPath(), components, oc);
@@ -34,7 +34,7 @@ public class DeployCommand {
 
     private void deployDeployments(ComponentsLoaderImpl componentsLoader) {
         componentsLoader.load(DeploymentComponent.class).forEach(component -> {
-            upload(component);
+            deployer.deploy(component);
             announce("Loaded component " + component);
         });
     }
@@ -44,7 +44,9 @@ public class DeployCommand {
             if (component.exists() && component.status() != SUCCEEDED) {
                 component.delete();
             }
-            upload(component);
+            component.deleteOldResourcesFromOpenShift();
+            component.createConfigMap();
+            component.upload();
 
             if (!component.waitUntilCompleted()) {
                 error("Job " + component.getName() + " failed");
@@ -53,12 +55,6 @@ public class DeployCommand {
 
             announce("Completed job " + component);
         });
-    }
-
-    private void upload(AbstractOpenShiftComponent component) {
-        component.deleteOldResourcesFromOpenShift();
-        component.createConfigMap();
-        component.upload();
     }
 
 }

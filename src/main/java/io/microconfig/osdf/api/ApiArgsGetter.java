@@ -11,8 +11,10 @@ import java.util.List;
 
 import static io.microconfig.osdf.api.OSDFApiInfo.paramsFromAnnotations;
 import static io.microconfig.osdf.utils.ReflectionUtils.annotations;
+import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.copyOfRange;
+import static java.util.stream.IntStream.range;
 
 @RequiredArgsConstructor
 public class ApiArgsGetter {
@@ -47,6 +49,11 @@ public class ApiArgsGetter {
             if (String.class.isAssignableFrom(type)) {
                 result.add(args[ind]);
                 ind++;
+            } else if (Integer.class.isAssignableFrom(type)) {
+                Integer integer = castToInteger(args[ind]);
+                if (integer == null) throw new RuntimeException("Bad integer format " + args[ind]);
+                result.add(integer);
+                ind++;
             } else if (List.class.isAssignableFrom(type)) {
                 result.add(asList(copyOfRange(args, ind, args.length)));
                 ind = args.length;
@@ -59,9 +66,9 @@ public class ApiArgsGetter {
     }
 
     private int plainCallSplitIndex(String[] args) {
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("-")) return i;
-        }
-        return args.length;
+        return range(0, args.length)
+                .filter(i -> args[i].startsWith("-"))
+                .findFirst()
+                .orElse(args.length);
     }
 }

@@ -32,16 +32,20 @@ public class OSDFVersion {
     }
 
     public static OSDFVersion fromString(String s) {
-        if (s == null) return null;
+        if (s == null) throw exception("<null>");
 
         String[] split = s.split("\\.");
-        if (split.length != 3) return null;
+        if (split.length != 3) throw exception(s);
 
         Integer major = castToInteger(split[0]);
         Integer minor = castToInteger(split[1]);
         Integer patch = castToInteger(split[2]);
-        if (major == null || minor == null || patch == null) return null;
+        if (major == null || minor == null || patch == null) throw exception(s);
         return new OSDFVersion(major, minor, patch);
+    }
+
+    private static RuntimeException exception(String s) {
+        return new RuntimeException("Bad version format " + s);
     }
 
     public boolean olderThan(OSDFVersion other) {
