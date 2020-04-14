@@ -49,7 +49,7 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
     @Override
     public void delete() {
         if (istioService) {
-            virtualService(oc, this).deleteRulesForVersion(version);
+            virtualService(oc, this).deleteRules();
         }
         super.delete();
     }

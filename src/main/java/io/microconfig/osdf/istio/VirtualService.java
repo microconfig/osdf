@@ -31,7 +31,7 @@ public class VirtualService {
     public void createEmpty() {
         String yaml = readAllFromResource("templates/virtual-service.yaml")
                 .replace("${application-name}", component.getName())
-                .replace("${application-version}", component.getVersion())
+                .replace("${application-version}", component.getEncodedVersion())
                 .replace("${project}", oc.project());
         virtualService = new Yaml().load(yaml);
     }
@@ -41,7 +41,7 @@ public class VirtualService {
 
         RuleSet ruleSet = RuleSet.from(getRules());
         MainRule rule = ruleSet.getMainRule();
-        rule.setWeight(component.getVersion(), weight);
+        rule.setWeight(component.getEncodedVersion(), weight);
 
         setRules(ruleSet.toYaml());
         return this;
@@ -52,7 +52,7 @@ public class VirtualService {
 
         RuleSet ruleSet = RuleSet.from(getRules());
         MainRule rule = ruleSet.getMainRule();
-        rule.setMirror(component.getVersion());
+        rule.setMirror(component.getEncodedVersion());
 
         setRules(ruleSet.toYaml());
         return this;
@@ -61,7 +61,7 @@ public class VirtualService {
     public VirtualService setHeader() {
         if (virtualService == null) throw new RuntimeException("Virtual Service not found");
 
-        HeaderRule headerRule = headerRule(destination(getHost(), component.getVersion()), "route-version", component.getVersion());
+        HeaderRule headerRule = headerRule(destination(getHost(), component.getEncodedVersion()), "route-version", component.getEncodedVersion());
 
         RuleSet ruleSet = RuleSet.from(getRules());
         ruleSet.addHeaderRule(headerRule);
@@ -70,17 +70,17 @@ public class VirtualService {
         return this;
     }
 
-    public void deleteRulesForVersion(String version) {
+    public void deleteRules() {
         if (virtualService == null) return;
 
         RuleSet ruleSet = RuleSet.from(getRules());
         MainRule rule = ruleSet.getMainRule();
-        rule.deleteSubset(version);
+        rule.deleteSubset(component.getEncodedVersion());
         if (rule.isEmpty()) {
             delete();
             return;
         }
-        ruleSet.deleteHeaderRule(version);
+        ruleSet.deleteHeaderRule(component.getEncodedVersion());
 
         setRules(ruleSet.toYaml());
         upload();
@@ -96,7 +96,7 @@ public class VirtualService {
 
     public String getTrafficStatus() {
         if (virtualService == null) return "uniform";
-        return RuleSet.from(getRules()).getTrafficStatus(component.getVersion());
+        return RuleSet.from(getRules()).getTrafficStatus(component.getEncodedVersion());
     }
 
     public void delete() {

@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -19,6 +18,7 @@ import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.info;
 import static java.nio.file.Files.list;
 import static java.nio.file.Path.of;
+import static java.util.Arrays.stream;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
@@ -32,7 +32,7 @@ public abstract class AbstractOpenShiftComponent {
     protected final OCExecutor oc;
 
     public static AbstractOpenShiftComponent fromPath(Path configDir, String version, OCExecutor oc) {
-        return Arrays.stream(values())
+        return stream(values())
                 .filter(type -> type.checkDir(of(configDir + "/openshift")))
                 .findFirst()
                 .map(type -> type.component(configDir.getFileName().toString(), version, configDir, oc))
@@ -78,6 +78,10 @@ public abstract class AbstractOpenShiftComponent {
 
     public String fullName() {
         return name + "." + version;
+    }
+
+    public String getEncodedVersion() {
+        return version.toLowerCase().replace(".", "-d-");
     }
 
     protected List<OpenShiftResource> getOpenShiftResources() {
