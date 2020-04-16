@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.configfetcher.GitFetcher.urlWithoutPassword;
 import static io.microconfig.utils.Logger.announce;
+import static io.microconfig.utils.StringUtils.isEmpty;
 
 @RequiredArgsConstructor
 public class OSDFStatePrinter {
@@ -18,12 +19,16 @@ public class OSDFStatePrinter {
         String version = "OSDF version: " + state.getOsdfVersion() + "\n";
 
         String stateParameters = "OSDF is not initialized\n";
-        if (state.check()) stateParameters = configSourceString() + "\n" +
-                "OpenShift user: " + state.getOpenShiftCredentials().getUsername() + "\n" +
-                "Env: " + state.getEnv() + "\n" +
-                "Project version: " + (state.getProjectVersion() == null ? "<default>" : state.getProjectVersion()) + "\n" +
-                "Group: " + (state.getGroup() == null ? "<all>" : state.getGroup()) + "\n" +
-                "Components: " + (state.getComponents() != null && !state.getComponents().isEmpty() ? state.getComponents().toString() : "<all>");
+        if (state.check()) {
+            String username = state.getOpenShiftCredentials().getCredentials() == null ? "unknown" :
+                    state.getOpenShiftCredentials().getCredentials().getUsername();
+            stateParameters = configSourceString() + "\n" +
+                    "OpenShift user: " + username + "\n" +
+                    "Env: " + state.getEnv() + "\n" +
+                    "Project version: " + (state.getProjectVersion() == null ? "<default>" : state.getProjectVersion()) + "\n" +
+                    "Group: " + (state.getGroup() == null ? "<all>" : state.getGroup()) + "\n" +
+                    "Components: " + (state.getComponents() != null && !state.getComponents().isEmpty() ? state.getComponents().toString() : "<all>");
+        }
         announce(version + stateParameters);
     }
 

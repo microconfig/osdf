@@ -15,10 +15,21 @@ class OSDFStatePrinterTest {
     }
 
     @Test
+    void printInitializedStateWithLocalConfigsAndToken() {
+        OSDFState state = new OSDFState();
+        state.setOsdfVersion("1.1.1");
+        state.setOpenShiftCredentials(OpenShiftCredentials.of("token"));
+        state.setConfigSource(LOCAL);
+        state.setLocalConfigs("/some/path");
+        state.setEnv("dev");
+        statePrinter(state).print();
+    }
+
+    @Test
     void printInitializedStateWithLocalConfigs() {
         OSDFState state = new OSDFState();
         state.setOsdfVersion("1.1.1");
-        state.setOpenShiftCredentials(Credentials.of("test:test"));
+        state.setOpenShiftCredentials(OpenShiftCredentials.of("test:test"));
         state.setConfigSource(LOCAL);
         state.setLocalConfigs("/some/path");
         state.setEnv("dev");
@@ -29,7 +40,7 @@ class OSDFStatePrinterTest {
     void printInitializedStateWithGitConfigs() {
         OSDFState state = new OSDFState();
         state.setOsdfVersion("1.1.1");
-        state.setOpenShiftCredentials(Credentials.of("test:test"));
+        state.setOpenShiftCredentials(OpenShiftCredentials.of("test:test"));
         state.setEnv("dev");
         state.setConfigSource(GIT);
         state.setGitUrl("git.url");
@@ -41,7 +52,7 @@ class OSDFStatePrinterTest {
     void printInitializedStateWithNexusConfigs() {
         OSDFState state = new OSDFState();
         state.setOsdfVersion("1.1.1");
-        state.setOpenShiftCredentials(Credentials.of("test:test"));
+        state.setOpenShiftCredentials(OpenShiftCredentials.of("test:test"));
         state.setEnv("dev");
         state.setConfigSource(NEXUS);
         state.setNexusUrl("nexus.url");

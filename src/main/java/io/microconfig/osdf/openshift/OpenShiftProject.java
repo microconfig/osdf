@@ -3,26 +3,26 @@ package io.microconfig.osdf.openshift;
 import io.microconfig.osdf.config.OSDFPaths;
 import io.microconfig.osdf.microconfig.properties.OpenShiftProperties;
 import io.microconfig.osdf.state.OSDFState;
+import io.microconfig.osdf.state.OpenShiftCredentials;
 import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.microconfig.properties.OpenShiftProperties.properties;
 import static io.microconfig.osdf.microconfig.properties.PropertyGetter.propertyGetter;
 import static io.microconfig.osdf.state.OSDFState.fromFile;
+import static io.microconfig.utils.StringUtils.isEmpty;
 
 @RequiredArgsConstructor
 public class OpenShiftProject implements AutoCloseable {
     private final String clusterUrl;
-    private final String username;
-    private final String password;
     private final String project;
 
+    private final OpenShiftCredentials osCredentials;
     private final OCExecutor oc;
 
     public static OpenShiftProject create(OSDFPaths paths, OCExecutor oc) {
         OSDFState state = fromFile(paths.stateSavePath());
         OpenShiftProperties properties = properties(propertyGetter(state.getEnv(), paths.configPath()));
-        return new OpenShiftProject(properties.clusterUrl(), state.getOpenShiftCredentials().getUsername(),
-                state.getOpenShiftCredentials().getPassword(), properties.project(), oc);
+        return new OpenShiftProject(properties.clusterUrl(), properties.project(), state.getOpenShiftCredentials(), oc);
     }
 
     public OpenShiftProject connect() {
@@ -37,7 +37,7 @@ public class OpenShiftProject implements AutoCloseable {
     }
 
     private void login() {
-        oc.execute("oc login " + clusterUrl + " -u " + username + " -p " + password);
+        oc.execute("oc login " + clusterUrl + osCredentials.getLoginParams());
     }
 
     private void setProjectCommand() {
@@ -46,6 +46,8 @@ public class OpenShiftProject implements AutoCloseable {
 
     @Override
     public String toString() {
+        String username = isEmpty(osCredentials.getCredentials().getUsername()) ? "unknown"
+                : osCredentials.getCredentials().getUsername();
         return "OpenShiftProject{" +
                 "clusterUrl='" + clusterUrl + '\'' +
                 ", username='" + username + '\'' +

@@ -5,6 +5,7 @@ import io.microconfig.osdf.nexus.NexusArtifact;
 import io.microconfig.osdf.state.ConfigSource;
 import io.microconfig.osdf.state.Credentials;
 import io.microconfig.osdf.state.OSDFState;
+import io.microconfig.osdf.state.OpenShiftCredentials;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
@@ -23,7 +24,7 @@ public class InitCommand {
     private final OSDFPaths paths;
 
     @SuppressWarnings({"DuplicatedCode"})
-    public void run(String gitUrl, String nexusUrl, NexusArtifact configsNexusArtifact, Path localConfigs, ConfigSource configSource, Credentials openShiftCredentials, Credentials nexusCredentials,
+    public void run(String gitUrl, String nexusUrl, NexusArtifact configsNexusArtifact, Path localConfigs, ConfigSource configSource, OpenShiftCredentials openShiftCredentials, Credentials nexusCredentials,
                     String env, String configVersion, String group, String projVersion, List<String> components) {
 
         OSDFState state = fromFile(paths.stateSavePath());

@@ -1,8 +1,8 @@
 package io.microconfig.osdf.commands;
 
 import io.microconfig.osdf.config.OSDFPaths;
-import io.microconfig.osdf.state.Credentials;
 import io.microconfig.osdf.state.OSDFState;
+import io.microconfig.osdf.state.OpenShiftCredentials;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ class InitCommandTest {
         OSDFState osdfState = OSDFState.fromFile(paths.stateSavePath());
         assertEquals(LOCAL, osdfState.getConfigSource());
         assertEquals("dev", osdfState.getEnv());
-        assertEquals(Credentials.of("test:test"), osdfState.getOpenShiftCredentials());
+        assertEquals(OpenShiftCredentials.of("test:test"), osdfState.getOpenShiftCredentials());
         assertNull(osdfState.getGitUrl());
         assertNull(osdfState.getNexusUrl());
         assertNull(osdfState.getConfigsNexusArtifact());
