@@ -46,7 +46,8 @@ public class OpenShiftProject implements AutoCloseable {
     }
 
     private boolean isLoggedIn() {
-        return !oc.execute("oc project " + project, true).toLowerCase().contains("not a member");
+        String projectString = oc.execute("oc project " + project, true).toLowerCase();
+        return !projectString.contains("not a member") && !projectString.contains("please login");
     }
 
     @Override

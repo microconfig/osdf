@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'io.microconfig.osdf'
-version '1.2.2'
+version '1.2.3'
 
 jar {
     manifest {
