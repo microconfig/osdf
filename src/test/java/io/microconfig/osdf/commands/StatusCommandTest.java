@@ -3,16 +3,20 @@ package io.microconfig.osdf.commands;
 import io.microconfig.osdf.components.checker.HealthChecker;
 import io.microconfig.osdf.config.OSDFPaths;
 import io.microconfig.osdf.openshift.OCExecutor;
-import io.microconfig.osdf.printer.ColumnPrinter;
+import io.microconfig.osdf.printers.ColumnPrinter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.List;
-import java.util.function.Consumer;
 
+import static io.microconfig.osdf.printers.ColumnPrinter.printer;
 import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
+import static io.microconfig.osdf.utils.MockObjects.loggedInOc;
+import static io.microconfig.utils.ConsoleColor.green;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 class StatusCommandTest {
@@ -25,7 +29,7 @@ class StatusCommandTest {
 
     @Test
     void statusOk() {
-        OCExecutor oc = mock(OCExecutor.class, withSettings().verboseLogging());
+        OCExecutor oc = loggedInOc();
         when(oc.executeAndReadLines("oc get dc -l application=helloworld-springboot -o name")).thenReturn(
                 List.of("deployment/helloworld-springboot.latest")
         );
@@ -51,17 +55,26 @@ class StatusCommandTest {
         HealthChecker healthChecker = mock(HealthChecker.class);
         when(healthChecker.check(any())).thenReturn(true);
 
-        ColumnPrinter printer = mock(ColumnPrinter.class);
-        ColumnPrinter localPrinter = mock(ColumnPrinter.class);
-        when(printer.newPrinter()).thenReturn(localPrinter);
+        String actualOut = getStatusOutput(oc, healthChecker, printer());
+        String expectedOutput = getExpectedOutput();
+        assertEquals(expectedOutput, actualOut);
+    }
 
+    private String getExpectedOutput() {
+        ByteArrayOutputStream expectedOut = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(expectedOut));
 
+        ColumnPrinter printer = printer();
+        printer.addColumns("COMPONENT", "VERSION", "STATUS", "REPLICAS");
+        printer.addRow(green("helloworld-springboot"), green("latest"), green("RUNNING"), green("1/1"));
+        printer.print();
+        return expectedOut.toString();
+    }
 
+    private String getStatusOutput(OCExecutor oc, HealthChecker healthChecker, ColumnPrinter printer) {
+        ByteArrayOutputStream actualOut = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(actualOut));
         new StatusCommand(paths, oc, healthChecker, printer).run(List.of("helloworld-springboot"));
-        verify(printer).addColumns("COMPONENT", "VERSION", "TRAFFIC", "STATUS", "REPLICAS");
-        verify(localPrinter).addRow("helloworld-springboot{latest}", "", "", "", "");
-        verify(localPrinter).addRow(ArgumentMatchers.<Consumer<String>>any(), eq(""), eq("latest"), eq("uniform"), eq("RUNNING"), eq("1/1"));
-        verify(printer).addRows(any());
-        verify(printer).print();
+        return actualOut.toString();
     }
 }

@@ -20,8 +20,10 @@ import static io.microconfig.osdf.utils.FileUtils.readAll;
 import static io.microconfig.osdf.utils.FileUtils.writeStringToFile;
 import static io.microconfig.osdf.utils.JarUtils.jarPath;
 import static io.microconfig.utils.Logger.warn;
+import static java.lang.System.getProperty;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Path.of;
+import static java.nio.file.Paths.get;
 import static org.apache.commons.io.FileUtils.getUserDirectoryPath;
 
 @RequiredArgsConstructor
@@ -79,12 +81,13 @@ public class OSDFInstaller {
     }
 
     private void createNewScript(Path tmpScriptPath, OSDFVersion version) {
+        Path pathToJava = get(getProperty("java.home").replace(" ", "\\ "), "bin", "java");
         String content =
                 "if [ $# -gt 0  ] && [ $1 == \"logs\" ]\n" +
                         "then\n" +
                         "        trap '' SIGINT\n" +
                         "fi\n" +
-                "java -jar " + paths.root() + "/" + jarName(version) + " ${@:1}";
+                        pathToJava + " -XX:TieredStopAtLevel=1 -jar " + paths.root() + "/" + jarName(version) + " ${@:1}";
         writeStringToFile(tmpScriptPath, content);
         execute("chmod +x " + tmpScriptPath);
     }

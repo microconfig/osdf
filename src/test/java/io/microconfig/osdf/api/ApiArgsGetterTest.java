@@ -1,7 +1,7 @@
 package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.api.annotation.ConsoleParam;
-import io.microconfig.osdf.parameters.AbstractParameter;
+import io.microconfig.osdf.parameters.ArgParameter;
 import org.apache.commons.cli.ParseException;
 import org.junit.jupiter.api.Test;
 
@@ -17,19 +17,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ApiArgsGetterTest {
-    public static class FirstString extends AbstractParameter<String> {
+    public static class FirstString extends ArgParameter<String> {
         public FirstString() {
             super("first", "f", "description");
         }
     }
 
-    public static class SecondString extends AbstractParameter<String> {
+    public static class SecondString extends ArgParameter<String> {
         public SecondString() {
             super("second", "s", "description");
         }
     }
 
-    public static class ListParameter extends AbstractParameter<List<String>> {
+    public static class ListParameter extends ArgParameter<List<String>> {
         public ListParameter() {
             super("list", "l", "description");
         }

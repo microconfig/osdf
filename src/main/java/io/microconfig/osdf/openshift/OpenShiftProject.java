@@ -26,14 +26,15 @@ public class OpenShiftProject implements AutoCloseable {
     }
 
     public OpenShiftProject connect() {
-        login();
-        setProjectCommand();
+        if (!isLoggedIn()) {
+            login();
+            setProjectCommand();
+        }
         return this;
     }
 
     @Override
     public void close() {
-        oc.execute("oc logout");
     }
 
     private void login() {
@@ -42,6 +43,10 @@ public class OpenShiftProject implements AutoCloseable {
 
     private void setProjectCommand() {
         oc.execute("oc project " + project);
+    }
+
+    private boolean isLoggedIn() {
+        return !oc.execute("oc project " + project, true).toLowerCase().contains("not a member");
     }
 
     @Override

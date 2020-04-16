@@ -2,7 +2,6 @@ package io.microconfig.osdf.deployers;
 
 import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.components.checker.HealthChecker;
-import io.microconfig.osdf.components.info.DeploymentStatus;
 import io.microconfig.osdf.components.properties.CanaryProperties;
 import io.microconfig.osdf.metrics.Metric;
 import io.microconfig.osdf.metrics.MetricsPuller;
@@ -13,8 +12,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.Map;
 
-import static io.microconfig.osdf.components.info.DeploymentStatus.BAD_HEALTHCHECK;
-import static io.microconfig.osdf.components.info.DeploymentStatus.RUNNING;
+import static io.microconfig.osdf.components.checker.SuccessfulDeploymentChecker.successfulDeploymentChecker;
 import static io.microconfig.osdf.deployers.HiddenDeployer.hiddenDeployer;
 import static io.microconfig.osdf.istio.VirtualService.virtualService;
 import static io.microconfig.osdf.metrics.MetricsPuller.metricsPuller;
@@ -100,22 +98,7 @@ public class CanaryDeployer implements Deployer {
         } else {
             hiddenDeployer(oc).deploy(component);
         }
-
-        waitSuccessfulDeployment(component);
+        if (!successfulDeploymentChecker(healthChecker).check(component)) throw new RuntimeException("Deployment failed");
         info("Successfully deployed component");
-    }
-
-    private void waitSuccessfulDeployment(DeploymentComponent component) {
-        int time = 0;
-        int maxTime = component.deployProperties().getPodStartTime();
-        while (time < maxTime) {
-            DeploymentStatus status = component.info(healthChecker).getStatus();
-            if (status == BAD_HEALTHCHECK) throw new RuntimeException("Bad healthcheck");
-            if (status == RUNNING) return;
-            info("Waiting(status=" + status + ")");
-            sleepSec(1);
-            time++;
-        }
-        throw new RuntimeException("Deployment failed");
     }
 }

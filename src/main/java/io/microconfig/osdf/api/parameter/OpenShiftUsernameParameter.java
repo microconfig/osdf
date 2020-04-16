@@ -1,8 +1,8 @@
 package io.microconfig.osdf.api.parameter;
 
-import io.microconfig.osdf.parameters.AbstractParameter;
+import io.microconfig.osdf.parameters.ArgParameter;
 
-public class OpenShiftUsernameParameter extends AbstractParameter<String> {
+public class OpenShiftUsernameParameter extends ArgParameter<String> {
     public OpenShiftUsernameParameter() {
         super("username", "u", "OpenShift username");
     }

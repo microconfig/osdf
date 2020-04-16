@@ -1,12 +1,12 @@
 package io.microconfig.osdf.api.parameter;
 
-import io.microconfig.osdf.parameters.AbstractParameter;
+import io.microconfig.osdf.parameters.ArgParameter;
 
 import java.nio.file.Path;
 
 import static java.nio.file.Path.of;
 
-public class LocalConfigsParameter extends AbstractParameter<Path> {
+public class LocalConfigsParameter extends ArgParameter<Path> {
     public LocalConfigsParameter() {
         super("local", "local", "Local path to configs");
     }

@@ -1,6 +1,5 @@
 package io.microconfig.osdf.components;
 
-import io.microconfig.osdf.components.checker.HealthChecker;
 import io.microconfig.osdf.components.info.DeploymentInfo;
 import io.microconfig.osdf.components.properties.CanaryProperties;
 import io.microconfig.osdf.components.properties.DeployProperties;
@@ -45,6 +44,17 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
         return new DeploymentComponent(name, version, configDir, oc);
     }
 
+    public boolean isRunning() {
+        List<String> lines = oc.executeAndReadLines("oc get dc " + name + "." + version + " -o custom-columns=" +
+                "replicas:.spec.replicas," +
+                "available:.status.availableReplicas");
+        if (lines.get(0).toLowerCase().contains("not found")) return false;
+        String[] fields = lines.get(1).split("\\s+");
+        Integer replicas = castToInteger(fields[0]);
+        Integer available = castToInteger(fields[1]);
+        if (replicas == null || available == null) return false;
+        return replicas.equals(available) && available > 0;
+    }
 
     @Override
     public void delete() {
@@ -105,8 +115,8 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
         return DeployProperties.deployProperties(configDir);
     }
 
-    public DeploymentInfo info(HealthChecker healthChecker) {
-        return DeploymentInfo.info(this, oc, healthChecker);
+    public DeploymentInfo info() {
+        return DeploymentInfo.info(this, oc);
     }
 
     public List<DeploymentComponent> getDeployedComponents() {

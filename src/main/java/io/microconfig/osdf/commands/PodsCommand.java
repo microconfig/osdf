@@ -5,7 +5,7 @@ import io.microconfig.osdf.components.checker.HealthChecker;
 import io.microconfig.osdf.config.OSDFPaths;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.OpenShiftProject;
-import io.microconfig.osdf.printer.ColumnPrinter;
+import io.microconfig.osdf.printers.ColumnPrinter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

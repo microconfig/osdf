@@ -1,6 +1,8 @@
 package io.microconfig.osdf;
 
 import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.exceptions.OSDFException;
+import io.microconfig.osdf.exceptions.StatusCodeException;
 import io.microconfig.osdf.openshift.OCExecutor;
 import lombok.RequiredArgsConstructor;
 
@@ -15,6 +17,8 @@ import static io.microconfig.osdf.commands.UpdateCommand.updateCommand;
 import static io.microconfig.osdf.config.OSDFPaths.paths;
 import static io.microconfig.osdf.openshift.OCExecutor.oc;
 import static io.microconfig.osdf.state.OSDFState.fromFile;
+import static io.microconfig.utils.Logger.error;
+import static java.lang.System.exit;
 import static java.util.Arrays.copyOfRange;
 
 @RequiredArgsConstructor
@@ -46,7 +50,14 @@ public class OpenShiftDeployStarter {
         String command = args[0];
         String[] params = copyOfRange(args, 1, args.length);
 
-        apiCaller(consoleArgs(params)).callCommand(osdfApi(paths, oc), command);
+        try {
+            apiCaller(consoleArgs(params)).callCommand(osdfApi(paths, oc), command);
+        } catch (StatusCodeException e) {
+            exit(e.getStatusCode());
+        } catch (OSDFException e) {
+            error(e.getMessage());
+            exit(1);
+        }
     }
 
     private boolean badArgs(String[] args) {

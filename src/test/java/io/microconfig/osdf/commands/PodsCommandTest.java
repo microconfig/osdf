@@ -3,7 +3,7 @@ package io.microconfig.osdf.commands;
 import io.microconfig.osdf.components.checker.HealthChecker;
 import io.microconfig.osdf.config.OSDFPaths;
 import io.microconfig.osdf.openshift.OCExecutor;
-import io.microconfig.osdf.printer.ColumnPrinter;
+import io.microconfig.osdf.printers.ColumnPrinter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
+import static io.microconfig.osdf.utils.MockObjects.loggedInOc;
 import static org.mockito.Mockito.*;
 
 class PodsCommandTest {
@@ -23,7 +24,7 @@ class PodsCommandTest {
 
     @Test
     void statusOk() {
-        OCExecutor oc = mock(OCExecutor.class);
+        OCExecutor oc = loggedInOc();
         when(oc.executeAndReadLines("oc get pods -l \"application in (helloworld-springboot), projectVersion in (latest)\" -o name")).thenReturn(List.of(
                 "pod/pod"
         ));

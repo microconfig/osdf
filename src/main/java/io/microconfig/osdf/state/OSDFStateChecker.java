@@ -3,6 +3,7 @@ package io.microconfig.osdf.state;
 import io.microconfig.osdf.api.parameter.*;
 import io.microconfig.osdf.parameters.CommandLineParameter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.cli.Option;
 
 import static io.microconfig.utils.Logger.error;
 
@@ -52,9 +53,15 @@ public class OSDFStateChecker {
 
     private boolean notNull(Object object, CommandLineParameter<?> parameter) {
         if (object == null) {
-            error(parameter.missingHint());
+            error(missingHint(parameter));
             return false;
         }
         return true;
+    }
+
+    private String missingHint(CommandLineParameter<?> parameter) {
+        Option option = parameter.toOption();
+        String name = parameter.name();
+        return "Missing " + name + ". Use osdf init -" + option.getOpt() + " <" + name + "> (" + option.getDescription() + ")";
     }
 }

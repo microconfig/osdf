@@ -1,5 +1,6 @@
 package io.microconfig.osdf.api;
 
+import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.cli.ParseException;
 
@@ -35,8 +36,14 @@ public class ApiCaller {
     private void invoke(OSDFApi api, String name, Method method, Object[] args) {
         try {
             method.invoke(api, args);
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException e) {
             throw new RuntimeException("Couldn't invoke method " + name, e);
+        } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof OSDFException) {
+                throw (OSDFException) e.getCause();
+            } else {
+                throw new RuntimeException("Exception in method " + name, e);
+            }
         }
     }
 }

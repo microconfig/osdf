@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 import static io.microconfig.osdf.components.ComponentType.values;
 import static io.microconfig.osdf.microconfig.files.DiffFilesCollector.collector;
 import static io.microconfig.osdf.openshift.OpenShiftResource.fromOpenShiftNotations;
-import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.info;
 import static java.nio.file.Files.list;
 import static java.nio.file.Path.of;
@@ -46,12 +45,10 @@ public abstract class AbstractOpenShiftComponent {
 
     public void delete() {
         oc.execute("oc delete all,configmap " + label());
-        announce("Deleted " + fullName());
     }
 
     public void deleteAll() {
         oc.execute("oc delete all,configmap -l application=" + name);
-        announce("Deleted " + name);
     }
 
     public void createConfigMap() {

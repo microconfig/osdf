@@ -35,7 +35,8 @@ public interface OSDFApi {
 
     @ApiCommand(description = "Deploy services to OpenShift", order = 5)
     void deploy(@ConsoleParam(ComponentsParameter.class) List<String> components,
-                @ConsoleParam(ModeParameter.class) String mode);
+                @ConsoleParam(ModeParameter.class) String mode,
+                @ConsoleParam(WaitParameter.class) Boolean wait);
 
     @Hidden
     @ApiCommand(description = "Set up routing rules", order = 6)
@@ -43,7 +44,8 @@ public interface OSDFApi {
                @ConsoleParam(value = RoutingRuleParameter.class, type = REQUIRED) String rule);
 
     @ApiCommand(description = "Show status info of services from OpenShift", order = 6)
-    void status(@ConsoleParam(ComponentsParameter.class) List<String> components);
+    void status(@ConsoleParam(ComponentsParameter.class) List<String> components,
+                @ConsoleParam(HealthCheckParameter.class) Boolean withHealthCheck);
 
     @ApiCommand(description = "Restart components in OpenShift", order = 7)
     void restart(@ConsoleParam(ComponentsParameter.class) List<String> components);

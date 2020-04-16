@@ -27,7 +27,7 @@ import static io.microconfig.osdf.istio.rulesetters.WeightRuleSetter.weightRule;
 import static io.microconfig.osdf.metrics.formats.PrometheusParser.prometheusParser;
 import static io.microconfig.osdf.microconfig.properties.HealthCheckProperties.properties;
 import static io.microconfig.osdf.microconfig.properties.PropertyGetter.propertyGetter;
-import static io.microconfig.osdf.printer.ColumnPrinter.printer;
+import static io.microconfig.osdf.printers.ColumnPrinter.printer;
 import static io.microconfig.osdf.state.OSDFVersion.fromJar;
 import static java.util.List.of;
 
@@ -52,8 +52,8 @@ public class OSDFApiImpl implements OSDFApi {
     }
 
     @Override
-    public void deploy(List<String> components, String mode) {
-        new DeployCommand(paths, oc, deployer(mode)).run(components);
+    public void deploy(List<String> components, String mode, Boolean wait) {
+        new DeployCommand(paths, oc, deployer(mode), wait ? getLogHealthChecker() : null).run(components);
     }
 
     @Override
@@ -62,8 +62,8 @@ public class OSDFApiImpl implements OSDFApi {
     }
 
     @Override
-    public void status(List<String> components) {
-        new StatusCommand(paths, oc, getLogHealthChecker(), printer()).run(components);
+    public void status(List<String> components, Boolean withHealthcheck) {
+        new StatusCommand(paths, oc, withHealthcheck ? getLogHealthChecker() : null, printer()).run(components);
     }
 
     @Override

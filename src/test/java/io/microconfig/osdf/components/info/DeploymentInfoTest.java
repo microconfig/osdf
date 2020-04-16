@@ -13,6 +13,7 @@ import java.nio.file.Path;
 
 import static io.microconfig.osdf.components.info.DeploymentInfo.info;
 import static io.microconfig.osdf.components.info.DeploymentStatus.*;
+import static io.microconfig.osdf.components.info.PodsHealthcheckInfo.podsInfo;
 import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
 import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,14 +57,12 @@ class DeploymentInfoTest {
         when(healthChecker.check(pod1)).thenReturn(true);
         when(healthChecker.check(pod2)).thenReturn(true);
 
-        DeploymentInfo info = info(component, oc, healthChecker);
+        DeploymentInfo info = info(component, oc);
         assertEquals(RUNNING, info.getStatus());
         assertEquals(2, info.getAvailableReplicas());
         assertEquals(2, info.getReplicas());
         assertEquals("local", info.getConfigVersion());
         assertEquals("latest", info.getProjectVersion());
-        assertEquals(of(true, true), info.getPodsHealth());
-        assertEquals(of(pod1, pod2), info.getPods());
     }
 
     @Test
@@ -72,14 +71,15 @@ class DeploymentInfoTest {
         when(healthChecker.check(pod1)).thenReturn(true);
         when(healthChecker.check(pod2)).thenReturn(false);
 
-        DeploymentInfo info = info(component, oc, healthChecker);
-        assertEquals(BAD_HEALTHCHECK, info.getStatus());
+        DeploymentInfo info = info(component, oc);
+        assertEquals(RUNNING, info.getStatus());
         assertEquals(2, info.getAvailableReplicas());
         assertEquals(2, info.getReplicas());
         assertEquals("local", info.getConfigVersion());
         assertEquals("latest", info.getProjectVersion());
-        assertEquals(of(true, false), info.getPodsHealth());
-        assertEquals(of(pod1, pod2), info.getPods());
+        PodsHealthcheckInfo podsInfo = podsInfo(component, healthChecker);
+        assertEquals(of(true, false), podsInfo.getPodsHealth());
+        assertEquals(of(pod1, pod2), podsInfo.getPods());
     }
 
     @Test
@@ -87,8 +87,7 @@ class DeploymentInfoTest {
         when(oc.executeAndReadLines(command, true)).thenReturn(of(
                 "not found error"
         ));
-        HealthChecker healthChecker = mock(HealthChecker.class);
-        DeploymentInfo info = info(component, oc, healthChecker);
+        DeploymentInfo info = info(component, oc);
         assertEquals(NOT_FOUND, info.getStatus());
     }
 
@@ -98,9 +97,8 @@ class DeploymentInfoTest {
                 "replicas   current   available   unavailable   projectVersion   configVersion",
                 "<none>     <none>    2           0             latest           local"
         ));
-        HealthChecker healthChecker = mock(HealthChecker.class);
-        DeploymentInfo info = info(component, oc, healthChecker);
-        assertEquals(UNKNOWN, info.getStatus());
+        DeploymentInfo info = info(component, oc);
+        assertEquals(FAILED, info.getStatus());
     }
 
     @Test
@@ -109,8 +107,7 @@ class DeploymentInfoTest {
                 "replicas   current   available   unavailable   projectVersion   configVersion",
                 "2          2         1           1             latest           local"
         ));
-        HealthChecker healthChecker = mock(HealthChecker.class);
-        DeploymentInfo info = info(component, oc, healthChecker);
+        DeploymentInfo info = info(component, oc);
         assertEquals(NOT_READY, info.getStatus());
     }
 }
