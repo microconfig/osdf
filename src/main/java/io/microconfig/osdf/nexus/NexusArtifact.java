@@ -1,5 +1,6 @@
 package io.microconfig.osdf.nexus;
 
+import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,7 @@ public class NexusArtifact {
 
     public static NexusArtifact configsNexusArtifact(String groupAndArtifact) {
         String[] split = groupAndArtifact.split(":");
-        if (split.length != 2) throw new RuntimeException("Error parsing configs nexus artifact. Should be: group:artifact");
+        if (split.length != 2) throw new OSDFException("Error parsing configs nexus artifact. Should be: group:artifact");
         return nexusArtifact(split[0], split[1], "1.0", "zip");
     }
 

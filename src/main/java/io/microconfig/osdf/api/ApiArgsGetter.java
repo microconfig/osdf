@@ -1,6 +1,7 @@
 package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.api.annotation.ConsoleParam;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.parameters.ParamsContainer;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.cli.ParseException;
@@ -51,7 +52,7 @@ public class ApiArgsGetter {
                 ind++;
             } else if (Integer.class.isAssignableFrom(type)) {
                 Integer integer = castToInteger(args[ind]);
-                if (integer == null) throw new RuntimeException("Bad integer format " + args[ind]);
+                if (integer == null) throw new OSDFException("Bad integer format " + args[ind]);
                 result.add(integer);
                 ind++;
             } else if (List.class.isAssignableFrom(type)) {

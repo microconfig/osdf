@@ -3,6 +3,7 @@ package io.microconfig.osdf.api;
 import io.microconfig.osdf.api.annotation.ApiCommand;
 import io.microconfig.osdf.api.annotation.ConsoleParam;
 import io.microconfig.osdf.api.annotation.Hidden;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.parameters.ParamsContainer;
 import io.microconfig.osdf.parameters.ParamsContainerBuilder;
 import org.apache.commons.cli.ParseException;
@@ -30,7 +31,7 @@ public class OSDFApiInfo {
         return of(OSDFApi.class.getMethods())
                 .filter(method -> method.getName().equals(name))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Unknown method " + name));
+                .orElseThrow(() -> new OSDFException("Unknown method " + name));
     }
 
     public static void printCommandInfos() {

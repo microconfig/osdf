@@ -4,6 +4,7 @@ import io.microconfig.osdf.commands.*;
 import io.microconfig.osdf.components.checker.LogHealthChecker;
 import io.microconfig.osdf.config.OSDFPaths;
 import io.microconfig.osdf.deployers.Deployer;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.istio.rulesetters.RoutingRuleSetter;
 import io.microconfig.osdf.nexus.NexusArtifact;
 import io.microconfig.osdf.openshift.OCExecutor;
@@ -140,7 +141,7 @@ public class OSDFApiImpl implements OSDFApi {
             return canaryDeployer(oc, prometheusParser(), getLogHealthChecker());
         }
 
-        throw new RuntimeException("Unknown deploy mode");
+        throw new OSDFException("Unknown deploy mode");
     }
 
     private LogHealthChecker getLogHealthChecker() {

@@ -30,7 +30,6 @@ public class ParamsContainerBuilder {
 
     public ParamsContainer build(String[] args) throws ParseException {
         CommandLine commandLine = runParser(args);
-        if (commandLine == null) throw new RuntimeException("Parsing error");
         parameters.forEach(param -> setParameter(commandLine, param));
         return new ParamsContainer(methodName, parameters);
     }

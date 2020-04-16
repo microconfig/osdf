@@ -2,6 +2,7 @@ package io.microconfig.osdf.commands;
 
 import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.istio.rulesetters.RoutingRuleSetter;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.OpenShiftProject;
@@ -22,7 +23,7 @@ public class RouteCommand {
         DeploymentComponent component = component(componentName, paths.componentsPath(), oc);
         try (OpenShiftProject ignored = create(paths, oc).connect()) {
             boolean ruleIsSet = ruleSetters.stream().anyMatch(setter -> setter.set(component, rule));
-            if (!ruleIsSet) throw new RuntimeException("Unknown routing rule");
+            if (!ruleIsSet) throw new OSDFException("Unknown routing rule");
         }
     }
 }

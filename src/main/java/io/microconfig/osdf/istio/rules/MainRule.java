@@ -1,5 +1,6 @@
 package io.microconfig.osdf.istio.rules;
 
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.istio.Destination;
 import io.microconfig.osdf.istio.WeightRoute;
 import lombok.AllArgsConstructor;
@@ -36,7 +37,7 @@ public class MainRule {
 
     public void setWeight(String subset, int weight) {
         WeightRoute otherRoute = getOtherRoute(subset);
-        if (otherRoute == null) throw new RuntimeException("No other subsets found");
+        if (otherRoute == null) throw new OSDFException("No other versions found");
 
         Destination destination = destination(otherRoute.getDestination().getHost(), subset);
         routes = of(
@@ -51,7 +52,7 @@ public class MainRule {
 
     public void setMirror(String subset) {
         List<WeightRoute> otherRoutes = getOtherRoutes(subset);
-        if (otherRoutes.isEmpty()) throw new RuntimeException("No other subsets found");
+        if (otherRoutes.isEmpty()) throw new OSDFException("No other versions found");
 
         setRoutesAndNormalize(otherRoutes);
         mirror = destination(otherRoutes.get(0).getDestination().getHost(), subset);
@@ -91,7 +92,7 @@ public class MainRule {
     private WeightRoute getOtherRoute(String subset) {
         List<WeightRoute> otherRoutes = getOtherRoutes(subset);
         if (otherRoutes.size() == 0) return null;
-        if (otherRoutes.size() != 1) throw new RuntimeException("Only one other version must exist");
+        if (otherRoutes.size() != 1) throw new OSDFException("Only one other version must exist");
         return otherRoutes.get(0);
     }
 

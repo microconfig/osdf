@@ -1,5 +1,6 @@
 package io.microconfig.osdf.microconfig.files;
 
+import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class MicroConfigFile {
             BasicFileAttributes attrs = readAttributes(path, BasicFileAttributes.class);
             return new MicroConfigFile(path, attrs.creationTime(), attrs.lastModifiedTime());
         } catch (IOException e) {
-            throw new RuntimeException("Can't get file attributes: " + path);
+            throw new OSDFException("Can't get file attributes: " + path);
         }
     }
 
@@ -33,7 +34,7 @@ public class MicroConfigFile {
         try {
             Files.delete(path);
         } catch (IOException e) {
-            throw new RuntimeException("Can't delete file " + path, e);
+            throw new OSDFException("Can't delete file " + path, e);
         }
     }
 }

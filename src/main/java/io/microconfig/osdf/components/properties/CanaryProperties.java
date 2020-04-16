@@ -1,5 +1,6 @@
 package io.microconfig.osdf.components.properties;
 
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.metrics.Metric;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class CanaryProperties {
     public static CanaryProperties canaryProperties(Path componentPath) {
         Map<String, Object> yaml = loadFromPath(of(componentPath + "/deploy.yaml"));
         Map<String, Object> canary = getMap(yaml, "canary");
-        if (canary == null) throw new RuntimeException("Canary config not found");
+        if (canary == null) throw new OSDFException("Canary config not found");
 
         int intervalInSec = getInt(canary, "deploy", "intervalInSec");
         int step = getInt(canary, "deploy", "step");

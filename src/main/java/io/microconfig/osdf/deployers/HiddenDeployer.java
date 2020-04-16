@@ -1,6 +1,7 @@
 package io.microconfig.osdf.deployers;
 
 import io.microconfig.osdf.components.DeploymentComponent;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.openshift.OCExecutor;
 import lombok.RequiredArgsConstructor;
 
@@ -17,8 +18,8 @@ public class HiddenDeployer implements Deployer {
 
     @Override
     public void deploy(DeploymentComponent component) {
-        if (component.deployed()) throw new RuntimeException("Component already deployed");
-        if (!virtualServiceExists(component)) throw new RuntimeException("Virtual service doesn't exist");
+        if (component.deployed()) throw new OSDFException("Component already deployed");
+        if (!virtualServiceExists(component)) throw new OSDFException("Virtual service doesn't exist");
         basicDeployer().deploy(component);
     }
 

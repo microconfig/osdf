@@ -1,6 +1,7 @@
 package io.microconfig.osdf.commands;
 
 import io.microconfig.osdf.components.AbstractOpenShiftComponent;
+import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 
@@ -31,7 +32,7 @@ public class PropertiesDiffCommand {
         try {
             info(IOUtils.toString(newInputStream(file), UTF_8.name()));
         } catch (IOException e) {
-            throw new RuntimeException("Can't access file " + file, e);
+            throw new OSDFException("Can't access file " + file, e);
         }
     }
 }

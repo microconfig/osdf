@@ -37,7 +37,7 @@ public class ApiCaller {
         try {
             method.invoke(api, args);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("Couldn't invoke method " + name, e);
+            throw new OSDFException("Couldn't invoke method " + name, e);
         } catch (InvocationTargetException e) {
             if (e.getCause() instanceof OSDFException) {
                 throw (OSDFException) e.getCause();

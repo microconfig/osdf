@@ -1,5 +1,6 @@
 package io.microconfig.osdf.state;
 
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.microconfig.properties.PropertyGetter;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class OSDFVersion {
         String filename = jarPath().getFileName().toString();
         filename = filename.substring(0, filename.length() - 4);
         String[] dashSplit = filename.split("-");
-        if (dashSplit.length < 2) throw new RuntimeException("Bad jar file name. Should be <name>-<version>.jar");
+        if (dashSplit.length < 2) throw new OSDFException("Bad jar file name. Should be <name>-<version>.jar");
         return fromString(dashSplit[dashSplit.length - 1]);
     }
 

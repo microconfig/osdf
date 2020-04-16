@@ -1,6 +1,7 @@
 package io.microconfig.osdf.istio;
 
 import io.microconfig.osdf.components.DeploymentComponent;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.istio.rules.HeaderRule;
 import io.microconfig.osdf.istio.rules.MainRule;
 import io.microconfig.osdf.openshift.OCExecutor;
@@ -37,7 +38,7 @@ public class VirtualService {
     }
 
     public VirtualService setWeight(int weight) {
-        if (virtualService == null) throw new RuntimeException("Virtual Service not found");
+        if (virtualService == null) throw new OSDFException("Virtual Service not found");
 
         RuleSet ruleSet = RuleSet.from(getRules());
         MainRule rule = ruleSet.getMainRule();
@@ -48,7 +49,7 @@ public class VirtualService {
     }
 
     public VirtualService setMirror() {
-        if (virtualService == null) throw new RuntimeException("Virtual Service not found");
+        if (virtualService == null) throw new OSDFException("Virtual Service not found");
 
         RuleSet ruleSet = RuleSet.from(getRules());
         MainRule rule = ruleSet.getMainRule();
@@ -59,7 +60,7 @@ public class VirtualService {
     }
 
     public VirtualService setHeader() {
-        if (virtualService == null) throw new RuntimeException("Virtual Service not found");
+        if (virtualService == null) throw new OSDFException("Virtual Service not found");
 
         HeaderRule headerRule = headerRule(destination(getHost(), component.getEncodedVersion()), "route-version", component.getEncodedVersion());
 

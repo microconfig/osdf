@@ -7,6 +7,7 @@ import io.microconfig.osdf.components.checker.SuccessfulDeploymentChecker;
 import io.microconfig.osdf.components.loader.ComponentsLoaderImpl;
 import io.microconfig.osdf.config.OSDFPaths;
 import io.microconfig.osdf.deployers.Deployer;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.exceptions.StatusCodeException;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.OpenShiftProject;
@@ -56,8 +57,7 @@ public class DeployCommand {
             component.upload();
 
             if (!component.waitUntilCompleted()) {
-                error("Job " + component.getName() + " failed");
-                throw new RuntimeException("Job failed");
+                throw new OSDFException("Job " + component.getName() + " failed");
             }
 
             announce("Completed job " + component);

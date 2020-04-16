@@ -2,6 +2,7 @@ package io.microconfig.osdf.commands;
 
 
 import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.install.OSDFSource;
 import io.microconfig.osdf.state.OSDFVersion;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,7 @@ public class InstallCommand {
             createDirectory(paths.root());
             createDirectory(of(paths.root() + "/bin"));
         } catch (IOException e) {
-            throw new RuntimeException("Couldn't create workfolder");
+            throw new OSDFException("Couldn't create workfolder at path " + paths.root(), e);
         }
     }
 }

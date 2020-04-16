@@ -1,5 +1,6 @@
 package io.microconfig.osdf.api.parameter;
 
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.parameters.ArgParameter;
 
 import static io.microconfig.osdf.utils.StringUtils.castToInteger;
@@ -13,7 +14,7 @@ public class CanaryWeightParameter extends ArgParameter<Integer> {
     public Integer get() {
         if (getValue() == null) return null;
         Integer weight = castToInteger(getValue());
-        if (weight == null) throw new RuntimeException("Invalid integer format " + getValue());
+        if (weight == null) throw new OSDFException("Invalid integer format " + getValue());
         return weight;
     }
 }

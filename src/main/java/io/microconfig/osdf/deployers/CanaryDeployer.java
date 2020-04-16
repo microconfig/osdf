@@ -3,6 +3,7 @@ package io.microconfig.osdf.deployers;
 import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.components.checker.HealthChecker;
 import io.microconfig.osdf.components.properties.CanaryProperties;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.metrics.Metric;
 import io.microconfig.osdf.metrics.MetricsPuller;
 import io.microconfig.osdf.metrics.formats.MetricsParser;
@@ -98,7 +99,7 @@ public class CanaryDeployer implements Deployer {
         } else {
             hiddenDeployer(oc).deploy(component);
         }
-        if (!successfulDeploymentChecker(healthChecker).check(component)) throw new RuntimeException("Deployment failed");
+        if (!successfulDeploymentChecker(healthChecker).check(component)) throw new OSDFException("Deployment failed");
         info("Successfully deployed component");
     }
 }

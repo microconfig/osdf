@@ -1,5 +1,6 @@
 package io.microconfig.osdf.microconfig.files;
 
+import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class DiffFilesCollector {
                     .filter(p -> p.getFileName().toString().startsWith("diff-"))
                     .collect(toUnmodifiableList());
         } catch (IOException e) {
-            throw new RuntimeException("Can't collect diff files in " + root, e);
+            throw new OSDFException("Can't collect diff files in " + root, e);
         }
     }
 }

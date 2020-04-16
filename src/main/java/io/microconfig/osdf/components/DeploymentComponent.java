@@ -3,6 +3,7 @@ package io.microconfig.osdf.components;
 import io.microconfig.osdf.components.info.DeploymentInfo;
 import io.microconfig.osdf.components.properties.CanaryProperties;
 import io.microconfig.osdf.components.properties.DeployProperties;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.Pod;
 import io.microconfig.utils.Logger;
@@ -33,7 +34,7 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
                 .stream()
                 .findFirst()
                 .orElse(null);
-        if (component == null) throw new RuntimeException("Component " + name + " not found");
+        if (component == null) throw new OSDFException("Component " + name + " not found");
         return component;
     }
 
@@ -104,7 +105,7 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
         return pods.stream()
                 .filter(pod -> pod.getName().equals(podName))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Pod not found"));
+                .orElseThrow(() -> new OSDFException("Pod not found"));
     }
 
     public CanaryProperties canaryProperties() {
