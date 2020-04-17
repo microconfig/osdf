@@ -22,11 +22,14 @@ public class OpenShiftCredentials {
     }
 
     public static OpenShiftCredentials of(String credentialsString) {
+        return !isToken(credentialsString) ?
+                new OpenShiftCredentials(Credentials.of(credentialsString)) :
+                new OpenShiftCredentials(credentialsString);
+    }
+
+    private static boolean isToken(String credentialsString) {
         String[] split = credentialsString.split(":");
-        if (split.length == 2) return new OpenShiftCredentials(new Credentials(split[0], split[1], credentialsString));
-        if (split.length == 1) return new OpenShiftCredentials(split[0]);
-        throw new RuntimeException("The format of \"osdf init -oc\" command isn't correct. " +
-                                    "Please input \"login:password\" or \"token\"");
+        return split.length == 1;
     }
 
     public String getLoginParams() {
