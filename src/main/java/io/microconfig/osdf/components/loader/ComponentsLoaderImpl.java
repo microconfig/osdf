@@ -13,6 +13,8 @@ import java.util.stream.Stream;
 import static io.microconfig.osdf.components.AbstractOpenShiftComponent.fromPath;
 import static io.microconfig.osdf.components.properties.DeployProperties.deployProperties;
 import static io.microconfig.osdf.utils.FileUtils.getPathsInDir;
+import static java.nio.file.Files.exists;
+import static java.nio.file.Paths.get;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
@@ -65,7 +67,7 @@ public class ComponentsLoaderImpl implements ComponentsLoader {
     }
 
     private boolean isComponentDir(Path path) {
-        String strPath = path.getFileName().toString();
-        return !strPath.startsWith(".") && !strPath.equals("openshift");
+        String dirName = path.getFileName().toString();
+        return !dirName.startsWith(".") && !dirName.equals("openshift") && exists(get(path.toString(), "openshift"));
     }
 }
