@@ -57,6 +57,8 @@ public class OpenShiftDeployStarter {
     }
 
     private boolean updatableCall(String[] args) {
-        return !"install".equals(args[0]) && !"init".equals(args[0]) && !"state".equals(args[0]) && !"update".equals(args[0]) && !"howToStart".equals(args[0]);
+        return !"install".equals(args[0]) && !"init".equals(args[0]) &&
+                !"state".equals(args[0]) && !"update".equals(args[0]) &&
+                !"howToStart".equals(args[0]) && !"help".equals(args[0]);
     }
 }

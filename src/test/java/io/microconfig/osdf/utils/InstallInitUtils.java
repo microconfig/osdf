@@ -3,8 +3,8 @@ package io.microconfig.osdf.utils;
 import io.microconfig.osdf.commands.InitCommand;
 import io.microconfig.osdf.commands.InstallCommand;
 import io.microconfig.osdf.config.OSDFPaths;
-import io.microconfig.osdf.state.Credentials;
 import io.microconfig.osdf.state.OSDFVersion;
+import io.microconfig.osdf.state.OpenShiftCredentials;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -19,7 +19,7 @@ public class InstallInitUtils {
         execute("rm -rf " + osdfPath);
         new InstallCommand(paths, OSDFVersion.fromString("1.0.0")).install();
         new InitCommand(paths).run(null, null, null, configsPath,
-                null, Credentials.of("test:test"), null, "dev",
+                null, OpenShiftCredentials.of("test:test"), null, "dev",
                 null, "helloworld", null, null);
     }
 

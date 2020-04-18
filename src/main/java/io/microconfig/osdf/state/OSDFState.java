@@ -24,7 +24,7 @@ public class OSDFState {
     private String localConfigs;
     private ConfigSource configSource;
 
-    private Credentials openShiftCredentials;
+    private OpenShiftCredentials openShiftCredentials;
     private Credentials nexusCredentials;
 
     private String env;
