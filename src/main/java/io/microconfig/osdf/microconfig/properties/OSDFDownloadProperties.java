@@ -2,7 +2,7 @@ package io.microconfig.osdf.microconfig.properties;
 
 import lombok.RequiredArgsConstructor;
 
-import static io.microconfig.factory.configtypes.StandardConfigTypes.PROCESS;
+import static io.microconfig.core.configtypes.StandardConfigType.PROCESS;
 
 @RequiredArgsConstructor
 public class OSDFDownloadProperties {

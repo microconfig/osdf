@@ -2,7 +2,8 @@ package io.microconfig.osdf.microconfig.properties;
 
 import lombok.RequiredArgsConstructor;
 
-import static io.microconfig.factory.configtypes.StandardConfigTypes.DEPLOY;
+import static io.microconfig.core.configtypes.StandardConfigType.DEPLOY;
+
 
 @RequiredArgsConstructor
 public class OpenShiftProperties {

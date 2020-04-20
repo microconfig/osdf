@@ -16,6 +16,7 @@ import static io.microconfig.core.properties.templates.CopyTemplatesService.reso
 import static io.microconfig.osdf.microconfig.files.MicroConfigFilesState.of;
 import static io.microconfig.osdf.utils.FileUtils.createDirectoryIfNotExists;
 import static java.nio.file.Files.exists;
+import static java.util.Collections.emptyList;
 import static java.util.List.of;
 
 @RequiredArgsConstructor
@@ -41,7 +42,7 @@ public class MicroConfig {
         searchConfigsIn(from.toFile())
                 .withDestinationDir(to.toFile())
                 .inEnvironment(env)
-                .findComponentsFrom(of(group), components)
+                .findComponentsFrom(group == null ? emptyList() : of(group), components == null ? emptyList() : components)
                 .getPropertiesFor(eachConfigType())
                 .resolveBy(searchConfigsIn(from.toFile()).withDestinationDir(to.toFile()).resolver())
                 .forEachComponent(resolveTemplatesBy(searchConfigsIn(from.toFile()).withDestinationDir(to.toFile()).resolver()))

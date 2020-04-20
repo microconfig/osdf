@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static io.microconfig.factory.configtypes.StandardConfigTypes.PROCESS;
+import static io.microconfig.core.configtypes.StandardConfigType.PROCESS;
 import static io.microconfig.osdf.microconfig.properties.PropertyGetter.propertyGetter;
 import static io.microconfig.osdf.microconfig.properties.PropertySetter.propertySetter;
 import static io.microconfig.osdf.utils.InstallInitUtils.DEFAULT_CONFIGS_PATH;

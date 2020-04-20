@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import static io.microconfig.osdf.microconfig.properties.OpenShiftProperties.properties;
 import static io.microconfig.osdf.microconfig.properties.PropertyGetter.propertyGetter;
 import static io.microconfig.osdf.state.OSDFState.fromFile;
+import static java.util.List.of;
 
 @RequiredArgsConstructor
 public class OpenShiftProject implements AutoCloseable {
@@ -47,7 +48,9 @@ public class OpenShiftProject implements AutoCloseable {
 
     private boolean isLoggedIn() {
         String projectString = oc.execute("oc project " + project, true).toLowerCase();
-        return !projectString.contains("not a member") && !projectString.contains("please login");
+        return of("not a member", "please login", "unauthorized")
+                .stream()
+                .noneMatch(projectString::contains);
     }
 
     @Override

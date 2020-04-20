@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import java.nio.file.Path;
 import java.util.List;
 
-import static io.microconfig.factory.configtypes.StandardConfigTypes.DEPLOY;
+import static io.microconfig.core.configtypes.StandardConfigType.DEPLOY;
 import static io.microconfig.osdf.microconfig.properties.PropertyGetter.propertyGetter;
 
 @RequiredArgsConstructor

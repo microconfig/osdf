@@ -8,7 +8,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 import static io.microconfig.osdf.utils.ThreadUtils.sleepSec;
-import static io.microconfig.utils.TimeUtils.calcSecFrom;
 import static java.lang.Runtime.getRuntime;
 import static java.lang.System.currentTimeMillis;
 
@@ -47,5 +46,9 @@ public class LogHealthChecker implements HealthChecker {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    private long calcSecFrom(long startTime) {
+        return (currentTimeMillis() - startTime) / 1000;
     }
 }
