@@ -39,7 +39,7 @@ public class OpenShiftProject implements AutoCloseable {
     }
 
     private void login() {
-        oc.execute("oc login " + clusterUrl + " -u " + username + " -p " + password);
+        oc.execute("oc login " + clusterUrl + " -u \"" + username + "\" -p \"" + password + "\"");
     }
 
     private void setProjectCommand() {
