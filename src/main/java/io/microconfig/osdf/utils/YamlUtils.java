@@ -19,7 +19,7 @@ public class YamlUtils {
             Yaml yaml = new Yaml(new Constructor(clazz));
             return yaml.load(inputStream);
         } catch (IOException e) {
-            throw new RuntimeException("Couldn't open file " + path);
+            throw new RuntimeException("Couldn't open file " + path, e);
         }
     }
 
@@ -27,7 +27,7 @@ public class YamlUtils {
         try {
             return new Yaml().load(new FileInputStream(path.toString()));
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("Couldn't load yaml from path " + path);
+            throw new RuntimeException("Couldn't load yaml from path " + path, e);
         }
     }
 
