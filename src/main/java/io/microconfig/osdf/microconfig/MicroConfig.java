@@ -1,9 +1,5 @@
 package io.microconfig.osdf.microconfig;
 
-import io.microconfig.commands.ComponentsToProcess;
-import io.microconfig.commands.ConfigCommand;
-import io.microconfig.factory.BuildConfigCommandFactory;
-import io.microconfig.factory.configtypes.ConfigTypeFileProvider;
 import io.microconfig.osdf.config.OSDFPaths;
 import io.microconfig.osdf.microconfig.files.MicroConfigFilesState;
 import io.microconfig.osdf.state.OSDFState;
@@ -12,12 +8,15 @@ import lombok.RequiredArgsConstructor;
 import java.nio.file.Path;
 import java.util.List;
 
-import static io.microconfig.factory.configtypes.CompositeConfigTypeProvider.composite;
-import static io.microconfig.factory.configtypes.StandardConfigTypes.asProvider;
+import static io.microconfig.core.Microconfig.searchConfigsIn;
+import static io.microconfig.core.configtypes.ConfigTypeFilters.eachConfigType;
+import static io.microconfig.core.properties.serializers.PropertySerializers.toFileIn;
+import static io.microconfig.core.properties.serializers.PropertySerializers.withConfigDiff;
+import static io.microconfig.core.properties.templates.CopyTemplatesService.resolveTemplatesBy;
 import static io.microconfig.osdf.microconfig.files.MicroConfigFilesState.of;
 import static io.microconfig.osdf.utils.FileUtils.createDirectoryIfNotExists;
 import static java.nio.file.Files.exists;
-import static java.util.Collections.emptyList;
+import static java.util.List.of;
 
 @RequiredArgsConstructor
 public class MicroConfig {
@@ -39,9 +38,14 @@ public class MicroConfig {
     }
 
     private void generateConfigs(String env, String group, List<String> components, Path from, Path to) {
-        BuildConfigCommandFactory factory = new BuildConfigCommandFactory(composite(new ConfigTypeFileProvider(), asProvider()));
-        ConfigCommand command = factory.newCommand(from.toFile(), to.toFile());
-        command.execute(new ComponentsToProcess(env, group, components == null ? emptyList() : components));
+        searchConfigsIn(from.toFile())
+                .withDestinationDir(to.toFile())
+                .inEnvironment(env)
+                .findComponentsFrom(of(group), components)
+                .getPropertiesFor(eachConfigType())
+                .resolveBy(searchConfigsIn(from.toFile()).withDestinationDir(to.toFile()).resolver())
+                .forEachComponent(resolveTemplatesBy(searchConfigsIn(from.toFile()).withDestinationDir(to.toFile()).resolver()))
+                .save(toFileIn(to.toFile(), withConfigDiff()));
         createDirectoryIfNotExists(to);
     }
 
