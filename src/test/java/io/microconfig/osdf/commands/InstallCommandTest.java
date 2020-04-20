@@ -19,12 +19,12 @@ class InstallCommandTest {
 
     @Test
     void firstInstall() {
-        new InstallCommand(paths, OSDFVersion.fromString("1.0.0")).install();
+        new InstallCommand(paths, OSDFVersion.fromString("1.0.0"), true).install();
     }
 
     @Test
     void secondInstall() {
-        new InstallCommand(paths, OSDFVersion.fromString("1.0.0")).install();
-        new InstallCommand(paths, OSDFVersion.fromString("1.1.0")).install();
+        new InstallCommand(paths, OSDFVersion.fromString("1.0.0"), true).install();
+        new InstallCommand(paths, OSDFVersion.fromString("1.1.0"), true).install();
     }
 }

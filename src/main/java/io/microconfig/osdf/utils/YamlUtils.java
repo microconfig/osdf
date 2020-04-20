@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.String.valueOf;
 import static java.nio.file.Files.newInputStream;
 
 public class YamlUtils {
@@ -40,7 +41,7 @@ public class YamlUtils {
     }
 
     public static String getString(Map<String, Object> yaml, String... properties) {
-        return (String) getObjectOrNull(yaml, properties);
+        return valueOf(getObjectOrNull(yaml, properties));
     }
 
     public static Integer getInt(Map<String, Object> yaml, String... properties) {
