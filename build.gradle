@@ -19,10 +19,10 @@ jar {
     }
 }
 
-//java {
-//    withJavadocJar()
-//    withSourcesJar()
-//}
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
 
 publishing {
     publications {
