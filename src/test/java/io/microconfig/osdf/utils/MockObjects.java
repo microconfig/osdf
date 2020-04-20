@@ -2,8 +2,7 @@ package io.microconfig.osdf.utils;
 
 import io.microconfig.osdf.openshift.OCExecutor;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class MockObjects {
     public static OCExecutor loggedInOc() {

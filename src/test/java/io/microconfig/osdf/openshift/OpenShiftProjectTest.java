@@ -19,7 +19,7 @@ class OpenShiftProjectTest {
         when(oc.execute("oc project project", true)).thenReturn("not a member").thenReturn("ok");
         project = new OpenShiftProject("url", "username", "password", "project", oc);
 
-        commands.put("login", "oc login url -u username -p password");
+        commands.put("login", "oc login url -u \"username\" -p \"password\"");
         commands.put("project", "oc project project");
         commands.put("logout", "oc logout");
     }

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import static io.microconfig.osdf.microconfig.properties.OpenShiftProperties.properties;
 import static io.microconfig.osdf.microconfig.properties.PropertyGetter.propertyGetter;
 import static io.microconfig.osdf.state.OSDFState.fromFile;
+import static io.microconfig.osdf.utils.StringUtils.withQuotes;
 import static java.util.List.of;
 
 @RequiredArgsConstructor
@@ -39,7 +40,7 @@ public class OpenShiftProject implements AutoCloseable {
     }
 
     private void login() {
-        oc.execute("oc login " + clusterUrl + " -u \"" + username + "\" -p \"" + password + "\"");
+        oc.execute("oc login " + clusterUrl + " -u " + withQuotes(username) + " -p " + withQuotes(password));
     }
 
     private void setProjectCommand() {

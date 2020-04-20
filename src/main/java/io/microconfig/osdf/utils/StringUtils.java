@@ -15,7 +15,6 @@ public class StringUtils {
         return s + " ".repeat(max(length - coloredStringLength(s), 0));
     }
 
-
     public static int coloredStringLength(String s) {
         String result = s;
         if (s.contains(RESET.asString())) {
@@ -40,5 +39,13 @@ public class StringUtils {
         } catch (NumberFormatException e) {
             throw new RuntimeException("Can't cast to int", e);
         }
+    }
+
+    public static String withQuotes(String s) {
+        return s == null ? null : "\"" + s + "\"";
+    }
+
+    public static String withoutQuotes(String s) {
+        return s == null ? null : s.replace("\"", "");
     }
 }
