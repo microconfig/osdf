@@ -139,7 +139,7 @@ public class OSDFInstaller {
     }
 
     private void copyJar(OSDFVersion version) {
-        execute("cp " + jarPath() + " " + paths.root() + "/osdf-" + version + ".jar");
+        execute("cp " + jarPath().toString().replace(" ", "\\ ") + " " + paths.root() + "/osdf-" + version + ".jar");
     }
 
     private String jarName(OSDFVersion version) {
