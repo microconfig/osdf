@@ -1,37 +1,30 @@
 package io.microconfig.osdf.microconfig.properties;
 
-import io.microconfig.core.properties.ConfigProvider;
-import io.microconfig.factory.MicroconfigFactory;
-import io.microconfig.factory.configtypes.StandardConfigTypes;
+import io.microconfig.core.configtypes.ConfigType;
+import io.microconfig.core.environments.Environment;
+import io.microconfig.core.properties.Property;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
-import java.util.Map;
 
-import static io.microconfig.core.environments.Component.byType;
-import static io.microconfig.factory.MicroconfigFactory.init;
-import static io.microconfig.factory.configtypes.StandardConfigTypes.*;
-import static java.util.Map.of;
+import static io.microconfig.core.Microconfig.searchConfigsIn;
+import static io.microconfig.core.configtypes.ConfigTypeFilters.configType;
 
 @RequiredArgsConstructor
 public class PropertyGetter {
-    private final String env;
-    private final Map<StandardConfigTypes, ConfigProvider> providers;
+    private final Environment environment;
 
     public static PropertyGetter propertyGetter(String env, Path configPath) {
-        MicroconfigFactory factory = init(configPath.toFile(), null);
-        return new PropertyGetter(env, of(
-                PROCESS, provider(factory, PROCESS),
-                DEPLOY, provider(factory, DEPLOY),
-                APPLICATION, provider(factory, APPLICATION)
-        ));
+        return new PropertyGetter(
+                searchConfigsIn(configPath.toFile()).inEnvironment(env)
+        );
     }
 
-    private static ConfigProvider provider(MicroconfigFactory factory, StandardConfigTypes type) {
-        return factory.newConfigProvider(type.getType());
-    }
-
-    public String get(StandardConfigTypes type, String component, String property) {
-        return providers.get(type).getProperties(byType(component), env).get(property).getValue();
+    public String get(ConfigType type, String component, String property) {
+        return environment.getOrCreateComponentWithName(component)
+                .getPropertiesFor(configType(type))
+                .getPropertyWithKey(property)
+                .map(Property::getValue)
+                .orElseThrow(() -> new IllegalArgumentException("Can't resolve property " + component + "@" + property));
     }
 }
