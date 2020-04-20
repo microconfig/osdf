@@ -31,18 +31,19 @@ public class OSDFInstaller {
     private static final String SCRIPT_NAME = "osdf";
 
     private final OSDFPaths paths;
+    private final boolean noBashRc;
 
-    public static OSDFInstaller osdfInstaller(OSDFPaths paths) {
-        return new OSDFInstaller(paths);
+    public static OSDFInstaller osdfInstaller(OSDFPaths paths, boolean noBashRc) {
+        return new OSDFInstaller(paths, noBashRc);
     }
 
     public void install(OSDFVersion oldVersion, OSDFVersion newVersion, OSDFSource source) {
         if (oldVersion.hasOlderMinorThan(newVersion)) {
             warn("Current version is significantly older than version in configs");
             warn("You'll need to init osdf again after update. Old state will be saved at " + paths.oldStateSavePath());
-            osdfInstaller(paths).install(oldVersion, newVersion, source, true);
+            install(oldVersion, newVersion, source, true);
         } else {
-            osdfInstaller(paths).install(oldVersion, newVersion, source, false);
+            install(oldVersion, newVersion, source, false);
         }
     }
 
@@ -63,7 +64,9 @@ public class OSDFInstaller {
         } else {
             replaceJarAndUseOldState(scriptPath, tmpScriptPath, newVersion);
         }
-        addScriptToBashrc();
+        if (!noBashRc) {
+            addScriptToBashrc();
+        }
         if (!newVersion.equals(oldVersion)) deleteOldJar(oldVersion);
     }
 

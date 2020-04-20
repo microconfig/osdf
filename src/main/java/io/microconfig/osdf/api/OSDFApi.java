@@ -15,7 +15,7 @@ import static io.microconfig.osdf.parameters.ParamType.REQUIRED;
 
 public interface OSDFApi {
     @ApiCommand(description = "Install osdf commandline tool", order = 1)
-    void install();
+    void install(@ConsoleParam(NoBashRcParameter.class) Boolean noBashRc);
 
     @ApiCommand(description = "Init osdf with configs, credentials and project parameters", order = 3)
     void init(@ConsoleParam(GitUrlParameter.class) String gitUrl,

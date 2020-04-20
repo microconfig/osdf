@@ -3,6 +3,7 @@ package io.microconfig.osdf.commands;
 
 import io.microconfig.osdf.config.OSDFPaths;
 import io.microconfig.osdf.exceptions.OSDFException;
+import io.microconfig.osdf.install.OSDFInstaller;
 import io.microconfig.osdf.install.OSDFSource;
 import io.microconfig.osdf.state.OSDFVersion;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +25,16 @@ import static java.nio.file.Path.of;
 public class InstallCommand {
     private final OSDFPaths paths;
     private final OSDFVersion version;
+    private final boolean noBashRc;
 
     public void install() {
         OSDFSource osdfSource = isJar() ? LOCAL : null;
+        OSDFInstaller installer = osdfInstaller(paths, noBashRc);
         if (foldersExist()) {
-            osdfInstaller(paths).install(fromState(fromFile(paths.stateSavePath())), version, osdfSource);
+            installer.install(fromState(fromFile(paths.stateSavePath())), version, osdfSource);
         } else {
             createWorkfolder();
-            osdfInstaller(paths).install(null, version, osdfSource, true);
+            installer.install(null, version, osdfSource, true);
             autoCompleteInstaller(paths.componentsPath()).installAutoComplete(false);
         }
         announce("Installed " + version);

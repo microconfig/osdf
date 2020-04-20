@@ -37,7 +37,7 @@ public class UpdateCommand {
             announce("Current version is up-to-date with version from configs");
             return;
         }
-        osdfInstaller(paths).install(stateVersion, configsVersion, REMOTE);
+        osdfInstaller(paths, false).install(stateVersion, configsVersion, REMOTE);
         announce("Updated to " + configsVersion);
     }
 
@@ -49,7 +49,7 @@ public class UpdateCommand {
                 return;
             }
 
-            osdfInstaller(paths).install(stateVersion, configsVersion, REMOTE, false);
+            osdfInstaller(paths, false).install(stateVersion, configsVersion, REMOTE, false);
             announce("Updated to " + configsVersion);
         } catch (Exception e) {
             warn("Can't auto-update. Try manual update or install new version");
