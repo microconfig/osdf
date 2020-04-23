@@ -15,6 +15,7 @@ import static io.microconfig.osdf.api.OSDFApiInfo.printCommandInfos;
 import static io.microconfig.osdf.api.argsproducer.ConsoleArgs.consoleArgs;
 import static io.microconfig.osdf.commands.UpdateCommand.updateCommand;
 import static io.microconfig.osdf.config.OSDFPaths.paths;
+import static io.microconfig.osdf.exceptions.BugTracker.bugTracker;
 import static io.microconfig.osdf.openshift.OCExecutor.oc;
 import static io.microconfig.osdf.state.OSDFState.fromFile;
 import static io.microconfig.utils.Logger.error;
@@ -56,6 +57,11 @@ public class OpenShiftDeployStarter {
             exit(e.getStatusCode());
         } catch (OSDFException e) {
             error(e.getMessage());
+            exit(1);
+        } catch (Exception e) {
+            error("Bug!");
+            bugTracker(paths.root()).save(command, e);
+            e.printStackTrace();
             exit(1);
         }
     }

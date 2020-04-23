@@ -10,6 +10,8 @@ import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.*;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
 
 public class FileUtils {
     public static String readAll(Path file) {
@@ -33,6 +35,14 @@ public class FileUtils {
     public static void writeStringToFile(Path file, String content) {
         try {
             writeString(file, content);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't create file " + file, e);
+        }
+    }
+
+    public static void appendToFile(Path file, String content) {
+        try {
+            writeString(file, content, APPEND, CREATE);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't create file " + file, e);
         }
