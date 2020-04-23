@@ -16,8 +16,10 @@ import static io.microconfig.osdf.api.argsproducer.ConsoleArgs.consoleArgs;
 import static io.microconfig.osdf.commands.UpdateCommand.updateCommand;
 import static io.microconfig.osdf.config.OSDFPaths.paths;
 import static io.microconfig.osdf.exceptions.BugTracker.bugTracker;
+import static io.microconfig.osdf.install.migrations.AllMigrations.allMigrations;
 import static io.microconfig.osdf.openshift.OCExecutor.oc;
 import static io.microconfig.osdf.state.OSDFState.fromFile;
+import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
 import static io.microconfig.utils.Logger.error;
 import static java.lang.System.exit;
 import static java.util.Arrays.copyOfRange;
@@ -29,7 +31,23 @@ public class OpenShiftDeployStarter {
 
     public static void main(String[] args) {
         OSDFPaths paths = paths();
-        new OpenShiftDeployStarter(paths, getOcExecutor(paths)).run(args);
+        applyMigrations(args, paths);
+        String[] filteredArgs = filterSystemArgs(args);
+        new OpenShiftDeployStarter(paths, getOcExecutor(paths)).run(filteredArgs);
+    }
+
+    private static String[] filterSystemArgs(String[] args) {
+        if (args[args.length - 1].equals("-UPDATE")) {
+            return copyOfRange(args, 0, args.length - 1);
+        }
+        return args;
+    }
+
+    private static void applyMigrations(String[] args, OSDFPaths paths) {
+        if (args[args.length - 1].equals("-UPDATE")) {
+            allMigrations().apply(paths);
+            execute("cp " + paths.newStateSavePath() + " " + paths.oldStateSavePath());
+        }
     }
 
     private static OCExecutor getOcExecutor(OSDFPaths paths) {
@@ -74,6 +92,8 @@ public class OpenShiftDeployStarter {
     }
 
     private boolean updatableCall(String[] args) {
-        return !"install".equals(args[0]) && !"init".equals(args[0]) && !"state".equals(args[0]) && !"update".equals(args[0]) && !"howToStart".equals(args[0]);
+        return !"install".equals(args[0]) && !"init".equals(args[0]) &&
+                !"state".equals(args[0]) && !"update".equals(args[0]) &&
+                !"howToStart".equals(args[0]) && !"help".equals(args[0]);
     }
 }

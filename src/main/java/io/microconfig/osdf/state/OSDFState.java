@@ -3,9 +3,7 @@ package io.microconfig.osdf.state;
 import io.microconfig.osdf.nexus.NexusArtifact;
 import lombok.Getter;
 import lombok.Setter;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -13,7 +11,7 @@ import java.util.function.BiConsumer;
 import static io.microconfig.osdf.state.ConfigSource.*;
 import static io.microconfig.osdf.state.OSDFStateChecker.stateChecker;
 import static io.microconfig.osdf.utils.YamlUtils.createFromFile;
-import static java.nio.file.Files.newBufferedWriter;
+import static io.microconfig.osdf.utils.YamlUtils.dump;
 
 @Getter
 @Setter
@@ -24,7 +22,7 @@ public class OSDFState {
     private String localConfigs;
     private ConfigSource configSource;
 
-    private Credentials openShiftCredentials;
+    private OpenShiftCredentials openShiftCredentials;
     private Credentials nexusCredentials;
 
     private String env;
@@ -57,11 +55,7 @@ public class OSDFState {
 
     public void save(Path path) {
         configureConfigSource();
-        try {
-            new Yaml().dump(this, newBufferedWriter(path));
-        } catch (IOException e) {
-            throw new RuntimeException("Couldn't dump state file", e);
-        }
+        dump(this, path);
     }
 
     private void configureConfigSource() {

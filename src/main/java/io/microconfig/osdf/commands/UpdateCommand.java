@@ -32,25 +32,16 @@ public class UpdateCommand {
         return new UpdateCommand(paths, stateVersion, configsVersion);
     }
 
-    public void update() {
-        if (!stateVersion.olderThan(configsVersion)) {
-            announce("Current version is up-to-date with version from configs");
-            return;
-        }
-        osdfInstaller(paths, false).install(stateVersion, configsVersion, REMOTE);
+    public boolean update() {
+        if (!stateVersion.olderThan(configsVersion)) return false;
+        osdfInstaller(paths, false).install(stateVersion, configsVersion, REMOTE, false);
         announce("Updated to " + configsVersion);
+        return true;
     }
 
     public void tryPatchUpdateAndRestart(String[] args) {
         try {
-            if (!stateVersion.olderThan(configsVersion)) return;
-            if (stateVersion.hasOlderMinorThan(configsVersion)) {
-                warn("Current version is significantly older than version in configs. Will not auto-update. Update using <osdf update> command");
-                return;
-            }
-
-            osdfInstaller(paths, false).install(stateVersion, configsVersion, REMOTE, false);
-            announce("Updated to " + configsVersion);
+            if (!update()) return;
         } catch (Exception e) {
             warn("Can't auto-update. Try manual update or install new version");
             return;
@@ -62,6 +53,7 @@ public class UpdateCommand {
     private void restart(String[] args) {
         List<String> processArgs = new ArrayList<>(of("osdf"));
         processArgs.addAll(of(args));
+        processArgs.add("-UPDATE");
 
         info("Restarting...\n");
         exit(startAndWait(new ProcessBuilder(processArgs).inheritIO()));

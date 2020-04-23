@@ -6,13 +6,12 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+import static io.microconfig.osdf.utils.YamlUtils.dump;
 import static io.microconfig.utils.Logger.info;
-import static java.nio.file.Files.newBufferedWriter;
 import static java.util.List.of;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toUnmodifiableList;
@@ -64,11 +63,7 @@ public class OpenShiftResource {
 
     public static void uploadResource(OCExecutor oc, Object resource) {
         Path tmpPath = Path.of("/tmp/resource.yaml");
-        try {
-            new Yaml().dump(resource, newBufferedWriter(tmpPath));
-        } catch (IOException e) {
-            throw new RuntimeException("Error writing resource", e);
-        }
+        dump(resource, tmpPath);
         oc.execute("oc apply -f " + tmpPath);
     }
 

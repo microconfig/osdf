@@ -18,7 +18,7 @@ class OSDFStateTest {
     void checkBadStateWithoutConfigSource() {
         OSDFState state = new OSDFState();
         state.setEnv("dev");
-        state.setOpenShiftCredentials(Credentials.of("test:test"));
+        state.setOpenShiftCredentials(OpenShiftCredentials.of("test:test"));
         assertFalse(state.check());
     }
 
@@ -34,7 +34,7 @@ class OSDFStateTest {
     @Test
     void checkBadStateWithoutEnv() {
         OSDFState state = new OSDFState();
-        state.setOpenShiftCredentials(Credentials.of("test:test"));
+        state.setOpenShiftCredentials(OpenShiftCredentials.of("test:test"));
         state.setConfigSource(LOCAL);
         state.setLocalConfigs("/some/path");
         assertFalse(state.check());
@@ -43,7 +43,7 @@ class OSDFStateTest {
     @Test
     void checkStateWithLocalConfigs() {
         OSDFState state = new OSDFState();
-        state.setOpenShiftCredentials(Credentials.of("test:test"));
+        state.setOpenShiftCredentials(OpenShiftCredentials.of("test:test"));
         state.setConfigSource(LOCAL);
         state.setLocalConfigs("/some/path");
         state.setEnv("dev");
@@ -53,7 +53,7 @@ class OSDFStateTest {
     @Test
     void checkStateWithGitConfigs() {
         OSDFState state = new OSDFState();
-        state.setOpenShiftCredentials(Credentials.of("test:test"));
+        state.setOpenShiftCredentials(OpenShiftCredentials.of("test:test"));
         state.setEnv("dev");
         state.setConfigSource(GIT);
         state.setGitUrl("git.url");
@@ -64,7 +64,7 @@ class OSDFStateTest {
     @Test
     void checkStateWithNexusConfigs() {
         OSDFState state = new OSDFState();
-        state.setOpenShiftCredentials(Credentials.of("test:test"));
+        state.setOpenShiftCredentials(OpenShiftCredentials.of("test:test"));
         state.setEnv("dev");
         state.setConfigSource(NEXUS);
         state.setNexusUrl("nexus.url");

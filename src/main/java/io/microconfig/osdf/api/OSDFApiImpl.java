@@ -11,6 +11,7 @@ import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.state.ConfigSource;
 import io.microconfig.osdf.state.Credentials;
 import io.microconfig.osdf.state.OSDFState;
+import io.microconfig.osdf.state.OpenShiftCredentials;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
@@ -47,7 +48,7 @@ public class OSDFApiImpl implements OSDFApi {
     }
 
     @Override
-    public void init(String gitUrl, String nexusUrl, NexusArtifact configsNexusArtifact, Path localConfigs, ConfigSource configSource, Credentials openShiftCredentials, Credentials nexusCredentials,
+    public void init(String gitUrl, String nexusUrl, NexusArtifact configsNexusArtifact, Path localConfigs, ConfigSource configSource, OpenShiftCredentials openShiftCredentials, Credentials nexusCredentials,
                      String env, String configVersion, String group, String projVersion, List<String> components) {
         new InitCommand(paths).run(gitUrl, nexusUrl, configsNexusArtifact, localConfigs, configSource, openShiftCredentials, nexusCredentials, env, configVersion, group, projVersion, components);
     }

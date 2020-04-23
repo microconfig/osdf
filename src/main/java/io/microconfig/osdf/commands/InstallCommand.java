@@ -31,7 +31,7 @@ public class InstallCommand {
         OSDFSource osdfSource = isJar() ? LOCAL : null;
         OSDFInstaller installer = osdfInstaller(paths, noBashRc);
         if (foldersExist()) {
-            installer.install(fromState(fromFile(paths.stateSavePath())), version, osdfSource);
+            installer.install(fromState(fromFile(paths.stateSavePath())), version, osdfSource, false);
         } else {
             createWorkfolder();
             installer.install(null, version, osdfSource, true);

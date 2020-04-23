@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
 
+import static io.microconfig.osdf.install.migrations.AllMigrations.allMigrations;
 import static io.microconfig.osdf.microconfig.properties.OSDFDownloadProperties.properties;
 import static io.microconfig.osdf.microconfig.properties.PropertyGetter.propertyGetter;
 import static io.microconfig.osdf.nexus.NexusArtifact.nexusArtifact;
@@ -35,16 +36,6 @@ public class OSDFInstaller {
 
     public static OSDFInstaller osdfInstaller(OSDFPaths paths, boolean noBashRc) {
         return new OSDFInstaller(paths, noBashRc);
-    }
-
-    public void install(OSDFVersion oldVersion, OSDFVersion newVersion, OSDFSource source) {
-        if (oldVersion.hasOlderMinorThan(newVersion)) {
-            warn("Current version is significantly older than version in configs");
-            warn("You'll need to init osdf again after update. Old state will be saved at " + paths.oldStateSavePath());
-            install(oldVersion, newVersion, source, true);
-        } else {
-            install(oldVersion, newVersion, source, false);
-        }
     }
 
     public void install(OSDFVersion oldVersion, OSDFVersion newVersion, OSDFSource source, boolean clearState) {
@@ -96,7 +87,8 @@ public class OSDFInstaller {
     }
 
     private void replaceJarAndUseOldState(Path scriptPath, Path tmpScriptPath, OSDFVersion newVersion) {
-        OSDFState state = fromFile(paths.stateSavePath());
+        allMigrations().apply(paths);
+        OSDFState state = fromFile(paths.newStateSavePath());
         state.setOsdfVersion(newVersion.toString());
         state.save(paths.newStateSavePath());
         execute("mv " + tmpScriptPath + " " + scriptPath);
