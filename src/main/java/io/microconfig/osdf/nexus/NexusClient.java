@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
+import static io.microconfig.osdf.utils.StringUtils.withQuotes;
 import static java.nio.file.Files.deleteIfExists;
 
 @RequiredArgsConstructor
@@ -38,6 +39,6 @@ public class NexusClient {
 
     private String withCredentials(String command) {
         if (credentials == null) return command;
-        return command + " -u " + credentials.getCredentialsString();
+        return command + " -u " + withQuotes(credentials.getCredentialsString());
     }
 }
