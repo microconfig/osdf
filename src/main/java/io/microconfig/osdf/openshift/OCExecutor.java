@@ -2,6 +2,7 @@ package io.microconfig.osdf.openshift;
 
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.utils.CommandLineExecutor;
+import io.microconfig.utils.Logger;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
@@ -23,23 +24,23 @@ public class OCExecutor {
     }
 
     public String execute(String command) {
-        logCall(command);
-        return returnOrThrowException(CommandLineExecutor.execute(command));
+        log(command);
+        return returnOrThrowException(log(CommandLineExecutor.execute(command)));
     }
 
     public String execute(String command, boolean allowErrors) {
-        logCall(command);
-        return returnOrThrowException(CommandLineExecutor.execute(command, allowErrors));
+        log(command);
+        return returnOrThrowException(log(CommandLineExecutor.execute(command, allowErrors)));
     }
 
     public List<String> executeAndReadLines(String command) {
-        logCall(command);
-        return returnOrThrowException(CommandLineExecutor.executeAndReadLines(command));
+        log(command);
+        return returnOrThrowException(log(CommandLineExecutor.executeAndReadLines(command)));
     }
 
     public List<String> executeAndReadLines(String command, boolean allowErrors) {
-        logCall(command);
-        return returnOrThrowException(CommandLineExecutor.executeAndReadLines(command, allowErrors));
+        log(command);
+        return returnOrThrowException(log(CommandLineExecutor.executeAndReadLines(command, allowErrors)));
     }
 
     public String project() {
@@ -60,9 +61,17 @@ public class OCExecutor {
         if (output.toLowerCase().contains("unable to connect")) throw new OSDFException("Unable to connect to OpenShift");
     }
 
-    private void logCall(String command) {
+    private String log(String string) {
         if (logOc) {
-            info(command);
+            info(string);
         }
+        return string;
+    }
+
+    private List<String> log(List<String> strings) {
+        if (logOc) {
+            strings.forEach(Logger::info);
+        }
+        return strings;
     }
 }

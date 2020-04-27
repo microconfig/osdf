@@ -15,6 +15,7 @@ import static io.microconfig.osdf.install.OSDFInstaller.osdfInstaller;
 import static io.microconfig.osdf.install.OSDFSource.LOCAL;
 import static io.microconfig.osdf.state.OSDFState.fromFile;
 import static io.microconfig.osdf.state.OSDFVersion.fromState;
+import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
 import static io.microconfig.osdf.utils.JarUtils.isJar;
 import static io.microconfig.utils.Logger.announce;
 import static java.nio.file.Files.createDirectory;
@@ -26,8 +27,10 @@ public class InstallCommand {
     private final OSDFPaths paths;
     private final OSDFVersion version;
     private final boolean noBashRc;
+    private final boolean clearState;
 
     public void install() {
+        clearStateIfNecessary();
         OSDFSource osdfSource = isJar() ? LOCAL : null;
         OSDFInstaller installer = osdfInstaller(paths, noBashRc);
         if (foldersExist()) {
@@ -38,6 +41,12 @@ public class InstallCommand {
             autoCompleteInstaller(paths.componentsPath()).installAutoComplete(false);
         }
         announce("Installed " + version);
+    }
+
+    private void clearStateIfNecessary() {
+        if (clearState) {
+            execute("rm -rf " + paths.root());
+        }
     }
 
     private boolean foldersExist() {

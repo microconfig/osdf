@@ -43,8 +43,8 @@ public class OSDFApiImpl implements OSDFApi {
     }
 
     @Override
-    public void install(Boolean noBashRc) {
-        new InstallCommand(paths, fromJar(), noBashRc).install();
+    public void install(Boolean noBashRc, Boolean clearState) {
+        new InstallCommand(paths, fromJar(), noBashRc, clearState).install();
     }
 
     @Override
