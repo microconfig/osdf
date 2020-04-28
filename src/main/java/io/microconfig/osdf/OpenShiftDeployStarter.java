@@ -6,13 +6,8 @@ import io.microconfig.osdf.exceptions.StatusCodeException;
 import io.microconfig.osdf.openshift.OCExecutor;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
-import static io.microconfig.osdf.api.ApiCaller.apiCaller;
-import static io.microconfig.osdf.api.OSDFApiImpl.osdfApi;
-import static io.microconfig.osdf.api.OSDFApiInfo.commands;
 import static io.microconfig.osdf.api.OSDFApiInfo.printCommandInfos;
-import static io.microconfig.osdf.api.argsproducer.ConsoleArgs.consoleArgs;
+import static io.microconfig.osdf.api.v2.MainApi.mainApi;
 import static io.microconfig.osdf.commands.UpdateCommand.updateCommand;
 import static io.microconfig.osdf.config.OSDFPaths.paths;
 import static io.microconfig.osdf.exceptions.BugTracker.bugTracker;
@@ -22,6 +17,7 @@ import static io.microconfig.osdf.state.OSDFState.fromFile;
 import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
 import static io.microconfig.utils.Logger.error;
 import static java.lang.System.exit;
+import static java.util.Arrays.asList;
 import static java.util.Arrays.copyOfRange;
 
 @RequiredArgsConstructor
@@ -33,7 +29,19 @@ public class OpenShiftDeployStarter {
         OSDFPaths paths = paths();
         applyMigrations(args, paths);
         String[] filteredArgs = filterSystemArgs(args);
-        new OpenShiftDeployStarter(paths, getOcExecutor(paths)).run(filteredArgs);
+        try {
+            new OpenShiftDeployStarter(paths, getOcExecutor(paths)).run(filteredArgs);
+        } catch (StatusCodeException e) {
+            exit(e.getStatusCode());
+        } catch (OSDFException e) {
+            error(e.getMessage());
+            exit(1);
+        } catch (Exception e) {
+            error("Bug!");
+            bugTracker(paths.root()).save(args[0], e);
+            e.printStackTrace();
+            exit(1);
+        }
     }
 
     private static String[] filterSystemArgs(String[] args) {
@@ -64,29 +72,15 @@ public class OpenShiftDeployStarter {
 
     public void run(String[] args) {
         if (badArgs(args)) return;
-        if (updatableCall(args)) updateCommand(paths).tryPatchUpdateAndRestart(args);
-
-        String command = args[0];
-        String[] params = copyOfRange(args, 1, args.length);
-
-        try {
-            apiCaller(consoleArgs(params)).callCommand(osdfApi(paths, oc), command);
-        } catch (StatusCodeException e) {
-            exit(e.getStatusCode());
-        } catch (OSDFException e) {
-            error(e.getMessage());
-            exit(1);
-        } catch (Exception e) {
-            error("Bug!");
-            bugTracker(paths.root()).save(command, e);
-            e.printStackTrace();
-            exit(1);
+        if (updatableCall(args)) {
+            updateCommand(paths).tryPatchUpdateAndRestart(args);
         }
+
+        mainApi(paths, oc).call(asList(args));
     }
 
     private boolean badArgs(String[] args) {
-        List<String> commands = commands();
-        if (args.length > 0 && commands.contains(args[0])) return false;
+        if (args.length > 0) return false;
         printCommandInfos();
         return true;
     }

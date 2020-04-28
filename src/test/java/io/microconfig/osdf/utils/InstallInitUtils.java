@@ -17,7 +17,7 @@ public class InstallInitUtils {
 
     public static void installInit(Path configsPath, Path osdfPath, OSDFPaths paths) {
         execute("rm -rf " + osdfPath);
-        new InstallCommand(paths, OSDFVersion.fromString("1.0.0"), true).install();
+        new InstallCommand(paths, OSDFVersion.fromString("1.0.0"), true, false).install();
         new InitCommand(paths).run(null, null, null, configsPath,
                 null, OpenShiftCredentials.of("test:test"), null, "dev",
                 null, "helloworld", null, null);
