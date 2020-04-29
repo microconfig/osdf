@@ -8,7 +8,7 @@ import static java.nio.file.Path.of;
 
 public class LocalConfigsParameter extends ArgParameter<Path> {
     public LocalConfigsParameter() {
-        super("local", "local", "Local path to configs");
+        super("path", "p", "Local path to configs");
     }
 
     @Override

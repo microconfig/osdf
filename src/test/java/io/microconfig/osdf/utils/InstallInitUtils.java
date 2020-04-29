@@ -2,9 +2,9 @@ package io.microconfig.osdf.utils;
 
 import io.microconfig.osdf.commands.InitCommand;
 import io.microconfig.osdf.commands.InstallCommand;
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.state.OSDFVersion;
-import io.microconfig.osdf.state.OpenShiftCredentials;
+import io.microconfig.osdf.openshift.OpenShiftCredentials;
 
 import java.io.IOException;
 import java.nio.file.Path;

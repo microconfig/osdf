@@ -1,6 +1,6 @@
 package io.microconfig.osdf.install;
 
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.microconfig.properties.OSDFDownloadProperties;
 import io.microconfig.osdf.nexus.NexusArtifact;
 import io.microconfig.osdf.state.OSDFState;

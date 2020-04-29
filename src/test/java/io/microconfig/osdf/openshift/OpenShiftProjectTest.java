@@ -1,6 +1,5 @@
 package io.microconfig.osdf.openshift;
 
-import io.microconfig.osdf.state.OpenShiftCredentials;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

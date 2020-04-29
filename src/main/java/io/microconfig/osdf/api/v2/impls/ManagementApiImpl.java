@@ -4,7 +4,7 @@ import io.microconfig.osdf.api.v2.apis.ManagementApi;
 import io.microconfig.osdf.commands.DeletePodCommand;
 import io.microconfig.osdf.commands.RestartCommand;
 import io.microconfig.osdf.commands.StopCommand;
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.openshift.OCExecutor;
 import lombok.RequiredArgsConstructor;

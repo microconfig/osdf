@@ -1,7 +1,7 @@
 package io.microconfig.osdf.api.v2;
 
 import io.microconfig.osdf.api.v2.apis.*;
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.openshift.OCExecutor;
 import lombok.RequiredArgsConstructor;
 
@@ -29,9 +29,9 @@ public class MainApi implements NewApiCaller {
     public void call(List<String> args) {
         ApiCallerImpl.builder()
                 .finder(finder(Api.class))
-                .addImpl(FrequentlyUsedApi.class, frequentlyUsedApi())
+                .addImpl(FrequentlyUsedApi.class, frequentlyUsedApi(paths))
                 .addImpl(InstallApi.class, installApi(paths))
-                .addImpl(InitializationApi.class, initializationApi())
+                .addImpl(InitializationApi.class, initializationApi(paths))
                 .addImpl(ComponentsApi.class, componentsApi(paths))
                 .addImpl(ManagementApi.class, managementApi(paths, oc))
                 .addImpl(InfoApi.class, infoApi(paths, oc))

@@ -19,17 +19,9 @@ import static org.yaml.snakeyaml.nodes.Tag.MAP;
 
 public class YamlUtils {
     public static <T> T createFromFile(Class<T> clazz, Path path) {
-        return createFromFile(clazz, path, true);
-    }
-
-    public static <T> T createFromFileExact(Class<T> clazz, Path path) {
-        return createFromFile(clazz, path, false);
-    }
-
-    private static <T> T createFromFile(Class<T> clazz, Path path, boolean skipMissingProperties) {
         try (InputStream inputStream = newInputStream(path)) {
             Representer representer = new Representer();
-            representer.getPropertyUtils().setSkipMissingProperties(skipMissingProperties);
+            representer.getPropertyUtils().setSkipMissingProperties(true);
             Yaml yaml = new Yaml(new Constructor(clazz), representer);
             return yaml.load(inputStream);
         } catch (IOException e) {

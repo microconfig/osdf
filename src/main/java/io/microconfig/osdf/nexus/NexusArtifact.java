@@ -20,10 +20,10 @@ public class NexusArtifact {
         return new NexusArtifact(group, artifact, version, type);
     }
 
-    public static NexusArtifact configsNexusArtifact(String groupAndArtifact) {
-        String[] split = groupAndArtifact.split(":");
-        if (split.length != 2) throw new OSDFException("Error parsing configs nexus artifact. Should be: group:artifact");
-        return nexusArtifact(split[0], split[1], "1.0", "zip");
+    public static NexusArtifact configsNexusArtifact(String artifactString) {
+        String[] split = artifactString.split(":");
+        if (split.length != 3) throw new OSDFException("Error parsing configs nexus artifact. Should be: group:artifact:version");
+        return nexusArtifact(split[0], split[1], split[2], "zip");
     }
 
     public String getDownloadUrl(String baseUrl) {

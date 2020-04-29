@@ -2,16 +2,16 @@ package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.commands.*;
 import io.microconfig.osdf.components.checker.LogHealthChecker;
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.deployers.Deployer;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.istio.rulesetters.RoutingRuleSetter;
 import io.microconfig.osdf.nexus.NexusArtifact;
 import io.microconfig.osdf.openshift.OCExecutor;
-import io.microconfig.osdf.state.ConfigSource;
+import io.microconfig.osdf.configs.ConfigsSource;
 import io.microconfig.osdf.state.Credentials;
 import io.microconfig.osdf.state.OSDFState;
-import io.microconfig.osdf.state.OpenShiftCredentials;
+import io.microconfig.osdf.openshift.OpenShiftCredentials;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
@@ -48,9 +48,8 @@ public class OSDFApiImpl implements OSDFApi {
     }
 
     @Override
-    public void init(String gitUrl, String nexusUrl, NexusArtifact configsNexusArtifact, Path localConfigs, ConfigSource configSource, OpenShiftCredentials openShiftCredentials, Credentials nexusCredentials,
+    public void init(String gitUrl, String nexusUrl, NexusArtifact configsNexusArtifact, Path localConfigs, ConfigsSource configsSource, OpenShiftCredentials openShiftCredentials, Credentials nexusCredentials,
                      String env, String configVersion, String group, String projVersion, List<String> components) {
-        new InitCommand(paths).run(gitUrl, nexusUrl, configsNexusArtifact, localConfigs, configSource, openShiftCredentials, nexusCredentials, env, configVersion, group, projVersion, components);
     }
 
     @Override

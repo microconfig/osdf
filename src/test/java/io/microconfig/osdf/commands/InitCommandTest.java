@@ -1,14 +1,14 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.state.OSDFState;
-import io.microconfig.osdf.state.OpenShiftCredentials;
+import io.microconfig.osdf.openshift.OpenShiftCredentials;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static io.microconfig.osdf.state.ConfigSource.LOCAL;
+import static io.microconfig.osdf.configs.ConfigsSource.LOCAL;
 import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -24,7 +24,7 @@ class InitCommandTest {
     @Test
     void initLocalCommand() {
         OSDFState osdfState = OSDFState.fromFile(paths.stateSavePath());
-        assertEquals(LOCAL, osdfState.getConfigSource());
+        assertEquals(LOCAL, osdfState.getConfigsSource());
         assertEquals("dev", osdfState.getEnv());
         assertEquals(OpenShiftCredentials.of("test:test"), osdfState.getOpenShiftCredentials());
         assertNull(osdfState.getGitUrl());

@@ -15,4 +15,7 @@ public interface SystemApi {
 
     @ApiCommand(description = "Show all prerequisites for osdf", order = 3)
     void howToStart();
+
+    @ApiCommand(description = "Show current osdf setup info", order = 4)
+    void state();
 }

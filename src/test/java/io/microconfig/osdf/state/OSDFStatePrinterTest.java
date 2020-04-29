@@ -1,9 +1,10 @@
 package io.microconfig.osdf.state;
 
+import io.microconfig.osdf.openshift.OpenShiftCredentials;
 import org.junit.jupiter.api.Test;
 
 import static io.microconfig.osdf.nexus.NexusArtifact.configsNexusArtifact;
-import static io.microconfig.osdf.state.ConfigSource.*;
+import static io.microconfig.osdf.configs.ConfigsSource.*;
 import static io.microconfig.osdf.state.OSDFStatePrinter.statePrinter;
 
 class OSDFStatePrinterTest {
@@ -19,7 +20,7 @@ class OSDFStatePrinterTest {
         OSDFState state = new OSDFState();
         state.setOsdfVersion("1.1.1");
         state.setOpenShiftCredentials(OpenShiftCredentials.of("token"));
-        state.setConfigSource(LOCAL);
+        state.setConfigsSource(LOCAL);
         state.setLocalConfigs("/some/path");
         state.setEnv("dev");
         statePrinter(state).print();
@@ -30,7 +31,7 @@ class OSDFStatePrinterTest {
         OSDFState state = new OSDFState();
         state.setOsdfVersion("1.1.1");
         state.setOpenShiftCredentials(OpenShiftCredentials.of("test:test"));
-        state.setConfigSource(LOCAL);
+        state.setConfigsSource(LOCAL);
         state.setLocalConfigs("/some/path");
         state.setEnv("dev");
         statePrinter(state).print();
@@ -42,7 +43,7 @@ class OSDFStatePrinterTest {
         state.setOsdfVersion("1.1.1");
         state.setOpenShiftCredentials(OpenShiftCredentials.of("test:test"));
         state.setEnv("dev");
-        state.setConfigSource(GIT);
+        state.setConfigsSource(GIT);
         state.setGitUrl("git.url");
         state.setConfigVersion("master");
         statePrinter(state).print();
@@ -54,7 +55,7 @@ class OSDFStatePrinterTest {
         state.setOsdfVersion("1.1.1");
         state.setOpenShiftCredentials(OpenShiftCredentials.of("test:test"));
         state.setEnv("dev");
-        state.setConfigSource(NEXUS);
+        state.setConfigsSource(NEXUS);
         state.setNexusUrl("nexus.url");
         state.setConfigVersion("1.1.1");
         state.setConfigsNexusArtifact(configsNexusArtifact("group:artifact"));

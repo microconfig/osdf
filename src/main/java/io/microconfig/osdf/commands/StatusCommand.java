@@ -4,7 +4,7 @@ import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.components.JobComponent;
 import io.microconfig.osdf.components.checker.HealthChecker;
 import io.microconfig.osdf.components.loader.ComponentsLoaderImpl;
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.exceptions.StatusCodeException;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.OpenShiftProject;

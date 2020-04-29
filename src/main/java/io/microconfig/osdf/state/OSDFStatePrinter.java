@@ -3,9 +3,7 @@ package io.microconfig.osdf.state;
 
 import lombok.RequiredArgsConstructor;
 
-import static io.microconfig.osdf.configfetcher.GitFetcher.urlWithoutPassword;
 import static io.microconfig.utils.Logger.announce;
-import static io.microconfig.utils.StringUtils.isEmpty;
 
 @RequiredArgsConstructor
 public class OSDFStatePrinter {
@@ -35,9 +33,10 @@ public class OSDFStatePrinter {
     private String configSourceString() {
         String source = "";
         String version = null;
-        switch (state.getConfigSource()) {
+        switch (state.getConfigsSource()) {
             case GIT:
-                source = urlWithoutPassword(state.getGitUrl());
+                // TODO urlwithoutpassword
+                source = state.getGitUrl();
                 version = state.getConfigVersion();
                 break;
             case NEXUS:

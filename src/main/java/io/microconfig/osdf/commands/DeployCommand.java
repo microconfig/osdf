@@ -5,7 +5,7 @@ import io.microconfig.osdf.components.JobComponent;
 import io.microconfig.osdf.components.checker.HealthChecker;
 import io.microconfig.osdf.components.checker.SuccessfulDeploymentChecker;
 import io.microconfig.osdf.components.loader.ComponentsLoaderImpl;
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.deployers.Deployer;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.exceptions.StatusCodeException;

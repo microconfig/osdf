@@ -1,6 +1,6 @@
 package io.microconfig.osdf.install.migrations;
 
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.paths.OSDFPaths;
 
 import java.util.List;
 

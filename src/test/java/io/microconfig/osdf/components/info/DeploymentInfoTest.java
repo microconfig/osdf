@@ -2,7 +2,7 @@ package io.microconfig.osdf.components.info;
 
 import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.components.checker.HealthChecker;
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.Pod;
 import org.junit.jupiter.api.BeforeEach;

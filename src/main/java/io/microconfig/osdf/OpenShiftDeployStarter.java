@@ -1,6 +1,6 @@
 package io.microconfig.osdf;
 
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.exceptions.StatusCodeException;
 import io.microconfig.osdf.openshift.OCExecutor;
@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import static io.microconfig.osdf.api.OSDFApiInfo.printCommandInfos;
 import static io.microconfig.osdf.api.v2.MainApi.mainApi;
 import static io.microconfig.osdf.commands.UpdateCommand.updateCommand;
-import static io.microconfig.osdf.config.OSDFPaths.paths;
+import static io.microconfig.osdf.paths.OSDFPaths.paths;
 import static io.microconfig.osdf.exceptions.BugTracker.bugTracker;
 import static io.microconfig.osdf.install.migrations.AllMigrations.allMigrations;
 import static io.microconfig.osdf.openshift.OCExecutor.oc;

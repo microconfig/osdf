@@ -1,5 +1,6 @@
-package io.microconfig.osdf.state;
+package io.microconfig.osdf.openshift;
 
+import io.microconfig.osdf.state.Credentials;
 import lombok.*;
 
 import static io.microconfig.osdf.utils.StringUtils.withQuotes;

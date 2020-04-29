@@ -1,6 +1,8 @@
 package io.microconfig.osdf.state;
 
+import io.microconfig.osdf.configs.ConfigsSource;
 import io.microconfig.osdf.nexus.NexusArtifact;
+import io.microconfig.osdf.openshift.OpenShiftCredentials;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +10,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import static io.microconfig.osdf.state.ConfigSource.*;
+import static io.microconfig.osdf.configs.ConfigsSource.*;
 import static io.microconfig.osdf.state.OSDFStateChecker.stateChecker;
 import static io.microconfig.osdf.utils.YamlUtils.createFromFile;
 import static io.microconfig.osdf.utils.YamlUtils.dump;
@@ -20,7 +22,7 @@ public class OSDFState {
     private String nexusUrl;
     private NexusArtifact configsNexusArtifact;
     private String localConfigs;
-    private ConfigSource configSource;
+    private ConfigsSource configsSource;
 
     private OpenShiftCredentials openShiftCredentials;
     private Credentials nexusCredentials;
@@ -59,10 +61,10 @@ public class OSDFState {
     }
 
     private void configureConfigSource() {
-        if (configSource == null) {
-            if (localConfigs != null) configSource = LOCAL;
-            else if (gitUrl != null) configSource = GIT;
-            else if (nexusUrl != null) configSource = NEXUS;
+        if (configsSource == null) {
+            if (localConfigs != null) configsSource = LOCAL;
+            else if (gitUrl != null) configsSource = GIT;
+            else if (nexusUrl != null) configsSource = NEXUS;
         }
     }
 }

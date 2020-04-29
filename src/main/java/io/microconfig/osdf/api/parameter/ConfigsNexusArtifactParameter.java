@@ -7,7 +7,7 @@ import static io.microconfig.osdf.nexus.NexusArtifact.configsNexusArtifact;
 
 public class ConfigsNexusArtifactParameter extends ArgParameter<NexusArtifact> {
     public ConfigsNexusArtifactParameter() {
-        super("configsNexusArtifact", "ca", "Nexus artifact for configs. Format: group:artifact");
+        super("artifact", "a", "Nexus artifact for configs. Format: group:artifact:version");
     }
 
     @Override

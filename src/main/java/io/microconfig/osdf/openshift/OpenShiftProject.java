@@ -1,9 +1,8 @@
 package io.microconfig.osdf.openshift;
 
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.microconfig.properties.OpenShiftProperties;
 import io.microconfig.osdf.state.OSDFState;
-import io.microconfig.osdf.state.OpenShiftCredentials;
 import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.microconfig.properties.OpenShiftProperties.properties;

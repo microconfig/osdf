@@ -1,4 +1,4 @@
-package io.microconfig.osdf.config;
+package io.microconfig.osdf.paths;
 
 import lombok.RequiredArgsConstructor;
 
@@ -12,7 +12,7 @@ public class OSDFPaths {
     private final Path root;
 
     public static OSDFPaths paths() {
-        return new OSDFPaths(of(getUserDirectory() + "/deployConfigs"));
+        return new OSDFPaths(of(getUserDirectory() + "/.osdf"));
     }
 
     public Path root() {
@@ -53,5 +53,9 @@ public class OSDFPaths {
 
     public Path oldStateSavePath() {
         return of(root() + "/conf_old.yml");
+    }
+
+    public Path settingsRootPath() {
+        return of(root() + "/settings");
     }
 }

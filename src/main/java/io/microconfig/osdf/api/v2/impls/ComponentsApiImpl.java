@@ -2,7 +2,7 @@ package io.microconfig.osdf.api.v2.impls;
 
 import io.microconfig.osdf.api.v2.apis.ComponentsApi;
 import io.microconfig.osdf.commands.PropertiesDiffCommand;
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 

@@ -1,25 +1,47 @@
 package io.microconfig.osdf.api.v2.impls;
 
 import io.microconfig.osdf.api.v2.apis.FrequentlyUsedApi;
-import io.microconfig.osdf.exceptions.OSDFException;
+import io.microconfig.osdf.configs.ConfigsSettings;
+import io.microconfig.osdf.configs.ConfigsSource;
+import io.microconfig.osdf.paths.OSDFPaths;
+import io.microconfig.osdf.settings.SettingsFile;
+import lombok.RequiredArgsConstructor;
 
+import java.nio.file.Path;
+
+import static io.microconfig.osdf.configfetcher.ConfigsFetcher.fetcher;
+import static io.microconfig.osdf.configs.ConfigsUpdater.configsUpdater;
+import static io.microconfig.osdf.paths.SettingsPaths.settingsPaths;
+import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
+
+@RequiredArgsConstructor
 public class FrequentlyUsedApiImpl implements FrequentlyUsedApi {
-    public static FrequentlyUsedApi frequentlyUsedApi() {
-        return new FrequentlyUsedApiImpl();
+    private final OSDFPaths paths;
+
+    public static FrequentlyUsedApi frequentlyUsedApi(OSDFPaths paths) {
+        return new FrequentlyUsedApiImpl(paths);
     }
 
     @Override
     public void group(String group) {
-        throw new OSDFException("Not Implemented yet");
+        Path configsPath = settingsPaths(paths.settingsRootPath()).configs();
+        SettingsFile<ConfigsSettings> file = settingsFile(ConfigsSettings.class, configsPath);
+
+        file.getSettings().setGroup("ALL".equals(group) ? null : group);
+        file.save();
     }
 
     @Override
     public void pull() {
-        throw new OSDFException("Not Implemented yet");
+        configsUpdater(paths).fetch();
     }
 
     @Override
     public void configVersion(String configVersion) {
-        throw new OSDFException("Not Implemented yet");
+        Path configsPath = settingsPaths(paths.settingsRootPath()).configs();
+        ConfigsSource configsSource = settingsFile(ConfigsSettings.class, configsPath).getSettings().getConfigsSource();
+        fetcher(configsSource, paths).setConfigVersion(configVersion);
+
+        configsUpdater(paths).fetch();
     }
 }

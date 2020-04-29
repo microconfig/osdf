@@ -16,8 +16,8 @@ public class OSDFStateChecker {
     }
 
     public boolean checkConfigSource() {
-        if (!notNull(state.getConfigSource(), new ConfigSourceParameter())) return false;
-        switch (state.getConfigSource()) {
+        if (!notNull(state.getConfigsSource(), new ConfigSourceParameter())) return false;
+        switch (state.getConfigsSource()) {
             case LOCAL: return areLocalConfigsConfigured();
             case GIT: return isGitConfigured();
             case NEXUS: return isNexusConfigured();

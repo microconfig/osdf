@@ -1,7 +1,7 @@
 package io.microconfig.osdf.microconfig.files;
 
 import io.microconfig.osdf.commands.InitCommand;
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.paths.OSDFPaths;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

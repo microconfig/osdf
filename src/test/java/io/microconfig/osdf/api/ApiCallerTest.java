@@ -1,7 +1,7 @@
 package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.api.argsproducer.ConsoleArgs;
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.paths.OSDFPaths;
 import org.junit.jupiter.api.Test;
 
 import static io.microconfig.osdf.api.ApiCaller.apiCaller;

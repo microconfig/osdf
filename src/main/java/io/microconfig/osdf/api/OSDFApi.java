@@ -5,9 +5,9 @@ import io.microconfig.osdf.api.annotation.ConsoleParam;
 import io.microconfig.osdf.api.annotation.Hidden;
 import io.microconfig.osdf.api.parameter.*;
 import io.microconfig.osdf.nexus.NexusArtifact;
-import io.microconfig.osdf.state.ConfigSource;
+import io.microconfig.osdf.configs.ConfigsSource;
 import io.microconfig.osdf.state.Credentials;
-import io.microconfig.osdf.state.OpenShiftCredentials;
+import io.microconfig.osdf.openshift.OpenShiftCredentials;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -24,7 +24,7 @@ public interface OSDFApi {
               @ConsoleParam(NexusUrlParameter.class) String nexusUrl,
               @ConsoleParam(ConfigsNexusArtifactParameter.class) NexusArtifact configsNexusArtifact,
               @ConsoleParam(LocalConfigsParameter.class) Path localConfigs,
-              @ConsoleParam(ConfigSourceParameter.class) ConfigSource configSource,
+              @ConsoleParam(ConfigSourceParameter.class) ConfigsSource configsSource,
 
               @ConsoleParam(OpenShiftCredentialsParameter.class) OpenShiftCredentials openShiftCredentials,
               @ConsoleParam(NexusCredentialsParameter.class) Credentials nexusCredentials,

@@ -1,10 +1,10 @@
 package io.microconfig.osdf.commands;
 
 
-import io.microconfig.osdf.config.OSDFPaths;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.install.OSDFInstaller;
 import io.microconfig.osdf.install.OSDFSource;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.state.OSDFVersion;
 import lombok.RequiredArgsConstructor;
 
@@ -20,7 +20,6 @@ import static io.microconfig.osdf.utils.JarUtils.isJar;
 import static io.microconfig.utils.Logger.announce;
 import static java.nio.file.Files.createDirectory;
 import static java.nio.file.Files.exists;
-import static java.nio.file.Path.of;
 
 @RequiredArgsConstructor
 public class InstallCommand {
@@ -56,7 +55,8 @@ public class InstallCommand {
     private void createWorkfolder() {
         try {
             createDirectory(paths.root());
-            createDirectory(of(paths.root() + "/bin"));
+            createDirectory(paths.scriptFolder());
+            createDirectory(paths.settingsRootPath());
         } catch (IOException e) {
             throw new OSDFException("Couldn't create workfolder at path " + paths.root(), e);
         }

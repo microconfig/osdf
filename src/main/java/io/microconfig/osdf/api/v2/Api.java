@@ -11,6 +11,9 @@ public interface Api {
     @Named
     @Import(InitializationApi.class)
     void init();
+
+    @Import(FrequentlyUsedApi.class)
+    void frequent();
     
     @Import(ComponentsApi.class)
     void components();

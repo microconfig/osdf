@@ -7,7 +7,7 @@ import static io.microconfig.osdf.state.Credentials.*;
 
 public class NexusCredentialsParameter extends ArgParameter<Credentials> {
     public NexusCredentialsParameter() {
-        super("nexusCredentials", "nc", "Credentials for Nexus: login:password");
+        super("credentials", "c", "Credentials for Nexus: login:password");
     }
 
     @Override
