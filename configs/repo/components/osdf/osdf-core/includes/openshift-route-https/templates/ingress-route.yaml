@@ -1,0 +1,14 @@
+kind: Route
+apiVersion: v1
+metadata:
+  name: ${this@name}-route
+  labels:
+    application: ${this@name}
+spec:
+  host: ${this@name}.apps.${this@cluster.url.base}
+  to:
+    kind: Service
+    name: ${this@name}-service
+    weight: 100
+  tls:
+    termination: passthrough
