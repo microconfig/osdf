@@ -1,0 +1,11 @@
+#include openshift-autoscaler-settings
+
+utilization:
+  cpu: ${this@set.utilization.cpu:70}
+  memory: ${this@set.utilization.memory:70}
+replicas:
+  min: ${this@set.replicas:min:1}
+  max: ${this@set.replicas:max:3}
+
+#var microconfig.template.autoscaler.fromFile: ${openshift-autoscaler@configDir}/templates/autoscaler.yaml
+#var microconfig.template.autoscaler.toFile: openshift/autoscaler.yaml

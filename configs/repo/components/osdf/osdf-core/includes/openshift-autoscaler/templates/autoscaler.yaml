@@ -1,0 +1,29 @@
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: ${this@name}-scaler
+  labels:
+    application: ${this@name}
+    projectVersion: ${this@version}
+    configVersion: ${this@config.version}
+spec:
+  scaleTargetRef:
+    apiVersion: apps.openshift.io/v1
+    name: ${this@name}
+    kind: DeploymentConfig
+  minReplicas: ${this@replicas.min}
+  maxReplicas: ${this@replicas.max}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: ${this@utilization.cpu}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          name: memory-percent
+          type: Utilization
+          averageUtilization: ${this@utilization.memory}

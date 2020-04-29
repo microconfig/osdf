@@ -1,0 +1,4 @@
+image.version: ${process::this@version}
+config.version: ${process::this@config.version}
+version: #{'${process::this@version}'.toLowerCase()}
+encodedVersion: #{'${process::this@version}'.toLowerCase().replace('.', '-d-')}

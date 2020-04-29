@@ -1,0 +1,7 @@
+#include openshift-service
+
+#var microconfig.template.destination-rule.fromFile: ${istio-service@configDir}/templates/destination-rule.yaml
+#var microconfig.template.destination-rule.toFile: openshift/destination-rule.yaml
+
+component.type: istio
+istioInject: true

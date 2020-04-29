@@ -1,0 +1,12 @@
+#include openshift-urls
+#include osdf-version-labels
+#include osdf-pod-deployment
+#include osdf-component-settings
+#include openshift-job-settings
+
+job:
+  retries: ${this@set.job.retries:1}
+  duration: ${this@set.job.duration:40}
+
+#var microconfig.template.job.fromFile: ${openshift-job@configDir}/templates/job.yaml
+#var microconfig.template.job.toFile: openshift/job.yaml
