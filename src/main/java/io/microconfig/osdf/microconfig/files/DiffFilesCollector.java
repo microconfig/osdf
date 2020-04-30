@@ -24,7 +24,7 @@ public class DiffFilesCollector {
         try (Stream<Path> files = walk(root)) {
             return files
                     .filter(p -> !isDirectory(p))
-                    .filter(p -> p.getFileName().toString().startsWith("diff-"))
+                    .filter(p -> p.getFileName().toString().startsWith("diff-application"))
                     .collect(toUnmodifiableList());
         } catch (IOException e) {
             throw new OSDFException("Can't collect diff files in " + root, e);

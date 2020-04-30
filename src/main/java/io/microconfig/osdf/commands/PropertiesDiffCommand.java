@@ -29,11 +29,16 @@ public class PropertiesDiffCommand {
     }
 
     private void printDiffFile(Path file) {
-        announce(file.toString());
+        announce(componentName(file));
         try {
             info(IOUtils.toString(newInputStream(file), UTF_8.name()));
         } catch (IOException e) {
             throw new OSDFException("Can't access file " + file, e);
         }
+    }
+
+    private String componentName(Path file) {
+        String[] tokens = file.toString().split("/");
+        return tokens[tokens.length - 2];
     }
 }
