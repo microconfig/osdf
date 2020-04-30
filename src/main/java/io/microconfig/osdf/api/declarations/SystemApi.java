@@ -14,7 +14,7 @@ import java.util.List;
 import static io.microconfig.osdf.parameters.ParamType.REQUIRED;
 
 public interface SystemApi {
-    @ApiCommand(description = "Update osdf script", order = 1)
+    @ApiCommand(description = "Update osdf", order = 1)
     void update(@ConsoleParam(OSDFVersionParameter.class) OSDFVersion version,
                 @ConsoleParam(UpdateNexusCredentials.class) Credentials credentials);
 
