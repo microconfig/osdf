@@ -18,8 +18,12 @@ public class GitFetcher implements ConfigsFetcherStrategy {
 
     public static GitFetcher gitFetcher(Path settingsPath) {
         GitFetcherSettings settings = settingsFile(GitFetcherSettings.class, settingsPath).getSettings();
-        if (!settings.verifyAndLogErrors()) throw new OSDFException("Incomplete configs source configuration");
         return new GitFetcher(settings, settingsPath);
+    }
+
+    @Override
+    public boolean verifyAndLogErrors() {
+        return settings.verifyAndLogErrors();
     }
 
     @Override
@@ -48,5 +52,10 @@ public class GitFetcher implements ConfigsFetcherStrategy {
 
     private String urlWithoutPassword(String gitUrl) {
         return gitUrl == null ? null : gitUrl.substring(gitUrl.indexOf('@') + 1);
+    }
+
+    @Override
+    public String toString() {
+        return "Type: git" + "\n" + settings;
     }
 }

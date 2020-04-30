@@ -25,4 +25,15 @@ public class NexusFetcherSettings {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "" +
+                (url == null ? "" :
+                        "Url: " + url + "\n") +
+                (artifact == null ? "" :
+                        "Artifact: " + artifact + "\n") +
+                (credentials == null ? "" :
+                        "Username: " + credentials.getUsername());
+    }
 }

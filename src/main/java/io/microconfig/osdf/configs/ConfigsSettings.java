@@ -14,4 +14,15 @@ public class ConfigsSettings {
     public boolean verify() {
         return configsSource != null && env != null;
     }
+
+    @Override
+    public String toString() {
+        return "" +
+                (env == null ? "" :
+                        "Env: " + env + "\n") +
+                (projectVersion == null ? "" :
+                        "Project version: " + projectVersion + "\n") +
+                (group == null ? "" :
+                        "Group: " + group + "\n");
+    }
 }

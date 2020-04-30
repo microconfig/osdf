@@ -1,7 +1,6 @@
 package io.microconfig.osdf.configfetcher.nexus;
 
 import io.microconfig.osdf.configfetcher.ConfigsFetcherStrategy;
-import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
@@ -21,8 +20,12 @@ public class NexusFetcher implements ConfigsFetcherStrategy {
 
     public static NexusFetcher nexusFetcher(Path settingsPath) {
         NexusFetcherSettings settings = settingsFile(NexusFetcherSettings.class, settingsPath).getSettings();
-        if (!settings.verifyAndLogErrors()) throw new OSDFException("Incomplete configs source configuration");
         return new NexusFetcher(settings, settingsPath);
+    }
+
+    @Override
+    public boolean verifyAndLogErrors() {
+        return settings.verifyAndLogErrors();
     }
 
     @Override
@@ -41,5 +44,10 @@ public class NexusFetcher implements ConfigsFetcherStrategy {
     @Override
     public String getConfigVersion() {
         return settings.getArtifact().getVersion();
+    }
+
+    @Override
+    public String toString() {
+        return "Type: nexus" + "\n" + settings;
     }
 }

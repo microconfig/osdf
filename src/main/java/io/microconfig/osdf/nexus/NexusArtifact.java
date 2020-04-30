@@ -29,4 +29,9 @@ public class NexusArtifact {
     public String getDownloadUrl(String baseUrl) {
         return baseUrl + "/" + group.replace(".", "/") + "/" + artifact + "/" + version + "/" + artifact + "-" + version + "." + type;
     }
+
+    @Override
+    public String toString() {
+        return group + "." + artifact + "." + version;
+    }
 }

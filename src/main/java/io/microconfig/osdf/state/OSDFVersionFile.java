@@ -15,4 +15,9 @@ public class OSDFVersionFile {
     public static OSDFVersionFile osdfVersionFile(OSDFVersion version) {
         return new OSDFVersionFile(version.toString());
     }
+
+    @Override
+    public String toString() {
+        return "Version: " + version;
+    }
 }

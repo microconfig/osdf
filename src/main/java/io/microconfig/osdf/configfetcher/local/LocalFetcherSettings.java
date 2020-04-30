@@ -17,4 +17,11 @@ public class LocalFetcherSettings {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "" +
+                (path == null ? "" :
+                        "Path: " + path + "\n");
+    }
 }

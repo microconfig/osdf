@@ -1,6 +1,7 @@
 package io.microconfig.osdf.configfetcher;
 
 import io.microconfig.osdf.configs.ConfigsSource;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
@@ -19,8 +20,11 @@ public class ConfigsFetcher {
     }
 
     public void fetchConfigs() {
+        ConfigsFetcherStrategy fetcherStrategy = fetchingStrategy();
+        if (!fetcherStrategy.verifyAndLogErrors()) throw new OSDFException("Incomplete configs source configuration");
+
         execute("rm -rf " + paths.configsDownloadPath());
-        fetchingStrategy().fetch(paths.configsDownloadPath());
+        fetcherStrategy.fetch(paths.configsDownloadPath());
     }
 
     public void setConfigVersion(String version) {
@@ -38,5 +42,10 @@ public class ConfigsFetcher {
             case NEXUS: return nexusFetcher(paths.settings().nexusFetcher());
         }
         throw new RuntimeException("No fetch strategy found");
+    }
+
+    @Override
+    public String toString() {
+        return fetchingStrategy().toString();
     }
 }

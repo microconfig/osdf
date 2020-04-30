@@ -15,8 +15,12 @@ public class LocalFetcher implements ConfigsFetcherStrategy {
 
     public static LocalFetcher localFetcher(Path settingsPath) {
         LocalFetcherSettings settings = settingsFile(LocalFetcherSettings.class, settingsPath).getSettings();
-        if (!settings.verifyAndLogErrors()) throw new OSDFException("Incomplete configs source configuration");
         return new LocalFetcher(settings);
+    }
+
+    @Override
+    public boolean verifyAndLogErrors() {
+        return settings.verifyAndLogErrors();
     }
 
     @Override
@@ -33,5 +37,10 @@ public class LocalFetcher implements ConfigsFetcherStrategy {
     @Override
     public String getConfigVersion() {
         return "local";
+    }
+
+    @Override
+    public String toString() {
+        return "Type: local" + "\n" + settings;
     }
 }

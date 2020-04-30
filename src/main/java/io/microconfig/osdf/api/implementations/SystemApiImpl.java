@@ -53,7 +53,7 @@ public class SystemApiImpl implements SystemApi {
 
     @Override
     public void state() {
-        new CurrentStateCommand(paths).run();
+        new CurrentStateCommand(paths).show();
     }
 
     @Override

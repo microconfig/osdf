@@ -22,4 +22,13 @@ public class GitFetcherSettings {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "" +
+                (url == null ? "" :
+                        "Url: " + url + "\n") +
+                (branchOrTag == null ? "" :
+                        "Branch or tag: " + branchOrTag + "\n");
+    }
 }
