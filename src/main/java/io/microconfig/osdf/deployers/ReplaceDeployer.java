@@ -5,8 +5,11 @@ import io.microconfig.osdf.istio.VirtualService;
 import io.microconfig.osdf.openshift.OCExecutor;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 import static io.microconfig.osdf.deployers.BasicDeployer.basicDeployer;
 import static io.microconfig.osdf.istio.VirtualService.virtualService;
+import static io.microconfig.utils.Logger.info;
 
 @RequiredArgsConstructor
 public class ReplaceDeployer implements Deployer {
@@ -18,9 +21,20 @@ public class ReplaceDeployer implements Deployer {
 
     @Override
     public void deploy(DeploymentComponent component) {
-        component.deleteAll();
+        info("Deploying " + component.getName());
+        if (deployedOtherVersion(component)) {
+            component.deleteAll();
+        }
         uploadVirtualService(component);
         basicDeployer().deploy(component);
+    }
+
+    private boolean deployedOtherVersion(DeploymentComponent component) {
+        List<DeploymentComponent> deployedComponents = component.getDeployedComponents();
+        if (deployedComponents.isEmpty()) return false;
+
+        return deployedComponents.stream()
+                .noneMatch(deployed -> deployed.getVersion().equals(component.getVersion()));
     }
 
     public void uploadVirtualService(DeploymentComponent component) {
