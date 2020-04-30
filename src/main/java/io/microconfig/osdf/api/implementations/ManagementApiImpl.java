@@ -1,6 +1,6 @@
-package io.microconfig.osdf.api.v2.impls;
+package io.microconfig.osdf.api.implementations;
 
-import io.microconfig.osdf.api.v2.apis.ManagementApi;
+import io.microconfig.osdf.api.declarations.ManagementApi;
 import io.microconfig.osdf.commands.DeletePodCommand;
 import io.microconfig.osdf.commands.DeployCommand;
 import io.microconfig.osdf.commands.RestartCommand;

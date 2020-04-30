@@ -1,4 +1,4 @@
-package io.microconfig.osdf.api.v2;
+package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.api.annotation.Import;
 import io.microconfig.osdf.exceptions.OSDFException;
@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
 
-import static io.microconfig.osdf.api.v2.ImportPrefix.importPrefix;
+import static io.microconfig.osdf.api.ImportPrefix.importPrefix;
 import static io.microconfig.osdf.utils.ReflectionUtils.hasAnnotation;
 import static java.util.Arrays.stream;
 

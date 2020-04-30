@@ -1,4 +1,4 @@
-package io.microconfig.osdf.api.v2;
+package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.api.annotation.ApiCommand;
 import io.microconfig.osdf.api.annotation.Hidden;
@@ -7,8 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.Method;
 
-import static io.microconfig.osdf.api.v2.ApiReader.reader;
-import static io.microconfig.osdf.api.v2.ImportPrefix.importPrefix;
+import static io.microconfig.osdf.api.ImportPrefix.importPrefix;
 import static io.microconfig.osdf.utils.StringUtils.pad;
 import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.info;
@@ -35,7 +34,7 @@ public class MainApiReader {
 
         Import anImport = importMethod.getAnnotation(Import.class);
         String prefix = importPrefix(importMethod).toString();
-        reader(anImport.api())
+        ApiReader.reader(anImport.api())
                 .methods()
                 .forEach(method -> printMethodDescription(prefix, method));
     }

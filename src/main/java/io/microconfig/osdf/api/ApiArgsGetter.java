@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.microconfig.osdf.api.OSDFApiInfo.paramsFromAnnotations;
+import static io.microconfig.osdf.api.ApiMethodReader.apiMethodReader;
 import static io.microconfig.osdf.utils.ReflectionUtils.annotations;
 import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 import static java.util.Arrays.asList;
@@ -36,7 +36,7 @@ public class ApiArgsGetter {
         List<Object> result = plainCallArgs(plainCallArgs, parameterTypes);
 
         List<ConsoleParam> annotationsNotProcessed = annotations.subList(result.size(), annotations.size());
-        ParamsContainer params = paramsFromAnnotations(method.getName(), argsWithFlag, annotationsNotProcessed);
+        ParamsContainer params = apiMethodReader(method).paramsFromAnnotations(argsWithFlag, annotationsNotProcessed);
         annotationsNotProcessed.forEach(param -> result.add(params.get(param.value())));
 
         return result.toArray();

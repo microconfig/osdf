@@ -1,6 +1,6 @@
-package io.microconfig.osdf.api.v2.impls;
+package io.microconfig.osdf.api.implementations;
 
-import io.microconfig.osdf.api.v2.apis.InstallApi;
+import io.microconfig.osdf.api.declarations.InstallApi;
 import io.microconfig.osdf.commands.InstallCommand;
 import io.microconfig.osdf.install.jarinstaller.JarInstaller;
 import io.microconfig.osdf.paths.OSDFPaths;

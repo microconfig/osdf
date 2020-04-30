@@ -6,7 +6,7 @@ import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
-import static io.microconfig.osdf.api.v2.MainApiCaller.mainApi;
+import static io.microconfig.osdf.api.MainApiCaller.mainApi;
 import static io.microconfig.osdf.commands.UpdateCommand.updateCommand;
 import static io.microconfig.osdf.exceptions.BugTracker.bugTracker;
 import static io.microconfig.osdf.openshift.OCExecutor.oc;

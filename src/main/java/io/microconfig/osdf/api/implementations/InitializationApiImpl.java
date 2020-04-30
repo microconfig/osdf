@@ -1,6 +1,6 @@
-package io.microconfig.osdf.api.v2.impls;
+package io.microconfig.osdf.api.implementations;
 
-import io.microconfig.osdf.api.v2.apis.InitializationApi;
+import io.microconfig.osdf.api.declarations.InitializationApi;
 import io.microconfig.osdf.common.Credentials;
 import io.microconfig.osdf.configfetcher.git.GitFetcherSettings;
 import io.microconfig.osdf.configfetcher.local.LocalFetcherSettings;

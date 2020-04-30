@@ -1,8 +1,8 @@
-package io.microconfig.osdf.api.v2;
+package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.api.annotation.Import;
 import io.microconfig.osdf.api.annotation.Named;
-import io.microconfig.osdf.api.v2.apis.*;
+import io.microconfig.osdf.api.declarations.*;
 
 public interface MainApi {
     @Import(api = InstallApi.class, order = 1)

@@ -1,4 +1,4 @@
-package io.microconfig.osdf.api.v2;
+package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.api.annotation.Named;
 import lombok.RequiredArgsConstructor;

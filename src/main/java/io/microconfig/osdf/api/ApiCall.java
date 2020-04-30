@@ -1,4 +1,4 @@
-package io.microconfig.osdf.api.v2;
+package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.exceptions.StatusCodeException;
 import lombok.Getter;
@@ -9,8 +9,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import static io.microconfig.osdf.api.ApiArgsGetter.argsGetter;
-import static io.microconfig.osdf.api.v2.ApiReader.reader;
-import static io.microconfig.osdf.api.v2.MethodInvoker.methodInvoker;
+import static io.microconfig.osdf.api.ApiReader.reader;
 
 @RequiredArgsConstructor
 public class ApiCall {
@@ -27,7 +26,7 @@ public class ApiCall {
     }
 
     public void invoke(Object implementation) {
-        methodInvoker(method, implementation, methodArgs()).invoke();
+        MethodInvoker.methodInvoker(method, implementation, methodArgs()).invoke();
     }
 
     private Object[] methodArgs() {

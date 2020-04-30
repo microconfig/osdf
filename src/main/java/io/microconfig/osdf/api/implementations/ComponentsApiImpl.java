@@ -1,6 +1,6 @@
-package io.microconfig.osdf.api.v2.impls;
+package io.microconfig.osdf.api.implementations;
 
-import io.microconfig.osdf.api.v2.apis.ComponentsApi;
+import io.microconfig.osdf.api.declarations.ComponentsApi;
 import io.microconfig.osdf.commands.PropertiesDiffCommand;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.exceptions.OSDFException;

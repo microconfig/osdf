@@ -1,8 +1,9 @@
-package io.microconfig.osdf.api.v2.impls;
+package io.microconfig.osdf.api.implementations;
 
-import io.microconfig.osdf.api.v2.MainApi;
-import io.microconfig.osdf.api.v2.ApiCall;
-import io.microconfig.osdf.api.v2.apis.SystemApi;
+import io.microconfig.osdf.api.ApiCall;
+import io.microconfig.osdf.api.ApiCallFinder;
+import io.microconfig.osdf.api.MainApi;
+import io.microconfig.osdf.api.declarations.SystemApi;
 import io.microconfig.osdf.commands.CurrentStateCommand;
 import io.microconfig.osdf.common.Credentials;
 import io.microconfig.osdf.exceptions.OSDFException;
@@ -14,8 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.osdf.api.v2.ApiCallFinder.finder;
-import static io.microconfig.osdf.api.v2.ApiMethodInfo.apiMethodInfo;
+import static io.microconfig.osdf.api.ApiMethodReader.apiMethodReader;
 import static io.microconfig.osdf.commands.UpdateCommand.updateCommand;
 import static io.microconfig.osdf.install.migrations.AllMigrations.allMigrations;
 import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
@@ -45,10 +45,10 @@ public class SystemApiImpl implements SystemApi {
 
     @Override
     public void help(List<String> command) {
-        ApiCall apiCall = finder(MainApi.class).find(command);
+        ApiCall apiCall = ApiCallFinder.finder(MainApi.class).find(command);
         if (!apiCall.getArgs().isEmpty()) throw new OSDFException("Additional arguments for method are not allowed");
 
-        apiMethodInfo(apiCall.getMethod(), join(" ", command)).printHelp();
+        apiMethodReader(apiCall.getMethod(), join(" ", command)).printHelp();
     }
 
     @Override

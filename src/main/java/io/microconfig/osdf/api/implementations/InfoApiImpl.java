@@ -1,6 +1,6 @@
-package io.microconfig.osdf.api.v2.impls;
+package io.microconfig.osdf.api.implementations;
 
-import io.microconfig.osdf.api.v2.apis.InfoApi;
+import io.microconfig.osdf.api.declarations.InfoApi;
 import io.microconfig.osdf.commands.LogsCommand;
 import io.microconfig.osdf.commands.StatusCommand;
 import io.microconfig.osdf.openshift.OCExecutor;

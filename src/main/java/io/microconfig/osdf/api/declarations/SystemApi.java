@@ -1,4 +1,4 @@
-package io.microconfig.osdf.api.v2.apis;
+package io.microconfig.osdf.api.declarations;
 
 import io.microconfig.osdf.api.parameter.UpdateNexusCredentials;
 import io.microconfig.osdf.api.annotation.ApiCommand;

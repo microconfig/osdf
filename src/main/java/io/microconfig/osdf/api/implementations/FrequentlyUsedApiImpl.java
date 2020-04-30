@@ -1,6 +1,6 @@
-package io.microconfig.osdf.api.v2.impls;
+package io.microconfig.osdf.api.implementations;
 
-import io.microconfig.osdf.api.v2.apis.FrequentlyUsedApi;
+import io.microconfig.osdf.api.declarations.FrequentlyUsedApi;
 import io.microconfig.osdf.configs.ConfigsSettings;
 import io.microconfig.osdf.configs.ConfigsSource;
 import io.microconfig.osdf.paths.OSDFPaths;

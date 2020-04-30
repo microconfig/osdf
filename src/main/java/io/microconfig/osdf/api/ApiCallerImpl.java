@@ -1,4 +1,4 @@
-package io.microconfig.osdf.api.v2;
+package io.microconfig.osdf.api;
 
 import lombok.Builder;
 import lombok.Singular;
@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 @Builder
-public class ApiCallerImpl implements NewApiCaller {
+public class ApiCallerImpl implements ApiCaller {
     private final ApiCallFinder finder;
     @Singular("addImpl")
     private final Map<Class<?>, Object> implementations;
