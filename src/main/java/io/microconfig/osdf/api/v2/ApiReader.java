@@ -1,5 +1,7 @@
 package io.microconfig.osdf.api.v2;
 
+import io.microconfig.osdf.api.annotation.ApiCommand;
+import io.microconfig.osdf.api.annotation.Hidden;
 import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 
@@ -10,6 +12,7 @@ import static java.lang.Character.toUpperCase;
 import static java.lang.String.join;
 import static java.util.Arrays.copyOfRange;
 import static java.util.Arrays.stream;
+import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static java.util.stream.Stream.of;
 
@@ -27,6 +30,18 @@ public class ApiReader {
                 .filter(method -> method.getName().equals(camelCaseName))
                 .findFirst()
                 .orElseThrow(() -> new OSDFException("Unknown method " + name));
+    }
+
+    public List<Method> methods() {
+        return of(apiClass.getMethods())
+                .filter(method -> method.getAnnotation(Hidden.class) == null)
+                .sorted(comparingInt(ApiReader::orderOfMethod))
+                .collect(toUnmodifiableList());
+    }
+
+    private static int orderOfMethod(Method method) {
+        ApiCommand apiCommand = method.getAnnotation(ApiCommand.class);
+        return apiCommand == null ? 100 : apiCommand.order();
     }
 
     private String toCamelCase(String name) {

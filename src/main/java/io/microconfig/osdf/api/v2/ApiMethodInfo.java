@@ -21,13 +21,12 @@ public class ApiMethodInfo {
     }
 
     public void printHelp() {
-        printDescription();
+        info(description());
         printInfo();
     }
 
-    private void printDescription() {
-        String description = method.getAnnotation(ApiCommand.class).description();
-        info(description);
+    public String description() {
+        return method.getAnnotation(ApiCommand.class).description();
     }
 
     private void printInfo() {

@@ -9,5 +9,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(METHOD)
 @Retention(RUNTIME)
 public @interface Import {
-    Class<?> value();
+    Class<?> api();
+
+    int order() default 100;
 }

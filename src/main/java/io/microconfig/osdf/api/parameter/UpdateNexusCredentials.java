@@ -1,4 +1,4 @@
-package io.microconfig.osdf.api;
+package io.microconfig.osdf.api.parameter;
 
 import io.microconfig.osdf.common.Credentials;
 import io.microconfig.osdf.parameters.ArgParameter;

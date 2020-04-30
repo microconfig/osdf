@@ -1,6 +1,6 @@
 package io.microconfig.osdf.api.v2.impls;
 
-import io.microconfig.osdf.api.v2.Api;
+import io.microconfig.osdf.api.v2.MainApi;
 import io.microconfig.osdf.api.v2.ApiCall;
 import io.microconfig.osdf.api.v2.apis.SystemApi;
 import io.microconfig.osdf.commands.CurrentStateCommand;
@@ -45,7 +45,7 @@ public class SystemApiImpl implements SystemApi {
 
     @Override
     public void help(List<String> command) {
-        ApiCall apiCall = finder(Api.class).find(command);
+        ApiCall apiCall = finder(MainApi.class).find(command);
         if (!apiCall.getArgs().isEmpty()) throw new OSDFException("Additional arguments for method are not allowed");
 
         apiMethodInfo(apiCall.getMethod(), join(" ", command)).printHelp();

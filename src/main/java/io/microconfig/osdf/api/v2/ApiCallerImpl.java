@@ -17,6 +17,7 @@ public class ApiCallerImpl implements NewApiCaller {
         ApiCall apiCall = finder.find(args);
         Class<?> apiClass = apiCall.getApiClass();
         Object implementation = implementations.get(apiClass);
+        if (implementation == null) throw new RuntimeException("No implementation for api class " + apiClass.getSimpleName());
         apiCall.invoke(implementation);
     }
 }
