@@ -6,6 +6,6 @@ import org.junit.jupiter.api.Test;
 class OpenShiftDeployStarterTest {
     @Test
     void testSimpleCall() {
-        new OpenShiftDeployStarter(null, null).run(new String[]{"help", "help"});
+        new CLIStarter(null, null).run(new String[]{"help", "help"});
     }
 }
