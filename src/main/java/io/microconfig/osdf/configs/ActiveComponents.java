@@ -1,9 +1,8 @@
-package io.microconfig.osdf.groups;
+package io.microconfig.osdf.configs;
 
 import io.microconfig.core.environments.Component;
 import io.microconfig.core.environments.Components;
 import io.microconfig.core.environments.Environment;
-import io.microconfig.osdf.configs.ConfigsSettings;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 

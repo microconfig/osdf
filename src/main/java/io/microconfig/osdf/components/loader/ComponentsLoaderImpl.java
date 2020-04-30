@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 import static io.microconfig.osdf.components.AbstractOpenShiftComponent.fromPath;
 import static io.microconfig.osdf.components.properties.DeployProperties.deployProperties;
-import static io.microconfig.osdf.groups.ActiveComponents.activeComponents;
+import static io.microconfig.osdf.configs.ActiveComponents.activeComponents;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Path.of;
 import static java.nio.file.Paths.get;
