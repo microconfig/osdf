@@ -5,6 +5,7 @@ import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
+import java.util.List;
 
 import static io.microconfig.core.Microconfig.searchConfigsIn;
 import static io.microconfig.core.configtypes.ConfigTypeFilters.eachConfigType;
@@ -12,9 +13,12 @@ import static io.microconfig.core.properties.serializers.PropertySerializers.toF
 import static io.microconfig.core.properties.serializers.PropertySerializers.withConfigDiff;
 import static io.microconfig.core.properties.templates.CopyTemplatesService.resolveTemplatesBy;
 import static io.microconfig.osdf.microconfig.files.MicroConfigFilesState.of;
+import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
 import static io.microconfig.osdf.utils.FileUtils.createDirectoryIfNotExists;
 import static java.nio.file.Files.exists;
+import static java.nio.file.Path.of;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 
 @RequiredArgsConstructor
 public class MicroConfig {
@@ -25,19 +29,25 @@ public class MicroConfig {
         return new MicroConfig(env, paths);
     }
 
-    public void generateConfigs() {
+    public void generateConfigs(List<String> components) {
         if (!exists(paths.componentsPath())) {
-            generateConfigs(env, paths.configsPath(), paths.componentsPath());
+            generateConfigs(env, components, paths.configsPath(), paths.componentsPath());
         } else {
-            generateConfigsAndClearUnchanged(env, paths.configsPath(), paths.componentsPath());
+            generateConfigsAndClearUnchanged(env, components, paths.configsPath(), paths.componentsPath());
         }
     }
 
-    private void generateConfigs(String env, Path from, Path to) {
+    public void generateSingleComponent(String component) {
+        generateConfigs(env, singletonList(component), paths.configsPath(), of("/tmp/microconfig"));
+        execute("rm -rf " + paths.componentsPath() + "/" + component);
+        execute("mv /tmp/microconfig/" + component + " " + paths.componentsPath() + "/" + component);
+    }
+
+    private void generateConfigs(String env, List<String> components, Path from, Path to) {
         searchConfigsIn(from.toFile())
                 .withDestinationDir(to.toFile())
                 .inEnvironment(env)
-                .findComponentsFrom(emptyList(), emptyList())
+                .findComponentsFrom(emptyList(), components)
                 .getPropertiesFor(eachConfigType())
                 .resolveBy(searchConfigsIn(from.toFile()).withDestinationDir(to.toFile()).resolver())
                 .forEachComponent(resolveTemplatesBy(searchConfigsIn(from.toFile()).withDestinationDir(to.toFile()).resolver()))
@@ -45,9 +55,9 @@ public class MicroConfig {
         createDirectoryIfNotExists(to);
     }
 
-    private void generateConfigsAndClearUnchanged(String env, Path from, Path to) {
+    private void generateConfigsAndClearUnchanged(String env, List<String> components, Path from, Path to) {
         MicroConfigFilesState oldState = of(paths.componentsPath());
-        generateConfigs(env, from, to);
+        generateConfigs(env, components, from, to);
         MicroConfigFilesState newState = of(paths.componentsPath());
         oldState.clearUnchanged(newState);
     }

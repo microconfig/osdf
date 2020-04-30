@@ -2,11 +2,15 @@ package io.microconfig.osdf.api.implementations;
 
 import io.microconfig.osdf.api.declarations.ComponentsApi;
 import io.microconfig.osdf.commands.PropertiesDiffCommand;
+import io.microconfig.osdf.configs.ConfigsSettings;
 import io.microconfig.osdf.paths.OSDFPaths;
-import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+
+import static io.microconfig.osdf.microconfig.MicroConfig.microConfig;
+import static io.microconfig.osdf.microconfig.properties.PropertySetter.propertySetter;
+import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
 
 @RequiredArgsConstructor
 public class ComponentsApiImpl implements ComponentsApi {
@@ -22,7 +26,10 @@ public class ComponentsApiImpl implements ComponentsApi {
     }
 
     @Override
-    public void changeVersion(List<String> components) {
-        throw new OSDFException("Not Implemented yet");
+    public void changeVersion(String component, String version) {
+        propertySetter().setIfNecessary(paths.projectVersionPath(), "project.version", version);
+
+        String env = settingsFile(ConfigsSettings.class, paths.settings().configs()).getSettings().getEnv();
+        microConfig(env, paths).generateSingleComponent(component);
     }
 }

@@ -11,6 +11,7 @@ import static io.microconfig.osdf.microconfig.MicroConfig.microConfig;
 import static io.microconfig.osdf.microconfig.properties.PropertySetter.propertySetter;
 import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
 import static io.microconfig.utils.Logger.warn;
+import static java.util.Collections.emptyList;
 
 @RequiredArgsConstructor
 public class ConfigsUpdater {
@@ -54,6 +55,6 @@ public class ConfigsUpdater {
         if (settings.getEnv() == null) throw new OSDFException("Environment is not specified");
 
         propertySetter().setIfNecessary(paths.projectVersionPath(), "project.version", settings.getProjectVersion());
-        microConfig(settings.getEnv(), paths).generateConfigs();
+        microConfig(settings.getEnv(), paths).generateConfigs(emptyList());
     }
 }
