@@ -1,11 +1,11 @@
 package io.microconfig.osdf.openshift;
 
 import io.microconfig.osdf.exceptions.OSDFException;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.utils.CommandLineExecutor;
 import io.microconfig.utils.Logger;
 import lombok.RequiredArgsConstructor;
 
-import java.nio.file.Path;
 import java.util.List;
 
 import static io.microconfig.core.configtypes.StandardConfigType.DEPLOY;
@@ -15,12 +15,11 @@ import static java.lang.System.getenv;
 
 @RequiredArgsConstructor
 public class OCExecutor {
-    private final String env;
-    private final Path configPath;
+    private final OSDFPaths paths;
     private final boolean logOc;
 
-    public static OCExecutor oc(String env, Path configPath) {
-        return new OCExecutor(env, configPath, "true".equals(getenv("OSDF_LOG_OC")));
+    public static OCExecutor oc(OSDFPaths paths) {
+        return new OCExecutor(paths, "true".equals(getenv("OSDF_LOG_OC")));
     }
 
     public String execute(String command) {
@@ -44,7 +43,7 @@ public class OCExecutor {
     }
 
     public String project() {
-        return propertyGetter(env, configPath).get(DEPLOY, "openshift-urls", "project");
+        return propertyGetter(paths).get(DEPLOY, "openshift-urls", "project");
     }
 
     private String returnOrThrowException(String output) {

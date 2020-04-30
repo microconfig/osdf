@@ -33,4 +33,12 @@ public class SettingsPaths {
     public Path configs() {
         return of(settingsRootPath + "/configs.yaml");
     }
+
+    public Path osdf() {
+        return of(settingsRootPath + "/osdf.yaml");
+    }
+
+    public Path update() {
+        return of(settingsRootPath + "/update.yaml");
+    }
 }

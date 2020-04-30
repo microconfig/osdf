@@ -9,16 +9,12 @@ import lombok.RequiredArgsConstructor;
 import static io.microconfig.osdf.api.OSDFApiInfo.printCommandInfos;
 import static io.microconfig.osdf.api.v2.MainApi.mainApi;
 import static io.microconfig.osdf.commands.UpdateCommand.updateCommand;
+import static io.microconfig.osdf.openshift.OCExecutor.oc;
 import static io.microconfig.osdf.paths.OSDFPaths.paths;
 import static io.microconfig.osdf.exceptions.BugTracker.bugTracker;
-import static io.microconfig.osdf.install.migrations.AllMigrations.allMigrations;
-import static io.microconfig.osdf.openshift.OCExecutor.oc;
-import static io.microconfig.osdf.state.OSDFState.fromFile;
-import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
 import static io.microconfig.utils.Logger.error;
 import static java.lang.System.exit;
 import static java.util.Arrays.asList;
-import static java.util.Arrays.copyOfRange;
 
 @RequiredArgsConstructor
 public class OpenShiftDeployStarter {
@@ -27,10 +23,8 @@ public class OpenShiftDeployStarter {
 
     public static void main(String[] args) {
         OSDFPaths paths = paths();
-        applyMigrations(args, paths);
-        String[] filteredArgs = filterSystemArgs(args);
         try {
-            new OpenShiftDeployStarter(paths, getOcExecutor(paths)).run(filteredArgs);
+            new OpenShiftDeployStarter(paths, oc(paths)).run(args);
         } catch (StatusCodeException e) {
             exit(e.getStatusCode());
         } catch (OSDFException e) {
@@ -44,36 +38,10 @@ public class OpenShiftDeployStarter {
         }
     }
 
-    private static String[] filterSystemArgs(String[] args) {
-        if (args[args.length - 1].equals("-UPDATE")) {
-            return copyOfRange(args, 0, args.length - 1);
-        }
-        return args;
-    }
-
-    private static void applyMigrations(String[] args, OSDFPaths paths) {
-        if (args[args.length - 1].equals("-UPDATE")) {
-            allMigrations().apply(paths);
-            execute("cp " + paths.newStateSavePath() + " " + paths.oldStateSavePath());
-        }
-    }
-
-    private static OCExecutor getOcExecutor(OSDFPaths paths) {
-        return oc(getEnv(paths), paths.configPath());
-    }
-
-    private static String getEnv(OSDFPaths paths) {
-        try {
-            return fromFile(paths.stateSavePath()).getEnv();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     public void run(String[] args) {
         if (badArgs(args)) return;
         if (updatableCall(args)) {
-            updateCommand(paths).tryPatchUpdateAndRestart(args);
+            updateCommand(paths).tryAutoUpdateAndRestart(args);
         }
 
         mainApi(paths, oc).call(asList(args));

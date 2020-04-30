@@ -1,7 +1,7 @@
 package io.microconfig.osdf.configfetcher.nexus;
 
 import io.microconfig.osdf.nexus.NexusArtifact;
-import io.microconfig.osdf.state.Credentials;
+import io.microconfig.osdf.common.Credentials;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,7 +1,6 @@
 package io.microconfig.osdf.deployers;
 
 import io.microconfig.osdf.components.DeploymentComponent;
-import io.microconfig.osdf.components.checker.HealthChecker;
 import io.microconfig.osdf.components.properties.CanaryProperties;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.metrics.Metric;
@@ -14,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import static io.microconfig.osdf.components.checker.SuccessfulDeploymentChecker.successfulDeploymentChecker;
+import static io.microconfig.osdf.components.properties.CanaryProperties.canaryProperties;
 import static io.microconfig.osdf.deployers.HiddenDeployer.hiddenDeployer;
 import static io.microconfig.osdf.istio.VirtualService.virtualService;
 import static io.microconfig.osdf.metrics.MetricsPuller.metricsPuller;
@@ -26,10 +26,9 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 public class CanaryDeployer implements Deployer {
     private final OCExecutor oc;
     private final MetricsParser metricsParser;
-    private final HealthChecker healthChecker;
 
-    public static CanaryDeployer canaryDeployer(OCExecutor oc, MetricsParser metricsParser, HealthChecker healthChecker) {
-        return new CanaryDeployer(oc, metricsParser, healthChecker);
+    public static CanaryDeployer canaryDeployer(OCExecutor oc, MetricsParser metricsParser) {
+        return new CanaryDeployer(oc, metricsParser);
     }
 
     @Override
@@ -39,7 +38,7 @@ public class CanaryDeployer implements Deployer {
     }
 
     private void routeCanaryTraffic(DeploymentComponent component) {
-        CanaryProperties canaryProperties = component.canaryProperties();
+        CanaryProperties canaryProperties = canaryProperties(component.getConfigDir());
 
         int intervalInSec = canaryProperties.getIntervalInSec();
         int step = canaryProperties.getStep();
@@ -94,12 +93,12 @@ public class CanaryDeployer implements Deployer {
     }
 
     private void deployNewVersion(DeploymentComponent component) {
-        if (component.deployed()) {
+        if (component.isDeployed()) {
             info("Component already deployed");
         } else {
             hiddenDeployer(oc).deploy(component);
         }
-        if (!successfulDeploymentChecker(healthChecker).check(component)) throw new OSDFException("Deployment failed");
+        if (!successfulDeploymentChecker().check(component)) throw new OSDFException("Deployment failed");
         info("Successfully deployed component");
     }
 }

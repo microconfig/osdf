@@ -1,7 +1,7 @@
 package io.microconfig.osdf.nexus;
 
 import io.microconfig.osdf.exceptions.OSDFException;
-import io.microconfig.osdf.state.Credentials;
+import io.microconfig.osdf.common.Credentials;
 import lombok.RequiredArgsConstructor;
 
 import java.io.File;

@@ -1,4 +1,4 @@
-package io.microconfig.osdf.state;
+package io.microconfig.osdf.common;
 
 import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.*;

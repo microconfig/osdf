@@ -1,13 +1,12 @@
 package io.microconfig.osdf.openshift;
 
-import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.microconfig.properties.OpenShiftProperties;
-import io.microconfig.osdf.state.OSDFState;
+import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.microconfig.properties.OpenShiftProperties.properties;
 import static io.microconfig.osdf.microconfig.properties.PropertyGetter.propertyGetter;
-import static io.microconfig.osdf.state.OSDFState.fromFile;
+import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
 import static java.util.List.of;
 
 @RequiredArgsConstructor
@@ -15,13 +14,13 @@ public class OpenShiftProject implements AutoCloseable {
     private final String clusterUrl;
     private final String project;
 
-    private final OpenShiftCredentials osCredentials;
+    private final OpenShiftCredentials credentials;
     private final OCExecutor oc;
 
     public static OpenShiftProject create(OSDFPaths paths, OCExecutor oc) {
-        OSDFState state = fromFile(paths.stateSavePath());
-        OpenShiftProperties properties = properties(propertyGetter(state.getEnv(), paths.configPath()));
-        return new OpenShiftProject(properties.clusterUrl(), properties.project(), state.getOpenShiftCredentials(), oc);
+        OpenShiftCredentials credentials = settingsFile(OpenShiftCredentials.class, paths.settings().openshift()).getSettings();
+        OpenShiftProperties properties = properties(propertyGetter(paths));
+        return new OpenShiftProject(properties.clusterUrl(), properties.project(), credentials, oc);
     }
 
     public OpenShiftProject connect() {
@@ -37,7 +36,7 @@ public class OpenShiftProject implements AutoCloseable {
     }
 
     private void login() {
-        oc.execute("oc login " + clusterUrl + osCredentials.getLoginParams());
+        oc.execute("oc login " + clusterUrl + credentials.getLoginParams());
     }
 
     private void setProjectCommand() {

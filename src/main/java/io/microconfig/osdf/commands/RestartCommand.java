@@ -18,7 +18,7 @@ public class RestartCommand {
 
     public void run(List<String> components) {
         try (OpenShiftProject ignored = create(paths, oc).connect()) {
-            componentsLoader(paths.componentsPath(), components, oc)
+            componentsLoader(paths, components, oc)
                     .load(DeploymentComponent.class)
                     .forEach(DeploymentComponent::restart);
         }

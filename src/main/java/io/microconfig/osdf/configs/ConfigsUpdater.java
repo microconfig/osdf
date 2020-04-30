@@ -3,14 +3,12 @@ package io.microconfig.osdf.configs;
 import io.microconfig.osdf.configfetcher.ConfigsFetcher;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
-import io.microconfig.osdf.paths.SettingsPaths;
 import io.microconfig.osdf.settings.SettingsFile;
 import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.configfetcher.ConfigsFetcher.fetcher;
 import static io.microconfig.osdf.microconfig.MicroConfig.microConfig;
 import static io.microconfig.osdf.microconfig.properties.PropertySetter.propertySetter;
-import static io.microconfig.osdf.paths.SettingsPaths.settingsPaths;
 import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
 import static io.microconfig.utils.Logger.warn;
 
@@ -20,8 +18,7 @@ public class ConfigsUpdater {
     private final SettingsFile<ConfigsSettings> settingsFile;
 
     public static ConfigsUpdater configsUpdater(OSDFPaths paths) {
-        SettingsPaths settingsPaths = settingsPaths(paths.settingsRootPath());
-        SettingsFile<ConfigsSettings> settingsFile = settingsFile(ConfigsSettings.class, settingsPaths.configs());
+        SettingsFile<ConfigsSettings> settingsFile = settingsFile(ConfigsSettings.class, paths.settings().configs());
         return new ConfigsUpdater(paths, settingsFile);
     }
 

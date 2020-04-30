@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static io.microconfig.osdf.components.checker.HealthCheckerFinder.healthCheckerFinder;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @Getter
@@ -17,7 +18,9 @@ public class PodsHealthcheckInfo {
     private final List<Boolean> podsHealth;
     private final boolean healthy;
 
-    public static PodsHealthcheckInfo podsInfo(DeploymentComponent component, HealthChecker healthChecker) {
+    public static PodsHealthcheckInfo podsInfo(DeploymentComponent component) {
+        HealthChecker healthChecker = healthCheckerFinder(component).get();
+
         List<Pod> pods = component.pods();
         List<Boolean> podsHealth = pods.parallelStream()
                 .map(healthChecker::check)

@@ -4,7 +4,6 @@ import io.microconfig.osdf.paths.OSDFPaths;
 
 import java.util.List;
 
-import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
 import static java.util.List.of;
 
 public class AllMigrations implements Migration {
@@ -14,11 +13,10 @@ public class AllMigrations implements Migration {
 
     @Override
     public void apply(OSDFPaths paths) {
-        execute("cp " + paths.stateSavePath() + " " + paths.newStateSavePath());
         migrations().forEach(migration -> migration.apply(paths));
     }
 
     private List<Migration> migrations() {
-        return of(new AddTokenMigration());
+        return of();
     }
 }

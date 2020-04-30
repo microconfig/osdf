@@ -27,9 +27,9 @@ public class MicroConfig {
 
     public void generateConfigs() {
         if (!exists(paths.componentsPath())) {
-            generateConfigs(env, paths.configPath(), paths.componentsPath());
+            generateConfigs(env, paths.configsPath(), paths.componentsPath());
         } else {
-            generateConfigsAndClearUnchanged(env, paths.configPath(), paths.componentsPath());
+            generateConfigsAndClearUnchanged(env, paths.configsPath(), paths.componentsPath());
         }
     }
 

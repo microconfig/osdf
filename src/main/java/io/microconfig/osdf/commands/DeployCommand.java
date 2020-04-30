@@ -2,15 +2,14 @@ package io.microconfig.osdf.commands;
 
 import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.components.JobComponent;
-import io.microconfig.osdf.components.checker.HealthChecker;
 import io.microconfig.osdf.components.checker.SuccessfulDeploymentChecker;
 import io.microconfig.osdf.components.loader.ComponentsLoaderImpl;
-import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.deployers.Deployer;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.exceptions.StatusCodeException;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.OpenShiftProject;
+import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -27,10 +26,10 @@ public class DeployCommand {
     private final OSDFPaths paths;
     private final OCExecutor oc;
     private final Deployer deployer;
-    private final HealthChecker healthChecker;
+    private final boolean wait;
 
     public void run(List<String> components) {
-        ComponentsLoaderImpl componentsLoader = componentsLoader(paths.componentsPath(), components, oc);
+        ComponentsLoaderImpl componentsLoader = componentsLoader(paths, components, oc);
 
         List<DeploymentComponent> deploymentComponents = componentsLoader.load(DeploymentComponent.class);
         List<JobComponent> jobComponents = componentsLoader.load(JobComponent.class);
@@ -74,8 +73,8 @@ public class DeployCommand {
     }
 
     private boolean checkIfSuccessful(List<DeploymentComponent> deploymentComponents) {
-        if (healthChecker != null) {
-            SuccessfulDeploymentChecker checker = successfulDeploymentChecker(healthChecker);
+        if (wait) {
+            SuccessfulDeploymentChecker checker = successfulDeploymentChecker();
             return deploymentComponents.parallelStream().allMatch(component -> checkDeployment(checker, component));
         }
         return true;

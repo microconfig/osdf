@@ -4,7 +4,7 @@ import io.microconfig.osdf.api.annotation.ApiCommand;
 import io.microconfig.osdf.api.annotation.ConsoleParam;
 import io.microconfig.osdf.api.parameter.*;
 import io.microconfig.osdf.nexus.NexusArtifact;
-import io.microconfig.osdf.state.Credentials;
+import io.microconfig.osdf.common.Credentials;
 
 import java.nio.file.Path;
 

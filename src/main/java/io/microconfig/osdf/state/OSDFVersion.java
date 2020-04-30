@@ -5,8 +5,10 @@ import io.microconfig.osdf.microconfig.properties.PropertyGetter;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
+import java.nio.file.Path;
+
 import static io.microconfig.osdf.microconfig.properties.OSDFDownloadProperties.properties;
-import static io.microconfig.osdf.utils.JarUtils.jarPath;
+import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
 import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 
 @RequiredArgsConstructor
@@ -16,16 +18,17 @@ public class OSDFVersion {
     private final int minor;
     private final int patch;
 
-    public static OSDFVersion fromJar() {
-        String filename = jarPath().getFileName().toString();
+    public static OSDFVersion fromJarPath(Path path) {
+        String filename = path.getFileName().toString();
         filename = filename.substring(0, filename.length() - 4);
         String[] dashSplit = filename.split("-");
         if (dashSplit.length < 2) throw new OSDFException("Bad jar file name. Should be <name>-<version>.jar");
         return fromString(dashSplit[dashSplit.length - 1]);
     }
 
-    public static OSDFVersion fromState(OSDFState state) {
-        return fromString(state.getOsdfVersion());
+    public static OSDFVersion fromSettings(Path path) {
+        String version = settingsFile(OSDFVersionFile.class, path).getSettings().getVersion();
+        return fromString(version);
     }
 
     public static OSDFVersion fromConfigs(PropertyGetter propertyGetter) {

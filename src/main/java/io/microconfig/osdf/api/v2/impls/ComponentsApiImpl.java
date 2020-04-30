@@ -18,7 +18,7 @@ public class ComponentsApiImpl implements ComponentsApi {
 
     @Override
     public void propertiesDiff(List<String> components) {
-        new PropertiesDiffCommand(paths.componentsPath()).show(components);
+        new PropertiesDiffCommand(paths).show(components);
     }
 
     @Override

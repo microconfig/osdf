@@ -8,13 +8,13 @@ import java.util.Map;
 
 @Builder
 public class ApiCallerImpl implements NewApiCaller {
-    private final ApiFinder finder;
+    private final ApiCallFinder finder;
     @Singular("addImpl")
     private final Map<Class<?>, Object> implementations;
 
     @Override
     public void call(List<String> args) {
-        ApiCall apiCall = finder.apiCall(args);
+        ApiCall apiCall = finder.find(args);
         Class<?> apiClass = apiCall.getApiClass();
         Object implementation = implementations.get(apiClass);
         apiCall.invoke(implementation);

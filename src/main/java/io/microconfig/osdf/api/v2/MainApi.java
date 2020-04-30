@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.osdf.api.v2.ApiFinder.finder;
+import static io.microconfig.osdf.api.v2.ApiCallFinder.finder;
 import static io.microconfig.osdf.api.v2.impls.ComponentsApiImpl.componentsApi;
 import static io.microconfig.osdf.api.v2.impls.FrequentlyUsedApiImpl.frequentlyUsedApi;
 import static io.microconfig.osdf.api.v2.impls.InfoApiImpl.infoApi;

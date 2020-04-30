@@ -68,7 +68,6 @@ public class FileUtils {
         }
     }
 
-
     public static Stream<Path> getPathsInDir(Path dir) {
         try {
             return list(dir);

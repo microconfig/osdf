@@ -1,9 +1,9 @@
 package io.microconfig.osdf.api.parameter;
 
 import io.microconfig.osdf.parameters.ArgParameter;
-import io.microconfig.osdf.state.Credentials;
+import io.microconfig.osdf.common.Credentials;
 
-import static io.microconfig.osdf.state.Credentials.of;
+import static io.microconfig.osdf.common.Credentials.of;
 
 public class OpenShiftCredentialsParameter extends ArgParameter<Credentials> {
     public OpenShiftCredentialsParameter() {

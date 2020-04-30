@@ -11,6 +11,7 @@ import java.util.List;
 
 import static io.microconfig.osdf.components.DeploymentComponent.component;
 import static io.microconfig.osdf.openshift.OpenShiftProject.create;
+import static io.microconfig.osdf.openshift.Pod.fromPods;
 import static io.microconfig.utils.Logger.announce;
 
 @RequiredArgsConstructor
@@ -21,14 +22,14 @@ public class DeletePodCommand {
 
     public void delete(String componentName, List<String> podNames) {
         try (OpenShiftProject ignored = create(paths, oc).connect()) {
-            podNames.forEach(podName -> deletePods(component(componentName, paths.componentsPath(), oc), podNames));
+            podNames.forEach(podName -> deletePods(component(componentName, paths, oc), podNames));
         }
     }
 
     private void deletePods(DeploymentComponent component, List<String> podNames) {
         List<Pod> pods = component.pods();
         podNames.stream()
-                .map(podName -> component.pod(pods, podName))
+                .map(podName -> fromPods(pods, podName))
                 .forEach(this::deletePod);
     }
 

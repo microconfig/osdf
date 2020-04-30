@@ -3,7 +3,6 @@ package io.microconfig.osdf.printers;
 import io.microconfig.osdf.components.AbstractOpenShiftComponent;
 import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.components.JobComponent;
-import io.microconfig.osdf.components.checker.HealthChecker;
 import io.microconfig.osdf.components.info.RowColumnsWithStatus;
 import lombok.RequiredArgsConstructor;
 
@@ -18,12 +17,12 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 public class StatusPrinter {
     private final List<JobComponent> jobComponents;
     private final List<DeploymentComponent> deploymentComponents;
-    private final HealthChecker healthChecker;
     private final ColumnPrinter printer;
+    private final boolean withHealthCheck;
 
     public static StatusPrinter statusPrinter(List<JobComponent> jobComponents, List<DeploymentComponent> deploymentComponents,
-                                              HealthChecker healthChecker, ColumnPrinter printer) {
-        return new StatusPrinter(jobComponents, deploymentComponents, healthChecker, printer);
+                                              ColumnPrinter printer, boolean withHealthCheck) {
+        return new StatusPrinter(jobComponents, deploymentComponents, printer, withHealthCheck);
     }
 
     public boolean checkStatusAndPrint() {
@@ -45,7 +44,7 @@ public class StatusPrinter {
 
     private RowColumnsWithStatus toRowColumnsWithStatus(AbstractOpenShiftComponent component) {
         if (component instanceof DeploymentComponent) {
-            return deploymentStatusRows((DeploymentComponent) component, printer.newPrinter(), healthChecker);
+            return deploymentStatusRows((DeploymentComponent) component, printer.newPrinter(), withHealthCheck);
         }
         if (component instanceof JobComponent) {
             return jobStatusRow((JobComponent) component, printer.newPrinter());

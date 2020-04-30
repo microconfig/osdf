@@ -5,20 +5,25 @@ import io.microconfig.core.configtypes.ConfigType;
 import io.microconfig.core.environments.Environment;
 import io.microconfig.core.properties.Property;
 import io.microconfig.core.properties.Resolver;
+import io.microconfig.osdf.configs.ConfigsSettings;
+import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
-
-import java.nio.file.Path;
 
 import static io.microconfig.core.Microconfig.searchConfigsIn;
 import static io.microconfig.core.configtypes.ConfigTypeFilters.configType;
+import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
 
 @RequiredArgsConstructor
 public class PropertyGetter {
     private final Environment environment;
     private final Resolver resolver;
 
-    public static PropertyGetter propertyGetter(String env, Path configPath) {
-        Microconfig microconfig = searchConfigsIn(configPath.toFile());
+    public static PropertyGetter propertyGetter(OSDFPaths paths) {
+        String env = settingsFile(ConfigsSettings.class, paths.settings().configs())
+                .getSettings()
+                .getEnv();
+
+        Microconfig microconfig = searchConfigsIn(paths.configsPath().toFile());
         return new PropertyGetter(
                 microconfig.inEnvironment(env),
                 microconfig.resolver()

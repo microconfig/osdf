@@ -27,6 +27,7 @@ public abstract class AbstractOpenShiftComponent {
     protected final String name;
     @Getter
     protected final String version;
+    @Getter
     protected final Path configDir;
     protected final OCExecutor oc;
 

@@ -16,7 +16,9 @@ import static io.microconfig.osdf.api.v2.MethodInvoker.methodInvoker;
 public class ApiCall {
     @Getter
     private final Class<?> apiClass;
+    @Getter
     private final Method method;
+    @Getter
     private final List<String> args;
 
     public static ApiCall apiCall(Class<?> apiClass, String methodName, List<String> args) {

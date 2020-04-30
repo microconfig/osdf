@@ -2,12 +2,11 @@ package io.microconfig.osdf.commands;
 
 import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.components.JobComponent;
-import io.microconfig.osdf.components.checker.HealthChecker;
 import io.microconfig.osdf.components.loader.ComponentsLoaderImpl;
-import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.exceptions.StatusCodeException;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.OpenShiftProject;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.printers.ColumnPrinter;
 import lombok.RequiredArgsConstructor;
 
@@ -21,8 +20,8 @@ import static io.microconfig.osdf.printers.StatusPrinter.statusPrinter;
 public class StatusCommand {
     private final OSDFPaths paths;
     private final OCExecutor oc;
-    private final HealthChecker healthChecker;
     private final ColumnPrinter printer;
+    private final boolean withHealthCheck;
 
     public void run(List<String> components) {
         try (OpenShiftProject ignored = create(paths, oc).connect()) {
@@ -33,9 +32,9 @@ public class StatusCommand {
     }
 
     private boolean checkStatusAndPrint(List<String> components) {
-        ComponentsLoaderImpl componentsLoader = componentsLoader(paths.componentsPath(), components, oc);
+        ComponentsLoaderImpl componentsLoader = componentsLoader(paths, components, oc);
         List<JobComponent> jobComponents = componentsLoader.load(JobComponent.class);
         List<DeploymentComponent> deploymentComponents = componentsLoader.load(DeploymentComponent.class);
-        return statusPrinter(jobComponents, deploymentComponents, healthChecker, printer).checkStatusAndPrint();
+        return statusPrinter(jobComponents, deploymentComponents, printer, withHealthCheck).checkStatusAndPrint();
     }
 }

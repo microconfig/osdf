@@ -1,12 +1,15 @@
 package io.microconfig.osdf.openshift;
 
+import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
+import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 import static java.lang.Thread.currentThread;
 
 @RequiredArgsConstructor
@@ -26,6 +29,18 @@ public class Pod implements Comparable<Pod> {
 
     public static Pod fromOpenShiftNotation(String notation, String componentName, OCExecutor oc) {
         return pod(notation.split("/")[1], componentName, oc);
+    }
+
+    public static Pod fromPods(List<Pod> pods, String podName) {
+        if (pods.size() == 0) throw new OSDFException("No pods found");
+
+        Integer order = castToInteger(podName);
+        if (order != null) return pods.get(order);
+
+        return pods.stream()
+                .filter(pod -> pod.getName().equals(podName))
+                .findFirst()
+                .orElseThrow(() -> new OSDFException("Pod not found"));
     }
 
     public void delete() {

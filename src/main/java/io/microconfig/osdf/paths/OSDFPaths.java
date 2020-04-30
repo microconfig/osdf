@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
 
+import static io.microconfig.osdf.paths.SettingsPaths.settingsPaths;
 import static java.nio.file.Path.of;
 import static org.apache.commons.io.FileUtils.getUserDirectory;
 
@@ -19,15 +20,23 @@ public class OSDFPaths {
         return root;
     }
 
-    public Path scriptFolder() {
+    public Path bin() {
         return of(root() + "/bin");
+    }
+
+    public Path settingsRoot() {
+        return of(root() + "/settings");
+    }
+
+    public Path tmp() {
+        return of(root() + "/tmp");
     }
 
     public Path configsDownloadPath() {
         return of(root() + "/fetchedConfigs");
     }
 
-    public Path configPath() {
+    public Path configsPath() {
         return of(configsDownloadPath() + "/repo");
     }
 
@@ -36,26 +45,14 @@ public class OSDFPaths {
     }
 
     public Path projectVersionPath() {
-        return of( configPath() + "/components/system/versions/project-version.proc");
+        return of( configsPath() + "/components/system/versions/project-version.proc");
     }
 
     public Path configVersionPath() {
-        return of(configPath() + "/components/system/versions/config-version.proc");
+        return of(configsPath() + "/components/system/versions/config-version.proc");
     }
 
-    public Path stateSavePath() {
-        return of(root() + "/conf.yml");
-    }
-
-    public Path newStateSavePath() {
-        return of(root() + "/conf_new.yml");
-    }
-
-    public Path oldStateSavePath() {
-        return of(root() + "/conf_old.yml");
-    }
-
-    public Path settingsRootPath() {
-        return of(root() + "/settings");
+    public SettingsPaths settings() {
+        return settingsPaths(settingsRoot());
     }
 }

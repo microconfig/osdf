@@ -1,18 +1,15 @@
 package io.microconfig.osdf.commands;
 
 
+import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
-import java.nio.file.Path;
-
-import static io.microconfig.osdf.state.OSDFState.fromFile;
-import static io.microconfig.osdf.state.OSDFStatePrinter.statePrinter;
 
 @RequiredArgsConstructor
 public class CurrentStateCommand {
-    private final Path stateSavePath;
+    private final OSDFPaths paths;
 
     public void run() {
-        statePrinter(fromFile(stateSavePath)).print();
+        // todo current state command
     }
 }

@@ -1,143 +1,63 @@
 package io.microconfig.osdf.install;
 
+import io.microconfig.osdf.exceptions.OSDFException;
+import io.microconfig.osdf.install.jarinstaller.JarInstaller;
 import io.microconfig.osdf.paths.OSDFPaths;
-import io.microconfig.osdf.microconfig.properties.OSDFDownloadProperties;
-import io.microconfig.osdf.nexus.NexusArtifact;
-import io.microconfig.osdf.state.OSDFState;
-import io.microconfig.osdf.state.OSDFVersion;
 import lombok.RequiredArgsConstructor;
 
-import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
-import static io.microconfig.osdf.install.migrations.AllMigrations.allMigrations;
-import static io.microconfig.osdf.microconfig.properties.OSDFDownloadProperties.properties;
-import static io.microconfig.osdf.microconfig.properties.PropertyGetter.propertyGetter;
-import static io.microconfig.osdf.nexus.NexusArtifact.nexusArtifact;
-import static io.microconfig.osdf.nexus.NexusClient.nexusClient;
-import static io.microconfig.osdf.state.OSDFState.createState;
-import static io.microconfig.osdf.state.OSDFState.fromFile;
-import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
-import static io.microconfig.osdf.utils.FileUtils.readAll;
-import static io.microconfig.osdf.utils.FileUtils.writeStringToFile;
-import static io.microconfig.osdf.utils.JarUtils.jarPath;
-import static io.microconfig.utils.Logger.warn;
-import static java.lang.System.getProperty;
-import static java.nio.file.Files.exists;
-import static java.nio.file.Path.of;
-import static java.nio.file.Paths.get;
-import static org.apache.commons.io.FileUtils.getUserDirectoryPath;
+import static io.microconfig.osdf.install.BashrcInstaller.bashrcInstaller;
+import static io.microconfig.osdf.install.ScriptInstaller.scriptInstaller;
+import static io.microconfig.osdf.install.WorkfolderInstaller.workfolderInstaller;
+import static io.microconfig.osdf.install.YamlFileReplacer.yamlFileReplacer;
+import static io.microconfig.osdf.state.OSDFVersionFile.osdfVersionFile;
+import static io.microconfig.osdf.utils.ProcessUtil.startAndWait;
+import static io.microconfig.utils.Logger.announce;
+import static java.util.List.of;
 
 @RequiredArgsConstructor
 public class OSDFInstaller {
-    private static final String SCRIPT_NAME = "osdf";
-
     private final OSDFPaths paths;
+    private final JarInstaller jarInstaller;
+    private final boolean clearState;
     private final boolean noBashRc;
 
-    public static OSDFInstaller osdfInstaller(OSDFPaths paths, boolean noBashRc) {
-        return new OSDFInstaller(paths, noBashRc);
+    public static OSDFInstaller osdfInstaller(OSDFPaths paths, JarInstaller jarInstaller, boolean clearState, boolean noBashRc) {
+        return new OSDFInstaller(paths, jarInstaller, clearState, noBashRc);
     }
 
-    public void install(OSDFVersion oldVersion, OSDFVersion newVersion, OSDFSource source, boolean clearState) {
-        if (source == null) {
-            createState(newVersion, paths.stateSavePath());
-            return;
+    public void install() {
+        boolean cleanInstallation = workfolderInstaller(paths).install(clearState);
+
+        List<FileReplacer> newFiles = newFiles();
+        newFiles.forEach(FileReplacer::prepare);
+        newFiles.forEach(FileReplacer::replace);
+        if (!cleanInstallation) {
+            migrate();
         }
+        announce("Successfully installed " + jarInstaller.version());
+    }
 
-        newJar(newVersion, source);
+    private void migrate() {
+        List<String> processArgs = of("osdf", "migrate");
+        int exitCode = startAndWait(new ProcessBuilder(processArgs).inheritIO());
+        if (exitCode != 0) throw new OSDFException("Migration failed. Please reinstall osdf completely using -c flag");
+    }
 
-        Path scriptPath = of(paths.scriptFolder() + "/" + SCRIPT_NAME);
-        Path tmpScriptPath = of(paths.scriptFolder() + "/_" + SCRIPT_NAME);
-
-        createNewScript(tmpScriptPath, newVersion);
-        if (clearState) {
-            replaceJarAndCreateState(scriptPath, tmpScriptPath, newVersion, oldVersion != null);
-        } else {
-            replaceJarAndUseOldState(scriptPath, tmpScriptPath, newVersion);
-        }
+    private List<FileReplacer> newFiles() {
+        List<FileReplacer> newFiles = new ArrayList<>();
+        newFiles.add(jarInstaller);
+        newFiles.add(versionFile());
+        newFiles.add(scriptInstaller(paths));
         if (!noBashRc) {
-            addScriptToBashrc();
+            newFiles.add(bashrcInstaller(paths));
         }
-        if (!newVersion.equals(oldVersion)) deleteOldJar(oldVersion);
+        return newFiles;
     }
 
-    private void newJar(OSDFVersion newVersion, OSDFSource source) {
-        switch (source) {
-            case REMOTE:
-                downloadJar(newVersion);
-                break;
-            case LOCAL:
-                copyJar(newVersion);
-                break;
-            default:
-                throw new RuntimeException("Unknown jar source");
-        }
-    }
-
-    private void createNewScript(Path tmpScriptPath, OSDFVersion version) {
-        Path pathToJava = get(getProperty("java.home").replace(" ", "\\ "), "bin", "java");
-        String content =
-                "if [ $# -gt 0  ] && [ $1 == \"logs\" ]\n" +
-                        "then\n" +
-                        "        trap '' SIGINT\n" +
-                        "fi\n" +
-                        pathToJava + " -XX:TieredStopAtLevel=1 -jar " + paths.root() + "/" + jarName(version) + " ${@:1}";
-        writeStringToFile(tmpScriptPath, content);
-        execute("chmod +x " + tmpScriptPath);
-    }
-
-    private void replaceJarAndUseOldState(Path scriptPath, Path tmpScriptPath, OSDFVersion newVersion) {
-        allMigrations().apply(paths);
-        OSDFState state = fromFile(paths.newStateSavePath());
-        state.setOsdfVersion(newVersion.toString());
-        state.save(paths.newStateSavePath());
-        execute("mv " + tmpScriptPath + " " + scriptPath);
-        execute("mv " + paths.newStateSavePath() + " " + paths.stateSavePath());
-    }
-
-    private void replaceJarAndCreateState(Path scriptPath, Path tmpScriptPath, OSDFVersion newVersion, boolean saveOldState) {
-        if (saveOldState) execute("mv " + paths.stateSavePath() + " " + paths.oldStateSavePath());
-        createState(newVersion, paths.stateSavePath());
-        execute("mv " + tmpScriptPath + " " + scriptPath);
-    }
-
-    private void addScriptToBashrc() {
-        String newEntry = "PATH=$PATH:" + paths.scriptFolder() + "/";
-
-        Path bashrc = of(getUserDirectoryPath() + "/.bashrc");
-        if (!exists(bashrc)) {
-            writeStringToFile(bashrc, newEntry);
-            return;
-        }
-
-        String bashrcContent = readAll(bashrc);
-        if (!bashrcContent.contains(newEntry)) {
-            writeStringToFile(bashrc, bashrcContent + "\n" + newEntry + "\n");
-        }
-    }
-
-    private void deleteOldJar(OSDFVersion oldVersion) {
-        execute("rm -rf " + paths.root() + "/" + jarName(oldVersion));
-    }
-
-    private void downloadJar(OSDFVersion version) {
-        OSDFState state = fromFile(paths.stateSavePath());
-        OSDFDownloadProperties downloadProperties = properties(propertyGetter(state.getEnv(), paths.configPath()));
-
-        String url = state.getNexusUrl();
-        if (url == null) {
-            warn("Nexus url wasn't provided. Will use url from configs");
-            url = downloadProperties.url();
-        }
-        NexusArtifact nexusArtifact = nexusArtifact(downloadProperties.group(), downloadProperties.artifact(), version.toString(), "jar");
-        nexusClient(url, state.getNexusCredentials()).download(nexusArtifact, of(paths.root() + "/" + jarName(version)));
-    }
-
-    private void copyJar(OSDFVersion version) {
-        execute("cp " + jarPath().toString().replace(" ", "\\ ") + " " + paths.root() + "/osdf-" + version + ".jar");
-    }
-
-    private String jarName(OSDFVersion version) {
-        return "osdf-" + version + ".jar";
+    private FileReplacer versionFile() {
+        return yamlFileReplacer(osdfVersionFile(jarInstaller.version()), "version", paths, paths.settings().osdf());
     }
 }

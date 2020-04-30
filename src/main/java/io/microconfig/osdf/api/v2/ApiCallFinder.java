@@ -15,14 +15,14 @@ import static java.util.Arrays.stream;
 import static java.util.List.of;
 
 @RequiredArgsConstructor
-public class ApiFinder {
+public class ApiCallFinder {
     private final Class<?> apiClass;
 
-    public static ApiFinder finder(Class<?> apiClass) {
-        return new ApiFinder(apiClass);
+    public static ApiCallFinder finder(Class<?> apiClass) {
+        return new ApiCallFinder(apiClass);
     }
 
-    public ApiCall apiCall(List<String> args) {
+    public ApiCall find(List<String> args) {
         return stream(apiClass.getMethods())
                 .filter(method -> hasAnnotation(method, Import.class))
                 .map(method -> resolve(method, args))

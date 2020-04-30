@@ -2,6 +2,7 @@ package io.microconfig.osdf.commands;
 
 import io.microconfig.osdf.components.AbstractOpenShiftComponent;
 import io.microconfig.osdf.exceptions.OSDFException;
+import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 
@@ -17,10 +18,10 @@ import static java.nio.file.Files.newInputStream;
 
 @RequiredArgsConstructor
 public class PropertiesDiffCommand {
-    private final Path componentsPath;
+    private final OSDFPaths paths;
 
     public void show(List<String> components) {
-        componentsLoader(componentsPath, components, null).load().forEach(this::showDiff);
+        componentsLoader(paths, components, null).load().forEach(this::showDiff);
     }
 
     private void showDiff(AbstractOpenShiftComponent component) {

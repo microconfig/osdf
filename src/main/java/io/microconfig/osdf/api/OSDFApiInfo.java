@@ -48,6 +48,12 @@ public class OSDFApiInfo {
         builder.build().printHelp();
     }
 
+    public static void printHelpForMethod(Method method, String fullMethodName) {
+        ParamsContainerBuilder builder = builder(fullMethodName);
+        processAnnotation(method, ConsoleParam.class, param -> builder.add(param.value(), param.type()));
+        builder.build().printHelp();
+    }
+
     public static ParamsContainer paramsFromAnnotations(String methodName, String[] args, List<ConsoleParam> annotations) throws ParseException {
         ParamsContainerBuilder builder = builder(methodName);
         annotations.forEach(param -> builder.add(param.value(), param.type()));

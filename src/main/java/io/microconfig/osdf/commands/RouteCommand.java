@@ -20,7 +20,7 @@ public class RouteCommand {
     private final List<RoutingRuleSetter> ruleSetters;
 
     public void set(String componentName, String rule) {
-        DeploymentComponent component = component(componentName, paths.componentsPath(), oc);
+        DeploymentComponent component = component(componentName, paths, oc);
         try (OpenShiftProject ignored = create(paths, oc).connect()) {
             boolean ruleIsSet = ruleSetters.stream().anyMatch(setter -> setter.set(component, rule));
             if (!ruleIsSet) throw new OSDFException("Unknown routing rule");

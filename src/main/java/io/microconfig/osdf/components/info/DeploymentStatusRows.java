@@ -1,7 +1,6 @@
 package io.microconfig.osdf.components.info;
 
 import io.microconfig.osdf.components.DeploymentComponent;
-import io.microconfig.osdf.components.checker.HealthChecker;
 import io.microconfig.osdf.openshift.Pod;
 import io.microconfig.osdf.printers.ColumnPrinter;
 
@@ -16,18 +15,18 @@ import static java.util.stream.IntStream.range;
 public class DeploymentStatusRows implements RowColumnsWithStatus {
     private final DeploymentComponent component;
     private final ColumnPrinter printer;
-    private final HealthChecker healthChecker;
+    private final boolean withHealthCheck;
     private final boolean status;
 
-    public DeploymentStatusRows(DeploymentComponent component, ColumnPrinter printer, HealthChecker healthChecker) {
+    public DeploymentStatusRows(DeploymentComponent component, ColumnPrinter printer, boolean withHealthCheck) {
         this.component = component;
         this.printer = printer;
-        this.healthChecker = healthChecker;
+        this.withHealthCheck = withHealthCheck;
         this.status = fetch();
     }
 
-    public static DeploymentStatusRows deploymentStatusRows(DeploymentComponent component, ColumnPrinter printer, HealthChecker healthChecker) {
-        return new DeploymentStatusRows(component, printer, healthChecker);
+    public static DeploymentStatusRows deploymentStatusRows(DeploymentComponent component, ColumnPrinter printer, boolean withHealthCheck) {
+        return new DeploymentStatusRows(component, printer, withHealthCheck);
     }
 
     @Override
@@ -48,8 +47,8 @@ public class DeploymentStatusRows implements RowColumnsWithStatus {
     private boolean fetch() {
         DeploymentInfo info = component.info();
         printer.addRow(green(component.getName()), green(component.getVersion()), coloredStatus(info.getStatus()), green(replicas(info)));
-        if (healthChecker != null) {
-            PodsHealthcheckInfo podsInfo = podsInfo(component, healthChecker);
+        if (withHealthCheck) {
+            PodsHealthcheckInfo podsInfo = podsInfo(component);
             addPods(podsInfo.getPods(), podsInfo.getPodsHealth());
             return podsInfo.isHealthy() && info.getStatus() == RUNNING;
         }

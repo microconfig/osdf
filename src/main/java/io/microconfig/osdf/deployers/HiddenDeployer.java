@@ -18,7 +18,7 @@ public class HiddenDeployer implements Deployer {
 
     @Override
     public void deploy(DeploymentComponent component) {
-        if (component.deployed()) throw new OSDFException("Component already deployed");
+        if (component.isDeployed()) throw new OSDFException("Component already deployed");
         if (!virtualServiceExists(component)) throw new OSDFException("Virtual service doesn't exist");
         basicDeployer().deploy(component);
     }

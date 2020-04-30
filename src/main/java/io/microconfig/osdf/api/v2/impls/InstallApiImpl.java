@@ -2,10 +2,14 @@ package io.microconfig.osdf.api.v2.impls;
 
 import io.microconfig.osdf.api.v2.apis.InstallApi;
 import io.microconfig.osdf.commands.InstallCommand;
+import io.microconfig.osdf.install.jarinstaller.JarInstaller;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
-import static io.microconfig.osdf.state.OSDFVersion.fromJar;
+import static io.microconfig.osdf.install.jarinstaller.FakeJarInstaller.fakeJarInstaller;
+import static io.microconfig.osdf.install.jarinstaller.LocalJarInstaller.jarInstaller;
+import static io.microconfig.osdf.state.OSDFVersion.fromString;
+import static io.microconfig.osdf.utils.JarUtils.isJar;
 
 @RequiredArgsConstructor
 public class InstallApiImpl implements InstallApi {
@@ -17,6 +21,7 @@ public class InstallApiImpl implements InstallApi {
 
     @Override
     public void install(Boolean noBashRc, Boolean clearState) {
-        new InstallCommand(paths, fromJar(), noBashRc, clearState).install();
+        JarInstaller jarInstaller = isJar() ? jarInstaller(paths) : fakeJarInstaller(paths, fromString("1.0.0"));
+        new InstallCommand(paths, jarInstaller, clearState, noBashRc).install();
     }
 }

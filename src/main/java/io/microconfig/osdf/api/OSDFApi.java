@@ -6,7 +6,7 @@ import io.microconfig.osdf.api.annotation.Hidden;
 import io.microconfig.osdf.api.parameter.*;
 import io.microconfig.osdf.nexus.NexusArtifact;
 import io.microconfig.osdf.configs.ConfigsSource;
-import io.microconfig.osdf.state.Credentials;
+import io.microconfig.osdf.common.Credentials;
 import io.microconfig.osdf.openshift.OpenShiftCredentials;
 
 import java.nio.file.Path;
