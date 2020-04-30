@@ -5,7 +5,6 @@ import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.Pod;
 import io.microconfig.osdf.paths.OSDFPaths;
-import io.microconfig.utils.Logger;
 import lombok.Getter;
 
 import java.nio.file.Path;
@@ -15,7 +14,6 @@ import static io.microconfig.osdf.components.loader.ComponentsLoaderImpl.compone
 import static io.microconfig.osdf.components.properties.DeployProperties.deployProperties;
 import static io.microconfig.osdf.istio.VirtualService.virtualService;
 import static io.microconfig.osdf.openshift.Pod.fromOpenShiftNotation;
-import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 import static java.util.List.of;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
@@ -60,13 +58,18 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
     }
 
     public void stop() {
-        String output = oc.execute("oc scale dc " + fullName() + " --replicas=0");
-        Logger.info("oc: " + output);
+        scale(0);
     }
 
+
     public void restart() {
-        stop();
-        upload();
+        int replicas = info().getReplicas();
+        if (replicas > 0) {
+            scale(0);
+            scale(replicas);
+        } else {
+            upload();
+        }
     }
 
     public List<Pod> pods() {
@@ -83,15 +86,8 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
     }
 
     public boolean isRunning() {
-        List<String> lines = oc.executeAndReadLines("oc get dc " + name + "." + version + " -o custom-columns=" +
-                "replicas:.spec.replicas," +
-                "available:.status.availableReplicas");
-        if (lines.get(0).toLowerCase().contains("not found")) return false;
-        String[] fields = lines.get(1).split("\\s+");
-        Integer replicas = castToInteger(fields[0]);
-        Integer available = castToInteger(fields[1]);
-        if (replicas == null || available == null) return false;
-        return replicas.equals(available) && available > 0;
+        DeploymentInfo info = info();
+        return info.getReplicas() == info.getAvailableReplicas() && info.getAvailableReplicas() > 0;
     }
 
     public DeploymentInfo info() {
@@ -104,5 +100,9 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
                 .filter(line -> line.length() > 0)
                 .map(notation -> fromNotation(notation, configDir, oc))
                 .collect(toUnmodifiableList());
+    }
+
+    private void scale(int replicas) {
+        oc.execute("oc scale dc " + fullName() + " --replicas=" + replicas);
     }
 }
