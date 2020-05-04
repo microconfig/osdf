@@ -7,6 +7,10 @@ metadata:
     projectVersion: ${this@version}
     configVersion: ${this@config.version}
 spec:
+  selector:
+    application: ${this@name}
+    projectVersion: ${this@version}
+    configVersion: ${this@config.version}
   template:
     metadata:
       labels:
