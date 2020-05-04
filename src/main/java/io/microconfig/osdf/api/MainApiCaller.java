@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static io.microconfig.osdf.api.ApiCallFinder.finder;
 import static io.microconfig.osdf.api.MainApiReader.apiInfo;
 import static io.microconfig.osdf.api.implementations.ComponentsApiImpl.componentsApi;
 import static io.microconfig.osdf.api.implementations.FrequentlyUsedApiImpl.frequentlyUsedApi;
@@ -32,7 +33,7 @@ public class MainApiCaller implements ApiCaller {
             return;
         }
         ApiCallerImpl.builder()
-                .finder(ApiCallFinder.finder(MainApi.class))
+                .finder(finder(MainApi.class))
                 .addImpl(FrequentlyUsedApi.class, frequentlyUsedApi(paths))
                 .addImpl(InstallApi.class, installApi(paths))
                 .addImpl(InitializationApi.class, initializationApi(paths))
