@@ -1,0 +1,7 @@
+helloworld:
+  components:
+    - helloworld-springboot
+
+helloworld-istio:
+  components:
+    - helloworld-springboot-istio

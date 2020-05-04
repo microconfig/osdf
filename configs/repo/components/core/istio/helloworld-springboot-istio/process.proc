@@ -1,0 +1,3 @@
+#include process
+
+java.main=io.microconfig.example.producer.ProducerStarter
