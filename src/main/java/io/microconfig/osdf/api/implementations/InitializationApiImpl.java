@@ -59,9 +59,10 @@ public class InitializationApiImpl implements InitializationApi {
     @Override
     public void openshift(Credentials credentials, String token) {
         if (credentials == null && token == null) throw new OSDFException("Provide credentials (-c) or token (-t) parameter");
+        if (credentials != null && token != null) throw new OSDFException("Choose only one authentication type");
         SettingsFile<OpenShiftCredentials> settingsFile = settingsFile(OpenShiftCredentials.class, paths.settings().openshift());
-        settingsFile.setIfNotNull(OpenShiftCredentials::setCredentials, credentials);
-        settingsFile.setIfNotNull(OpenShiftCredentials::setToken, token);
+        settingsFile.getSettings().setCredentials(credentials);
+        settingsFile.getSettings().setToken(token);
         settingsFile.save();
     }
 
