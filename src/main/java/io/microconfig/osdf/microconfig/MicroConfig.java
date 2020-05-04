@@ -1,5 +1,6 @@
 package io.microconfig.osdf.microconfig;
 
+import io.microconfig.osdf.exceptions.MicroConfigException;
 import io.microconfig.osdf.microconfig.files.MicroConfigFilesState;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
@@ -44,14 +45,18 @@ public class MicroConfig {
     }
 
     private void generateConfigs(String env, List<String> components, Path from, Path to) {
-        searchConfigsIn(from.toFile())
-                .withDestinationDir(to.toFile())
-                .inEnvironment(env)
-                .findComponentsFrom(emptyList(), components)
-                .getPropertiesFor(eachConfigType())
-                .resolveBy(searchConfigsIn(from.toFile()).withDestinationDir(to.toFile()).resolver())
-                .forEachComponent(resolveTemplatesBy(searchConfigsIn(from.toFile()).withDestinationDir(to.toFile()).resolver()))
-                .save(toFileIn(to.toFile(), withConfigDiff()));
+        try {
+            searchConfigsIn(from.toFile())
+                    .withDestinationDir(to.toFile())
+                    .inEnvironment(env)
+                    .findComponentsFrom(emptyList(), components)
+                    .getPropertiesFor(eachConfigType())
+                    .resolveBy(searchConfigsIn(from.toFile()).withDestinationDir(to.toFile()).resolver())
+                    .forEachComponent(resolveTemplatesBy(searchConfigsIn(from.toFile()).withDestinationDir(to.toFile()).resolver()))
+                    .save(toFileIn(to.toFile(), withConfigDiff()));
+        } catch (RuntimeException e) {
+            throw new MicroConfigException();
+        }
         createDirectoryIfNotExists(to);
     }
 

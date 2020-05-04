@@ -6,6 +6,7 @@ import io.microconfig.core.environments.Environment;
 import io.microconfig.core.properties.Property;
 import io.microconfig.core.properties.Resolver;
 import io.microconfig.osdf.configs.ConfigsSettings;
+import io.microconfig.osdf.exceptions.MicroConfigException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
@@ -23,11 +24,15 @@ public class PropertyGetter {
                 .getSettings()
                 .getEnv();
 
-        Microconfig microconfig = searchConfigsIn(paths.configsPath().toFile());
-        return new PropertyGetter(
-                microconfig.inEnvironment(env),
-                microconfig.resolver()
-        );
+        try {
+            Microconfig microconfig = searchConfigsIn(paths.configsPath().toFile());
+            return new PropertyGetter(
+                    microconfig.inEnvironment(env),
+                    microconfig.resolver()
+            );
+        } catch (RuntimeException e) {
+            throw new MicroConfigException();
+        }
     }
 
     public String get(ConfigType type, String component, String property) {

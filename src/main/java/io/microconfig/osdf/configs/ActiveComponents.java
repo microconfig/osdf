@@ -3,6 +3,7 @@ package io.microconfig.osdf.configs;
 import io.microconfig.core.environments.Component;
 import io.microconfig.core.environments.Components;
 import io.microconfig.core.environments.Environment;
+import io.microconfig.osdf.exceptions.MicroConfigException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
@@ -21,11 +22,15 @@ public class ActiveComponents {
         String group = settings.getGroup();
         String env = settings.getEnv();
 
-        Environment environment = searchConfigsIn(paths.configsPath().toFile()).inEnvironment(env);
-        if (group == null || group.equals("ALL")) {
-            return new ActiveComponents(toComponentNames(environment.getAllComponents()));
+        try {
+            Environment environment = searchConfigsIn(paths.configsPath().toFile()).inEnvironment(env);
+            if (group == null || group.equals("ALL")) {
+                return new ActiveComponents(toComponentNames(environment.getAllComponents()));
+            }
+            return new ActiveComponents(toComponentNames(environment.getGroupWithName(group).getComponents()));
+        } catch (RuntimeException e) {
+            throw new MicroConfigException();
         }
-        return new ActiveComponents(toComponentNames(environment.getGroupWithName(group).getComponents()));
     }
 
     private static List<String> toComponentNames(Components components) {
