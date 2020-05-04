@@ -23,6 +23,6 @@ public class OSDFStarter {
 
     private boolean updatableCall(String[] args) {
         if (args.length == 0) return false;
-        return of("install", "init", "state", "update", "help").stream().noneMatch(command -> command.equals(args[0]));
+        return of("install", "init", "state", "update", "help", "migrate").stream().noneMatch(command -> command.equals(args[0]));
     }
 }
