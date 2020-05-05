@@ -1,8 +1,8 @@
 package io.microconfig.osdf.commands;
 
 import io.microconfig.osdf.components.checker.HealthChecker;
-import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.printers.ColumnPrinter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,6 @@ import java.io.PrintStream;
 import java.util.List;
 
 import static io.microconfig.osdf.printers.ColumnPrinter.printer;
-import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
 import static io.microconfig.osdf.utils.MockObjects.loggedInOc;
 import static io.microconfig.utils.ConsoleColor.green;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,7 +23,7 @@ class StatusCommandTest {
 
     @BeforeEach
     void createConfigs() throws IOException {
-        paths = createConfigsAndInstallInit();
+        paths = null; //TODO
     }
 
     @Test
@@ -74,7 +73,7 @@ class StatusCommandTest {
     private String getStatusOutput(OCExecutor oc, HealthChecker healthChecker, ColumnPrinter printer) {
         ByteArrayOutputStream actualOut = new ByteArrayOutputStream();
         System.setOut(new PrintStream(actualOut));
-        new StatusCommand(paths, oc, healthChecker, printer).run(List.of("helloworld-springboot"));
+        new StatusCommand(paths, oc, printer, true).run(List.of("helloworld-springboot")); //TODO
         return actualOut.toString();
     }
 }

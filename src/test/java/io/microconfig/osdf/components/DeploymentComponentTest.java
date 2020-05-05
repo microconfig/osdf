@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
+import static io.microconfig.osdf.openshift.Pod.fromPods;
 import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -24,7 +24,7 @@ class DeploymentComponentTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        OSDFPaths paths = createConfigsAndInstallInit();
+        OSDFPaths paths = null; // createConfigsAndInstallInit(); TODO
         oc = mock(OCExecutor.class);
         component = new DeploymentComponent("helloworld-springboot", "latest", Path.of(paths.componentsPath() + "/helloworld-springboot"), oc);
 
@@ -72,7 +72,7 @@ class DeploymentComponentTest {
                 "pod/pod2"
         ));
 
-        Pod pod = component.pod("pod1");
+        Pod pod = fromPods(component.pods(), "pod1");
         verify(oc).executeAndReadLines(commands.get("pods"));
         assertEquals("pod1", pod.getName());
     }
@@ -84,7 +84,7 @@ class DeploymentComponentTest {
                 "pod/pod2"
         ));
 
-        assertThrows(RuntimeException.class, () -> component.pod("pod3"));
+        assertThrows(RuntimeException.class, () -> fromPods(component.pods(), "pod3"));
         verify(oc).executeAndReadLines(commands.get("pods"));
     }
 

@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
 import static java.util.List.of;
 import static org.mockito.Mockito.*;
 
@@ -21,7 +20,7 @@ class AbstractOpenShiftComponentTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        OSDFPaths paths = createConfigsAndInstallInit();
+        OSDFPaths paths = null; //TODO
         oc = mock(OCExecutor.class);
         component = new DeploymentComponent("helloworld-springboot", "latest", Path.of(paths.componentsPath() + "/helloworld-springboot"), oc);
 

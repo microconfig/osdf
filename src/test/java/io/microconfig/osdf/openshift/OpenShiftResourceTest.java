@@ -10,7 +10,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import static io.microconfig.osdf.openshift.OpenShiftResource.*;
-import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
 import static java.nio.file.Path.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
@@ -21,7 +20,7 @@ class OpenShiftResourceTest {
 
     @BeforeEach
     void createConfigs() throws IOException {
-        paths = createConfigsAndInstallInit();
+        paths = null; //TODO
     }
 
     @Test

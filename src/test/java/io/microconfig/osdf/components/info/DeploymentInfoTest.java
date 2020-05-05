@@ -2,9 +2,9 @@ package io.microconfig.osdf.components.info;
 
 import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.components.checker.HealthChecker;
-import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.Pod;
+import io.microconfig.osdf.paths.OSDFPaths;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +14,6 @@ import java.nio.file.Path;
 import static io.microconfig.osdf.components.info.DeploymentInfo.info;
 import static io.microconfig.osdf.components.info.DeploymentStatus.*;
 import static io.microconfig.osdf.components.info.PodsHealthcheckInfo.podsInfo;
-import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
 import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -29,7 +28,7 @@ class DeploymentInfoTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        OSDFPaths paths = createConfigsAndInstallInit();
+        OSDFPaths paths = null; //TODO
         oc = mock(OCExecutor.class);
         command = "oc get dc helloworld-springboot.latest -o custom-columns=" +
                 "replicas:.spec.replicas," +
@@ -77,7 +76,7 @@ class DeploymentInfoTest {
         assertEquals(2, info.getReplicas());
         assertEquals("local", info.getConfigVersion());
         assertEquals("latest", info.getProjectVersion());
-        PodsHealthcheckInfo podsInfo = podsInfo(component, healthChecker);
+        PodsHealthcheckInfo podsInfo = podsInfo(component);
         assertEquals(of(true, false), podsInfo.getPodsHealth());
         assertEquals(of(pod1, pod2), podsInfo.getPods());
     }
