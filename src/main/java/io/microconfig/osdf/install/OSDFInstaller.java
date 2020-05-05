@@ -23,9 +23,10 @@ public class OSDFInstaller {
     private final JarInstaller jarInstaller;
     private final boolean clearState;
     private final boolean noBashRc;
+    private final boolean withMigrations;
 
     public static OSDFInstaller osdfInstaller(OSDFPaths paths, JarInstaller jarInstaller, boolean clearState, boolean noBashRc) {
-        return new OSDFInstaller(paths, jarInstaller, clearState, noBashRc);
+        return new OSDFInstaller(paths, jarInstaller, clearState, noBashRc, true);
     }
 
     public void install() {
@@ -34,7 +35,7 @@ public class OSDFInstaller {
         List<FileReplacer> newFiles = newFiles();
         newFiles.forEach(FileReplacer::prepare);
         newFiles.forEach(FileReplacer::replace);
-        if (!cleanInstallation) {
+        if (withMigrations && !cleanInstallation) {
             migrate();
         }
         announce("Successfully installed " + jarInstaller.version());
