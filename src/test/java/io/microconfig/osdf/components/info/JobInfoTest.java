@@ -6,6 +6,7 @@ import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 import static io.microconfig.osdf.commandline.CommandLineOutput.errorOutput;
@@ -25,8 +26,9 @@ class JobInfoTest {
     private OCExecutor oc;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         oc = loggedInOc();
+        context.initDev();
     }
 
     @Test

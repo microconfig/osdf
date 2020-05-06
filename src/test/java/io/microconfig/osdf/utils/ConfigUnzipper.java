@@ -26,7 +26,7 @@ public class ConfigUnzipper {
         }
         if (!exists(of("/tmp/configs.zip"))) {
             InputStream resourceAsStream = ConfigUnzipper.class.getClassLoader().getResourceAsStream(resourceName);
-            if (resourceAsStream == null) throw new IOException("Couldn't read resource");
+            if (resourceAsStream == null) throw new IOException("Couldn't read resource " + resourceName);
             copy(resourceAsStream, of("/tmp/configs.zip"));
         }
         execute("unzip /tmp/configs.zip" + " -d " + path);
