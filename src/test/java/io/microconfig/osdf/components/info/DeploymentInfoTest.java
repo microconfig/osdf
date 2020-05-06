@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import static io.microconfig.osdf.components.info.DeploymentInfo.info;
 import static io.microconfig.osdf.components.info.DeploymentStatus.*;
 import static io.microconfig.osdf.components.info.PodsHealthcheckInfo.podsInfo;
+import static io.microconfig.osdf.utils.OCCommands.deploymentInfoCustomColumns;
 import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -30,13 +31,7 @@ class DeploymentInfoTest {
     void setUp() throws IOException {
         OSDFPaths paths = null; //TODO
         oc = mock(OCExecutor.class);
-        command = "oc get dc helloworld-springboot.latest -o custom-columns=" +
-                "replicas:.spec.replicas," +
-                "current:.status.replicas," +
-                "available:.status.availableReplicas," +
-                "unavailable:.status.unavailableReplicas," +
-                "projectVersion:.metadata.labels.projectVersion," +
-                "configVersion:.metadata.labels.configVersion";
+        command = "oc get dc helloworld-springboot.latest " + deploymentInfoCustomColumns();
 //        when(oc.executeAndReadLines(command, true)).thenReturn(of(
 //                "replicas   current   available   unavailable   projectVersion   configVersion",
 //                "2          2         2           0             latest           local"

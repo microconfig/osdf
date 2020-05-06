@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import static io.microconfig.osdf.api.implementations.InitializationApiImpl.initializationApi;
 import static io.microconfig.osdf.install.OSDFInstaller.osdfInstaller;
 import static io.microconfig.osdf.install.jarinstaller.FakeJarInstaller.fakeJarInstaller;
 import static io.microconfig.osdf.state.OSDFVersion.fromString;
@@ -41,5 +42,12 @@ public class TestContext {
 
     public void prepareConfigs() throws IOException {
         configUnzipper(CONFIGS_PATH, "configs.zip").unzip();
+    }
+
+    public void initDev() throws IOException {
+        install();
+        prepareConfigs();
+        initializationApi(paths).localConfigs(CONFIGS_PATH);
+        initializationApi(paths).configs("dev", null);
     }
 }
