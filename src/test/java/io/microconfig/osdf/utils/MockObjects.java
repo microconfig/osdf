@@ -8,7 +8,7 @@ import static org.mockito.Mockito.*;
 public class MockObjects {
     public static OCExecutor loggedInOc() {
         OCExecutor oc = mock(OCExecutor.class);
-        when(oc.execute("oc project unknown")).thenReturn(output("ok"));
+        when(oc.execute("oc project default")).thenReturn(output("ok"));
         return oc;
     }
 }
