@@ -14,7 +14,8 @@ import java.util.stream.Stream;
 import static io.microconfig.osdf.api.implementations.InitializationApiImpl.initializationApi;
 import static io.microconfig.osdf.utils.TestContext.CONFIGS_PATH;
 import static io.microconfig.osdf.utils.TestContext.defaultContext;
-import static java.nio.file.Files.*;
+import static java.nio.file.Files.exists;
+import static java.nio.file.Files.list;
 import static java.util.List.of;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.junit.jupiter.api.Assertions.*;
@@ -70,5 +71,14 @@ class InitializationApiImplTest {
     @Test
     void exceptionIfBothArgsForOpenShiftInit() {
         assertThrows(OSDFException.class, () -> initializationApi(context.getPaths()).openshift(Credentials.of("user:pass"), "token"));
+    }
+
+    @Test
+    void initOpenShift() {
+        initializationApi(context.getPaths()).openshift(Credentials.of("user:pass"), null);
+        exists(context.getPaths().settings().openshift());
+
+        initializationApi(context.getPaths()).openshift(null, "token");
+        exists(context.getPaths().settings().openshift());
     }
 }
