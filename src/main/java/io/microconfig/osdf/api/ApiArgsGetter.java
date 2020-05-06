@@ -3,6 +3,7 @@ package io.microconfig.osdf.api;
 import io.microconfig.osdf.api.annotation.ConsoleParam;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.parameters.ParamsContainer;
+import io.microconfig.osdf.parameters.ParamsContainerBuilder;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.cli.ParseException;
 
@@ -10,7 +11,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.microconfig.osdf.api.ApiMethodReader.apiMethodReader;
+import static io.microconfig.osdf.parameters.ParamsContainerBuilder.builder;
 import static io.microconfig.osdf.utils.ReflectionUtils.annotations;
 import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 import static java.util.Arrays.asList;
@@ -36,7 +37,7 @@ public class ApiArgsGetter {
         List<Object> result = plainCallArgs(plainCallArgs, parameterTypes);
 
         List<ConsoleParam> annotationsNotProcessed = annotations.subList(result.size(), annotations.size());
-        ParamsContainer params = apiMethodReader(method).paramsFromAnnotations(argsWithFlag, annotationsNotProcessed);
+        ParamsContainer params = paramsFromAnnotations(argsWithFlag, annotationsNotProcessed);
         annotationsNotProcessed.forEach(param -> result.add(params.get(param.value())));
 
         return result.toArray();
@@ -71,5 +72,11 @@ public class ApiArgsGetter {
                 .filter(i -> args[i].startsWith("-"))
                 .findFirst()
                 .orElse(args.length);
+    }
+
+    private ParamsContainer paramsFromAnnotations(String[] args, List<ConsoleParam> annotations) throws ParseException {
+        ParamsContainerBuilder builder = builder(method.getName());
+        annotations.forEach(param -> builder.add(param.value(), param.type()));
+        return builder.build(args);
     }
 }

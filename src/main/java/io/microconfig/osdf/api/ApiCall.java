@@ -10,6 +10,7 @@ import java.util.List;
 
 import static io.microconfig.osdf.api.ApiArgsGetter.argsGetter;
 import static io.microconfig.osdf.api.ApiReader.reader;
+import static io.microconfig.osdf.api.MethodInvoker.methodInvoker;
 
 @RequiredArgsConstructor
 public class ApiCall {
@@ -26,7 +27,7 @@ public class ApiCall {
     }
 
     public void invoke(Object implementation) {
-        MethodInvoker.methodInvoker(method, implementation, methodArgs()).invoke();
+        methodInvoker(method, implementation, methodArgs()).invoke();
     }
 
     private Object[] methodArgs() {

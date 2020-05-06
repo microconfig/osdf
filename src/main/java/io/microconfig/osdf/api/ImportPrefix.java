@@ -19,7 +19,9 @@ public class ImportPrefix {
     }
 
     public List<String> toList() {
-        return asList(toString().split(" "));
+        String prefix = toString();
+        if (prefix.isEmpty()) return emptyList();
+        return asList(prefix.split(" "));
     }
 
     public String toString() {
