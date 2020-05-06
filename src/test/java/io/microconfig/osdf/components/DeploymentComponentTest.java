@@ -2,7 +2,7 @@ package io.microconfig.osdf.components;
 
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.Pod;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,46 +12,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.microconfig.osdf.commandline.CommandLineOutput.output;
 import static io.microconfig.osdf.openshift.Pod.fromPods;
+import static io.microconfig.osdf.utils.TestContext.defaultContext;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 class DeploymentComponentTest {
+    private final TestContext context = defaultContext();
+    private final String COMPONENT_NAME = "helloworld-springboot";
+    private final String COMPONENT_VERSION = "latest";
+
     private final Map<String, String> commands = new HashMap<>();
     private OCExecutor oc;
-    private DeploymentComponent component;
-
-    @BeforeEach
-    void setUp() throws IOException {
-        OSDFPaths paths = null; // createConfigsAndInstallInit(); TODO
-        oc = mock(OCExecutor.class);
-        component = new DeploymentComponent("helloworld-springboot", "latest", Path.of(paths.componentsPath() + "/helloworld-springboot"), oc);
-
-        commands.put("stop", "oc scale dc helloworld-springboot.latest --replicas=0");
-        commands.put("pods", "oc get pods -l \"application in (helloworld-springboot), projectVersion in (latest)\" -o name");
-        commands.put("upload", "oc apply -f " + paths.componentsPath() + "/helloworld-springboot/openshift");
-
-//        when(oc.execute(commands.get("stop"))).thenReturn("scaled");
-//        when(oc.executeAndReadLines(commands.get("upload"))).thenReturn(of("resource1 configured", "resource2 configured"));
-    }
 
     @Test
     void testStop() {
-        component.stop();
+        component().stop();
         verify(oc).execute(commands.get("stop"));
     }
 
     @Test
     void testPods() {
-//        when(oc.executeAndReadLines(commands.get("pods"))).thenReturn(of(
-//                "pod/pod1",
-//                "pod/pod2"
-//        ));
+        when(oc.execute(commands.get("pods"))).thenReturn(output(
+                "pod/pod1" + "\n" +
+                "pod/pod2"
+        ));
 
-        List<Pod> pods = component.pods();
-//        verify(oc).executeAndReadLines(commands.get("pods"));
+        List<Pod> pods = component().pods();
         assertEquals(2, pods.size());
         assertEquals("pod1", pods.get(0).getName());
         assertEquals("pod2", pods.get(1).getName());
@@ -59,40 +48,48 @@ class DeploymentComponentTest {
 
     @Test
     void testEmptyPods() {
-//        when(oc.executeAndReadLines(commands.get("pods"))).thenReturn(of());
+        when(oc.execute(commands.get("pods"))).thenReturn(output(""));
 
-        List<Pod> pods = component.pods();
-//        verify(oc).executeAndReadLines(commands.get("pods"));
+        List<Pod> pods = component().pods();
         assertEquals(0, pods.size());
     }
 
     @Test
     void testGetPod() {
-//        when(oc.executeAndReadLines(commands.get("pods"))).thenReturn(of(
-//                "pod/pod1",
-//                "pod/pod2"
-//        ));
+        when(oc.execute(commands.get("pods"))).thenReturn(output(
+                "pod/pod1" + "\n" +
+                "pod/pod2"
+        ));
 
-        Pod pod = fromPods(component.pods(), "pod1");
-//        verify(oc).executeAndReadLines(commands.get("pods"));
+        Pod pod = fromPods(component().pods(), "pod1");
         assertEquals("pod1", pod.getName());
     }
 
     @Test
     void testGetUnknownPod() {
-//        when(oc.executeAndReadLines(commands.get("pods"))).thenReturn(of(
-//                "pod/pod1",
-//                "pod/pod2"
-//        ));
+        when(oc.execute(commands.get("pods"))).thenReturn(output(
+                "pod/pod1" + "\n" +
+                "pod/pod2"
+        ));
 
-        assertThrows(RuntimeException.class, () -> fromPods(component.pods(), "pod3"));
-//        verify(oc).executeAndReadLines(commands.get("pods"));
+        assertThrows(RuntimeException.class, () -> fromPods(component().pods(), "pod3"));
+        verify(oc).execute(commands.get("pods"));
     }
 
-    @Test
-    void testRestart() {
-        component.restart();
-//        verify(oc).execute(commands.get("stop"));
-//        verify(oc).executeAndReadLines(commands.get("upload"));
+    @BeforeEach
+    void setUp() throws IOException {
+        context.initDev();
+
+        commands.put("stop", "oc scale dc " + COMPONENT_NAME + "." + COMPONENT_VERSION + " --replicas=0");
+        commands.put("pods", "oc get pods -l \"application in (" + COMPONENT_NAME + "), projectVersion in (" + COMPONENT_VERSION + ")\" -o name");
+        commands.put("upload", "oc apply -f " + context.getPaths().componentsPath() + "/" + COMPONENT_NAME + "/openshift");
+
+        oc = mock(OCExecutor.class);
+        when(oc.execute(commands.get("stop"))).thenReturn(output("scaled"));
+        when(oc.execute(commands.get("upload"))).thenReturn(output("uploaded"));
+    }
+
+    private DeploymentComponent component() {
+        return new DeploymentComponent(COMPONENT_NAME, COMPONENT_VERSION, Path.of(context.getPaths().componentsPath() + "/" + COMPONENT_NAME), oc);
     }
 }
