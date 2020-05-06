@@ -16,6 +16,7 @@ import static io.microconfig.osdf.utils.TestContext.CONFIGS_PATH;
 import static io.microconfig.osdf.utils.TestContext.defaultContext;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Files.list;
+import static java.util.Comparator.naturalOrder;
 import static java.util.List.of;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,8 +48,9 @@ class InitializationApiImplTest {
         try (Stream<Path> files = list(context.getPaths().componentsPath())) {
             List<String> builtComponents = files.map(Path::getFileName)
                     .map(Path::toString)
+                    .sorted(naturalOrder())
                     .collect(toUnmodifiableList());
-            assertEquals(of("helloworld-springboot"), builtComponents);
+            assertEquals(of("fakejob", "helloworld-springboot"), builtComponents);
         }
     }
 
