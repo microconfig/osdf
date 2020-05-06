@@ -64,7 +64,7 @@ public class DefaultConfigsCreator {
 
     private void configs() {
         createSettingsFile(ConfigsSettings.class, paths.settings().configs(), settings -> {
-            settings.setEnv("default");
+            settings.setEnv("dev");
             settings.setGroup(null);
             settings.setConfigsSource(LOCAL);
             settings.setProjectVersion(null);

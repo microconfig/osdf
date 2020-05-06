@@ -1,7 +1,6 @@
 package io.microconfig.osdf.microconfig.properties;
 
 import io.microconfig.osdf.paths.OSDFPaths;
-import io.microconfig.osdf.utils.ConfigUnzipper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +18,7 @@ class PropertyGetterSetterTest {
 
     @BeforeEach
     void createConfigs() throws IOException {
-        ConfigUnzipper.unzip("configs.zip", DEFAULT_CONFIGS_PATH);
+//        ConfigUnzipper.unzip("configs.zip", DEFAULT_CONFIGS_PATH); //TODO
     }
 
     @Test
