@@ -44,7 +44,8 @@ public class Pod implements Comparable<Pod> {
     }
 
     public void delete() {
-        oc.execute("oc delete pod " + name);
+        oc.execute("oc delete pod " + name)
+                .throwExceptionIfError();
     }
 
     public void logs() {

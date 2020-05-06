@@ -21,12 +21,13 @@ public class JobInfo {
     }
 
     public static JobInfo jobInfo(String name, OCExecutor oc) {
-        List<String> lines = oc.executeAndReadLines("oc get job " + name + " -o custom-columns=" +
+        List<String> lines = oc.execute("oc get job " + name + " -o custom-columns=" +
                 "failed:.status.failed," +
                 "succeeded:.status.succeeded," +
                 "active:.status.active," +
                 "projectVersion:.metadata.labels.projectVersion," +
-                "configVersion:.metadata.labels.configVersion", true);
+                "configVersion:.metadata.labels.configVersion")
+                .getOutputLines();
 
         if (lines.get(0).toLowerCase().contains("not found")) return notExecuted();
         String[] fields = lines.get(1).split("\\s+");

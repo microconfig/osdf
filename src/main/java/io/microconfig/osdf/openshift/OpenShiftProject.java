@@ -36,15 +36,17 @@ public class OpenShiftProject implements AutoCloseable {
     }
 
     private void login() {
-        oc.execute("oc login " + clusterUrl + credentials.getLoginParams());
+        oc.execute("oc login " + clusterUrl + credentials.getLoginParams())
+                .throwExceptionIfError();
     }
 
     private void setProjectCommand() {
-        oc.execute("oc project " + project);
+        oc.execute("oc project " + project)
+                .throwExceptionIfError();
     }
 
     private boolean isLoggedIn() {
-        String projectString = oc.execute("oc project " + project, true).toLowerCase();
+        String projectString = oc.execute("oc project " + project).getOutput().toLowerCase();
         return of("not a member", "please login", "unauthorized")
                 .stream()
                 .noneMatch(projectString::contains);

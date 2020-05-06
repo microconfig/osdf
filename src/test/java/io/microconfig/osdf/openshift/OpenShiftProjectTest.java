@@ -17,7 +17,7 @@ class OpenShiftProjectTest {
     @BeforeEach
     void setUp() {
         oc = mock(OCExecutor.class);
-        when(oc.execute("oc project project", true)).thenReturn("not a member").thenReturn("ok");
+//        when(oc.execute("oc project project", true)).thenReturn("not a member").thenReturn("ok");
 
         project = new OpenShiftProject("url", "project",
                 OpenShiftCredentials.of("username:password"), oc);

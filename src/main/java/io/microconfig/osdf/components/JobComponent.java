@@ -20,7 +20,10 @@ public class JobComponent extends AbstractOpenShiftComponent {
     }
 
     public boolean exists() {
-        return !oc.execute("oc get job " + name, true).toLowerCase().contains("error");
+        return !oc.execute("oc get job " + name)
+                .getOutput()
+                .toLowerCase()
+                .contains("error");
     }
 
     public JobStatus status() {

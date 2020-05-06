@@ -73,7 +73,9 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
     }
 
     public List<Pod> pods() {
-        return oc.executeAndReadLines("oc get pods " + label() + " -o name")
+        return oc.execute("oc get pods " + label() + " -o name")
+                .throwExceptionIfError()
+                .getOutputLines()
                 .stream()
                 .filter(line -> line.length() > 0)
                 .map(notation -> fromOpenShiftNotation(notation, name, oc))
@@ -82,7 +84,7 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
     }
 
     public boolean isDeployed() {
-        return !oc.execute("oc get dc " + fullName(), true).contains("not found");
+        return !oc.execute("oc get dc " + fullName()).getOutput().contains("not found");
     }
 
     public boolean isRunning() {
@@ -95,7 +97,9 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
     }
 
     public List<DeploymentComponent> getDeployedComponents() {
-        return oc.executeAndReadLines("oc get dc -l application=" + name + " -o name")
+        return oc.execute("oc get dc -l application=" + name + " -o name")
+                .throwExceptionIfError()
+                .getOutputLines()
                 .stream()
                 .filter(line -> line.length() > 0)
                 .map(notation -> fromNotation(notation, configDir, oc))
@@ -103,6 +107,7 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
     }
 
     private void scale(int replicas) {
-        oc.execute("oc scale dc " + fullName() + " --replicas=" + replicas);
+        oc.execute("oc scale dc " + fullName() + " --replicas=" + replicas)
+                .throwExceptionIfError();
     }
 }

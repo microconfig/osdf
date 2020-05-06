@@ -13,7 +13,6 @@ import static io.microconfig.osdf.openshift.OpenShiftResource.*;
 import static java.nio.file.Path.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 class OpenShiftResourceTest {
     private OSDFPaths paths;
@@ -46,7 +45,7 @@ class OpenShiftResourceTest {
     @Test
     void testDelete() {
         OCExecutor oc = Mockito.mock(OCExecutor.class);
-        when(oc.execute("oc delete kind name")).thenReturn("deleted");
+//        when(oc.execute("oc delete kind name")).thenReturn("deleted");
         fromOpenShiftNotation("kind/name", oc).delete();
         verify(oc).execute("oc delete kind name");
     }

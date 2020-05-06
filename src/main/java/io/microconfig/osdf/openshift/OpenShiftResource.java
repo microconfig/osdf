@@ -64,12 +64,13 @@ public class OpenShiftResource {
     public static void uploadResource(OCExecutor oc, Object resource) {
         Path tmpPath = Path.of("/tmp/resource.yaml");
         dump(resource, tmpPath);
-        oc.execute("oc apply -f " + tmpPath);
+        oc.execute("oc apply -f " + tmpPath)
+                .throwExceptionIfError();
     }
 
     public void delete() {
-        var command = "oc delete " + kind + " " + name;
-        oc.execute(command);
+        oc.execute("oc delete " + kind + " " + name)
+                .throwExceptionIfError();
         info("Deleted: " + toString());
     }
 

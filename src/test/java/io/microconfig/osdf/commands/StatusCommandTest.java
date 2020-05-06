@@ -29,27 +29,27 @@ class StatusCommandTest {
     @Test
     void statusOk() {
         OCExecutor oc = loggedInOc();
-        when(oc.executeAndReadLines("oc get dc -l application=helloworld-springboot -o name")).thenReturn(
-                List.of("deployment/helloworld-springboot.latest")
-        );
-        when(oc.executeAndReadLines(
-                "oc get dc helloworld-springboot.latest -o custom-columns=" +
-                        "replicas:.spec.replicas," +
-                        "current:.status.replicas," +
-                        "available:.status.availableReplicas," +
-                        "unavailable:.status.unavailableReplicas," +
-                        "projectVersion:.metadata.labels.projectVersion," +
-                        "configVersion:.metadata.labels.configVersion",
-                true)).thenReturn(List.of(
-                "replicas   current   available   unavailable   projectVersion   configVersion",
-                "1          1         1           0             latest           local"
-        ));
-        when(oc.execute("oc get virtualservice helloworld-springboot -o yaml", true)).thenReturn(
-                "not found"
-        );
-        when(oc.executeAndReadLines("oc get pods --selector name=helloworld-springboot -o name")).thenReturn(List.of(
-                "pod/pod"
-        ));
+//        when(oc.executeAndReadLines("oc get dc -l application=helloworld-springboot -o name")).thenReturn(
+//                List.of("deployment/helloworld-springboot.latest")
+//        );
+//        when(oc.executeAndReadLines(
+//                "oc get dc helloworld-springboot.latest -o custom-columns=" +
+//                        "replicas:.spec.replicas," +
+//                        "current:.status.replicas," +
+//                        "available:.status.availableReplicas," +
+//                        "unavailable:.status.unavailableReplicas," +
+//                        "projectVersion:.metadata.labels.projectVersion," +
+//                        "configVersion:.metadata.labels.configVersion",
+//                true)).thenReturn(List.of(
+//                "replicas   current   available   unavailable   projectVersion   configVersion",
+//                "1          1         1           0             latest           local"
+//        ));
+//        when(oc.execute("oc get virtualservice helloworld-springboot -o yaml", true)).thenReturn(
+//                "not found"
+//        );
+//        when(oc.executeAndReadLines("oc get pods --selector name=helloworld-springboot -o name")).thenReturn(List.of(
+//                "pod/pod"
+//        ));
 
         HealthChecker healthChecker = mock(HealthChecker.class);
         when(healthChecker.check(any())).thenReturn(true);

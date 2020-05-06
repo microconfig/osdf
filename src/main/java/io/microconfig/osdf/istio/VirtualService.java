@@ -25,7 +25,7 @@ public class VirtualService {
     private Map<String, Object> virtualService;
 
     public static VirtualService virtualService(OCExecutor oc, DeploymentComponent component) {
-        String yaml = oc.execute("oc get virtualservice " + component.getName() + " -o yaml", true);
+        String yaml = oc.execute("oc get virtualservice " + component.getName() + " -o yaml").getOutput();
         return new VirtualService(oc, component, yaml.contains("not found") || yaml.contains("error") ? null : new Yaml().load(yaml));
     }
 
@@ -101,7 +101,7 @@ public class VirtualService {
     }
 
     public void delete() {
-        oc.execute("oc delete virtualservice " + component.getName(), true);
+        oc.execute("oc delete virtualservice " + component.getName());
     }
 
     private List<Object> getRules() {

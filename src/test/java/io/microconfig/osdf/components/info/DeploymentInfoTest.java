@@ -37,14 +37,14 @@ class DeploymentInfoTest {
                 "unavailable:.status.unavailableReplicas," +
                 "projectVersion:.metadata.labels.projectVersion," +
                 "configVersion:.metadata.labels.configVersion";
-        when(oc.executeAndReadLines(command, true)).thenReturn(of(
-                "replicas   current   available   unavailable   projectVersion   configVersion",
-                "2          2         2           0             latest           local"
-        ));
-        when(oc.executeAndReadLines("oc get pods -l \"application in (helloworld-springboot), projectVersion in (latest)\" -o name")).thenReturn(of(
-                "pod/pod1",
-                "pod/pod2"
-        ));
+//        when(oc.executeAndReadLines(command, true)).thenReturn(of(
+//                "replicas   current   available   unavailable   projectVersion   configVersion",
+//                "2          2         2           0             latest           local"
+//        ));
+//        when(oc.executeAndReadLines("oc get pods -l \"application in (helloworld-springboot), projectVersion in (latest)\" -o name")).thenReturn(of(
+//                "pod/pod1",
+//                "pod/pod2"
+//        ));
         pod1 = new Pod("pod1", "helloworld-springboot", oc);
         pod2 = new Pod("pod2", "helloworld-springboot", oc);
         component = new DeploymentComponent("helloworld-springboot", "latest", Path.of(paths.componentsPath() + "/helloworld-springboot"), oc);
@@ -83,29 +83,29 @@ class DeploymentInfoTest {
 
     @Test
     void notFound() {
-        when(oc.executeAndReadLines(command, true)).thenReturn(of(
-                "not found error"
-        ));
+//        when(oc.executeAndReadLines(command, true)).thenReturn(of(
+//                "not found error"
+//        ));
         DeploymentInfo info = info(component, oc);
         assertEquals(NOT_FOUND, info.getStatus());
     }
 
     @Test
     void badFormat() {
-        when(oc.executeAndReadLines(command, true)).thenReturn(of(
-                "replicas   current   available   unavailable   projectVersion   configVersion",
-                "<none>     <none>    2           0             latest           local"
-        ));
+//        when(oc.executeAndReadLines(command, true)).thenReturn(of(
+//                "replicas   current   available   unavailable   projectVersion   configVersion",
+//                "<none>     <none>    2           0             latest           local"
+//        ));
         DeploymentInfo info = info(component, oc);
         assertEquals(FAILED, info.getStatus());
     }
 
     @Test
     void notEnoughReplicas() {
-        when(oc.executeAndReadLines(command, true)).thenReturn(of(
-                "replicas   current   available   unavailable   projectVersion   configVersion",
-                "2          2         1           1             latest           local"
-        ));
+//        when(oc.executeAndReadLines(command, true)).thenReturn(of(
+//                "replicas   current   available   unavailable   projectVersion   configVersion",
+//                "2          2         1           1             latest           local"
+//        ));
         DeploymentInfo info = info(component, oc);
         assertEquals(NOT_READY, info.getStatus());
     }

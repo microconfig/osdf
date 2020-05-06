@@ -2,6 +2,7 @@ package io.microconfig.osdf.components;
 
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.OpenShiftResource;
+import io.microconfig.utils.Logger;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -40,25 +41,30 @@ public abstract class AbstractOpenShiftComponent {
     }
 
     public void upload() {
-        oc.executeAndReadLines("oc apply -f " + configDir + "/openshift")
-                .forEach(line -> info("oc: " + line));
+        oc.execute("oc apply -f " + configDir + "/openshift")
+                .throwExceptionIfError()
+                .consumeOutput(Logger::info);
     }
 
     public void delete() {
-        oc.execute("oc delete all,configmap " + label());
+        oc.execute("oc delete all,configmap " + label())
+                .throwExceptionIfError();
     }
 
     public void deleteAll() {
-        oc.execute("oc delete all,configmap -l application=" + name);
+        oc.execute("oc delete all,configmap -l application=" + name)
+                .throwExceptionIfError();
     }
 
     public void createConfigMap() {
         info("Creating configmap");
         var createCommand = "oc create configmap " + fullName() + " --from-file=" + configDir;
         var labelCommand = "oc label configmap " + fullName() + " application=" + name + " projectVersion=" + version;
-        String output = oc.execute(createCommand);
-        info("oc: " + output);
-        oc.execute(labelCommand);
+        oc.execute(createCommand)
+                .throwExceptionIfError()
+                .consumeOutput(Logger::info);
+        oc.execute(labelCommand)
+                .throwExceptionIfError();
     }
 
     public void deleteOldResourcesFromOpenShift() {
@@ -83,8 +89,10 @@ public abstract class AbstractOpenShiftComponent {
     }
 
     protected List<OpenShiftResource> getOpenShiftResources() {
-        var command = "oc get all,configmap " + label() + " -o name";
-        return fromOpenShiftNotations(oc.executeAndReadLines(command), oc);
+        List<String> notations = oc.execute("oc get all,configmap " + label() + " -o name")
+                .throwExceptionIfError()
+                .getOutputLines();
+        return fromOpenShiftNotations(notations, oc);
     }
 
     private List<OpenShiftResource> getLocalResources() {
