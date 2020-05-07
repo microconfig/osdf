@@ -60,8 +60,7 @@ public class ApiArgsGetter {
                 result.add(asList(copyOfRange(args, ind, args.length)));
                 ind = args.length;
             } else {
-                result.add(args[ind]);
-                ind = args.length;
+                throw new OSDFException("Plain call is not supported for arg " + args[ind] + ". Specify corresponding flag");
             }
         }
         return result;

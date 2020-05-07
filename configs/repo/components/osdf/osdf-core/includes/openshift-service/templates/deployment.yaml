@@ -52,4 +52,4 @@ spec:
     - type: ConfigChange
   replicas: ${this@replicas.count}
   strategy:
-    type: Rolling
+    type: Recreate
