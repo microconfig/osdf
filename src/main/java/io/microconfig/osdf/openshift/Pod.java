@@ -33,9 +33,10 @@ public class Pod implements Comparable<Pod> {
 
     public static Pod fromPods(List<Pod> pods, String podName) {
         if (pods.size() == 0) throw new OSDFException("No pods found");
+        if (podName == null) return pods.get(0);
 
         Integer order = castToInteger(podName);
-        if (order != null) return pods.get(order);
+        if (order != null && order < pods.size()) return pods.get(order);
 
         return pods.stream()
                 .filter(pod -> pod.getName().equals(podName))
