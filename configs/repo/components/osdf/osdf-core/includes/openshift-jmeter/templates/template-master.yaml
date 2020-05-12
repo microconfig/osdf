@@ -1,0 +1,102 @@
+kind: Template
+apiVersion: v1
+metadata:
+  name: "${CONFIG_NAME}"
+labels:
+  template: "${CONFIG_NAME}"
+  app: "${CONFIG_NAME}"
+objects:
+  - kind: ConfigMap
+    apiVersion: v1
+    metadata:
+      name: "${CONFIG_MAP_NAME}"
+    data:
+      testplan.jmx: null
+  - kind: DeploymentConfig
+    apiVersion: apps.openshift.io/v1
+    metadata:
+      name: "${CONFIG_NAME}.${this@version}"
+      labels:
+        application: "${CONFIG_NAME}"
+        projectVersion: latest
+        configVersion: custom
+    spec:
+      template:
+        metadata:
+          labels:
+            application: "${CONFIG_NAME}"
+            projectVersion: latest
+            configVersion: custom
+          annotations:
+            sidecar.istio.io/inject: 'true'
+        spec:
+          containers:
+            - image: registry.hub.docker.com/slav9n4ik/jmeter-master:latest
+              volumeMounts:
+                - name: jmeter-props
+                  mountPath: /home/mapconfig
+              env:
+                - name: SLAVE_HOSTS
+                  value: #SLAVE_HOSTS#
+                - name: PATH_TO_JMETERPLAN
+                  value: /home/mapconfig/testplan.jmx
+              imagePullPolicy: Always
+              name: "${CONFIG_NAME}"
+              ports:
+                - containerPort: 60000
+                  protocol: TCP
+              resources:
+                requests:
+                  cpu: 0.25
+                  memory: 256M
+                limits:
+                  cpu: 0.25
+                  memory: 512M
+          volumes:
+            - name: jmeter-props
+              configMap:
+                name: "${CONFIG_MAP_NAME}"
+          restartPolicy: Always
+      triggers:
+        - type: ConfigChange
+      replicas: 1
+      strategy:
+        type: Rolling
+
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: "${CONFIG_NAME}"
+      labels:
+        application: "${CONFIG_NAME}"
+    spec:
+      selector:
+        application: "${CONFIG_NAME}"
+      ports:
+        - port: 60000
+          protocol: TCP
+          targetPort: 60000
+          name: http-60000
+
+  - kind: Route
+    apiVersion: v1
+    metadata:
+      name: "${CONFIG_NAME}"
+      labels:
+        application: "${CONFIG_NAME}"
+    spec:
+      to:
+        kind: Service
+        name: "${CONFIG_NAME}"
+        weight: 100
+
+parameters:
+  - name: CONFIG_NAME
+    description: "Project name"
+    required: true
+    value: #MASTER_PROJECT_NAME#
+  - name: CONFIG_MAP_NAME
+    displayName: CONFIG_MAP_NAME
+    description: "ConfigMap name of jmeter test plan"
+    required: true
+    value: jmeter-testplan

@@ -44,6 +44,10 @@ public class OSDFPaths {
         return of(root() + "/buildConfigs");
     }
 
+    public Path jmeterPath() {
+        return of(componentsPath() + "/openshift-jmeter");
+    }
+
     public Path projectVersionPath() {
         return of( configsPath() + "/components/system/versions/project-version.proc");
     }

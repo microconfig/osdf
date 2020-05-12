@@ -2,6 +2,7 @@ package io.microconfig.osdf.utils;
 
 import org.apache.commons.io.IOUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -49,6 +50,17 @@ public class FileUtils {
         }
     }
 
+    public static void copyFile(Path from, Path to) {
+        File fileFrom = new File(from.toString());
+        File fileTo = new File(to.toString());
+
+        try {
+            org.apache.commons.io.FileUtils.copyFile(fileFrom, fileTo);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't copy file " + fileFrom.getName() + ", to " + fileTo.getName());
+        }
+    }
+
     public static void deleteIfEmpty(Path dir) {
         try (Stream<Path> list = list(dir)) {
             if (list.findAny().isEmpty()) {
@@ -71,5 +83,23 @@ public class FileUtils {
 
     public static String hashOfFile(Path path) {
         return md5Hex(readAll(path));
+    }
+
+    public static void createFileIfNotExists(Path file) {
+        if (!exists(file)) {
+            try {
+                createFile(file);
+            } catch (IOException e) {
+                throw new RuntimeException("Can't create file " + file);
+            }
+        }
+    }
+
+    public static Stream<Path> getPathsInDir(Path dir) {
+        try {
+            return list(dir);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Couldn't open dir at " + dir, e);
+        }
     }
 }

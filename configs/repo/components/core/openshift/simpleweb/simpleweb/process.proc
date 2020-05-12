@@ -1,0 +1,5 @@
+#include process
+
+java.main=ru.diplom.simpleweb.SimplewebApplication
+mgmt.start.waitSec=5
+java.opts.mem=-Xms256M -Xmx512M

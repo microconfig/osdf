@@ -43,8 +43,12 @@ public class ComponentsLoaderImpl implements ComponentsLoader {
     }
 
     private Stream<AbstractOpenShiftComponent> components() {
-        return activeComponents(paths)
-                .get()
+        List<String> components = activeComponents(paths).get();
+        if (components.contains("openshift-jmeter")) {
+            components.addAll(JmeterComponentsLoader.componentsLoader(paths, oc)
+                    .getNamesOfAllJmeterComponents());
+        }
+        return components
                 .stream()
                 .filter(this::isRequired)
                 .filter(this::hasOpenShift)

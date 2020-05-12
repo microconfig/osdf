@@ -5,3 +5,11 @@ helloworld:
 helloworld-istio:
   components:
     - helloworld-springboot-istio
+
+simpleweb:
+  components:
+    - simpleweb
+
+jmeter:
+  components:
+    - openshift-jmeter

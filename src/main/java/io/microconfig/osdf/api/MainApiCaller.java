@@ -14,6 +14,7 @@ import static io.microconfig.osdf.api.implementations.FrequentlyUsedApiImpl.freq
 import static io.microconfig.osdf.api.implementations.InfoApiImpl.infoApi;
 import static io.microconfig.osdf.api.implementations.InitializationApiImpl.initializationApi;
 import static io.microconfig.osdf.api.implementations.InstallApiImpl.installApi;
+import static io.microconfig.osdf.api.implementations.LoadTestingApiImpl.loadTestingApi;
 import static io.microconfig.osdf.api.implementations.ManagementApiImpl.managementApi;
 import static io.microconfig.osdf.api.implementations.SystemApiImpl.systemApi;
 
@@ -41,6 +42,7 @@ public class MainApiCaller implements ApiCaller {
                 .addImpl(ManagementApi.class, managementApi(paths, oc))
                 .addImpl(InfoApi.class, infoApi(paths, oc))
                 .addImpl(SystemApi.class, systemApi(paths))
+                .addImpl(LoadTestingApi.class, loadTestingApi(paths, oc))
                 .build()
                 .call(args);
     }

@@ -24,6 +24,9 @@ public interface MainApi {
     @Import(api = ComponentsApi.class, order = 6)
     void components();
 
-    @Import(api = SystemApi.class, order = 7)
+    @Import(api = LoadTestingApi.class, order = 7)
+    void loadTesting();
+
+    @Import(api = SystemApi.class, order = 8)
     void system();
 }

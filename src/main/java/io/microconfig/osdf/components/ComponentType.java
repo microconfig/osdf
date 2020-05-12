@@ -5,7 +5,7 @@ import io.microconfig.osdf.openshift.OCExecutor;
 import java.nio.file.Path;
 
 import static java.nio.file.Files.exists;
-import static java.nio.file.Path.*;
+import static java.nio.file.Path.of;
 
 public enum ComponentType {
     JOB {
@@ -18,6 +18,12 @@ public enum ComponentType {
         @Override
         public AbstractOpenShiftComponent component(String name, String version, Path configDir, OCExecutor oc) {
             return new DeploymentComponent(name, version, configDir, oc);
+        }
+    },
+    TEMPLATE {
+        @Override
+        public AbstractOpenShiftComponent component(String name, String version, Path configDir, OCExecutor oc) {
+            return new TemplateComponent(name, version, configDir, oc);
         }
     };
 

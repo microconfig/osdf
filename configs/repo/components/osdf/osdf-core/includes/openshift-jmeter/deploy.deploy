@@ -1,0 +1,17 @@
+#include openshift-urls
+#include osdf-version-labels
+#include osdf-pod-deployment
+#include osdf-component-settings
+
+#var microconfig.template.master.fromFile: ${openshift-jmeter@configDir}/templates/template-master.yaml
+#var microconfig.template.master.toFile: master-template.yaml
+
+#var microconfig.template.slave.fromFile: ${openshift-jmeter@configDir}/templates/template-slave.yaml
+#var microconfig.template.slave.toFile: slave-template.yaml
+
+server.port: 8888
+master-name: jmeter-master
+image.master-name: jmeter-master
+
+slave-name: jmeter-slave
+image.slave-name: jmeter-slave

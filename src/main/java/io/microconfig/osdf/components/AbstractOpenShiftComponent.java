@@ -86,7 +86,7 @@ public abstract class AbstractOpenShiftComponent {
         return version.toLowerCase().replace(".", "-d-");
     }
 
-    protected List<OpenShiftResource> getOpenShiftResources() {
+    public List<OpenShiftResource> getOpenShiftResources() {
         List<String> notations = oc.execute("oc get all,configmap " + label() + " -o name")
                 .throwExceptionIfError()
                 .getOutputLines();

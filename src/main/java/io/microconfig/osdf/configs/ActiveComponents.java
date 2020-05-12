@@ -8,10 +8,10 @@ import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.microconfig.core.Microconfig.searchConfigsIn;
 import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
-import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
 public class ActiveComponents {
@@ -38,7 +38,7 @@ public class ActiveComponents {
                 .asList()
                 .stream()
                 .map(Component::getName)
-                .collect(toUnmodifiableList());
+                .collect(Collectors.toList());
     }
 
     public List<String> get() {
