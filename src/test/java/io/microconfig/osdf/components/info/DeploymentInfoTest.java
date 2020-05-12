@@ -29,8 +29,8 @@ class DeploymentInfoTest {
     @Test
     void basicTest() {
         when(oc.execute(infoCommand())).thenReturn(output(
-                "replicas   current   available   unavailable   projectVersion   configVersion" + "\n" +
-                "2          2         2           0             latest           local"
+                "replicas   current   available   unavailable   projectVersion   configVersion  configHash" + "\n" +
+                "2          2         2           0             latest           local          hash"
         ));
         DeploymentInfo info = info(component(), oc);
         assertEquals(RUNNING, info.getStatus());
@@ -38,6 +38,7 @@ class DeploymentInfoTest {
         assertEquals(2, info.getReplicas());
         assertEquals("local", info.getConfigVersion());
         assertEquals("latest", info.getProjectVersion());
+        assertEquals("hash", info.getHash());
     }
 
     @Test
@@ -50,8 +51,8 @@ class DeploymentInfoTest {
     @Test
     void badFormat() {
         when(oc.execute(infoCommand())).thenReturn(output(
-                "replicas   current   available   unavailable   projectVersion   configVersion" + "\n" +
-                "<none>     <none>    2           0             latest           local"
+                "replicas   current   available   unavailable   projectVersion   configVersion  configHash" + "\n" +
+                "<none>     <none>    2           0             latest           local          hash"
         ));
         DeploymentInfo info = info(component(), oc);
         assertEquals(FAILED, info.getStatus());
@@ -60,8 +61,8 @@ class DeploymentInfoTest {
     @Test
     void notEnoughReplicas() {
         when(oc.execute(infoCommand())).thenReturn(output(
-                "replicas   current   available   unavailable   projectVersion   configVersion" + "\n" +
-                "2          2         1           1             latest           local"
+                "replicas   current   available   unavailable   projectVersion   configVersion  configHash" + "\n" +
+                "2          2         1           1             latest           local          hash"
         ));
         DeploymentInfo info = info(component(), oc);
         assertEquals(NOT_READY, info.getStatus());

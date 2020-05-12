@@ -8,6 +8,7 @@ public class OCCommands {
                 "available:.status.availableReplicas," +
                 "unavailable:.status.unavailableReplicas," +
                 "projectVersion:.metadata.labels.projectVersion," +
-                "configVersion:.metadata.labels.configVersion";
+                "configVersion:.metadata.labels.configVersion," +
+                "configHash:.metadata.labels.configHash";
     }
 }

@@ -45,8 +45,8 @@ class StatusCommandTest {
         when(oc.execute("oc get dc -l application=" + COMPONENT_NAME + " -o name"))
                 .thenReturn(output("deployment/" + COMPONENT_NAME + "." + COMPONENT_VERSION));
         when(oc.execute("oc get dc " + COMPONENT_NAME + "." + COMPONENT_VERSION + " " + deploymentInfoCustomColumns())).thenReturn(output(
-                "replicas   current   available   unavailable   projectVersion   configVersion" + "\n" +
-                "1          1         1           0             " + COMPONENT_VERSION + "           local"
+                "replicas   current   available   unavailable   projectVersion   configVersion  configHash" + "\n" +
+                "1          1         1           0             " + COMPONENT_VERSION + "           local   hash"
         ));
         when(oc.execute("oc get virtualservice " + COMPONENT_NAME + " -o yaml"))
                 .thenReturn(output("not found"));
