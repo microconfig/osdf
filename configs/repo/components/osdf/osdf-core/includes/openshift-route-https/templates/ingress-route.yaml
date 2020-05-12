@@ -4,6 +4,7 @@ metadata:
   name: ${this@name}-route
   labels:
     application: ${this@name}
+    configHash: <CONFIG_HASH>
 spec:
   host: ${this@name}.apps.${this@cluster.url.base}
   to:

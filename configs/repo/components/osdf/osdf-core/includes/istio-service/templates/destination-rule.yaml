@@ -6,6 +6,7 @@ metadata:
     application: ${this@name}
     projectVersion: ${this@version}
     configVersion: ${this@config.version}
+    configHash: <CONFIG_HASH>
 spec:
   host: ${this@name}-service.${this@project}.svc.cluster.local
   subsets:

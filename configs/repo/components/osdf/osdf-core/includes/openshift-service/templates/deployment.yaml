@@ -6,6 +6,7 @@ metadata:
     application: ${this@name}
     projectVersion: ${this@version}
     configVersion: ${this@config.version}
+    configHash: <CONFIG_HASH>
 spec:
   selector:
     application: ${this@name}
@@ -17,11 +18,12 @@ spec:
         application: ${this@name}
         projectVersion: ${this@version}
         configVersion: ${this@config.version}
+        configHash: <CONFIG_HASH>
       annotations:
         sidecar.istio.io/inject: '${this@istioInject}'
     spec:
       containers:
-        - image: ${this@registry.project.url}/${this@image.name}:${this@image.version}
+        - image: ${this@image.url}
           env:
             - name: JAVA_TOOL_OPTIONS
               value: ${this@java.opts}

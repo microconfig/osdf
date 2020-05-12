@@ -6,6 +6,7 @@ metadata:
     application: ${this@name}
     projectVersion: ${this@version}
     configVersion: ${this@config.version}
+    configHash: <CONFIG_HASH>
 spec:
   scaleTargetRef:
     apiVersion: apps.openshift.io/v1
