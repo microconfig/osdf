@@ -17,13 +17,15 @@ public class DeploymentInfo {
     private final int availableReplicas;
     private final String configVersion;
     private final String projectVersion;
+    private final String hash;
     private final DeploymentStatus status;
 
-    private DeploymentInfo(int replicas, int available, int unavailable, String projectVersion, String configVersion) {
+    private DeploymentInfo(int replicas, int available, int unavailable, String projectVersion, String configVersion, String hash) {
         this.replicas = replicas;
         this.availableReplicas = available;
         this.configVersion = configVersion;
         this.projectVersion = projectVersion;
+        this.hash = hash;
         this.status = status(replicas, available, unavailable);
     }
 
@@ -34,7 +36,8 @@ public class DeploymentInfo {
                 "available:.status.availableReplicas," +
                 "unavailable:.status.unavailableReplicas," +
                 "projectVersion:.metadata.labels.projectVersion," +
-                "configVersion:.metadata.labels.configVersion")
+                "configVersion:.metadata.labels.configVersion," +
+                "configHash:.metadata.labels.configHash")
                 .getOutputLines();
         if (lines.get(0).toLowerCase().contains("not found")) return of(NOT_FOUND);
 
@@ -45,12 +48,13 @@ public class DeploymentInfo {
         Integer unavailable = castToInteger(fields[3]);
         String projectVersion = fields[4];
         String configVersion = fields[5];
+        String hash = fields[6];
         if (replicas == null || current == null || available == null || unavailable == null) return of(FAILED);
-        return new DeploymentInfo(replicas, available, unavailable, projectVersion, configVersion);
+        return new DeploymentInfo(replicas, available, unavailable, projectVersion, configVersion, hash);
     }
 
     private static DeploymentInfo of(DeploymentStatus status) {
-        return new DeploymentInfo(0, 0,"?", "?", status);
+        return new DeploymentInfo(0, 0,"?", "?", "?", status);
     }
 
     private DeploymentStatus status(Integer replicas, Integer available, Integer unavailable) {

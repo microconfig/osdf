@@ -49,7 +49,7 @@ public class ManagementApiImpl implements ManagementApi {
 
     private Deployer deployer(String mode) {
         if (mode == null || mode.equals("replace")) {
-            return replaceDeployer(oc);
+            return replaceDeployer(oc, paths);
         }
         if (mode.equals("hidden")) {
             return hiddenDeployer(oc);

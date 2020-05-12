@@ -8,9 +8,11 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static io.microconfig.osdf.resources.ResourcesHashComputer.resourcesHashComputer;
 import static io.microconfig.osdf.microconfig.MicroConfig.microConfig;
 import static io.microconfig.osdf.microconfig.properties.PropertySetter.propertySetter;
 import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
+import static java.nio.file.Path.of;
 
 @RequiredArgsConstructor
 public class ComponentsApiImpl implements ComponentsApi {
@@ -31,5 +33,6 @@ public class ComponentsApiImpl implements ComponentsApi {
 
         String env = settingsFile(ConfigsSettings.class, paths.settings().configs()).getSettings().getEnv();
         microConfig(env, paths).generateSingleComponent(component);
+        resourcesHashComputer(of(paths.componentsPath() + "/" + component)).computeAll();
     }
 }

@@ -41,4 +41,8 @@ public class SettingsPaths {
     public Path update() {
         return of(settingsRootPath + "/update.yaml");
     }
+
+    public Path registryCredentials() {
+        return of(settingsRootPath + "/registryCredentials.yaml");
+    }
 }

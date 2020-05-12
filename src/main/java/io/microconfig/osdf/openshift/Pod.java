@@ -65,6 +65,13 @@ public class Pod implements Comparable<Pod> {
         }
     }
 
+    public String imageId() {
+        List<String> outputLines = oc.execute("oc get pod " + name + " -o custom-columns=\"full:.status.containerStatuses[].imageID\"")
+                .throwExceptionIfError()
+                .getOutputLines();
+        return outputLines.get(1).split("@")[1];
+    }
+
     @Override
     public int compareTo(Pod o) {
         return name.compareTo(o.name);

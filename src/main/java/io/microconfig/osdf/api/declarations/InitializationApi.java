@@ -3,10 +3,12 @@ package io.microconfig.osdf.api.declarations;
 import io.microconfig.osdf.api.annotation.ApiCommand;
 import io.microconfig.osdf.api.annotation.ConsoleParam;
 import io.microconfig.osdf.api.parameter.*;
-import io.microconfig.osdf.nexus.NexusArtifact;
 import io.microconfig.osdf.common.Credentials;
+import io.microconfig.osdf.nexus.NexusArtifact;
 
 import java.nio.file.Path;
+
+import static io.microconfig.osdf.parameters.ParamType.REQUIRED;
 
 public interface InitializationApi {
     @ApiCommand(description = "Initialize git configs", order = 1)
@@ -28,4 +30,9 @@ public interface InitializationApi {
     @ApiCommand(description = "Set config parameters", order = 5)
     void configs(@ConsoleParam(EnvParameter.class) String env,
                  @ConsoleParam(ProjectVersionParameter.class) String projVersion);
+
+
+    @ApiCommand(description = "Set registry credentials", order = 6)
+    void registry(@ConsoleParam(value = RegistryUrlParameter.class, type = REQUIRED) String url,
+                  @ConsoleParam(value = RegistryCredentialsParameter.class, type = REQUIRED) Credentials credentials);
 }

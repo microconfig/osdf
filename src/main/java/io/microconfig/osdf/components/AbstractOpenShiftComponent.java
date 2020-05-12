@@ -41,9 +41,7 @@ public abstract class AbstractOpenShiftComponent {
     }
 
     public void upload() {
-        oc.execute("oc apply -f " + configDir + "/openshift")
-                .throwExceptionIfError()
-                .consumeOutput(Logger::info);
+        getLocalResources().forEach(OpenShiftResource::upload);
     }
 
     public void delete() {

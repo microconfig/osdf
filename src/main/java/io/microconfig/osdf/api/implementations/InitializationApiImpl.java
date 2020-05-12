@@ -2,6 +2,7 @@ package io.microconfig.osdf.api.implementations;
 
 import io.microconfig.osdf.api.declarations.InitializationApi;
 import io.microconfig.osdf.common.Credentials;
+import io.microconfig.osdf.components.checker.RegistryCredentials;
 import io.microconfig.osdf.configfetcher.git.GitFetcherSettings;
 import io.microconfig.osdf.configfetcher.local.LocalFetcherSettings;
 import io.microconfig.osdf.configfetcher.nexus.NexusFetcherSettings;
@@ -69,5 +70,12 @@ public class InitializationApiImpl implements InitializationApi {
     @Override
     public void configs(String env, String projVersion) {
         configsUpdater(paths).setConfigsParameters(env, projVersion);
+    }
+
+    @Override
+    public void registry(String url, Credentials credentials) {
+        SettingsFile<RegistryCredentials> file = settingsFile(RegistryCredentials.class, paths.settings().registryCredentials());
+        file.getSettings().add(url, credentials);
+        file.save();
     }
 }

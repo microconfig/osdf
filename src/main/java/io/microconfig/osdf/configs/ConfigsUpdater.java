@@ -6,11 +6,17 @@ import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.settings.SettingsFile;
 import lombok.RequiredArgsConstructor;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.stream.Stream;
+
 import static io.microconfig.osdf.configfetcher.ConfigsFetcher.fetcher;
+import static io.microconfig.osdf.resources.ResourcesHashComputer.resourcesHashComputer;
 import static io.microconfig.osdf.microconfig.MicroConfig.microConfig;
 import static io.microconfig.osdf.microconfig.properties.PropertySetter.propertySetter;
 import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
 import static io.microconfig.utils.Logger.warn;
+import static java.nio.file.Files.list;
 import static java.util.Collections.emptyList;
 
 @RequiredArgsConstructor
@@ -56,5 +62,14 @@ public class ConfigsUpdater {
 
         propertySetter().setIfNecessary(paths.projectVersionPath(), "project.version", settings.getProjectVersion());
         microConfig(settings.getEnv(), paths).generateConfigs(emptyList());
+        computeHashes();
+    }
+
+    private void computeHashes() {
+        try (Stream<Path> configDirs = list(paths.componentsPath())) {
+            configDirs.forEach(configDir -> resourcesHashComputer(configDir).computeAll());
+        } catch (IOException e) {
+            throw new OSDFException("Can't access " + paths.componentsPath());
+        }
     }
 }

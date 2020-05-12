@@ -23,8 +23,8 @@ public class OCExecutor {
     public CommandLineOutput execute(String command) {
         log(command);
         CommandLineOutput output = outputOf(command);
-        log(output.toString());
-        throwIfOpenShiftError(output.toString());
+        log(output.getOutput());
+        throwIfOpenShiftError(output.getOutput());
         return output;
     }
 

@@ -29,6 +29,13 @@ public class YamlUtils {
         }
     }
 
+    public static <T> T createFromString(Class<T> clazz, String content) {
+        Representer representer = new Representer();
+        representer.getPropertyUtils().setSkipMissingProperties(true);
+        Yaml yaml = new Yaml(new Constructor(clazz), representer);
+        return yaml.load(content);
+    }
+
     public static Map<String, Object> loadFromPath(Path path) {
         try {
             return new Yaml().load(new FileInputStream(path.toString()));
