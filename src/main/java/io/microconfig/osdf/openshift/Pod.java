@@ -72,6 +72,14 @@ public class Pod implements Comparable<Pod> {
         return outputLines.get(1).split("@")[1];
     }
 
+    public boolean checkStressContainer() {
+        return oc.execute("oc get pod " + name + " -o jsonpath=\"{.spec.containers[*].name}\"")
+                .throwExceptionIfError()
+                .getOutputLines()
+                .stream()
+                .anyMatch(line -> line.contains("stress-sidecar"));
+    }
+
     @Override
     public int compareTo(Pod o) {
         return name.compareTo(o.name);

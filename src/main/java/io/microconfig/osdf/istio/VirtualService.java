@@ -2,6 +2,7 @@ package io.microconfig.osdf.istio;
 
 import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.exceptions.OSDFException;
+import io.microconfig.osdf.istio.faults.Fault;
 import io.microconfig.osdf.istio.rules.HeaderRule;
 import io.microconfig.osdf.istio.rules.MainRule;
 import io.microconfig.osdf.openshift.OCExecutor;
@@ -67,6 +68,15 @@ public class VirtualService {
         RuleSet ruleSet = RuleSet.from(getRules());
         ruleSet.addHeaderRule(headerRule);
 
+        setRules(ruleSet.toYaml());
+        return this;
+    }
+
+    public VirtualService setFault(Fault fault) {
+        if (virtualService == null) throw new RuntimeException("Virtual Service not found");
+        RuleSet ruleSet = RuleSet.from(getRules());
+        MainRule rule = ruleSet.getMainRule();
+        rule.setFault(fault);
         setRules(ruleSet.toYaml());
         return this;
     }

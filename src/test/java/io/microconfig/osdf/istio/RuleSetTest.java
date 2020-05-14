@@ -1,5 +1,6 @@
 package io.microconfig.osdf.istio;
 
+import io.microconfig.osdf.istio.faults.Fault;
 import io.microconfig.osdf.istio.rules.HeaderRule;
 import io.microconfig.osdf.istio.rules.MainRule;
 import org.junit.jupiter.api.Test;
@@ -8,17 +9,19 @@ import java.util.List;
 
 import static io.microconfig.osdf.istio.Destination.destination;
 import static io.microconfig.osdf.istio.WeightRoute.weightRoute;
+import static io.microconfig.osdf.istio.faults.AbortFault.abortFault;
 import static io.microconfig.osdf.istio.rules.HeaderRule.headerRule;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RuleSetTest {
     private final Destination first = destination("host", "v1");
     private final Destination second = destination("host", "v2");
+    private final Fault abortFault = abortFault("555",100);
 
     @Test
     void testSerialization() {
         HeaderRule headerRule = headerRule(second, "headerName", "headerValue");
-        MainRule mainRule = new MainRule(List.of(weightRoute(first, 100)), second);
+        MainRule mainRule = new MainRule(List.of(weightRoute(first, 100)), second,abortFault);
         List<Object> yaml = List.of(
                 headerRule.toYaml(),
                 mainRule.toYaml()
@@ -33,7 +36,7 @@ class RuleSetTest {
     @Test
     void testAddDeleteHeaderRule() {
         HeaderRule headerRule = headerRule(second, "headerName", "headerValue");
-        MainRule mainRule = new MainRule(List.of(weightRoute(first, 100)), second);
+        MainRule mainRule = new MainRule(List.of(weightRoute(first, 100)), second, abortFault);
         List<Object> yaml = List.of(mainRule.toYaml());
 
         RuleSet ruleSet = RuleSet.from(yaml);
@@ -53,7 +56,7 @@ class RuleSetTest {
 
     @Test
     void testGetEmptyTraffic() {
-        MainRule mainRule = new MainRule(List.of(weightRoute(first, 100)), null);
+        MainRule mainRule = new MainRule(List.of(weightRoute(first, 100)), null, null);
         List<Object> yaml = List.of(mainRule.toYaml());
 
         RuleSet ruleSet = RuleSet.from(yaml);
@@ -62,7 +65,7 @@ class RuleSetTest {
 
     @Test
     void testGetMirrorTraffic() {
-        MainRule mainRule = new MainRule(List.of(weightRoute(first, 100)), second);
+        MainRule mainRule = new MainRule(List.of(weightRoute(first, 100)), second, null);
         List<Object> yaml = List.of(mainRule.toYaml());
 
         RuleSet ruleSet = RuleSet.from(yaml);
@@ -72,10 +75,12 @@ class RuleSetTest {
     @Test
     void testGetHeaderMirrorTraffic() {
         HeaderRule headerRule = headerRule(second, "headerName", "headerValue");
-        MainRule mainRule = new MainRule(List.of(weightRoute(first, 100)), second);
+        MainRule mainRule = new MainRule(List.of(weightRoute(first, 100)), second, null);
         List<Object> yaml = List.of(headerRule.toYaml(), mainRule.toYaml());
 
         RuleSet ruleSet = RuleSet.from(yaml);
         assertEquals("mirror,header", ruleSet.getTrafficStatus("v2"));
     }
+
+    //TODO add network chaos test
 }

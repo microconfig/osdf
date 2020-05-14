@@ -3,6 +3,7 @@ package io.microconfig.osdf.istio.rules;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.istio.Destination;
 import io.microconfig.osdf.istio.WeightRoute;
+import io.microconfig.osdf.istio.faults.Fault;
 import lombok.AllArgsConstructor;
 
 import java.util.HashMap;
@@ -19,20 +20,25 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 public class MainRule {
     private List<WeightRoute> routes;
     private Destination mirror;
+    private Fault fault;
 
     @SuppressWarnings("unchecked")
     public static MainRule fromYaml(Object ruleObject) {
         Map<String, Object> rule = (Map<String, Object>) ruleObject;
 
         Destination mirror = null;
+        Fault fault = null;
         if (rule.containsKey("mirror")) {
             mirror = Destination.fromYaml(rule.get("mirror"));
+        }
+        if (rule.containsKey("fault")) {
+            fault = Fault.fromYaml(rule.get("fault"));
         }
         List<WeightRoute> routes = getList(rule, "route")
                 .stream()
                 .map(WeightRoute::fromYaml)
                 .collect(toUnmodifiableList());
-        return new MainRule(routes, mirror);
+        return new MainRule(routes, mirror, fault);
     }
 
     public void setWeight(String subset, int weight) {
@@ -103,12 +109,19 @@ public class MainRule {
                     .collect(toUnmodifiableList());
     }
 
+    public void setFault(Fault fault) {
+        this.fault = fault;
+    }
+
     public Object toYaml() {
         Map<String, Object> route = new HashMap<>();
 
         route.put("route", routes.stream().map(WeightRoute::toYaml).collect(toUnmodifiableList()));
         if (mirror != null) {
             route.put("mirror", mirror.toYaml());
+        }
+        if (fault != null) {
+            route.put("fault", fault.toYaml());
         }
         return route;
     }
