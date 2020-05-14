@@ -6,7 +6,6 @@ import io.microconfig.osdf.openshift.Pod;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
-import javax.net.ssl.SSLHandshakeException;
 import java.util.List;
 
 import static io.microconfig.osdf.components.checker.LatestImageVersionGetter.latestImageVersionGetter;
@@ -14,7 +13,6 @@ import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
 import static io.microconfig.osdf.utils.YamlUtils.getString;
 import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
 import static io.microconfig.utils.Logger.info;
-import static io.microconfig.utils.Logger.warn;
 import static java.nio.file.Path.of;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
@@ -49,12 +47,7 @@ public class ImageVersionChecker {
             info("No credentials found for " + hostAndPath[0]);
             return null;
         }
-        try {
-            return latestImageVersionGetter(credentials, hostAndPath[0], hostAndPath[1]).get();
-        } catch (SSLHandshakeException e) {
-            warn("No certificate found for " + hostAndPath[0] + ". Consider adding certificate to java cacerts");
-            return null;
-        }
+        return latestImageVersionGetter(credentials, hostAndPath[0], hostAndPath[1]).get();
     }
 
     private List<String> currentVersions() {

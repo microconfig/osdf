@@ -4,13 +4,10 @@ import io.microconfig.osdf.common.Credentials;
 import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 
-import javax.net.ssl.SSLHandshakeException;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.regex.Matcher;
 
 import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
+import static java.util.Arrays.stream;
 import static java.util.regex.Pattern.compile;
 
 @RequiredArgsConstructor
@@ -23,33 +20,28 @@ public class LatestImageVersionGetter {
         return new LatestImageVersionGetter(credentials, host, imagePath);
     }
 
-    public String get() throws SSLHandshakeException {
-        return imageId(token());
+    public String get() {
+        return imageId();
     }
 
     private String token() {
-        String output = execute("curl -u " + credentials.getCredentialsString() + " https://" + host + "/v2/token");
+        String output = execute("curl -k -u " + credentials.getCredentialsString() + " https://" + host + "/v2/token");
         Matcher matcher = compile(".*\"(DockerToken.*)\".*").matcher(output);
         if (!matcher.matches()) throw new OSDFException("Unknown registry token format");
         return matcher.group(1);
     }
 
-    private String imageId(String token) throws SSLHandshakeException {
-        String url = manifestUrl();
-        try {
-            HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
-            con.setRequestMethod("GET");
-            con.setRequestProperty("Authorization", "Bearer " + token);
-            con.setRequestProperty("Accept", "application/vnd.docker.distribution.manifest.v2+json");
-            if (con.getResponseCode() != 200) {
-                throw new OSDFException(url + " returned " + con.getResponseCode() + " status code");
-            }
-            return con.getHeaderField("Docker-Content-Digest");
-        } catch (SSLHandshakeException e) {
-            throw e;
-        } catch (IOException e) {
-            throw new OSDFException("Error querying " + url, e);
-        }
+    private String imageId() {
+        String output = execute("curl -k " +
+                "-H \"Authorization: Bearer " + token() + "\" " +
+                "-H \"Accept: application/vnd.docker.distribution.manifest.v2+json\" " +
+                manifestUrl() + " -D -");
+        String digestHeader = stream(output.split("\n"))
+                .filter(line -> line.contains("Docker-Content-Digest"))
+                .findFirst()
+                .orElse("Docker-Content-Digest: notfound")
+                .strip();
+        return digestHeader.split(" ")[1];
     }
 
     private String manifestUrl() {
