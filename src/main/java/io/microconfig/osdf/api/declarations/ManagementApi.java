@@ -23,4 +23,7 @@ public interface ManagementApi {
     @ApiCommand(description = "Delete pods", order = 4)
     void deletePod(@ConsoleParam(value = ComponentParameter.class, type = REQUIRED) String component,
                    @ConsoleParam(value = PodsParameter.class, type = REQUIRED) List<String> pods);
+
+    @ApiCommand(description = "Delete deployment configs for given version", order = 5)
+    void clearDeployments(@ConsoleParam(value = ConfigVersionParameter.class, type = REQUIRED) String version);
 }

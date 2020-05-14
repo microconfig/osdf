@@ -30,7 +30,7 @@ public class DeploymentInfo {
     }
 
     public static DeploymentInfo info(DeploymentComponent component, OCExecutor oc) {
-        List<String> lines = oc.execute("oc get dc " + component.getName() + "." + component.getVersion() + " -o custom-columns=" +
+        List<String> lines = oc.execute("oc get dc " + component.fullName() + " -o custom-columns=" +
                 "replicas:.spec.replicas," +
                 "current:.status.replicas," +
                 "available:.status.availableReplicas," +

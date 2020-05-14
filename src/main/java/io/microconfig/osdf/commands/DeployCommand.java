@@ -18,6 +18,7 @@ import static io.microconfig.osdf.components.checker.SuccessfulDeploymentChecker
 import static io.microconfig.osdf.components.info.JobStatus.SUCCEEDED;
 import static io.microconfig.osdf.components.loader.ComponentsLoaderImpl.componentsLoader;
 import static io.microconfig.osdf.openshift.OpenShiftProject.create;
+import static io.microconfig.osdf.resources.ResourceVersionInserter.resourceVersionInserter;
 import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.error;
 
@@ -42,9 +43,14 @@ public class DeployCommand {
 
     private void deployDeployments(List<DeploymentComponent> deploymentComponents) {
         deploymentComponents.forEach(component -> {
+            insertVersion(component);
             deployer.deploy(component);
             announce("Loaded component " + component);
         });
+    }
+
+    private void insertVersion(DeploymentComponent component) {
+        resourceVersionInserter(component.getConfigDir(), component.isPrimary() ? null : component.getVersion()).insert();
     }
 
     private void deployJobs(List<JobComponent> jobComponents) {

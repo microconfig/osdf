@@ -82,6 +82,7 @@ public class ReplaceDeployer implements Deployer {
     }
 
     private boolean deployedOtherVersion(DeploymentComponent component) {
+        if (!component.isIstioService()) return false;
         List<DeploymentComponent> deployedComponents = component.getDeployedComponents();
         if (deployedComponents.isEmpty()) return false;
 

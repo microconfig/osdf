@@ -26,6 +26,24 @@ public class JobComponent extends AbstractOpenShiftComponent {
                 .contains("error");
     }
 
+    @Override
+    public void delete() {
+        oc.execute("oc delete job " + name);
+        oc.execute("oc delete configmap " + name);
+    }
+
+    @Override
+    public void createConfigMap() {
+        Logger.info("Creating configmap");
+        var createCommand = "oc create configmap " + name + " --from-file=" + configDir;
+        var labelCommand = "oc label configmap " + name + " application=" + name + " projectVersion=" + version;
+        oc.execute(createCommand)
+                .throwExceptionIfError()
+                .consumeOutput(Logger::info);
+        oc.execute(labelCommand)
+                .throwExceptionIfError();
+    }
+
     public JobStatus status() {
         return jobInfo(name, oc).getStatus();
     }

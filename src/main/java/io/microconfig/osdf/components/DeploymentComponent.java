@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 @Getter
 public class DeploymentComponent extends AbstractOpenShiftComponent {
     private final boolean istioService;
+    private boolean isPrimary = false;
 
     public DeploymentComponent(String name, String version, Path configDir, OCExecutor oc) {
         super(name, version, configDir, oc);
@@ -55,6 +56,10 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
     public void deleteAll() {
         virtualService(oc, this).delete();
         super.deleteAll();
+    }
+
+    public void deleteDeploymentConfig(String version) {
+        oc.execute("oc delete dc " + name + "." + version);
     }
 
     public void stop() {
@@ -104,6 +109,17 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
                 .filter(line -> line.length() > 0)
                 .map(notation -> fromNotation(notation, configDir, oc))
                 .collect(toUnmodifiableList());
+    }
+
+    public boolean isPrimary() {
+        if (!isIstioService()) return true;
+        return isPrimary;
+    }
+
+    @Override
+    public String fullName() {
+        if (isPrimary()) return name;
+        return super.fullName();
     }
 
     private void scale(int replicas) {
