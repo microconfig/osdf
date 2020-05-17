@@ -5,6 +5,7 @@ import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.Pod;
 import io.microconfig.osdf.paths.OSDFPaths;
+import io.microconfig.utils.Logger;
 import lombok.Getter;
 
 import java.nio.file.Path;
@@ -59,7 +60,8 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
     }
 
     public void deleteDeploymentConfig(String version) {
-        oc.execute("oc delete dc " + name + "." + version);
+        String output = oc.execute("oc delete dc " + name + "." + version).getOutput();
+        Logger.info(output);
     }
 
     public void stop() {

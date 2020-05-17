@@ -45,7 +45,7 @@ public class OpenShiftProject implements AutoCloseable {
     }
 
     private boolean isLoggedIn() {
-        String user = oc.execute("oc project whoami").getOutput().toLowerCase();
+        String user = oc.execute("oc whoami").getOutput().toLowerCase();
         if (user.contains("error")) return false;
         if (credentials.getCredentials() != null) {
             return user.strip().equals(credentials.getCredentials().getUsername());

@@ -9,6 +9,7 @@ import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.deployers.Deployer;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftProject;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
@@ -20,7 +21,7 @@ import static io.microconfig.osdf.deployers.HiddenDeployer.hiddenDeployer;
 import static io.microconfig.osdf.deployers.ReplaceDeployer.replaceDeployer;
 import static io.microconfig.osdf.deployers.RestrictedDeployer.restrictedDeployer;
 import static io.microconfig.osdf.metrics.formats.PrometheusParser.prometheusParser;
-import static io.microconfig.utils.Logger.info;
+import static io.microconfig.osdf.openshift.OpenShiftProject.create;
 
 @RequiredArgsConstructor
 public class ManagementApiImpl implements ManagementApi {
@@ -53,11 +54,11 @@ public class ManagementApiImpl implements ManagementApi {
 
     @Override
     public void clearDeployments(String version) {
-        componentsLoader(paths, null, oc).load(DeploymentComponent.class)
-                .forEach(component -> {
-                    component.deleteDeploymentConfig(version);
-                    info("Deleted " + component.getName());
-                });
+        try (OpenShiftProject ignored = create(paths, oc).connect()) {
+            componentsLoader(paths, null, oc)
+                    .load(DeploymentComponent.class)
+                    .forEach(component -> component.deleteDeploymentConfig(version));
+        }
     }
 
     private Deployer deployer(String mode) {

@@ -80,7 +80,7 @@ class DeploymentComponentTest {
     void setUp() throws IOException {
         context.initDev();
 
-        commands.put("stop", "oc scale dc " + COMPONENT_NAME + "." + COMPONENT_VERSION + " --replicas=0");
+        commands.put("stop", "oc scale dc " + COMPONENT_NAME + " --replicas=0");
         commands.put("pods", "oc get pods -l \"application in (" + COMPONENT_NAME + "), projectVersion in (" + COMPONENT_VERSION + ")\" -o name");
         commands.put("upload", "oc apply -f " + context.getPaths().componentsPath() + "/" + COMPONENT_NAME + "/openshift");
 
