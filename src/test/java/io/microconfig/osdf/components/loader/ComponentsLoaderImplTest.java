@@ -1,7 +1,7 @@
 package io.microconfig.osdf.components.loader;
 
 import io.microconfig.osdf.components.AbstractOpenShiftComponent;
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -9,27 +9,27 @@ import java.io.IOException;
 import java.util.List;
 
 import static io.microconfig.osdf.components.loader.ComponentsLoaderImpl.componentsLoader;
-import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
+import static io.microconfig.osdf.utils.TestContext.defaultContext;
+import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ComponentsLoaderImplTest {
-    private OSDFPaths paths;
+    private final TestContext context = defaultContext();
 
     @BeforeEach
     void createConfigs() throws IOException {
-        paths = createConfigsAndInstallInit();
+        context.initDev();
     }
 
     @Test
     void loadAll() {
-        List<AbstractOpenShiftComponent> components = componentsLoader(paths.componentsPath(), null, null).load();
+        List<AbstractOpenShiftComponent> components = componentsLoader(context.getPaths(), null, null).load();
         assertEquals(2, components.size());
     }
 
     @Test
     void loadOne() {
-        List<AbstractOpenShiftComponent> components = componentsLoader(paths.componentsPath(), List.of("helloworld-springboot"), null).load();
+        List<AbstractOpenShiftComponent> components = componentsLoader(context.getPaths(), of("helloworld-springboot"), null).load(); //TODO
         assertEquals(1, components.size());
     }
-
 }

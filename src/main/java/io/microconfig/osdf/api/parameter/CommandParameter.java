@@ -1,9 +1,18 @@
 package io.microconfig.osdf.api.parameter;
 
-import io.microconfig.osdf.parameters.AbstractParameter;
+import io.microconfig.osdf.parameters.ArgParameter;
 
-public class CommandParameter extends AbstractParameter<String> {
+import java.util.List;
+
+import static io.microconfig.osdf.parameters.ParameterUtils.toList;
+
+public class CommandParameter extends ArgParameter<List<String>> {
     public CommandParameter() {
-        super("command", "cmd", "OSDF command");
+        super("command", "c", "OSDF command");
+    }
+
+    @Override
+    public List<String> get() {
+        return toList(getValue());
     }
 }

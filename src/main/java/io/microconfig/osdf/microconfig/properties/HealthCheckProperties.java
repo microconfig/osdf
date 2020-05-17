@@ -2,8 +2,8 @@ package io.microconfig.osdf.microconfig.properties;
 
 import lombok.RequiredArgsConstructor;
 
-import static io.microconfig.factory.configtypes.StandardConfigTypes.DEPLOY;
-import static io.microconfig.factory.configtypes.StandardConfigTypes.PROCESS;
+import static io.microconfig.core.configtypes.StandardConfigType.DEPLOY;
+import static io.microconfig.core.configtypes.StandardConfigType.PROCESS;
 import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 
 @RequiredArgsConstructor

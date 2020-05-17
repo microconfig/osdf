@@ -1,27 +1,26 @@
 package io.microconfig.osdf.openshift;
 
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import static io.microconfig.osdf.commandline.CommandLineOutput.output;
 import static io.microconfig.osdf.openshift.OpenShiftResource.*;
-import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
+import static io.microconfig.osdf.utils.TestContext.defaultContext;
 import static java.nio.file.Path.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class OpenShiftResourceTest {
-    private OSDFPaths paths;
+    private final TestContext context = defaultContext();
 
     @BeforeEach
-    void createConfigs() throws IOException {
-        paths = createConfigsAndInstallInit();
+    void init() throws IOException {
+        context.initDev();
     }
 
     @Test
@@ -40,14 +39,14 @@ class OpenShiftResourceTest {
 
     @Test
     void testFromPath() throws IllegalAccessException, NoSuchFieldException {
-        OpenShiftResource resource = fromPath(of(paths.componentsPath() + "/helloworld-springboot/openshift/deployment.yaml"), null);
+        OpenShiftResource resource = fromPath(of(context.getPaths().componentsPath() + "/helloworld-springboot/openshift/deployment.yaml"), null);
         checkKindAndName(resource, "deploymentconfig", "helloworld-springboot.latest");
     }
 
     @Test
     void testDelete() {
-        OCExecutor oc = Mockito.mock(OCExecutor.class);
-        when(oc.execute("oc delete kind name")).thenReturn("deleted");
+        OCExecutor oc = mock(OCExecutor.class);
+        when(oc.execute("oc delete kind name")).thenReturn(output("deleted"));
         fromOpenShiftNotation("kind/name", oc).delete();
         verify(oc).execute("oc delete kind name");
     }

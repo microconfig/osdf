@@ -34,7 +34,6 @@ public class CommandLineExecutor {
                 error(errorOutput);
                 throw new RuntimeException("Non-zero exit code (" + process.exitValue() + ") of command: " + command);
             }
-
             return IOUtils.toString(process.getInputStream(), UTF_8.name());
         } catch (IOException | InterruptedException e) {
             currentThread().interrupt();

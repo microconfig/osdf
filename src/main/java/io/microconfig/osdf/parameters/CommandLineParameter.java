@@ -9,7 +9,5 @@ public interface CommandLineParameter<T> {
 
     T get();
 
-    void setString(String param);
-
-    String missingHint();
+    void set(String param);
 }

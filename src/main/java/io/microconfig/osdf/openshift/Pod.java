@@ -1,12 +1,15 @@
 package io.microconfig.osdf.openshift;
 
+import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
+import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 import static java.lang.Thread.currentThread;
 
 @RequiredArgsConstructor
@@ -28,8 +31,22 @@ public class Pod implements Comparable<Pod> {
         return pod(notation.split("/")[1], componentName, oc);
     }
 
+    public static Pod fromPods(List<Pod> pods, String podName) {
+        if (pods.size() == 0) throw new OSDFException("No pods found");
+        if (podName == null) return pods.get(0);
+
+        Integer order = castToInteger(podName);
+        if (order != null && order < pods.size()) return pods.get(order);
+
+        return pods.stream()
+                .filter(pod -> pod.getName().equals(podName))
+                .findFirst()
+                .orElseThrow(() -> new OSDFException("Pod not found"));
+    }
+
     public void delete() {
-        oc.execute("oc delete pod " + name);
+        oc.execute("oc delete pod " + name)
+                .throwExceptionIfError();
     }
 
     public void logs() {
@@ -46,6 +63,13 @@ public class Pod implements Comparable<Pod> {
             currentThread().interrupt();
             throw new RuntimeException("Error processing logs", e);
         }
+    }
+
+    public String imageId() {
+        List<String> outputLines = oc.execute("oc get pod " + name + " -o custom-columns=\"full:.status.containerStatuses[].imageID\"")
+                .throwExceptionIfError()
+                .getOutputLines();
+        return outputLines.get(1).split("@")[1];
     }
 
     @Override

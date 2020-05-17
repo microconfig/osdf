@@ -1,7 +1,7 @@
 package io.microconfig.osdf.commands;
 
 import io.microconfig.osdf.components.DeploymentComponent;
-import io.microconfig.osdf.config.OSDFPaths;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.OpenShiftProject;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class DeleteCommand {
 
     public void delete(List<String> components) {
         try (OpenShiftProject ignored = create(paths, oc).connect()) {
-            componentsLoader(paths.componentsPath(), components, oc)
+            componentsLoader(paths, components, oc)
                     .load(DeploymentComponent.class)
                     .forEach(DeploymentComponent::delete);
         }

@@ -10,6 +10,9 @@ import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.*;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
 public class FileUtils {
     public static String readAll(Path file) {
@@ -38,6 +41,14 @@ public class FileUtils {
         }
     }
 
+    public static void appendToFile(Path file, String content) {
+        try {
+            writeString(file, content, APPEND, CREATE);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't create file " + file, e);
+        }
+    }
+
     public static void deleteIfEmpty(Path dir) {
         try (Stream<Path> list = list(dir)) {
             if (list.findAny().isEmpty()) {
@@ -58,12 +69,7 @@ public class FileUtils {
         }
     }
 
-
-    public static Stream<Path> getPathsInDir(Path dir) {
-        try {
-            return list(dir);
-        } catch (IOException e) {
-            throw new UncheckedIOException("Couldn't open dir at " + dir, e);
-        }
+    public static String hashOfFile(Path path) {
+        return md5Hex(readAll(path));
     }
 }

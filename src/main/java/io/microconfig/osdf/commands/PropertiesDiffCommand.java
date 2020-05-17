@@ -1,6 +1,8 @@
 package io.microconfig.osdf.commands;
 
 import io.microconfig.osdf.components.AbstractOpenShiftComponent;
+import io.microconfig.osdf.exceptions.OSDFException;
+import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 
@@ -16,10 +18,10 @@ import static java.nio.file.Files.newInputStream;
 
 @RequiredArgsConstructor
 public class PropertiesDiffCommand {
-    private final Path componentsPath;
+    private final OSDFPaths paths;
 
     public void show(List<String> components) {
-        componentsLoader(componentsPath, components, null).load().forEach(this::showDiff);
+        componentsLoader(paths, components, null).load().forEach(this::showDiff);
     }
 
     private void showDiff(AbstractOpenShiftComponent component) {
@@ -27,11 +29,16 @@ public class PropertiesDiffCommand {
     }
 
     private void printDiffFile(Path file) {
-        announce(file.toString());
+        announce(componentName(file));
         try {
             info(IOUtils.toString(newInputStream(file), UTF_8.name()));
         } catch (IOException e) {
-            throw new RuntimeException("Can't access file " + file, e);
+            throw new OSDFException("Can't access file " + file, e);
         }
+    }
+
+    private String componentName(Path file) {
+        String[] tokens = file.toString().split("/");
+        return tokens[tokens.length - 2];
     }
 }

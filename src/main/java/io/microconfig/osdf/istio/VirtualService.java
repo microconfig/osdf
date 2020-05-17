@@ -1,6 +1,7 @@
 package io.microconfig.osdf.istio;
 
 import io.microconfig.osdf.components.DeploymentComponent;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.istio.rules.HeaderRule;
 import io.microconfig.osdf.istio.rules.MainRule;
 import io.microconfig.osdf.openshift.OCExecutor;
@@ -24,44 +25,44 @@ public class VirtualService {
     private Map<String, Object> virtualService;
 
     public static VirtualService virtualService(OCExecutor oc, DeploymentComponent component) {
-        String yaml = oc.execute("oc get virtualservice " + component.getName() + " -o yaml", true);
+        String yaml = oc.execute("oc get virtualservice " + component.getName() + " -o yaml").getOutput();
         return new VirtualService(oc, component, yaml.contains("not found") || yaml.contains("error") ? null : new Yaml().load(yaml));
     }
 
     public void createEmpty() {
         String yaml = readAllFromResource("templates/virtual-service.yaml")
                 .replace("${application-name}", component.getName())
-                .replace("${application-version}", component.getVersion())
+                .replace("${application-version}", component.getEncodedVersion())
                 .replace("${project}", oc.project());
         virtualService = new Yaml().load(yaml);
     }
 
     public VirtualService setWeight(int weight) {
-        if (virtualService == null) throw new RuntimeException("Virtual Service not found");
+        if (virtualService == null) throw new OSDFException("Virtual Service not found");
 
         RuleSet ruleSet = RuleSet.from(getRules());
         MainRule rule = ruleSet.getMainRule();
-        rule.setWeight(component.getVersion(), weight);
+        rule.setWeight(component.getEncodedVersion(), weight);
 
         setRules(ruleSet.toYaml());
         return this;
     }
 
     public VirtualService setMirror() {
-        if (virtualService == null) throw new RuntimeException("Virtual Service not found");
+        if (virtualService == null) throw new OSDFException("Virtual Service not found");
 
         RuleSet ruleSet = RuleSet.from(getRules());
         MainRule rule = ruleSet.getMainRule();
-        rule.setMirror(component.getVersion());
+        rule.setMirror(component.getEncodedVersion());
 
         setRules(ruleSet.toYaml());
         return this;
     }
 
     public VirtualService setHeader() {
-        if (virtualService == null) throw new RuntimeException("Virtual Service not found");
+        if (virtualService == null) throw new OSDFException("Virtual Service not found");
 
-        HeaderRule headerRule = headerRule(destination(getHost(), component.getVersion()), "route-version", component.getVersion());
+        HeaderRule headerRule = headerRule(destination(getHost(), component.getEncodedVersion()), "route-version", component.getEncodedVersion());
 
         RuleSet ruleSet = RuleSet.from(getRules());
         ruleSet.addHeaderRule(headerRule);
@@ -70,17 +71,17 @@ public class VirtualService {
         return this;
     }
 
-    public void deleteRulesForVersion(String version) {
+    public void deleteRules() {
         if (virtualService == null) return;
 
         RuleSet ruleSet = RuleSet.from(getRules());
         MainRule rule = ruleSet.getMainRule();
-        rule.deleteSubset(version);
+        rule.deleteSubset(component.getEncodedVersion());
         if (rule.isEmpty()) {
             delete();
             return;
         }
-        ruleSet.deleteHeaderRule(version);
+        ruleSet.deleteHeaderRule(component.getEncodedVersion());
 
         setRules(ruleSet.toYaml());
         upload();
@@ -96,11 +97,11 @@ public class VirtualService {
 
     public String getTrafficStatus() {
         if (virtualService == null) return "uniform";
-        return RuleSet.from(getRules()).getTrafficStatus(component.getVersion());
+        return RuleSet.from(getRules()).getTrafficStatus(component.getEncodedVersion());
     }
 
     public void delete() {
-        oc.execute("oc delete virtualservice " + component.getName(), true);
+        oc.execute("oc delete virtualservice " + component.getName());
     }
 
     private List<Object> getRules() {

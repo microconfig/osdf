@@ -45,6 +45,7 @@ public class PropertySetter {
 
     private String newLine(String key, String newValue, String line) {
         if (!line.startsWith(key + "=")) return line;
+        if (newValue.startsWith("-") && line.contains(newValue)) return line;
         return newValue.startsWith("-") ? line + newValue : key + "=" + newValue;
     }
 }

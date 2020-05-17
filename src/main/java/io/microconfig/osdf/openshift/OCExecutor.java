@@ -1,40 +1,44 @@
 package io.microconfig.osdf.openshift;
 
-import io.microconfig.osdf.utils.CommandLineExecutor;
+import io.microconfig.osdf.commandline.CommandLineOutput;
+import io.microconfig.osdf.exceptions.OSDFException;
+import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
-import java.nio.file.Path;
-import java.util.List;
-
-import static io.microconfig.factory.configtypes.StandardConfigTypes.DEPLOY;
+import static io.microconfig.core.configtypes.StandardConfigType.DEPLOY;
+import static io.microconfig.osdf.commandline.CommandLineOutput.outputOf;
 import static io.microconfig.osdf.microconfig.properties.PropertyGetter.propertyGetter;
+import static io.microconfig.utils.Logger.info;
+import static java.lang.System.getenv;
 
 @RequiredArgsConstructor
 public class OCExecutor {
-    private final String env;
-    private final Path configPath;
+    private final OSDFPaths paths;
+    private final boolean logOc;
 
-    public static OCExecutor oc(String env, Path configPath) {
-        return new OCExecutor(env, configPath);
+    public static OCExecutor oc(OSDFPaths paths) {
+        return new OCExecutor(paths, "true".equals(getenv("OSDF_LOG_OC")));
     }
 
-    public String execute(String command) {
-        return CommandLineExecutor.execute(command);
-    }
-
-    public String execute(String command, boolean allowErrors) {
-        return CommandLineExecutor.execute(command, allowErrors);
-    }
-
-    public List<String> executeAndReadLines(String command) {
-        return CommandLineExecutor.executeAndReadLines(command);
-    }
-
-    public List<String> executeAndReadLines(String command, boolean allowErrors) {
-        return CommandLineExecutor.executeAndReadLines(command, allowErrors);
+    public CommandLineOutput execute(String command) {
+        log(command);
+        CommandLineOutput output = outputOf(command);
+        log(output.getOutput());
+        throwIfOpenShiftError(output.getOutput());
+        return output;
     }
 
     public String project() {
-        return propertyGetter(env, configPath).get(DEPLOY, "openshift-urls", "project");
+        return propertyGetter(paths).get(DEPLOY, "openshift-urls", "project");
+    }
+
+    private void throwIfOpenShiftError(String output) {
+        if (output.toLowerCase().contains("unable to connect")) throw new OSDFException("Unable to connect to OpenShift");
+    }
+
+    private void log(String string) {
+        if (logOc) {
+            info(string);
+        }
     }
 }

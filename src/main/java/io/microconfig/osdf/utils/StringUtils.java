@@ -1,18 +1,28 @@
 package io.microconfig.osdf.utils;
 
+import static io.microconfig.osdf.utils.ColorSymbol.RESET;
+import static io.microconfig.osdf.utils.ColorSymbol.values;
 import static java.lang.Integer.parseInt;
 import static java.lang.Integer.valueOf;
 import static java.lang.Math.max;
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.joining;
 
 public class StringUtils {
     public static String pad(String s, int length) {
         return s + " ".repeat(max(length - s.length(), 0));
     }
 
-    public static String statusFormat(String name, String statusString, String info, String projectVersion, String configVersion) {
-        return padStrings(name, statusString, info, projectVersion, configVersion);
+    public static String coloredStringPad(String s, int length) {
+        return s + " ".repeat(max(length - coloredStringLength(s), 0));
+    }
+
+    public static int coloredStringLength(String s) {
+        String result = s;
+        if (s.contains(RESET.asString())) {
+            for (ColorSymbol colorSymbol : values()) {
+                result = result.replace(colorSymbol.asString(), "");
+            }
+        }
+        return result.length();
     }
 
     public static Integer castToInteger(String s) {
@@ -31,9 +41,11 @@ public class StringUtils {
         }
     }
 
-    private static String padStrings(String name, String... columns) {
-        return stream(columns)
-                .map(column -> pad(column, 20))
-                .collect(joining("", pad(name, 50), ""));
+    public static String withQuotes(String s) {
+        return s == null ? null : "\"" + s + "\"";
+    }
+
+    public static String withoutQuotes(String s) {
+        return s == null ? null : s.replace("\"", "");
     }
 }

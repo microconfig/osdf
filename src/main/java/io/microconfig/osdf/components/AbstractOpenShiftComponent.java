@@ -2,23 +2,23 @@ package io.microconfig.osdf.components;
 
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.OpenShiftResource;
+import io.microconfig.utils.Logger;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static io.microconfig.osdf.components.ComponentType.values;
 import static io.microconfig.osdf.microconfig.files.DiffFilesCollector.collector;
 import static io.microconfig.osdf.openshift.OpenShiftResource.fromOpenShiftNotations;
-import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.info;
 import static java.nio.file.Files.list;
 import static java.nio.file.Path.of;
+import static java.util.Arrays.stream;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
@@ -28,11 +28,12 @@ public abstract class AbstractOpenShiftComponent {
     protected final String name;
     @Getter
     protected final String version;
+    @Getter
     protected final Path configDir;
     protected final OCExecutor oc;
 
     public static AbstractOpenShiftComponent fromPath(Path configDir, String version, OCExecutor oc) {
-        return Arrays.stream(values())
+        return stream(values())
                 .filter(type -> type.checkDir(of(configDir + "/openshift")))
                 .findFirst()
                 .map(type -> type.component(configDir.getFileName().toString(), version, configDir, oc))
@@ -40,27 +41,28 @@ public abstract class AbstractOpenShiftComponent {
     }
 
     public void upload() {
-        oc.executeAndReadLines("oc apply -f " + configDir + "/openshift")
-                .forEach(line -> info("oc: " + line));
+        getLocalResources().forEach(OpenShiftResource::upload);
     }
 
     public void delete() {
-        oc.execute("oc delete all,configmap " + label());
-        announce("Deleted " + fullName());
+        oc.execute("oc delete all,configmap " + label())
+                .throwExceptionIfError();
     }
 
     public void deleteAll() {
-        oc.execute("oc delete all,configmap -l application=" + name);
-        announce("Deleted " + name);
+        oc.execute("oc delete all,configmap -l application=" + name)
+                .throwExceptionIfError();
     }
 
     public void createConfigMap() {
         info("Creating configmap");
         var createCommand = "oc create configmap " + fullName() + " --from-file=" + configDir;
         var labelCommand = "oc label configmap " + fullName() + " application=" + name + " projectVersion=" + version;
-        String output = oc.execute(createCommand);
-        info("oc: " + output);
-        oc.execute(labelCommand);
+        oc.execute(createCommand)
+                .throwExceptionIfError()
+                .consumeOutput(Logger::info);
+        oc.execute(labelCommand)
+                .throwExceptionIfError();
     }
 
     public void deleteOldResourcesFromOpenShift() {
@@ -80,9 +82,15 @@ public abstract class AbstractOpenShiftComponent {
         return name + "." + version;
     }
 
+    public String getEncodedVersion() {
+        return version.toLowerCase().replace(".", "-d-");
+    }
+
     protected List<OpenShiftResource> getOpenShiftResources() {
-        var command = "oc get all,configmap " + label() + " -o name";
-        return fromOpenShiftNotations(oc.executeAndReadLines(command), oc);
+        List<String> notations = oc.execute("oc get all,configmap " + label() + " -o name")
+                .throwExceptionIfError()
+                .getOutputLines();
+        return fromOpenShiftNotations(notations, oc);
     }
 
     private List<OpenShiftResource> getLocalResources() {

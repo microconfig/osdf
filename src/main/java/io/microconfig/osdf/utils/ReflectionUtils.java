@@ -35,4 +35,9 @@ public class ReflectionUtils {
             }
         }
     }
+
+
+    public static boolean hasAnnotation(Method method, Class<? extends Annotation> annotationClass) {
+        return method.getAnnotation(annotationClass) != null;
+    }
 }

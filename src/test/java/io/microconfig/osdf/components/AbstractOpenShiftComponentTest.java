@@ -1,57 +1,47 @@
 package io.microconfig.osdf.components;
 
-import io.microconfig.osdf.config.OSDFPaths;
 import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 
-import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
+import static io.microconfig.osdf.utils.TestContext.defaultContext;
+import static io.microconfig.osdf.utils.mock.ApplyMock.applyMock;
+import static io.microconfig.osdf.utils.mock.DeleteMock.deleteMock;
+import static io.microconfig.osdf.utils.mock.OCMockAggregator.createMock;
+import static io.microconfig.osdf.utils.mock.ResourceHashMock.resourceHashMock;
 import static java.util.List.of;
-import static org.mockito.Mockito.*;
 
 class AbstractOpenShiftComponentTest {
-    private final Map<String, String> commands = new HashMap<>();
+    private final TestContext context = defaultContext();
     private OCExecutor oc;
-    private DeploymentComponent component;
-
-    @BeforeEach
-    void setUp() throws IOException {
-        OSDFPaths paths = createConfigsAndInstallInit();
-        oc = mock(OCExecutor.class);
-        component = new DeploymentComponent("helloworld-springboot", "latest", Path.of(paths.componentsPath() + "/helloworld-springboot"), oc);
-
-        commands.put("upload", "oc apply -f " + paths.componentsPath() + "/helloworld-springboot/openshift");
-        commands.put("delete", "oc delete all,configmap -l \"application in (helloworld-springboot), projectVersion in (latest)\"");
-        commands.put("createConfigMap", "oc create configmap helloworld-springboot.latest --from-file=" + paths.componentsPath() + "/helloworld-springboot");
-        commands.put("labelConfigMap", "oc label configmap helloworld-springboot.latest application=helloworld-springboot projectVersion=latest");
-
-        when(oc.executeAndReadLines(commands.get("upload"))).thenReturn(of("resource1 configured", "resource2 configured"));
-        when(oc.execute(commands.get("createConfigMap"))).thenReturn("created");
-        when(oc.execute(commands.get("delete"))).thenReturn("deleted");
-        when(oc.execute(commands.get("labelConfigMap"))).thenReturn("labeled");
-    }
 
     @Test
     void testUpload() {
-        component.upload();
-        verify(oc).executeAndReadLines(commands.get("upload"));
+        component().upload();
     }
 
     @Test
     void testDelete() {
-        component.delete();
-        verify(oc).execute(commands.get("delete"));
+        component().delete();
     }
 
-    @Test
-    void testCreateConfigMap() {
-        component.createConfigMap();
-        verify(oc).execute(commands.get("createConfigMap"));
-        verify(oc).execute(commands.get("labelConfigMap"));
+    @BeforeEach
+    void setUp() throws IOException {
+        context.initDev();
+        oc = createMock(of(
+                resourceHashMock(),
+                applyMock(),
+                deleteMock()
+        ));
+    }
+
+    private DeploymentComponent component() {
+        String name = "helloworld-springboot";
+        String version = "latest";
+        return new DeploymentComponent(name, version, Path.of(context.getPaths().componentsPath() + "/" + name), oc);
     }
 }

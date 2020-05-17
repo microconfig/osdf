@@ -1,5 +1,6 @@
 package io.microconfig.osdf.microconfig.files;
 
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 
@@ -48,7 +49,7 @@ public class MicroConfigFilesState {
                     .map(MicroConfigFile::of)
                     .collect(toSet());
         } catch (IOException e) {
-            throw new RuntimeException("Error accessing files in " + root);
+            throw new OSDFException("Error accessing files in " + root);
         }
     }
 }

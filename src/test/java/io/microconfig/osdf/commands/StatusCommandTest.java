@@ -1,67 +1,73 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.components.checker.HealthChecker;
-import io.microconfig.osdf.config.OSDFPaths;
 import io.microconfig.osdf.openshift.OCExecutor;
-import io.microconfig.osdf.printer.ColumnPrinter;
+import io.microconfig.osdf.printers.ColumnPrinter;
+import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.List;
-import java.util.function.Consumer;
 
-import static io.microconfig.osdf.utils.InstallInitUtils.createConfigsAndInstallInit;
-import static org.mockito.Mockito.*;
+import static io.microconfig.osdf.commandline.CommandLineOutput.output;
+import static io.microconfig.osdf.printers.ColumnPrinter.printer;
+import static io.microconfig.osdf.utils.MockObjects.loggedInOc;
+import static io.microconfig.osdf.utils.OCCommands.deploymentInfoCustomColumns;
+import static io.microconfig.osdf.utils.TestContext.defaultContext;
+import static io.microconfig.utils.ConsoleColor.green;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 class StatusCommandTest {
-    private OSDFPaths paths;
+    private final TestContext context = defaultContext();
+
+    private final String COMPONENT_NAME = "helloworld-springboot";
+    private final String COMPONENT_VERSION = "latest";
 
     @BeforeEach
-    void createConfigs() throws IOException {
-        paths = createConfigsAndInstallInit();
+    void prepareEnv() throws IOException {
+        context.initDev();
     }
 
     @Test
     void statusOk() {
-        OCExecutor oc = mock(OCExecutor.class, withSettings().verboseLogging());
-        when(oc.executeAndReadLines("oc get dc -l application=helloworld-springboot -o name")).thenReturn(
-                List.of("deployment/helloworld-springboot.latest")
-        );
-        when(oc.executeAndReadLines(
-                "oc get dc helloworld-springboot.latest -o custom-columns=" +
-                        "replicas:.spec.replicas," +
-                        "current:.status.replicas," +
-                        "available:.status.availableReplicas," +
-                        "unavailable:.status.unavailableReplicas," +
-                        "projectVersion:.metadata.labels.projectVersion," +
-                        "configVersion:.metadata.labels.configVersion",
-                true)).thenReturn(List.of(
-                "replicas   current   available   unavailable   projectVersion   configVersion",
-                "1          1         1           0             latest           local"
+        OCExecutor oc = mockOc();
+
+        String actualOut = getStatusOutput(oc, printer());
+        String expectedOutput = getExpectedOutput();
+        assertEquals(expectedOutput, actualOut);
+    }
+
+    private OCExecutor mockOc() {
+        OCExecutor oc = loggedInOc();
+        when(oc.execute("oc get dc " + COMPONENT_NAME + " " + deploymentInfoCustomColumns())).thenReturn(output(
+                "replicas   current   available   unavailable   projectVersion   configVersion  configHash" + "\n" +
+                "1          1         1           0             " + COMPONENT_VERSION + "           local   hash"
         ));
-        when(oc.execute("oc get virtualservice helloworld-springboot -o yaml", true)).thenReturn(
-                "not found"
-        );
-        when(oc.executeAndReadLines("oc get pods --selector name=helloworld-springboot -o name")).thenReturn(List.of(
-                "pod/pod"
-        ));
+        when(oc.execute("oc get virtualservice " + COMPONENT_NAME + " -o yaml"))
+                .thenReturn(output("not found"));
+        when(oc.execute("oc get pods -l \"application in (" + COMPONENT_NAME + "), projectVersion in (" + COMPONENT_VERSION + ")\" -o name"))
+                .thenReturn(output("pod/pod"));
+        return oc;
+    }
 
-        HealthChecker healthChecker = mock(HealthChecker.class);
-        when(healthChecker.check(any())).thenReturn(true);
+    private String getExpectedOutput() {
+        ByteArrayOutputStream expectedOut = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(expectedOut));
 
-        ColumnPrinter printer = mock(ColumnPrinter.class);
-        ColumnPrinter localPrinter = mock(ColumnPrinter.class);
-        when(printer.newPrinter()).thenReturn(localPrinter);
+        ColumnPrinter printer = printer();
+        printer.addColumns("COMPONENT", "VERSION", "STATUS", "REPLICAS");
+        printer.addRow(green(COMPONENT_NAME), green(COMPONENT_VERSION), green("RUNNING"), green("1/1"));
+        printer.print();
+        return expectedOut.toString();
+    }
 
-
-
-        new StatusCommand(paths, oc, healthChecker, printer).run(List.of("helloworld-springboot"));
-        verify(printer).addColumns("COMPONENT", "VERSION", "TRAFFIC", "STATUS", "REPLICAS");
-        verify(localPrinter).addRow("helloworld-springboot{latest}", "", "", "", "");
-        verify(localPrinter).addRow(ArgumentMatchers.<Consumer<String>>any(), eq(""), eq("latest"), eq("uniform"), eq("RUNNING"), eq("1/1"));
-        verify(printer).addRows(any());
-        verify(printer).print();
+    private String getStatusOutput(OCExecutor oc, ColumnPrinter printer) {
+        ByteArrayOutputStream actualOut = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(actualOut));
+        new StatusCommand(context.getPaths(), oc, printer, false).run(List.of(COMPONENT_NAME)); //TODO
+        return actualOut.toString();
     }
 }

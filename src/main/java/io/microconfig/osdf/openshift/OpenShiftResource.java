@@ -6,24 +6,24 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+import static io.microconfig.osdf.utils.YamlUtils.*;
 import static io.microconfig.utils.Logger.info;
-import static java.nio.file.Files.newBufferedWriter;
 import static java.util.List.of;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
-@EqualsAndHashCode
+@EqualsAndHashCode(of = {"kind", "name"})
 @RequiredArgsConstructor
 public class OpenShiftResource {
-    private static final List<String> SYSTEM_RESOURCES = of("replicationcontroller", "pod");
+    private static final List<String> SYSTEM_RESOURCES = of("replicationcontroller", "pod", "configmap");
 
     private final String kind;
     private final String name;
+    private final Path path;
     private final OCExecutor oc;
 
     public static List<OpenShiftResource> fromOpenShiftNotations(List<String> lines, OCExecutor oc) {
@@ -44,7 +44,7 @@ public class OpenShiftResource {
 
         String[] fullKindSplit = fullKind.split("\\.");
         String kind = fullKindSplit[0].toLowerCase();
-        return new OpenShiftResource(kind, name, oc);
+        return new OpenShiftResource(kind, name, null, oc);
     }
 
     public static OpenShiftResource fromPath(Path path, OCExecutor oc) {
@@ -56,7 +56,7 @@ public class OpenShiftResource {
             @SuppressWarnings("unchecked")
             Map<String, Object> metadata = (Map<String, Object>) resource.get("metadata");
             String name = (String) metadata.get("name");
-            return new OpenShiftResource(kind, name, oc);
+            return new OpenShiftResource(kind, name, path, oc);
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Couldn't find resource at " + path, e);
         }
@@ -64,18 +64,32 @@ public class OpenShiftResource {
 
     public static void uploadResource(OCExecutor oc, Object resource) {
         Path tmpPath = Path.of("/tmp/resource.yaml");
-        try {
-            new Yaml().dump(resource, newBufferedWriter(tmpPath));
-        } catch (IOException e) {
-            throw new RuntimeException("Error writing resource", e);
-        }
-        oc.execute("oc apply -f " + tmpPath);
+        dump(resource, tmpPath);
+        oc.execute("oc apply -f " + tmpPath)
+                .throwExceptionIfError();
     }
 
     public void delete() {
-        var command = "oc delete " + kind + " " + name;
-        oc.execute(command);
+        oc.execute("oc delete " + kind + " " + name)
+                .throwExceptionIfError();
         info("Deleted: " + toString());
+    }
+
+    public void upload() {
+        if (getRemoteHash().equals(getLocalHash())) return;
+        oc.execute("oc apply -f " + path);
+        info("Uploaded: " + toString());
+    }
+
+    private String getRemoteHash() {
+        List<String> output = oc.execute("oc get " + kind + " " + name + " -o custom-columns=\"hash:.metadata.labels.configHash\"")
+                .getOutputLines();
+        if (output.get(0).toLowerCase().contains("not found")) return "noHashFound";
+        return output.get(1).strip();
+    }
+
+    private String getLocalHash() {
+        return getString(loadFromPath(path), "metadata", "labels", "configHash");
     }
 
     public boolean isSystemResource() {

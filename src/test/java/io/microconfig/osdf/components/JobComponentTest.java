@@ -1,41 +1,51 @@
 package io.microconfig.osdf.components;
 
 import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.microconfig.osdf.commandline.CommandLineOutput.output;
+import static io.microconfig.osdf.utils.TestContext.defaultContext;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class JobComponentTest {
+    private final TestContext context = defaultContext();
+    private final String JOB_NAME = "fakejob";
+    private final String JOB_VERSION = "latest";
+
     private OCExecutor oc;
-    private JobComponent component;
     private final Map<String, String> commands = new HashMap<>();
-
-    @BeforeEach
-    void setUp() {
-        oc = mock(OCExecutor.class);
-        component = new JobComponent("test-name", null, Path.of("/tmp/components/test-name/openshift"), oc);
-
-        commands.put("exists", "oc get job test-name");
-    }
 
     @Test
     void testExists() {
-        when(oc.execute(commands.get("exists"), true)).thenReturn("exists");
-        assertTrue(component.exists());
-        verify(oc).execute(commands.get("exists"), true);
+        when(oc.execute(commands.get("exists"))).thenReturn(output("exists"));
+        assertTrue(component().exists());
     }
 
     @Test
     void testNotExists() {
-        when(oc.execute(commands.get("exists"), true)).thenReturn("error");
-        assertFalse(component.exists());
-        verify(oc).execute(commands.get("exists"), true);
+        when(oc.execute(commands.get("exists"))).thenReturn(output("error"));
+        assertFalse(component().exists());
+    }
+
+    @BeforeEach
+    void setUp() throws IOException {
+        context.initDev();
+
+        oc = mock(OCExecutor.class);
+        commands.put("exists", "oc get job " + JOB_NAME);
+    }
+
+    private JobComponent component() {
+        return new JobComponent(JOB_NAME, JOB_VERSION, Path.of(context.getPaths().componentsPath() + "/" + JOB_NAME), oc);
     }
 }

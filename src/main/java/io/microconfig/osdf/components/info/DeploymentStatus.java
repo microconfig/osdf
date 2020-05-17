@@ -6,5 +6,5 @@ public enum DeploymentStatus {
     NOT_READY,
     TURNED_OFF,
     NOT_FOUND,
-    UNKNOWN
+    FAILED
 }

@@ -1,28 +1,40 @@
 package io.microconfig.osdf.components.checker;
 
-import io.microconfig.osdf.microconfig.properties.HealthCheckProperties;
+import io.microconfig.osdf.components.DeploymentComponent;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.openshift.Pod;
+import io.microconfig.osdf.utils.PropertiesUtils;
 import lombok.RequiredArgsConstructor;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Map;
+import java.util.Properties;
 
 import static io.microconfig.osdf.utils.ThreadUtils.sleepSec;
-import static io.microconfig.utils.TimeUtils.calcSecFrom;
+import static io.microconfig.osdf.utils.YamlUtils.getInt;
+import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
 import static java.lang.Runtime.getRuntime;
 import static java.lang.System.currentTimeMillis;
+import static java.nio.file.Path.of;
+import static java.util.Optional.ofNullable;
 
 @RequiredArgsConstructor
 public class LogHealthChecker implements HealthChecker {
-    private final HealthCheckProperties properties;
+    private final String marker;
+    private final int timeoutInSec;
 
-    public static LogHealthChecker logHealthChecker(HealthCheckProperties properties) {
-        return new LogHealthChecker(properties);
+    public static LogHealthChecker logHealthChecker(DeploymentComponent component) {
+        Map<String, Object> deployProperties = loadFromPath(of(component.getConfigDir() + "/deploy.yaml"));
+        Integer timeoutInSec = getInt(deployProperties, "osdf.start.waitSec");
+
+        Properties processProperties = PropertiesUtils.loadFromPath(of(component.getConfigDir() + "/process.properties"));
+        String marker = processProperties.getProperty("healthcheck.marker.success");
+        if (marker == null) throw new OSDFException("Marker not found for log healthchecker");
+        return new LogHealthChecker(marker, ofNullable(timeoutInSec).orElse(30));
     }
 
     public boolean check(Pod pod) {
-        String marker = properties.marker(pod.getComponentName());
-        int timeoutInSec = properties.timeoutInSec(pod.getComponentName());
         try {
             Process process = getRuntime().exec("oc logs -f " + pod.getName() + " -c " + pod.getComponentName());
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
@@ -47,5 +59,9 @@ public class LogHealthChecker implements HealthChecker {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    private long calcSecFrom(long startTime) {
+        return (currentTimeMillis() - startTime) / 1000;
     }
 }

@@ -1,9 +1,9 @@
 package io.microconfig.osdf.api.parameter;
 
-import io.microconfig.osdf.parameters.AbstractParameter;
+import io.microconfig.osdf.parameters.ArgParameter;
 
-public class ConfigVersionParameter extends AbstractParameter<String> {
+public class ConfigVersionParameter extends ArgParameter<String> {
     public ConfigVersionParameter() {
-        super("configVersion", "v", "Version of config or branch for git");
+        super("version", "v", "Version of config or branch for git");
     }
 }

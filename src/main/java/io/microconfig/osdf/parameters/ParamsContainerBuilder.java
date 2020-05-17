@@ -30,9 +30,16 @@ public class ParamsContainerBuilder {
 
     public ParamsContainer build(String[] args) throws ParseException {
         CommandLine commandLine = runParser(args);
-        if (commandLine == null) throw new RuntimeException("Parsing error");
-        parameters.forEach(param -> param.setString(commandLine.getOptionValue(param.name())));
+        parameters.forEach(param -> setParameter(commandLine, param));
         return new ParamsContainer(methodName, parameters);
+    }
+
+    private void setParameter(CommandLine commandLine, CommandLineParameter<?> param) {
+        if (param instanceof FlagParameter) {
+            param.set(commandLine.hasOption(param.name()) ? "true" : "false");
+            return;
+        }
+        param.set(commandLine.getOptionValue(param.name()));
     }
 
     public ParamsContainer build() {

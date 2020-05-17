@@ -1,18 +1,18 @@
 package io.microconfig.osdf.api.parameter;
 
-import io.microconfig.osdf.parameters.AbstractParameter;
-import io.microconfig.osdf.state.ConfigSource;
+import io.microconfig.osdf.parameters.ArgParameter;
+import io.microconfig.osdf.configs.ConfigsSource;
 
-import static io.microconfig.osdf.state.ConfigSource.*;
+import static io.microconfig.osdf.configs.ConfigsSource.*;
 
 
-public class ConfigSourceParameter extends AbstractParameter<ConfigSource> {
+public class ConfigSourceParameter extends ArgParameter<ConfigsSource> {
     public ConfigSourceParameter() {
         super("configSource", "s", "Config source: git, nexus or local");
     }
 
     @Override
-    public ConfigSource get() {
+    public ConfigsSource get() {
         if (getValue() == null) return null;
         return valueOf(getValue().toUpperCase());
     }
