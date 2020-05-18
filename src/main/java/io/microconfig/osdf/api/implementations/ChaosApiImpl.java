@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static io.microconfig.osdf.deployers.NetworkChaosDeployer.chaosDeployer;
-import static io.microconfig.osdf.istio.faults.Fault.faultFromArgs;
+import static io.microconfig.osdf.istio.faults.Fault.fault;
 
 @AllArgsConstructor
 public class ChaosApiImpl implements ChaosApi {
@@ -22,8 +22,9 @@ public class ChaosApiImpl implements ChaosApi {
     }
 
     @Override
-    public void startNetworkChaos(String faultType, Integer chaosSeverity, List<String> components) {
-        new NetworkChaosCommand(paths, oc, chaosDeployer(oc, faultFromArgs(faultType, chaosSeverity))).run(components);
+    public void startNetworkChaos(Integer severity, Integer httpDelay, Integer httpError, List<String> components) {
+        if (httpDelay == null && httpError == null) throw new RuntimeException("Specify HTTP error or delay");
+        new NetworkChaosCommand(paths, oc, chaosDeployer(oc, fault(httpError, severity, httpDelay, severity))).run(components);
     }
 
     @Override

@@ -30,16 +30,17 @@ public class ChaosStep {
     public static ChaosStep fromMap(Object step) {
         Map<String, Object> stepMap = (Map<String, Object>) step;
         List<Object> components = getList(stepMap, "components");
+        Map<String, Object> chaosSetMap = getMap(stepMap, "chaosSet");
         return new ChaosStep(
                 getInt(stepMap, "number"),
                 (List<String>) (Object) components,
                 getInt(stepMap, "severity"),
                 getInt(stepMap, "duration"),
                 chaosSet(
-                        getInt(getMap(stepMap, "chaosSet"), "abort"),
-                        getInt(getMap(stepMap, "chaosSet"), "delay"),
-                        getInt(getMap(stepMap, "chaosSet"), "ioChaos"),
-                        getInt(getMap(stepMap, "chaosSet"), "podChaos")
+                        getInt(chaosSetMap, "httpAbort"),
+                        getInt(chaosSetMap, "httpDelay"),
+                        getInt(chaosSetMap, "ioChaosTimeout"),
+                        getInt(chaosSetMap, "podChaosTimeout")
                 )
         );
     }
@@ -47,10 +48,9 @@ public class ChaosStep {
     public void runStep(OSDFPaths paths, OCExecutor ocExecutor) {
         long start = System.nanoTime();
 
-        runAbort(paths, ocExecutor);
-        runDelay(paths, ocExecutor);
-        runIO(paths, ocExecutor);
-        runPod(paths, ocExecutor, start);
+        runHttpFaultInjection(paths, ocExecutor);
+        runIOStress(paths, ocExecutor);
+        runPodKill(paths, ocExecutor, start);
 
         long current = System.nanoTime();
 
@@ -67,38 +67,28 @@ public class ChaosStep {
         }
     }
 
-    private void runPod(OSDFPaths paths, OCExecutor ocExecutor, long start) {
+    private void runPodKill(OSDFPaths paths, OCExecutor ocExecutor, long start) {
         if (chaosSet.isKillPod()) {
             ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-            service.scheduleAtFixedRate(() -> new KillPodsCommand(paths, ocExecutor, severity).run(components), 0, chaosSet.getIoStressTimeout(), TimeUnit.SECONDS);
+            service.scheduleAtFixedRate(() -> new KillPodsCommand(paths, ocExecutor, severity).run(components), 0, chaosSet.getKillPodTimeout(), TimeUnit.SECONDS);
             long current = System.nanoTime();
             sleepSec(duration - TimeUnit.NANOSECONDS.toSeconds(current - start));
             service.shutdownNow();
         }
     }
 
-    private void runIO(OSDFPaths paths, OCExecutor ocExecutor) {
+    private void runIOStress(OSDFPaths paths, OCExecutor ocExecutor) {
         if (chaosSet.isIOStress()) {
             new StartIoStressCommand(paths, ocExecutor, chaosSet.getIoStressTimeout(), severity).run(components);
         }
     }
 
-    private void runDelay(OSDFPaths paths, OCExecutor ocExecutor) {
-        if (chaosSet.isHttpDelay()) {
+    private void runHttpFaultInjection(OSDFPaths paths, OCExecutor ocExecutor) {
+        if (chaosSet.isHttpError() || chaosSet.isHttpDelay()) {
             new NetworkChaosCommand(
                     paths,
                     ocExecutor,
-                    new NetworkChaosDeployer(ocExecutor, chaosSet.getHttpDelayFault(severity))
-            ).run(components);
-        }
-    }
-
-    private void runAbort(OSDFPaths paths, OCExecutor ocExecutor) {
-        if (chaosSet.isHttpError()) {
-            new NetworkChaosCommand(
-                    paths,
-                    ocExecutor,
-                    new NetworkChaosDeployer(ocExecutor, chaosSet.getHttpErrorFault(severity))
+                    new NetworkChaosDeployer(ocExecutor, chaosSet.getHttpFault(severity))
             ).run(components);
         }
     }

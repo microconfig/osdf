@@ -12,8 +12,9 @@ import static io.microconfig.osdf.parameters.ParamType.REQUIRED;
 public interface ChaosApi {
 
     @ApiCommand(description = "Inject network fault into components", order = 2)
-    void startNetworkChaos(@ConsoleParam(value = NetworkFaultParameter.class, type = REQUIRED) String faultType,
-                           @ConsoleParam(value = ChaosSeverityParameter.class, type = REQUIRED) Integer chaosSeverity,
+    void startNetworkChaos(@ConsoleParam(value = ChaosSeverityParameter.class, type = REQUIRED) Integer chaosSeverity,
+                           @ConsoleParam(value = NetworkDelayParameter.class) Integer httpDelay,
+                           @ConsoleParam(value = NetworkErrorParameter.class) Integer httpError,
                            @ConsoleParam(value = ComponentParameter.class) List<String> components);
 
     @ApiCommand(description = "Remove network fault from components", order = 3)

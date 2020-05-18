@@ -4,8 +4,7 @@ import io.microconfig.osdf.istio.faults.Fault;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import static io.microconfig.osdf.istio.faults.Fault.abortFault;
-import static io.microconfig.osdf.istio.faults.Fault.delayFault;
+import static io.microconfig.osdf.istio.faults.Fault.fault;
 
 @Getter
 @AllArgsConstructor
@@ -19,12 +18,8 @@ public class ChaosSet {
         return new ChaosSet(httpErrorCode, httpDelay, ioStressTimeout, killPodTimeout);
     }
 
-    public Fault getHttpDelayFault(Integer severity) {
-        return delayFault(httpDelay, severity);
-    }
-
-    public Fault getHttpErrorFault(Integer severity) {
-        return abortFault(httpErrorCode, severity);
+    public Fault getHttpFault(Integer severity) {
+        return fault(httpErrorCode, severity, httpDelay, severity);
     }
 
     public boolean isHttpError() {

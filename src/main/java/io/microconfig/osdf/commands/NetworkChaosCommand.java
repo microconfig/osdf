@@ -2,17 +2,16 @@ package io.microconfig.osdf.commands;
 
 import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.components.loader.ComponentsLoaderImpl;
-import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.deployers.Deployer;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.OpenShiftProject;
+import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 import static io.microconfig.osdf.components.loader.ComponentsLoaderImpl.componentsLoader;
 import static io.microconfig.osdf.openshift.OpenShiftProject.create;
-import static io.microconfig.utils.Logger.announce;
 
 @RequiredArgsConstructor
 public class NetworkChaosCommand {
@@ -28,9 +27,6 @@ public class NetworkChaosCommand {
     }
 
     private void deployChaos(ComponentsLoaderImpl componentsLoader) {
-        componentsLoader.load(DeploymentComponent.class).forEach(component -> {
-            deployer.deploy(component);
-            announce("Loaded component " + component);
-        });
+        componentsLoader.load(DeploymentComponent.class).forEach(deployer::deploy);
     }
 }

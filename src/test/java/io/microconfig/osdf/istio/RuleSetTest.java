@@ -10,7 +10,6 @@ import java.util.Map;
 
 import static io.microconfig.osdf.istio.Destination.destination;
 import static io.microconfig.osdf.istio.WeightRoute.weightRoute;
-import static io.microconfig.osdf.istio.faults.Fault.abortFault;
 import static io.microconfig.osdf.istio.rules.HeaderRule.headerRule;
 import static io.microconfig.osdf.utils.YamlUtils.getMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class RuleSetTest {
     private final Destination first = destination("host", "v1");
     private final Destination second = destination("host", "v2");
-    private final Fault fault = abortFault(555, 100);
+    private final Fault fault = Fault.fault(555, 10, 7, 20);
 
     @Test
     void testSerialization() {

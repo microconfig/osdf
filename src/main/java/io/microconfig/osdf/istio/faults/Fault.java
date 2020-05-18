@@ -2,7 +2,6 @@ package io.microconfig.osdf.istio.faults;
 
 import lombok.AllArgsConstructor;
 
-import java.util.List;
 import java.util.Map;
 
 import static io.microconfig.osdf.utils.YamlUtils.getInt;
@@ -19,21 +18,17 @@ public class Fault {
 
     public Object toYaml() {
         if (httpErrorCode != null && httpDelayInSec != null) {
-            return List.of(
-                    of(
-                            "abort", of(
-                                    "httpStatus", httpErrorCode,
-                                    "percentage", of(
-                                            "value", httpErrorPercentage
-                                    )
+            return of(
+                    "abort", of(
+                            "httpStatus", httpErrorCode,
+                            "percentage", of(
+                                    "value", httpErrorPercentage
                             )
                     ),
-                    of(
-                            "delay", of(
-                                    "fixedDelay", httpDelayInSec + "s",
-                                    "percentage", of(
-                                            "value", httpDelayPercentage
-                                    )
+                    "delay", of(
+                            "fixedDelay", httpDelayInSec + "s",
+                            "percentage", of(
+                                    "value", httpDelayPercentage
                             )
                     )
             );
@@ -87,21 +82,8 @@ public class Fault {
         throw new RuntimeException("Unknown fault injection in virtual service");
     }
 
-    static public Fault delayFault(Integer httpDelayInSec, Integer httpDelayPercentage) {
-        return new Fault(null, null, httpDelayInSec, httpDelayPercentage);
+    static public Fault fault(Integer httpErrorCode, Integer httpErrorPercentage, Integer httpDelayInSec, Integer httpDelayPercentage) {
+        return new Fault(httpErrorCode, httpErrorPercentage, httpDelayInSec, httpDelayPercentage);
     }
 
-    static public Fault abortFault(Integer httpErrorCode, Integer httpErrorPercentage) {
-        return new Fault(httpErrorCode, httpErrorPercentage, null, null);
-    }
-
-    static public Fault faultFromArgs(String faultType, Integer chaosSeverity) {
-        if (faultType.equals("delay")) {
-            return delayFault(10, chaosSeverity);
-        }
-        if (faultType.equals("abort")) {
-            return abortFault(555, chaosSeverity);
-        }
-        throw new RuntimeException("Unknown type of fault: " + faultType);
-    }
 }

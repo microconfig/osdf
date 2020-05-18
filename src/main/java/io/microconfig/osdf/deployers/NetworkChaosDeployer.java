@@ -7,6 +7,7 @@ import io.microconfig.osdf.openshift.OCExecutor;
 import lombok.AllArgsConstructor;
 
 import static io.microconfig.osdf.istio.VirtualService.virtualService;
+import static io.microconfig.utils.Logger.announce;
 
 @AllArgsConstructor
 public class NetworkChaosDeployer implements Deployer {
@@ -27,5 +28,6 @@ public class NetworkChaosDeployer implements Deployer {
         if (!component.isIstioService()) return;
         VirtualService virtualService = virtualService(oc, component);
         virtualService.setFault(fault).upload();
+        announce("Loaded component " + component);
     }
 }
