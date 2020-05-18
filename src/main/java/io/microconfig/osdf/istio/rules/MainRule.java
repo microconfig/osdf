@@ -104,9 +104,9 @@ public class MainRule {
 
     private List<WeightRoute> getOtherRoutes(String subset) {
         return routes
-                    .stream()
-                    .filter(r -> !r.getDestination().getSubset().equals(subset))
-                    .collect(toUnmodifiableList());
+                .stream()
+                .filter(r -> !r.getDestination().getSubset().equals(subset))
+                .collect(toUnmodifiableList());
     }
 
     public void setFault(Fault fault) {

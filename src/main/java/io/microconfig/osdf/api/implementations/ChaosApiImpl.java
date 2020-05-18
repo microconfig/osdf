@@ -1,15 +1,12 @@
 package io.microconfig.osdf.api.implementations;
 
 import io.microconfig.osdf.api.declarations.ChaosApi;
-import io.microconfig.osdf.api.declarations.ManagementApi;
-import io.microconfig.osdf.commands.KillPodsCommand;
-import io.microconfig.osdf.commands.NetworkChaosCommand;
-import io.microconfig.osdf.commands.StartIoStressCommand;
-import io.microconfig.osdf.commands.StopIoStressCommand;
+import io.microconfig.osdf.commands.*;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.AllArgsConstructor;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import static io.microconfig.osdf.deployers.NetworkChaosDeployer.chaosDeployer;
@@ -49,4 +46,8 @@ public class ChaosApiImpl implements ChaosApi {
         new KillPodsCommand(paths, oc, chaosSeverity).run(components);
     }
 
+    @Override
+    public void runChaosExperiment(Path pathToPlan) {
+        new ChaosExperimentCommand(paths, oc, pathToPlan).run();
+    }
 }

@@ -6,22 +6,25 @@ import io.microconfig.osdf.istio.rules.MainRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static io.microconfig.osdf.istio.Destination.destination;
 import static io.microconfig.osdf.istio.WeightRoute.weightRoute;
-import static io.microconfig.osdf.istio.faults.AbortFault.abortFault;
+import static io.microconfig.osdf.istio.faults.Fault.abortFault;
 import static io.microconfig.osdf.istio.rules.HeaderRule.headerRule;
+import static io.microconfig.osdf.utils.YamlUtils.getMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class RuleSetTest {
     private final Destination first = destination("host", "v1");
     private final Destination second = destination("host", "v2");
-    private final Fault abortFault = abortFault("555",100);
+    private final Fault fault = abortFault(555, 100);
 
     @Test
     void testSerialization() {
         HeaderRule headerRule = headerRule(second, "headerName", "headerValue");
-        MainRule mainRule = new MainRule(List.of(weightRoute(first, 100)), second,abortFault);
+        MainRule mainRule = new MainRule(List.of(weightRoute(first, 100)), second, fault);
         List<Object> yaml = List.of(
                 headerRule.toYaml(),
                 mainRule.toYaml()
@@ -36,7 +39,7 @@ class RuleSetTest {
     @Test
     void testAddDeleteHeaderRule() {
         HeaderRule headerRule = headerRule(second, "headerName", "headerValue");
-        MainRule mainRule = new MainRule(List.of(weightRoute(first, 100)), second, abortFault);
+        MainRule mainRule = new MainRule(List.of(weightRoute(first, 100)), second, fault);
         List<Object> yaml = List.of(mainRule.toYaml());
 
         RuleSet ruleSet = RuleSet.from(yaml);
@@ -82,5 +85,20 @@ class RuleSetTest {
         assertEquals("mirror,header", ruleSet.getTrafficStatus("v2"));
     }
 
-    //TODO add network chaos test
+    @Test
+    @SuppressWarnings("unchecked")
+    void injectRemoveNetworkFault() {
+        MainRule mainRule = new MainRule(List.of(weightRoute(first, 100)), second, null);
+        List<Object> yaml = List.of(mainRule.toYaml());
+
+        RuleSet ruleSet = RuleSet.from(yaml);
+        ruleSet.getMainRule().setFault(fault);
+        assertEquals(fault.toYaml(), getMap((Map<String, Object>) ruleSet.getMainRule().toYaml(), "fault"));
+
+        ruleSet.getMainRule().setFault(null);
+
+        assertNull(getMap((Map<String, Object>) ruleSet.getMainRule().toYaml(), "fault"));
+        assertEquals(mainRule.toYaml(), ruleSet.getMainRule().toYaml());
+
+    }
 }

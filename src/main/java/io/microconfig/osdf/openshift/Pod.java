@@ -49,6 +49,11 @@ public class Pod implements Comparable<Pod> {
                 .throwExceptionIfError();
     }
 
+    public void forceDelete() {
+        oc.execute("oc delete pod " + name + " --grace-period=0 --force")
+                .throwExceptionIfError();
+    }
+
     public void logs() {
         try {
             Process logs = new ProcessBuilder("/bin/sh", "-c", "oc logs -f " + name + " -c " + componentName)

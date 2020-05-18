@@ -34,7 +34,7 @@ public class OCExecutor {
     public void executeAndForget(String command) {
         try {
             log(command);
-            Process process = new ProcessBuilder("/bin/sh", "-c", command).start();
+            new ProcessBuilder("/bin/sh", "-c", command).start();
         } catch (IOException e) {
             currentThread().interrupt();
             throw new RuntimeException("Couldn't execute command: " + command, e);
