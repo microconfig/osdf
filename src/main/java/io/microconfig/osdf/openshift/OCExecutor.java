@@ -5,11 +5,15 @@ import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
+import static io.microconfig.core.configtypes.StandardConfigType.DEPLOY;
+import static io.microconfig.osdf.commandline.CommandLineOutput.outputOf;
 import java.io.IOException;
 
 import static io.microconfig.core.configtypes.StandardConfigType.DEPLOY;
 import static io.microconfig.osdf.commandline.CommandLineOutput.outputOf;
 import static io.microconfig.osdf.microconfig.properties.PropertyGetter.propertyGetter;
+import static io.microconfig.utils.Logger.info;
+import static java.lang.System.getenv;
 import static io.microconfig.utils.Logger.info;
 import static java.lang.System.getenv;
 import static java.lang.Thread.currentThread;
@@ -29,7 +33,6 @@ public class OCExecutor {
         log(output.getOutput());
         throwIfOpenShiftError(output.getOutput());
         return output;
-    }
 
     public void executeAndForget(String command) {
         try {

@@ -29,8 +29,8 @@ public class DeploymentInfo {
         this.status = status(replicas, available, unavailable);
     }
 
-    public static DeploymentInfo info(DeploymentComponent component, OCExecutor oc) {
-        List<String> lines = oc.execute("oc get dc " + component.getName() + "." + component.getVersion() + " -o custom-columns=" +
+    public static DeploymentInfo info(DeploymentComponent component, OCExecutor oc, HealthChecker healthChecker) {
+        List<String> lines = oc.executeAndReadLines("oc get dc " + component.getName() + "." + component.getVersion() + " -o custom-columns=" +
                 "replicas:.spec.replicas," +
                 "current:.status.replicas," +
                 "available:.status.availableReplicas," +

@@ -42,9 +42,7 @@ class StatusCommandTest {
 
     private OCExecutor mockOc() {
         OCExecutor oc = loggedInOc();
-        when(oc.execute("oc get dc -l application=" + COMPONENT_NAME + " -o name"))
-                .thenReturn(output("deployment/" + COMPONENT_NAME + "." + COMPONENT_VERSION));
-        when(oc.execute("oc get dc " + COMPONENT_NAME + "." + COMPONENT_VERSION + " " + deploymentInfoCustomColumns())).thenReturn(output(
+        when(oc.execute("oc get dc " + COMPONENT_NAME + " " + deploymentInfoCustomColumns())).thenReturn(output(
                 "replicas   current   available   unavailable   projectVersion   configVersion  configHash" + "\n" +
                 "1          1         1           0             " + COMPONENT_VERSION + "           local   hash"
         ));

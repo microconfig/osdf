@@ -5,6 +5,7 @@ import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.openshift.Pod;
 import io.microconfig.osdf.paths.OSDFPaths;
+import io.microconfig.utils.Logger;
 import lombok.Getter;
 
 import java.nio.file.Path;
@@ -20,6 +21,7 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 @Getter
 public class DeploymentComponent extends AbstractOpenShiftComponent {
     private final boolean istioService;
+    private boolean isPrimary = false;
 
     public DeploymentComponent(String name, String version, Path configDir, OCExecutor oc) {
         super(name, version, configDir, oc);
@@ -55,6 +57,11 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
     public void deleteAll() {
         virtualService(oc, this).delete();
         super.deleteAll();
+    }
+
+    public void deleteDeploymentConfig(String version) {
+        String output = oc.execute("oc delete dc " + name + "." + version).getOutput();
+        Logger.info(output);
     }
 
     public void stop() {
@@ -104,6 +111,17 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
                 .filter(line -> line.length() > 0)
                 .map(notation -> fromNotation(notation, configDir, oc))
                 .collect(toUnmodifiableList());
+    }
+
+    public boolean isPrimary() {
+        if (!isIstioService()) return true;
+        return isPrimary;
+    }
+
+    @Override
+    public String fullName() {
+        if (isPrimary()) return name;
+        return super.fullName();
     }
 
     private void scale(int replicas) {

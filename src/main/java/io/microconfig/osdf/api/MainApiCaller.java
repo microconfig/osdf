@@ -1,7 +1,6 @@
 package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.api.declarations.*;
-import io.microconfig.osdf.api.implementations.ChaosApiImpl;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +9,6 @@ import java.util.List;
 
 import static io.microconfig.osdf.api.ApiCallFinder.finder;
 import static io.microconfig.osdf.api.MainApiReader.apiInfo;
-import static io.microconfig.osdf.api.implementations.ChaosApiImpl.chaosApi;
 import static io.microconfig.osdf.api.implementations.ComponentsApiImpl.componentsApi;
 import static io.microconfig.osdf.api.implementations.FrequentlyUsedApiImpl.frequentlyUsedApi;
 import static io.microconfig.osdf.api.implementations.InfoApiImpl.infoApi;
@@ -43,7 +41,6 @@ public class MainApiCaller implements ApiCaller {
                 .addImpl(ManagementApi.class, managementApi(paths, oc))
                 .addImpl(InfoApi.class, infoApi(paths, oc))
                 .addImpl(SystemApi.class, systemApi(paths))
-                .addImpl(ChaosApi.class, chaosApi(paths,oc))
                 .build()
                 .call(args);
     }

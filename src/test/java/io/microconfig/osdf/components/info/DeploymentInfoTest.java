@@ -79,6 +79,6 @@ class DeploymentInfoTest {
     }
 
     private String infoCommand() {
-        return "oc get dc helloworld-springboot.latest " + deploymentInfoCustomColumns();
+        return "oc get dc helloworld-springboot " + deploymentInfoCustomColumns();
     }
 }
