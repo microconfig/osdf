@@ -51,4 +51,10 @@ public class ChaosApiImpl implements ChaosApi {
     public void runChaosExperiment(Path pathToPlan) {
         new ChaosExperimentCommand(paths, oc, pathToPlan).run();
     }
+
+    @Override
+    public void stopChaos() {
+        stopNetworkChaos(null);
+        stopIoChaos(null);
+    }
 }

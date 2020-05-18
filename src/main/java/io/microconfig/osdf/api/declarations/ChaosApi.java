@@ -11,6 +11,9 @@ import static io.microconfig.osdf.parameters.ParamType.REQUIRED;
 
 public interface ChaosApi {
 
+    @ApiCommand(description = "Start chaos-plan", order = 1)
+    void runChaosExperiment(@ConsoleParam(value = ChaosExperimentPlanPathParameter.class, type = REQUIRED) Path planPath);
+
     @ApiCommand(description = "Inject network fault into components", order = 2)
     void startNetworkChaos(@ConsoleParam(value = ChaosSeverityParameter.class, type = REQUIRED) Integer chaosSeverity,
                            @ConsoleParam(value = NetworkDelayParameter.class) Integer httpDelay,
@@ -32,6 +35,6 @@ public interface ChaosApi {
     void startPodChaos(@ConsoleParam(value = ChaosSeverityParameter.class, type = REQUIRED) Integer chaosSeverity,
                        @ConsoleParam(value = ComponentParameter.class) List<String> components);
 
-    @ApiCommand(description = "Start chaos-plan", order = 1)
-    void runChaosExperiment(@ConsoleParam(value = ChaosExperimentPlanPathParameter.class, type = REQUIRED) Path planPath);
+    @ApiCommand(description = "Stop all chaos experiments", order = -1)
+    void stopChaos();
 }
