@@ -81,6 +81,11 @@ public class YamlUtils {
     }
 
     @SuppressWarnings("unchecked")
+    public static List<Map<String, Object>> getListOfMaps(Map<String, Object> yaml, String... properties) {
+        return (List<Map<String, Object>>) getObjectOrNull(yaml, properties);
+    }
+
+    @SuppressWarnings("unchecked")
     public static Map<String, Object> getMap(Map<String, Object> yaml, String... properties) {
         return (Map<String, Object>) getObjectOrNull(yaml, properties);
     }
