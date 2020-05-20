@@ -1,6 +1,6 @@
 package io.microconfig.osdf;
 
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
@@ -12,13 +12,13 @@ import static java.util.List.of;
 @RequiredArgsConstructor
 public class OSDFStarter {
     private final OSDFPaths paths;
-    private final OCExecutor oc;
+    private final ClusterCLI cli;
 
     public void run(String[] args) {
         if (updatableCall(args)) {
             updateCommand(paths).tryAutoUpdateAndRestart(args);
         }
-        mainApi(paths, oc).call(asList(args));
+        mainApi(paths, cli).call(asList(args));
     }
 
     private boolean updatableCall(String[] args) {
