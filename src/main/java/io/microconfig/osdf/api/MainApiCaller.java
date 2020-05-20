@@ -1,7 +1,7 @@
 package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.api.declarations.*;
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
@@ -20,10 +20,10 @@ import static io.microconfig.osdf.api.implementations.SystemApiImpl.systemApi;
 @RequiredArgsConstructor
 public class MainApiCaller implements ApiCaller {
     private final OSDFPaths paths;
-    private final OCExecutor oc;
+    private final ClusterCLI cli;
 
-    public static ApiCaller mainApi(OSDFPaths paths, OCExecutor oc) {
-        return new MainApiCaller(paths, oc);
+    public static ApiCaller mainApi(OSDFPaths paths, ClusterCLI cli) {
+        return new MainApiCaller(paths, cli);
     }
 
     @Override
@@ -38,8 +38,8 @@ public class MainApiCaller implements ApiCaller {
                 .addImpl(InstallApi.class, installApi(paths))
                 .addImpl(InitializationApi.class, initializationApi(paths))
                 .addImpl(ComponentsApi.class, componentsApi(paths))
-                .addImpl(ManagementApi.class, managementApi(paths, oc))
-                .addImpl(InfoApi.class, infoApi(paths, oc))
+                .addImpl(ManagementApi.class, managementApi(paths, cli))
+                .addImpl(InfoApi.class, infoApi(paths, cli))
                 .addImpl(SystemApi.class, systemApi(paths))
                 .build()
                 .call(args);
