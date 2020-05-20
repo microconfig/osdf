@@ -1,5 +1,6 @@
 package io.microconfig.osdf.openshift;
 
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.commandline.CommandLineOutput;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
@@ -12,12 +13,17 @@ import static io.microconfig.utils.Logger.info;
 import static java.lang.System.getenv;
 
 @RequiredArgsConstructor
-public class OCExecutor {
+public class OCExecutor implements ClusterCLI {
     private final OSDFPaths paths;
     private final boolean logOc;
 
     public static OCExecutor oc(OSDFPaths paths) {
         return new OCExecutor(paths, "true".equals(getenv("OSDF_LOG_OC")));
+    }
+
+    public static OCExecutor oc(ClusterCLI cli) {
+        if (cli instanceof OCExecutor) return (OCExecutor) cli;
+        throw new OSDFException("OpenShift cli is required");
     }
 
     public CommandLineOutput execute(String command) {
