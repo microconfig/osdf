@@ -50,6 +50,30 @@ public class FileUtils {
         }
     }
 
+    public static void copyFile(Path from, Path to) {
+        try {
+            org.apache.commons.io.FileUtils.copyFile(from.toFile(), to.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't copy file " + from.getFileName() + ", to " + to.getFileName());
+        }
+    }
+
+    public static void copyDirectory(Path from, Path to) {
+        try {
+            org.apache.commons.io.FileUtils.copyDirectory(from.toFile(), to.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't copy directory " + from.getFileName() + ", to " + to.getFileName());
+        }
+    }
+
+    public static void deleteDirectory(Path path) {
+        try {
+            org.apache.commons.io.FileUtils.deleteDirectory(path.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't delete directory " + path.getFileName());
+        }
+    }
+
     public static void deleteIfEmpty(Path dir) {
         try (Stream<Path> list = list(dir)) {
             if (list.findAny().isEmpty()) {
@@ -72,5 +96,23 @@ public class FileUtils {
 
     public static String hashOfFile(Path path) {
         return md5Hex(readAll(path));
+    }
+
+    public static void createFileIfNotExists(Path file) {
+        if (!exists(file)) {
+            try {
+                createFile(file);
+            } catch (IOException e) {
+                throw new RuntimeException("Can't create file " + file);
+            }
+        }
+    }
+
+    public static Stream<Path> getPathsInDir(Path dir) {
+        try {
+            return list(dir);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Couldn't open dir at " + dir, e);
+        }
     }
 }

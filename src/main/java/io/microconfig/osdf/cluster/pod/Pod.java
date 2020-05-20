@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
+import static io.microconfig.osdf.utils.CommandLineExecutor.executeAndReadLines;
 import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 import static java.lang.Thread.currentThread;
 
@@ -43,6 +45,23 @@ public class Pod implements Comparable<Pod> {
                 .filter(pod -> pod.getName().equals(podName))
                 .findFirst()
                 .orElseThrow(() -> new OSDFException("Pod not found"));
+    }
+
+    public String getPodIp() {
+        String command = "oc get pods --template='" +
+                "{{range .items}}" +
+                    "{{if eq .metadata.name \"" + name + "\"}}" +
+                        "{{if eq .status.phase \"Running\"}}" +
+                            "{{.status.podIP}}" +
+                        "{{end}}" +
+                    "{{end}}" +
+                "{{end}}'";
+
+        return executeAndReadLines(command)
+                .stream()
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElseThrow();
     }
 
     public void delete() {
