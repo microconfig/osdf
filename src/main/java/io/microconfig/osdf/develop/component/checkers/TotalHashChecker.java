@@ -1,6 +1,6 @@
 package io.microconfig.osdf.develop.component.checkers;
 
-import io.microconfig.osdf.develop.cli.ClusterCLI;
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.develop.component.ClusterDeployment;
 import io.microconfig.osdf.develop.component.ComponentFiles;
 import io.microconfig.osdf.develop.resources.TotalHashesStorage;

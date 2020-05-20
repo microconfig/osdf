@@ -1,6 +1,6 @@
 package io.microconfig.osdf.develop.deployers;
 
-import io.microconfig.osdf.develop.cli.ClusterCLI;
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.develop.component.ClusterComponent;
 import io.microconfig.osdf.develop.component.ClusterDeployment;
 import io.microconfig.osdf.develop.component.ComponentFiles;

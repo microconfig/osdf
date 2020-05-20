@@ -1,6 +1,6 @@
 package io.microconfig.osdf.develop.cluster;
 
-import io.microconfig.osdf.develop.cli.ClusterCLI;
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 
 public interface ClusterResource {
     String kind();
