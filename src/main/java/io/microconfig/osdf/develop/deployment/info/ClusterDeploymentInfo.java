@@ -1,4 +1,4 @@
-package io.microconfig.osdf.develop.component;
+package io.microconfig.osdf.develop.deployment.info;
 
 import io.microconfig.osdf.components.info.DeploymentStatus;
 
@@ -7,7 +7,7 @@ public interface ClusterDeploymentInfo {
 
     int availableReplicas();
 
-    String projectVersion();
+    String version();
 
     String configVersion();
 

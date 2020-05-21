@@ -1,9 +1,9 @@
-package io.microconfig.osdf.develop.component.checkers;
+package io.microconfig.osdf.develop.deployment.checkers;
 
 import io.microconfig.osdf.common.Credentials;
 import io.microconfig.osdf.components.checker.RegistryCredentials;
-import io.microconfig.osdf.develop.component.ClusterDeployment;
-import io.microconfig.osdf.develop.component.ComponentFiles;
+import io.microconfig.osdf.develop.deployment.ClusterDeployment;
+import io.microconfig.osdf.develop.service.ServiceFiles;
 import io.microconfig.osdf.openshift.Pod;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +20,11 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 @RequiredArgsConstructor
 public class NewImageVersionChecker {
     private final ClusterDeployment deployment;
-    private final ComponentFiles componentFiles;
+    private final ServiceFiles serviceFiles;
     private final OSDFPaths paths;
 
-    public static NewImageVersionChecker imageVersionChecker(ClusterDeployment deployment, ComponentFiles componentFiles, OSDFPaths paths) {
-        return new NewImageVersionChecker(deployment, componentFiles, paths);
+    public static NewImageVersionChecker imageVersionChecker(ClusterDeployment deployment, ServiceFiles serviceFiles, OSDFPaths paths) {
+        return new NewImageVersionChecker(deployment, serviceFiles, paths);
     }
 
     public boolean isLatest() {
@@ -37,7 +37,7 @@ public class NewImageVersionChecker {
     }
 
     private String latestVersion() {
-        String[] hostAndPath = getString(loadFromPath(componentFiles.getPath("deploy")), "image", "url")
+        String[] hostAndPath = getString(loadFromPath(serviceFiles.getPath("deploy.yaml")), "image", "url")
                 .replaceFirst("http://", "")
                 .replaceFirst("https://", "")
                 .replaceFirst("/", "---")

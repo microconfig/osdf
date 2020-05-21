@@ -1,6 +1,6 @@
 package io.microconfig.osdf.develop.resources;
 
-import io.microconfig.osdf.develop.component.ComponentFiles;
+import io.microconfig.osdf.develop.service.ServiceFiles;
 import io.microconfig.osdf.develop.cluster.resource.LocalClusterResource;
 import io.microconfig.osdf.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +13,9 @@ import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
 @RequiredArgsConstructor
 public class TotalHashComputer {
-    private final ComponentFiles files;
+    private final ServiceFiles files;
 
-    public static TotalHashComputer totalHashComputer(ComponentFiles files) {
+    public static TotalHashComputer totalHashComputer(ServiceFiles files) {
         return new TotalHashComputer(files);
     }
 

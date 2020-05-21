@@ -1,9 +1,9 @@
 package io.microconfig.osdf.develop.deployers;
 
-import io.microconfig.osdf.develop.component.ClusterComponent;
-import io.microconfig.osdf.develop.component.ClusterDeployment;
-import io.microconfig.osdf.develop.component.ComponentFiles;
+import io.microconfig.osdf.develop.service.ClusterService;
+import io.microconfig.osdf.develop.deployment.ClusterDeployment;
+import io.microconfig.osdf.develop.service.ServiceFiles;
 
 public interface ClusterDeployer {
-    void deploy(ClusterComponent component, ClusterDeployment deployment, ComponentFiles files);
+    void deploy(ClusterService service, ClusterDeployment deployment, ServiceFiles files);
 }

@@ -5,3 +5,6 @@
 
 component.type: istio
 istioInject: true
+
+deployment.resource: deploymentconfig
+service.type: old-istio

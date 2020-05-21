@@ -1,5 +1,6 @@
 package io.microconfig.osdf.openshift;
 
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 import static java.lang.Thread.currentThread;
 
 @RequiredArgsConstructor
-@EqualsAndHashCode(exclude = {"oc"})
+@EqualsAndHashCode(exclude = {"cli"})
 public class Pod implements Comparable<Pod> {
     private static final String TMP_LOG_FILE = "/tmp/osdf_logs.log";
 
@@ -21,14 +22,14 @@ public class Pod implements Comparable<Pod> {
     private final String name;
     @Getter
     private final String componentName;
-    private final OpenShiftCLI oc;
+    private final ClusterCLI cli;
 
-    public static Pod pod(String name, String componentName, OpenShiftCLI oc) {
-        return new Pod(name, componentName, oc);
+    public static Pod pod(String name, String componentName, ClusterCLI cli) {
+        return new Pod(name, componentName, cli);
     }
 
-    public static Pod fromOpenShiftNotation(String notation, String componentName, OpenShiftCLI oc) {
-        return pod(notation.split("/")[1], componentName, oc);
+    public static Pod fromOpenShiftNotation(String notation, String componentName, ClusterCLI cli) {
+        return pod(notation.split("/")[1], componentName, cli);
     }
 
     public static Pod fromPods(List<Pod> pods, String podName) {
@@ -45,7 +46,7 @@ public class Pod implements Comparable<Pod> {
     }
 
     public void delete() {
-        oc.execute("oc delete pod " + name)
+        cli.execute("delete pod " + name)
                 .throwExceptionIfError();
     }
 
@@ -66,9 +67,10 @@ public class Pod implements Comparable<Pod> {
     }
 
     public String imageId() {
-        List<String> outputLines = oc.execute("oc get pod " + name + " -o custom-columns=\"full:.status.containerStatuses[].imageID\"")
+        List<String> outputLines = cli.execute("get pod " + name + " -o custom-columns=\"full:.status.containerStatuses[].imageID\"")
                 .throwExceptionIfError()
                 .getOutputLines();
+        if (outputLines.size() == 1) return "unknown";
         return outputLines.get(1).split("@")[1];
     }
 

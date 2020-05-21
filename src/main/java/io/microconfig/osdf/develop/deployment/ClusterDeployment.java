@@ -1,5 +1,6 @@
-package io.microconfig.osdf.develop.component;
+package io.microconfig.osdf.develop.deployment;
 
+import io.microconfig.osdf.develop.deployment.info.ClusterDeploymentInfo;
 import io.microconfig.osdf.openshift.Pod;
 
 import java.nio.file.Path;
@@ -10,15 +11,13 @@ public interface ClusterDeployment {
 
     String version();
 
+    String serviceName();
+
     List<Pod> pods();
 
-    void restart();
-
-    void stop();
+    void scale(int replicas);
 
     boolean createConfigMap(List<Path> configs);
 
     ClusterDeploymentInfo info();
-
-    String label();
 }
