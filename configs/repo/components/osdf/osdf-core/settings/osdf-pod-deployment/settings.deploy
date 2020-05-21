@@ -1,12 +1,10 @@
-#include pod-deployment-settings
-
-#var unfiltered.java.opts: ${this@set.java.opts:${process::this@java.opts:}}
+#var unfiltered.java.opts: ${process::this@java.opts:}
 java.opts: #{'${this@unfiltered.java.opts}'.replace('${process::this@java.opts.mem}', '')}
 replicas:
-  count: ${this@set.replicas.count:1}
+  count: 1
 requests:
-  cpu: ${this@set.requests.cpu:1}
-  memory: ${this@set.requests.memory:#{#findGroupOrDefault('-Xms(\d+\w+)', '${process::this@java.opts.mem:}', '512M')}}
+  cpu: 1
+  memory: #{#findGroupOrDefault('-Xms(\d+\w+)', '${process::this@java.opts.mem:}', '512M')}
 limits:
-  cpu: ${this@set.limits.cpu:1}
-  memory: ${this@set.limits.memory:#{#findGroupOrDefault('-Xmx(\d+\w+)', '${process::this@java.opts.mem:}', '512M')}}
+  cpu: 1
+  memory: #{#findGroupOrDefault('-Xmx(\d+\w+)', '${process::this@java.opts.mem:}', '512M')}
