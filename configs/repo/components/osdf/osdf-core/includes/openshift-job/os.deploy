@@ -2,7 +2,6 @@
 #include osdf-version-labels
 #include osdf-pod-deployment
 #include osdf-component-settings
-#include openshift-job-settings
 
 job:
   retries: 1
