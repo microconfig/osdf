@@ -2,7 +2,7 @@ package io.microconfig.osdf.resources;
 
 import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.exceptions.OSDFException;
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import io.microconfig.osdf.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 
@@ -20,9 +20,9 @@ import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 @RequiredArgsConstructor
 public class ConfigMapUploader {
     private final DeploymentComponent component;
-    private final OCExecutor oc;
+    private final OpenShiftCLI oc;
 
-    public static ConfigMapUploader configMapUploader(DeploymentComponent component, OCExecutor oc) {
+    public static ConfigMapUploader configMapUploader(DeploymentComponent component, OpenShiftCLI oc) {
         return new ConfigMapUploader(component, oc);
     }
 

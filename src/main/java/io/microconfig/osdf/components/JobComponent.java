@@ -2,7 +2,7 @@ package io.microconfig.osdf.components;
 
 import io.microconfig.osdf.components.info.JobInfo;
 import io.microconfig.osdf.components.info.JobStatus;
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import io.microconfig.utils.Logger;
 
 import java.nio.file.Path;
@@ -15,7 +15,7 @@ import static io.microconfig.osdf.utils.ThreadUtils.sleepSec;
 public class JobComponent extends AbstractOpenShiftComponent {
     private static final int WAIT_LIMIT = 30;
 
-    public JobComponent(String name, String version, Path configDir, OCExecutor oc) {
+    public JobComponent(String name, String version, Path configDir, OpenShiftCLI oc) {
         super(name, version, configDir, oc);
     }
 

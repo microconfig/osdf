@@ -1,7 +1,7 @@
 package io.microconfig.osdf.utils.mock;
 
 import io.microconfig.osdf.commandline.CommandLineOutput;
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -15,9 +15,9 @@ import static org.mockito.Mockito.when;
 public class OCMockAggregator {
     private final List<OCMock> mocks;
 
-    public static OCExecutor createMock(List<OCMock> mocks) {
+    public static OpenShiftCLI createMock(List<OCMock> mocks) {
         OCMockAggregator aggregator = new OCMockAggregator(mocks);
-        OCExecutor oc = mock(OCExecutor.class);
+        OpenShiftCLI oc = mock(OpenShiftCLI.class);
         when(oc.execute(anyString())).thenAnswer(invocation -> aggregator.execute(invocation.getArgument(0)));
         return oc;
     }

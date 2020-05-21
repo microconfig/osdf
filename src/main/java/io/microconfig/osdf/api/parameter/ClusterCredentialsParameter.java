@@ -5,9 +5,9 @@ import io.microconfig.osdf.common.Credentials;
 
 import static io.microconfig.osdf.common.Credentials.of;
 
-public class OpenShiftCredentialsParameter extends ArgParameter<Credentials> {
-    public OpenShiftCredentialsParameter() {
-        super("credentials", "c", "Credentials for OpenShift: login:password or token");
+public class ClusterCredentialsParameter extends ArgParameter<Credentials> {
+    public ClusterCredentialsParameter() {
+        super("credentials", "c", "Credentials for cluster: login:password or token");
     }
 
     @Override

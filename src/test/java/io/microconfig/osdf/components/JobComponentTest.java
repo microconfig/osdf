@@ -1,6 +1,6 @@
 package io.microconfig.osdf.components;
 
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ class JobComponentTest {
     private final String JOB_NAME = "fakejob";
     private final String JOB_VERSION = "latest";
 
-    private OCExecutor oc;
+    private OpenShiftCLI oc;
     private final Map<String, String> commands = new HashMap<>();
 
     @Test
@@ -41,7 +41,7 @@ class JobComponentTest {
     void setUp() throws IOException {
         context.initDev();
 
-        oc = mock(OCExecutor.class);
+        oc = mock(OpenShiftCLI.class);
         commands.put("exists", "oc get job " + JOB_NAME);
     }
 
