@@ -45,7 +45,7 @@ class OpenShiftResourceTest {
 
     @Test
     void testDelete() {
-        OCExecutor oc = mock(OCExecutor.class);
+        OpenShiftCLI oc = mock(OpenShiftCLI.class);
         when(oc.execute("oc delete kind name")).thenReturn(output("deleted"));
         fromOpenShiftNotation("kind/name", oc).delete();
         verify(oc).execute("oc delete kind name");

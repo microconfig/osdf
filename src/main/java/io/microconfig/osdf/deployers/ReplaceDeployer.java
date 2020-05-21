@@ -2,7 +2,7 @@ package io.microconfig.osdf.deployers;
 
 import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.istio.VirtualService;
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.resources.TotalHashesStorage;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +18,10 @@ import static io.microconfig.utils.Logger.info;
 
 @RequiredArgsConstructor
 public class ReplaceDeployer implements Deployer {
-    private final OCExecutor oc;
+    private final OpenShiftCLI oc;
     private final OSDFPaths paths;
 
-    public static ReplaceDeployer replaceDeployer(OCExecutor oc, OSDFPaths paths) {
+    public static ReplaceDeployer replaceDeployer(OpenShiftCLI oc, OSDFPaths paths) {
         return new ReplaceDeployer(oc, paths);
     }
 

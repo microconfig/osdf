@@ -1,6 +1,6 @@
 package io.microconfig.osdf.components;
 
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import io.microconfig.osdf.openshift.Pod;
 import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +25,7 @@ class DeploymentComponentTest {
     private final String COMPONENT_VERSION = "latest";
 
     private final Map<String, String> commands = new HashMap<>();
-    private OCExecutor oc;
+    private OpenShiftCLI oc;
 
     @Test
     void testStop() {
@@ -84,7 +84,7 @@ class DeploymentComponentTest {
         commands.put("pods", "oc get pods -l \"application in (" + COMPONENT_NAME + "), projectVersion in (" + COMPONENT_VERSION + ")\" -o name");
         commands.put("upload", "oc apply -f " + context.getPaths().componentsPath() + "/" + COMPONENT_NAME + "/openshift");
 
-        oc = mock(OCExecutor.class);
+        oc = mock(OpenShiftCLI.class);
         when(oc.execute(commands.get("stop"))).thenReturn(output("scaled"));
         when(oc.execute(commands.get("upload"))).thenReturn(output("uploaded"));
     }

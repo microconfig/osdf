@@ -1,6 +1,6 @@
 package io.microconfig.osdf.components;
 
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 
 import java.nio.file.Path;
 
@@ -10,13 +10,13 @@ import static java.nio.file.Path.*;
 public enum ComponentType {
     JOB {
         @Override
-        public AbstractOpenShiftComponent component(String name, String version, Path configDir, OCExecutor oc) {
+        public AbstractOpenShiftComponent component(String name, String version, Path configDir, OpenShiftCLI oc) {
             return new JobComponent(name, version, configDir, oc);
         }
     },
     DEPLOYMENT {
         @Override
-        public AbstractOpenShiftComponent component(String name, String version, Path configDir, OCExecutor oc) {
+        public AbstractOpenShiftComponent component(String name, String version, Path configDir, OpenShiftCLI oc) {
             return new DeploymentComponent(name, version, configDir, oc);
         }
     };
@@ -25,5 +25,5 @@ public enum ComponentType {
         return exists(of(dir + "/" + toString().toLowerCase() + ".yaml"));
     }
 
-    public abstract AbstractOpenShiftComponent component(String name, String version, Path configDir, OCExecutor oc);
+    public abstract AbstractOpenShiftComponent component(String name, String version, Path configDir, OpenShiftCLI oc);
 }

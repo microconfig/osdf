@@ -1,7 +1,7 @@
 package io.microconfig.osdf.components.info;
 
 import io.microconfig.osdf.components.DeploymentComponent;
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -29,7 +29,7 @@ public class DeploymentInfo {
         this.status = status(replicas, available, unavailable);
     }
 
-    public static DeploymentInfo info(DeploymentComponent component, OCExecutor oc) {
+    public static DeploymentInfo info(DeploymentComponent component, OpenShiftCLI oc) {
         List<String> lines = oc.execute("oc get dc " + component.fullName() + " -o custom-columns=" +
                 "replicas:.spec.replicas," +
                 "current:.status.replicas," +

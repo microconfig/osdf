@@ -1,6 +1,6 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import io.microconfig.osdf.printers.ColumnPrinter;
 import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,15 +33,15 @@ class StatusCommandTest {
 
     @Test
     void statusOk() {
-        OCExecutor oc = mockOc();
+        OpenShiftCLI oc = mockOc();
 
         String actualOut = getStatusOutput(oc, printer());
         String expectedOutput = getExpectedOutput();
         assertEquals(expectedOutput, actualOut);
     }
 
-    private OCExecutor mockOc() {
-        OCExecutor oc = loggedInOc();
+    private OpenShiftCLI mockOc() {
+        OpenShiftCLI oc = loggedInOc();
         when(oc.execute("oc get dc " + COMPONENT_NAME + " " + deploymentInfoCustomColumns())).thenReturn(output(
                 "replicas   current   available   unavailable   projectVersion   configVersion  configHash" + "\n" +
                 "1          1         1           0             " + COMPONENT_VERSION + "           local   hash"
@@ -64,7 +64,7 @@ class StatusCommandTest {
         return expectedOut.toString();
     }
 
-    private String getStatusOutput(OCExecutor oc, ColumnPrinter printer) {
+    private String getStatusOutput(OpenShiftCLI oc, ColumnPrinter printer) {
         ByteArrayOutputStream actualOut = new ByteArrayOutputStream();
         System.setOut(new PrintStream(actualOut));
         new StatusCommand(context.getPaths(), oc, printer, false).run(List.of(COMPONENT_NAME)); //TODO

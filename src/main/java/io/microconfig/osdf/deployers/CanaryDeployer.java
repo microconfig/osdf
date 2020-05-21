@@ -6,7 +6,7 @@ import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.metrics.Metric;
 import io.microconfig.osdf.metrics.MetricsPuller;
 import io.microconfig.osdf.metrics.formats.MetricsParser;
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -24,10 +24,10 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
 public class CanaryDeployer implements Deployer {
-    private final OCExecutor oc;
+    private final OpenShiftCLI oc;
     private final MetricsParser metricsParser;
 
-    public static CanaryDeployer canaryDeployer(OCExecutor oc, MetricsParser metricsParser) {
+    public static CanaryDeployer canaryDeployer(OpenShiftCLI oc, MetricsParser metricsParser) {
         return new CanaryDeployer(oc, metricsParser);
     }
 
