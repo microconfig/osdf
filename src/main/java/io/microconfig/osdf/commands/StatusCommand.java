@@ -4,8 +4,7 @@ import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.components.JobComponent;
 import io.microconfig.osdf.components.loader.ComponentsLoaderImpl;
 import io.microconfig.osdf.exceptions.StatusCodeException;
-import io.microconfig.osdf.openshift.OCExecutor;
-import io.microconfig.osdf.openshift.OpenShiftProject;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.printers.ColumnPrinter;
 import lombok.RequiredArgsConstructor;
@@ -13,21 +12,18 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import static io.microconfig.osdf.components.loader.ComponentsLoaderImpl.componentsLoader;
-import static io.microconfig.osdf.openshift.OpenShiftProject.create;
 import static io.microconfig.osdf.printers.StatusPrinter.statusPrinter;
 
 @RequiredArgsConstructor
 public class StatusCommand {
     private final OSDFPaths paths;
-    private final OCExecutor oc;
+    private final OpenShiftCLI oc;
     private final ColumnPrinter printer;
     private final boolean withHealthCheck;
 
     public void run(List<String> components) {
-        try (OpenShiftProject ignored = create(paths, oc).connect()) {
-            if (!checkStatusAndPrint(components)) {
-                throw new StatusCodeException(1);
-            }
+        if (!checkStatusAndPrint(components)) {
+            throw new StatusCodeException(1);
         }
     }
 

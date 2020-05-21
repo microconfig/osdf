@@ -1,6 +1,6 @@
 package io.microconfig.osdf.components;
 
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import io.microconfig.osdf.openshift.OpenShiftResource;
 import io.microconfig.utils.Logger;
 import lombok.Getter;
@@ -30,9 +30,9 @@ public abstract class AbstractOpenShiftComponent {
     protected final String version;
     @Getter
     protected final Path configDir;
-    protected final OCExecutor oc;
+    protected final OpenShiftCLI oc;
 
-    public static AbstractOpenShiftComponent fromPath(Path configDir, String version, OCExecutor oc) {
+    public static AbstractOpenShiftComponent fromPath(Path configDir, String version, OpenShiftCLI oc) {
         return stream(values())
                 .filter(type -> type.checkDir(of(configDir + "/openshift")))
                 .findFirst()

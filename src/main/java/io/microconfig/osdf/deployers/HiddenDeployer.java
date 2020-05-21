@@ -2,7 +2,7 @@ package io.microconfig.osdf.deployers;
 
 import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.exceptions.OSDFException;
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.deployers.BasicDeployer.basicDeployer;
@@ -10,9 +10,9 @@ import static io.microconfig.osdf.istio.VirtualService.virtualService;
 
 @RequiredArgsConstructor
 public class HiddenDeployer implements Deployer {
-    private final OCExecutor oc;
+    private final OpenShiftCLI oc;
 
-    public static HiddenDeployer hiddenDeployer(OCExecutor oc) {
+    public static HiddenDeployer hiddenDeployer(OpenShiftCLI oc) {
         return new HiddenDeployer(oc);
     }
 

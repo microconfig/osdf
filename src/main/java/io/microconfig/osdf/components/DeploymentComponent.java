@@ -2,7 +2,7 @@ package io.microconfig.osdf.components;
 
 import io.microconfig.osdf.components.info.DeploymentInfo;
 import io.microconfig.osdf.exceptions.OSDFException;
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import io.microconfig.osdf.openshift.Pod;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.utils.Logger;
@@ -23,12 +23,12 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
     private final boolean istioService;
     private boolean isPrimary = false;
 
-    public DeploymentComponent(String name, String version, Path configDir, OCExecutor oc) {
+    public DeploymentComponent(String name, String version, Path configDir, OpenShiftCLI oc) {
         super(name, version, configDir, oc);
         this.istioService = "istio".equals(deployProperties(configDir).getType());
     }
 
-    public static DeploymentComponent component(String name, OSDFPaths paths, OCExecutor oc) {
+    public static DeploymentComponent component(String name, OSDFPaths paths, OpenShiftCLI oc) {
         DeploymentComponent component = componentsLoader(paths, of(name), oc)
                 .load(DeploymentComponent.class)
                 .stream()
@@ -38,7 +38,7 @@ public class DeploymentComponent extends AbstractOpenShiftComponent {
         return component;
     }
 
-    public static DeploymentComponent fromNotation(String notation, Path configDir, OCExecutor oc) {
+    public static DeploymentComponent fromNotation(String notation, Path configDir, OpenShiftCLI oc) {
         String fullName = notation.split("/")[1];
         String name = fullName.split("\\.")[0];
         String version = fullName.substring(name.length() + 1);

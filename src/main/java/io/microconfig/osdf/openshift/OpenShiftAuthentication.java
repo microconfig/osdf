@@ -9,29 +9,24 @@ import static io.microconfig.osdf.microconfig.properties.PropertyGetter.property
 import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
 
 @RequiredArgsConstructor
-public class OpenShiftProject implements AutoCloseable {
+public class OpenShiftAuthentication {
     private final String clusterUrl;
     private final String project;
 
     private final OpenShiftCredentials credentials;
-    private final OCExecutor oc;
+    private final OpenShiftCLI oc;
 
-    public static OpenShiftProject create(OSDFPaths paths, OCExecutor oc) {
+    public static OpenShiftAuthentication openShiftAuthentication(OSDFPaths paths, OpenShiftCLI oc) {
         OpenShiftCredentials credentials = settingsFile(OpenShiftCredentials.class, paths.settings().openshift()).getSettings();
         OpenShiftProperties properties = properties(propertyGetter(paths));
-        return new OpenShiftProject(properties.clusterUrl(), properties.project(), credentials, oc);
+        return new OpenShiftAuthentication(properties.clusterUrl(), properties.project(), credentials, oc);
     }
 
-    public OpenShiftProject connect() {
+    public void connect() {
         if (!isLoggedIn()) {
             login();
             setProjectCommand();
         }
-        return this;
-    }
-
-    @Override
-    public void close() {
     }
 
     private void login() {

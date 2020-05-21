@@ -7,8 +7,7 @@ import io.microconfig.osdf.components.loader.ComponentsLoaderImpl;
 import io.microconfig.osdf.deployers.Deployer;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.exceptions.StatusCodeException;
-import io.microconfig.osdf.openshift.OCExecutor;
-import io.microconfig.osdf.openshift.OpenShiftProject;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
@@ -17,7 +16,6 @@ import java.util.List;
 import static io.microconfig.osdf.components.checker.SuccessfulDeploymentChecker.successfulDeploymentChecker;
 import static io.microconfig.osdf.components.info.JobStatus.SUCCEEDED;
 import static io.microconfig.osdf.components.loader.ComponentsLoaderImpl.componentsLoader;
-import static io.microconfig.osdf.openshift.OpenShiftProject.create;
 import static io.microconfig.osdf.resources.ResourceVersionInserter.resourceVersionInserter;
 import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.error;
@@ -25,7 +23,7 @@ import static io.microconfig.utils.Logger.error;
 @RequiredArgsConstructor
 public class DeployCommand {
     private final OSDFPaths paths;
-    private final OCExecutor oc;
+    private final OpenShiftCLI oc;
     private final Deployer deployer;
     private final boolean wait;
 
@@ -34,11 +32,10 @@ public class DeployCommand {
 
         List<DeploymentComponent> deploymentComponents = componentsLoader.load(DeploymentComponent.class);
         List<JobComponent> jobComponents = componentsLoader.load(JobComponent.class);
-        try (OpenShiftProject ignored = create(paths, oc).connect()) {
-            deployJobs(jobComponents);
-            deployDeployments(deploymentComponents);
-            printDeploymentStatus(deploymentComponents);
-        }
+
+        deployJobs(jobComponents);
+        deployDeployments(deploymentComponents);
+        printDeploymentStatus(deploymentComponents);
     }
 
     private void deployDeployments(List<DeploymentComponent> deploymentComponents) {

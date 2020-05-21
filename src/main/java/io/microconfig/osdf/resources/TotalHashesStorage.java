@@ -1,6 +1,6 @@
 package io.microconfig.osdf.resources;
 
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 
 import java.util.List;
 
@@ -11,15 +11,15 @@ import static java.lang.String.join;
 import static java.nio.file.Path.of;
 
 public class TotalHashesStorage {
-    private final OCExecutor oc;
+    private final OpenShiftCLI oc;
     private final TotalHashesTable table;
 
-    public TotalHashesStorage(OCExecutor oc) {
+    public TotalHashesStorage(OpenShiftCLI oc) {
         this.oc = oc;
         this.table = getTable(oc);
     }
 
-    public static TotalHashesStorage totalHashesStorage(OCExecutor oc) {
+    public static TotalHashesStorage totalHashesStorage(OpenShiftCLI oc) {
         return new TotalHashesStorage(oc);
     }
 
@@ -44,7 +44,7 @@ public class TotalHashesStorage {
         }
     }
 
-    private TotalHashesTable getTable(OCExecutor oc) {
+    private TotalHashesTable getTable(OpenShiftCLI oc) {
         List<String> output = oc.execute("oc get configmap osdf-total-hashes -o custom-columns=\"data:.data.table\"").getOutputLines();
         if (output.get(0).contains("not found")) {
             return new TotalHashesTable();

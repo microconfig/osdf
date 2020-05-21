@@ -21,13 +21,13 @@ public class Pod implements Comparable<Pod> {
     private final String name;
     @Getter
     private final String componentName;
-    private final OCExecutor oc;
+    private final OpenShiftCLI oc;
 
-    public static Pod pod(String name, String componentName, OCExecutor oc) {
+    public static Pod pod(String name, String componentName, OpenShiftCLI oc) {
         return new Pod(name, componentName, oc);
     }
 
-    public static Pod fromOpenShiftNotation(String notation, String componentName, OCExecutor oc) {
+    public static Pod fromOpenShiftNotation(String notation, String componentName, OpenShiftCLI oc) {
         return pod(notation.split("/")[1], componentName, oc);
     }
 

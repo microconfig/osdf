@@ -4,6 +4,7 @@ import io.microconfig.osdf.paths.OSDFPaths;
 
 import java.util.List;
 
+import static io.microconfig.osdf.install.migrations.CreateClusterContext.createClusterContext;
 import static java.util.List.of;
 
 public class AllMigrations implements Migration {
@@ -17,6 +18,6 @@ public class AllMigrations implements Migration {
     }
 
     private List<Migration> migrations() {
-        return of();
+        return of(createClusterContext());
     }
 }
