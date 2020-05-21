@@ -1,6 +1,6 @@
 package io.microconfig.osdf.develop.component;
 
-import io.microconfig.osdf.develop.cluster.LocalClusterResource;
+import io.microconfig.osdf.develop.cluster.resource.LocalClusterResource;
 
 import java.nio.file.Path;
 import java.util.List;

@@ -1,4 +1,4 @@
-package io.microconfig.osdf.develop.cluster;
+package io.microconfig.osdf.develop.cluster.resource;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 

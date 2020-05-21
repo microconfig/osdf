@@ -1,7 +1,7 @@
 package io.microconfig.osdf.develop.resources;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.develop.cluster.ClusterResource;
+import io.microconfig.osdf.develop.cluster.resource.ClusterResource;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
