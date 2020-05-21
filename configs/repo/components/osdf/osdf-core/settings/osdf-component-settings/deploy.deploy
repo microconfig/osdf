@@ -1,4 +1,2 @@
-#include component-settings
-
-osdf.start.waitSec: ${this@set.osdf.start.waitSec:${process::this@mgmt.start.waitSec:60}}
-osdf.start.podWaitSec: ${this@set.osdf.start.podWaitSec:60}
+osdf.start.waitSec: ${process::this@mgmt.start.waitSec:60}
+osdf.start.podWaitSec: 60
