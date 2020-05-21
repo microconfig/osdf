@@ -22,10 +22,10 @@ public class BugTracker {
     }
 
     private String bugMessage(String command, Exception e) {
-        return separationLine() +
+        return "=====\n" +
                 command + "\n" +
                 exceptionMessage(e) + "\n" +
-                separationLine();
+                "=====\n";
     }
 
     private String exceptionMessage(Exception e) {
@@ -38,7 +38,4 @@ public class BugTracker {
         return of(osdfDir + "/bugs.txt");
     }
 
-    private String separationLine() {
-        return "=====\n";
-    }
 }

@@ -22,12 +22,11 @@ public class OpenShiftAuthentication {
         return new OpenShiftAuthentication(properties.clusterUrl(), properties.project(), credentials, oc);
     }
 
-    public OpenShiftAuthentication connect() {
+    public void connect() {
         if (!isLoggedIn()) {
             login();
             setProjectCommand();
         }
-        return this;
     }
 
     private void login() {
