@@ -8,8 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
 
-import static io.microconfig.osdf.deployers.ReplaceDeployer.replaceDeployer;
-import static io.microconfig.osdf.openshift.OCExecutor.oc;
+import static io.microconfig.osdf.openshift.OpenShiftCLI.oc;
 
 @RequiredArgsConstructor
 public class LoadTestingApiImpl implements LoadTestingApi {
@@ -23,6 +22,6 @@ public class LoadTestingApiImpl implements LoadTestingApi {
     @Override
     public void loadTest(Path jmeterPlanPath, Integer numberOfSlaves) {
         int number = numberOfSlaves != null ? numberOfSlaves : 3;
-        new LoadTestCommand(paths, jmeterPlanPath, number, oc(cli), replaceDeployer(oc(cli), paths)).run();
+        new LoadTestCommand(paths, jmeterPlanPath, number, oc(cli)).run();
     }
 }

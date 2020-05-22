@@ -3,14 +3,18 @@ package io.microconfig.osdf.loadtesting.jmeter.configs;
 import io.microconfig.osdf.utils.FileUtils;
 import io.microconfig.osdf.utils.PropertiesUtils;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static io.microconfig.osdf.resources.ResourcesHashComputer.resourcesHashComputer;
 import static io.microconfig.osdf.utils.FileUtils.*;
 import static io.microconfig.osdf.utils.FileUtils.createDirectoryIfNotExists;
+import static java.nio.file.Files.list;
 
-public abstract class JmeterComponentConfig {
+public class JmeterComponentConfig {
     private final String name;
     private final Path jmeterComponentsPath;
 
@@ -18,6 +22,15 @@ public abstract class JmeterComponentConfig {
         this.name = name;
         this.jmeterComponentsPath = jmeterComponentsPath;
         prepareConfigPathsForComponent();
+    }
+
+    public void initGeneralConfigs(Path templatePath) {
+        try (Stream<Path> list = list(templatePath)) {
+            list.forEach(path -> setConfigName(path, name));
+            setHashValue();
+        } catch (IOException e) {
+            throw new UncheckedIOException("Couldn't open dir at " + templatePath, e);
+        }
     }
 
     protected void setHashValue() {
@@ -53,6 +66,4 @@ public abstract class JmeterComponentConfig {
         Path configFilePath = Path.of(jmeterComponentsPath + "/" + configFileName);
         FileUtils.copyFile(configFilePath, Path.of(componentPath + "/" + configFileName));
     }
-
-    public abstract void init();
 }
