@@ -48,20 +48,11 @@ public class Pod implements Comparable<Pod> {
     }
 
     public String getPodIp() {
-        String command = "oc get pods --template='" +
-                "{{range .items}}" +
-                    "{{if eq .metadata.name \"" + name + "\"}}" +
-                        "{{if eq .status.phase \"Running\"}}" +
-                            "{{.status.podIP}}" +
-                        "{{end}}" +
-                    "{{end}}" +
-                "{{end}}'";
-
-        return executeAndReadLines(command)
-                .stream()
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElseThrow();
+        String command = "oc get pod " + name + " -o custom-columns=IP:.status.podIP";
+        List<String> output = oc.execute(command).getOutputLines();
+        if (output.get(0).toLowerCase().contains("not found"))
+            throw new RuntimeException("Pod " + name + " ip not found");
+        return output.get(1).strip();
     }
 
     public void delete() {

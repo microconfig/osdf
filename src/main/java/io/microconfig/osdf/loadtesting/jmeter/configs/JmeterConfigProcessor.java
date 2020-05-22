@@ -1,7 +1,7 @@
 package io.microconfig.osdf.loadtesting.jmeter.configs;
 
 import io.microconfig.osdf.components.DeploymentComponent;
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class JmeterConfigProcessor {
     private final List<JmeterSlaveConfig> slaveConfigs;
     private final Path jmeterComponentsPath;
 
-    public static JmeterConfigProcessor of(OCExecutor oc, OSDFPaths paths, int numberOfSlaves, Path jmeterPlanPath) {
+    public static JmeterConfigProcessor of(OpenShiftCLI oc, OSDFPaths paths, int numberOfSlaves, Path jmeterPlanPath) {
         String jmeterComponentsPathName = "openshift-jmeter";
         Path jmeterComponentsPath = Path.of(paths.systemComponentsPath() + "/" + jmeterComponentsPathName);
         initSystemDir(paths, jmeterComponentsPathName);
@@ -68,7 +68,7 @@ public class JmeterConfigProcessor {
         return true;
     }
 
-    private static Map<String, String> getCurrentRoutesMap(OCExecutor oc, OSDFPaths paths) {
+    private static Map<String, String> getCurrentRoutesMap(OpenShiftCLI oc, OSDFPaths paths) {
         return componentsLoader(paths, null, oc)
                 .load(DeploymentComponent.class)
                 .stream()

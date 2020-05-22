@@ -1,94 +1,94 @@
 package io.microconfig.osdf.components.loader;
 
-import io.microconfig.osdf.components.AbstractOpenShiftComponent;
-import io.microconfig.osdf.components.ComponentType;
+import io.microconfig.osdf.components.JmeterComponent;
 import io.microconfig.osdf.loadtesting.jmeter.configs.JmeterConfigProcessor;
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static io.microconfig.osdf.components.properties.DeployProperties.deployProperties;
-import static io.microconfig.osdf.utils.FileUtils.getPathsInDir;
+import static io.microconfig.osdf.components.JmeterComponent.jmeterComponent;
 import static java.nio.file.Files.exists;
+import static java.nio.file.Files.list;
 import static java.nio.file.Path.of;
 import static java.nio.file.Paths.get;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @Setter
 @RequiredArgsConstructor
-public class JmeterComponentsLoader implements ComponentsLoader {
+public class JmeterComponentsLoader {
 
     private final JmeterConfigProcessor jmeterConfigProcessor;
-    private final OCExecutor oc;
+    private final OpenShiftCLI oc;
 
-    public static JmeterComponentsLoader componentsLoader(JmeterConfigProcessor jmeterConfigProcessor, OCExecutor oc) {
+    public static JmeterComponentsLoader componentsLoader(JmeterConfigProcessor jmeterConfigProcessor, OpenShiftCLI oc) {
         return new JmeterComponentsLoader(jmeterConfigProcessor, oc);
     }
 
-    @Override
-    public List<AbstractOpenShiftComponent> load() {
-        return load(AbstractOpenShiftComponent.class);
+    public  List<JmeterComponent> load() {
+        return loadComponents(allComponents());
     }
 
-    @Override
-    public <T extends AbstractOpenShiftComponent> List<T> load(Class<T> clazz) {
-        return loadComponents(clazz, allComponents());
-    }
-
-    public <T extends AbstractOpenShiftComponent> T loadMaster(Class<T> clazz) {
-        Stream<AbstractOpenShiftComponent> components = specificJmeterComponent(false);
-        return loadComponents(clazz, components).stream()
+    public JmeterComponent loadMaster() {
+        Stream<JmeterComponent> components = specificJmeterComponent(false);
+        return loadComponents(components).stream()
                 .findFirst()
                 .orElseThrow();
     }
 
-    public <T extends AbstractOpenShiftComponent> List<T> loadSlaves(Class<T> clazz) {
-        Stream<AbstractOpenShiftComponent> components = specificJmeterComponent(true);
-        return loadComponents(clazz, components);
+    public List<JmeterComponent> loadSlaves() {
+        Stream<JmeterComponent> components = specificJmeterComponent(true);
+        return loadComponents(components);
     }
 
-    public <T> List<T> loadComponents(Class<T> clazz, Stream<AbstractOpenShiftComponent> componentsStream) {
+    public List<JmeterComponent> loadComponents(Stream<JmeterComponent> componentsStream) {
         return componentsStream.filter(Objects::nonNull)
-                .filter(clazz::isInstance)
-                .map(clazz::cast)
                 .collect(toUnmodifiableList());
     }
 
-    private Stream<AbstractOpenShiftComponent> specificJmeterComponent(boolean isSlaveNode) {
-        Stream<Path> componentPathStream = getComponentPaths(isSlaveNode);
+    private Stream<JmeterComponent> specificJmeterComponent(boolean isSlaveNode) {
+        Stream<Path> componentPathStream = getComponentPaths(isSlaveNode).stream();
         return pathsToComponents(componentPathStream);
     }
 
-    private Stream<AbstractOpenShiftComponent> allComponents() {
-        Stream<Path> allPaths = Stream.concat(getComponentPaths(true), getComponentPaths(false));
+    private Stream<JmeterComponent> allComponents() {
+        Stream<Path> allPaths = Stream.concat(getComponentPaths(true).stream(),
+                getComponentPaths(false).stream());
         return pathsToComponents(allPaths);
     }
 
-    private Stream<AbstractOpenShiftComponent> pathsToComponents(Stream<Path> paths) {
+    private Stream<JmeterComponent> pathsToComponents(Stream<Path> paths) {
         return paths.map(path -> path.getFileName().toString())
                 .filter(this::hasOpenShift)
                 .map(this::nameToComponent);
     }
 
-    private AbstractOpenShiftComponent nameToComponent(String componentName) {
+    private JmeterComponent nameToComponent(String componentName) {
         Path componentPath = of(jmeterConfigProcessor.getJmeterComponentsPath() + "/" + componentName);
-        return ComponentType.DEPLOYMENT.component(componentName, deployProperties(componentPath).getVersion(), componentPath, oc);
+        return jmeterComponent(componentName, componentPath, oc);
     }
 
     private boolean hasOpenShift(String component) {
         return exists(get(jmeterConfigProcessor.getJmeterComponentsPath().toString(), component, "openshift"));
     }
 
-    private Stream<Path> getComponentPaths(boolean isSlaveNode) {
-        return getPathsInDir(jmeterConfigProcessor.getJmeterComponentsPath())
-                .filter(path -> isSlaveNode == isSlaveDir(path))
-                .filter(Files::isDirectory);
+    private List<Path> getComponentPaths(boolean isSlaveNode) {
+        Path componentsPath = jmeterConfigProcessor.getJmeterComponentsPath();
+        try (Stream<Path> list = list(componentsPath)) {
+            return list.filter(path -> isSlaveNode == isSlaveDir(path))
+                    .filter(Files::isDirectory)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new UncheckedIOException("Couldn't open dir at " + componentsPath, e);
+        }
     }
 
     private boolean isSlaveDir(Path path) {
