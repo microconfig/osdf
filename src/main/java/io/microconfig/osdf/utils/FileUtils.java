@@ -97,22 +97,4 @@ public class FileUtils {
     public static String hashOfFile(Path path) {
         return md5Hex(readAll(path));
     }
-
-    public static void createFileIfNotExists(Path file) {
-        if (!exists(file)) {
-            try {
-                createFile(file);
-            } catch (IOException e) {
-                throw new RuntimeException("Can't create file " + file);
-            }
-        }
-    }
-
-    public static Stream<Path> getPathsInDir(Path dir) {
-        try {
-            return list(dir);
-        } catch (IOException e) {
-            throw new UncheckedIOException("Couldn't open dir at " + dir, e);
-        }
-    }
 }

@@ -5,14 +5,16 @@ import java.util.List;
 import java.util.Map;
 
 import static io.microconfig.osdf.loadtesting.jmeter.JmeterTestBuilder.jmeterConfigBuilder;
-import static io.microconfig.osdf.utils.FileUtils.*;
+import static io.microconfig.osdf.utils.FileUtils.readAll;
+import static io.microconfig.osdf.utils.FileUtils.writeStringToFile;
 import static io.microconfig.osdf.utils.YamlUtils.getInt;
 import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
 
-public class JmeterMasterConfig extends JmeterComponentConfig {
+public class JmeterMasterConfig {
     private final String masterName;
     private final Path jmeterComponentsPath;
     private final Path jmeterPlanPath;
+    private JmeterComponentConfig jmeterConfig;
 
     public static JmeterMasterConfig jmeterMasterConfig(String componentName, Path jmeterComponentsPath, Path jmeterPlanPath) {
         return new JmeterMasterConfig(componentName, jmeterComponentsPath, jmeterPlanPath);
@@ -24,10 +26,10 @@ public class JmeterMasterConfig extends JmeterComponentConfig {
     }
 
     public JmeterMasterConfig(String name, Path jmeterComponentsPath, Path jmeterPlanPath) {
-        super(name, jmeterComponentsPath);
         this.masterName = name;
         this.jmeterComponentsPath = jmeterComponentsPath;
         this.jmeterPlanPath = jmeterPlanPath;
+        this.jmeterConfig = new JmeterComponentConfig(name, jmeterComponentsPath);
     }
 
     public void setHostsInMasterTemplateConfig(List<String> slaveHosts) {
@@ -46,15 +48,12 @@ public class JmeterMasterConfig extends JmeterComponentConfig {
         return getInt(userConfig, "duration");
     }
 
-    @Override
     public void init() {
-        getPathsInDir(Path.of(jmeterComponentsPath + "/templates/master"))
-                .forEach(path -> setConfigName(path, masterName));
+        jmeterConfig.initGeneralConfigs(Path.of(jmeterComponentsPath + "/templates/master"));
+        jmeterConfig.setHealthCheckMarker("Remote engines have been started");
 
         Path configMapPath = Path.of(jmeterComponentsPath + "/" + masterName + "/openshift/configmap.yaml");
         setJmeterPlanInMasterTemplateConfig(jmeterPlanPath, configMapPath);
-        setHashValue();
-        setHealthCheckMarker("Remote engines have been started");
     }
 
     private static void setJmeterPlanInMasterTemplateConfig(Path jmeterPlanPath, Path configMapPath) {
