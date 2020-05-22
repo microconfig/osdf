@@ -27,7 +27,7 @@ public class BaseClusterCLI implements ClusterCLI {
 
     @Override
     public void login() {
-        throw new UnsupportedOperationException("Login is not supported in base cli");
+        throw new OSDFException("Specify cluster context");
     }
 
     private void throwIfClusterError(String output) {
