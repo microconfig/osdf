@@ -36,6 +36,7 @@ public class InfoApiImpl implements InfoApi {
 
     @Override
     public void showAll() {
-        new ShowAllCommand(oc(cli), printer()).run();
+        cli.login();
+        new ShowAllCommand(cli, printer()).run();
     }
 }

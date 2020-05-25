@@ -1,20 +1,19 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.openshift.OpenShiftCLI;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.printers.ColumnPrinter;
 import lombok.RequiredArgsConstructor;
 
-import static java.util.stream.Stream.*;
+import static java.util.stream.Stream.of;
 
 @RequiredArgsConstructor
 public class ShowAllCommand {
-    private final OpenShiftCLI oc;
+    private final ClusterCLI cli;
     private final ColumnPrinter printer;
 
     public void run() {
         of("job", "deployment", "dc")
-                .map(line -> oc.execute("oc get " + line + " -o custom-columns=" +
+                .map(line -> cli.execute("get " + line + " -o custom-columns=" +
                         "name:.metadata.labels.application," +
                         "configVersion:.metadata.labels.projectVersion")
                         .getOutputLines())
