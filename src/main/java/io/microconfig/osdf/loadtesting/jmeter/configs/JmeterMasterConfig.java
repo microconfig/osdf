@@ -21,7 +21,7 @@ public class JmeterMasterConfig {
     }
 
     public static JmeterMasterConfig jmeterMasterConfig(String componentName, Path jmeterComponentsPath, Map<String, String> routes) {
-        Path jmeterPlanPath = jmeterConfigBuilder(componentName, jmeterComponentsPath, routes).build();
+        Path jmeterPlanPath = jmeterConfigBuilder(jmeterComponentsPath, routes).build();
         return new JmeterMasterConfig(componentName, jmeterComponentsPath, jmeterPlanPath);
     }
 

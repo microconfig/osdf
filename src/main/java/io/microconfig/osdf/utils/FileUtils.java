@@ -5,6 +5,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
@@ -70,6 +71,13 @@ public class FileUtils {
             org.apache.commons.io.FileUtils.deleteDirectory(path.toFile());
         } catch (IOException e) {
             throw new RuntimeException("Couldn't delete directory " + path.getFileName());
+        }
+    }
+    public static void deleteFile(Path path) {
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't delete file " + path.getFileName());
         }
     }
 

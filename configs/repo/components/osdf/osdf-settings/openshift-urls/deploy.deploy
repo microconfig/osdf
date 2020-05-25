@@ -1,4 +1,4 @@
-cluster.url.base: unknown
-cluster.url.api: unknown
-project: unknown
-registry.project.url: unknown
+cluster.url.base: api.ca-central-1.starter.openshift-online.com
+cluster.url.api: https://api.ca-central-1.starter.openshift-online.com:6443
+project: osdf-util
+registry.project.url: registry.hub.docker.com/slav9n4ik

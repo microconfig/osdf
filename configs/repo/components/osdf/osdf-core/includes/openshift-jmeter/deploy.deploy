@@ -2,7 +2,6 @@
 #include osdf-version-labels
 #include osdf-pod-deployment
 #include osdf-component-settings
-#include test-templates
 
 #var microconfig.template.master.deployment.fromFile: ${openshift-jmeter@configDir}/master-templates/deployment.yaml
 #var microconfig.template.master.deployment.toFile: templates/master/deployment.yaml
@@ -18,6 +17,9 @@
 
 #var microconfig.template.slave.service.fromFile: ${openshift-jmeter@configDir}/slave-templates/service.yaml
 #var microconfig.template.slave.service.toFile: templates/slave/service.yaml
+
+#var microconfig.template.config.fromFile: ${openshift-jmeter@configDir}/jmeter-test-config.yaml
+#var microconfig.template.config.toFile: config/jmeter-test-config.yaml
 
 image-master.url = ${this@registry.project.url}/jmeter-master:latest
 image-slave.url = ${this@registry.project.url}/jmeter-slave:latest
