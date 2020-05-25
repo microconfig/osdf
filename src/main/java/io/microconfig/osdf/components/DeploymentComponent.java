@@ -19,6 +19,7 @@ import static java.util.List.of;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @Getter
+@Deprecated
 public class DeploymentComponent extends AbstractOpenShiftComponent {
     private final boolean istioService;
     private boolean isPrimary = false;

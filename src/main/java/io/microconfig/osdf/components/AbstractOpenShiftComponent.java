@@ -23,6 +23,7 @@ import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
+@Deprecated
 public abstract class AbstractOpenShiftComponent {
     @Getter
     protected final String name;

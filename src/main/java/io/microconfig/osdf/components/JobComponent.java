@@ -12,6 +12,7 @@ import static io.microconfig.osdf.components.info.JobStatus.FAILED;
 import static io.microconfig.osdf.components.info.JobStatus.SUCCEEDED;
 import static io.microconfig.osdf.utils.ThreadUtils.sleepSec;
 
+@Deprecated
 public class JobComponent extends AbstractOpenShiftComponent {
     private static final int WAIT_LIMIT = 30;
 
