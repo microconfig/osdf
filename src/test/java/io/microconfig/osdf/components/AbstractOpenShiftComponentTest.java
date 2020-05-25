@@ -1,6 +1,6 @@
 package io.microconfig.osdf.components;
 
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ import static java.util.List.of;
 
 class AbstractOpenShiftComponentTest {
     private final TestContext context = defaultContext();
-    private OCExecutor oc;
+    private OpenShiftCLI oc;
 
     @Test
     void testUpload() {

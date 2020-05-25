@@ -1,6 +1,6 @@
 package io.microconfig.osdf.components.info;
 
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -20,7 +20,7 @@ public class JobInfo {
         return new JobInfo("?", "?", NOT_EXECUTED);
     }
 
-    public static JobInfo jobInfo(String name, OCExecutor oc) {
+    public static JobInfo jobInfo(String name, OpenShiftCLI oc) {
         List<String> lines = oc.execute("oc get job " + name + " -o custom-columns=" +
                 "failed:.status.failed," +
                 "succeeded:.status.succeeded," +

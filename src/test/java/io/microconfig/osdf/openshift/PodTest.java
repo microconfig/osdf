@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 class PodTest {
     @Test
     void testDelete() {
-        OCExecutor oc = mock(OCExecutor.class);
+        OpenShiftCLI oc = mock(OpenShiftCLI.class);
         when(oc.execute("oc delete pod pod")).thenReturn(output("deleted"));
 
         pod("pod", "component", oc).delete();
@@ -25,7 +25,7 @@ class PodTest {
 
     @Test
     void testFromPods() {
-        OCExecutor oc = mock(OCExecutor.class);
+        OpenShiftCLI oc = mock(OpenShiftCLI.class);
         Pod pod1 = pod("pod1", "component", oc);
         Pod pod2 = pod("pod2", "component", oc);
         List<Pod> pods = of(pod1, pod2);

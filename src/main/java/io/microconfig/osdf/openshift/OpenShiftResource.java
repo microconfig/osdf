@@ -24,9 +24,9 @@ public class OpenShiftResource {
     private final String kind;
     private final String name;
     private final Path path;
-    private final OCExecutor oc;
+    private final OpenShiftCLI oc;
 
-    public static List<OpenShiftResource> fromOpenShiftNotations(List<String> lines, OCExecutor oc) {
+    public static List<OpenShiftResource> fromOpenShiftNotations(List<String> lines, OpenShiftCLI oc) {
         return lines
                 .stream()
                 .filter(not(String::isEmpty))
@@ -34,7 +34,7 @@ public class OpenShiftResource {
                 .collect(toUnmodifiableList());
     }
 
-    public static OpenShiftResource fromOpenShiftNotation(String notation, OCExecutor oc) {
+    public static OpenShiftResource fromOpenShiftNotation(String notation, OpenShiftCLI oc) {
         String[] split = notation.split("/");
         if (split.length != 2) {
             throw new RuntimeException("Wrong OpenShift Notation format " + notation);
@@ -47,7 +47,7 @@ public class OpenShiftResource {
         return new OpenShiftResource(kind, name, null, oc);
     }
 
-    public static OpenShiftResource fromPath(Path path, OCExecutor oc) {
+    public static OpenShiftResource fromPath(Path path, OpenShiftCLI oc) {
         try {
             Map<String, Object> resource = new Yaml().load(new FileInputStream(path.toString()));
 
@@ -62,7 +62,7 @@ public class OpenShiftResource {
         }
     }
 
-    public static void uploadResource(OCExecutor oc, Object resource) {
+    public static void uploadResource(OpenShiftCLI oc, Object resource) {
         Path tmpPath = Path.of("/tmp/resource.yaml");
         dump(resource, tmpPath);
         oc.execute("oc apply -f " + tmpPath)

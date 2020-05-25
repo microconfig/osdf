@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.osdf.openshift.OCExecutor.oc;
+import static io.microconfig.osdf.openshift.OpenShiftCLI.oc;
 import static io.microconfig.osdf.printers.ColumnPrinter.printer;
 
 @RequiredArgsConstructor
@@ -24,11 +24,13 @@ public class InfoApiImpl implements InfoApi {
 
     @Override
     public void logs(String component, String pod) {
+        cli.login();
         new LogsCommand(paths, oc(cli)).show(component, pod);
     }
 
     @Override
     public void status(List<String> components, Boolean withHealthCheck) {
+        cli.login();
         new StatusCommand(paths, oc(cli), printer(), withHealthCheck).run(components);
     }
 

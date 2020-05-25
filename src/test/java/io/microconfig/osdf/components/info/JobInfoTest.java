@@ -1,7 +1,7 @@
 package io.microconfig.osdf.components.info;
 
 import io.microconfig.osdf.components.JobComponent;
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ class JobInfoTest {
     private final String JOB_NAME = "fakejob";
     private final String JOB_VERSION = "latest";
 
-    private OCExecutor oc;
+    private OpenShiftCLI oc;
 
     @BeforeEach
     void setUp() throws IOException {

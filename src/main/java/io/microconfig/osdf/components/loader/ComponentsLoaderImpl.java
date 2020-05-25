@@ -1,7 +1,7 @@
 package io.microconfig.osdf.components.loader;
 
 import io.microconfig.osdf.components.AbstractOpenShiftComponent;
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
@@ -22,9 +22,9 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 public class ComponentsLoaderImpl implements ComponentsLoader {
     private final OSDFPaths paths;
     private final List<String> requiredComponentsNames;
-    private final OCExecutor oc;
+    private final OpenShiftCLI oc;
 
-    public static ComponentsLoaderImpl componentsLoader(OSDFPaths paths, List<String> requiredComponentsNames, OCExecutor oc) {
+    public static ComponentsLoaderImpl componentsLoader(OSDFPaths paths, List<String> requiredComponentsNames, OpenShiftCLI oc) {
         return new ComponentsLoaderImpl(paths, requiredComponentsNames, oc);
     }
 

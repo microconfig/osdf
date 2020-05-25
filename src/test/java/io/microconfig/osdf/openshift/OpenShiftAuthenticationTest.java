@@ -10,11 +10,11 @@ import static io.microconfig.osdf.commandline.CommandLineOutput.output;
 import static io.microconfig.osdf.openshift.OpenShiftCredentials.of;
 import static org.mockito.Mockito.*;
 
-class OpenShiftProjectTest {
-    private OCExecutor oc;
+class OpenShiftAuthenticationTest {
+    private OpenShiftCLI oc;
     private final Map<String, String> commands = new HashMap<>();
-    private OpenShiftProject project;
-    private OpenShiftProject projectWithToken;
+    private OpenShiftAuthentication project;
+    private OpenShiftAuthentication projectWithToken;
 
     @BeforeEach
     void setUp() {
@@ -24,14 +24,14 @@ class OpenShiftProjectTest {
         commands.put("loginWithToken", "oc login url --token=oc-token");
         commands.put("logout", "oc logout");
 
-        oc = mock(OCExecutor.class);
+        oc = mock(OpenShiftCLI.class);
         when(oc.execute(commands.get("whoami"))).thenReturn(output("not logged in"));
         when(oc.execute(commands.get("project"))).thenReturn(output("ok"));
         when(oc.execute(commands.get("login"))).thenReturn(output("ok"));
         when(oc.execute(commands.get("loginWithToken"))).thenReturn(output("ok"));
 
-        project = new OpenShiftProject("url", "default", of("username:password"), oc);
-        projectWithToken = new OpenShiftProject("url", "default", of("oc-token"), oc);
+        project = new OpenShiftAuthentication("url", "default", of("username:password"), oc);
+        projectWithToken = new OpenShiftAuthentication("url", "default", of("oc-token"), oc);
     }
 
     @Test

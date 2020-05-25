@@ -1,7 +1,7 @@
 package io.microconfig.osdf.components.info;
 
 import io.microconfig.osdf.components.DeploymentComponent;
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.openshift.OpenShiftCLI;
 import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class DeploymentInfoTest {
     private final String COMPONENT_NAME = "helloworld-springboot";
     private final String COMPONENT_VERSION = "latest";
 
-    private OCExecutor oc;
+    private OpenShiftCLI oc;
 
     @Test
     void basicTest() {
