@@ -1,10 +1,12 @@
 requests:
   - hello-request:
-      component: helloworld-springboot
+      component: helloworld-springboot            #Name of component or 'domain: target system domain'
       method: GET
       path: /hello
       protocol: http
-      params:
+      headers:
+        - headerName: headerValue
+      params:                                     #Request params '- name: value'
         - paramName: test-param-value
         - nextParamName: next-test-param-value
   - next-hello-request:
@@ -12,6 +14,30 @@ requests:
       method: GET
       path: /next-hello
       protocol: http
-number_of_threads: 30
-ramp_up_period: 1
+      params:
+        - name: test-param-value
+  - post-request:
+      component: helloworld-springboot
+      method: POST
+      path: /post-hello
+      protocol: http
+      body: '{
+              	"data": "data",
+              	"number": 1234,
+              	"nextData": "nextData"
+              }'
+  - post-request-header:
+      component: helloworld-springboot
+      method: POST
+      path: /post-hello-header
+      protocol: http
+      headers:
+        - headerName: headerValue
+      body: '{
+              	"data": "data",
+              	"number": 1234,
+              	"nextData": "nextData"
+              }'
+numberOfThreads: 30
+rampUpPeriod: 1
 duration: 20

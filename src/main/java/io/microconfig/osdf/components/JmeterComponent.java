@@ -46,14 +46,13 @@ public class JmeterComponent {
             openShiftResource.upload();
         });
         if (!checkDeploy()) {
-            announce(componentName + " hasn't been started. Please wait a cleaning resources and start again.");
+            announce(componentName + " hasn't been started. Please wait a cleaning resources.");
             throw new RuntimeException(componentName + " hasn't been started");
         }
     }
 
     public void deleteAll() {
-        oc.execute("oc delete all,configmap -l application=" + componentName)
-                .throwExceptionIfError();
+        oc.execute("oc delete all -l application=" + componentName).throwExceptionIfError();
     }
 
     private List<OpenShiftResource> getLocalResources() {
