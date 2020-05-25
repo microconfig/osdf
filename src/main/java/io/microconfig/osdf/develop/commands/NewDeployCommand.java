@@ -3,7 +3,7 @@ package io.microconfig.osdf.develop.commands;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.develop.component.ComponentDir;
 import io.microconfig.osdf.develop.deployers.DefaultClusterDeployer;
-import io.microconfig.osdf.develop.deployment.ClusterDeployment;
+import io.microconfig.osdf.develop.deployment.ServiceDeployment;
 import io.microconfig.osdf.develop.service.DefaultClusterService;
 import io.microconfig.osdf.develop.service.ServiceDeploymentMatcher;
 import io.microconfig.osdf.develop.service.ServiceFiles;
@@ -35,26 +35,26 @@ public class NewDeployCommand {
         List<ComponentDir> allComponents = componentsLoader(paths.componentsPath()).load();
 
         List<ServiceFiles> serviceFilesList = servicesLoader(serviceNames).load(allComponents);
-        List<ClusterDeployment> deployments = deploymentsFromServiceFiles(serviceFilesList);
+        List<ServiceDeployment> deployments = deploymentsFromServiceFiles(serviceFilesList);
         List<DefaultClusterService> services = servicesFromDeployments(deployments);
 
         callDeployer(serviceFilesList, deployments, services);
     }
 
-    private void callDeployer(List<ServiceFiles> serviceFilesList, List<ClusterDeployment> deployments, List<DefaultClusterService> services) {
+    private void callDeployer(List<ServiceFiles> serviceFilesList, List<ServiceDeployment> deployments, List<DefaultClusterService> services) {
         DefaultClusterDeployer deployer = defaultClusterDeployer(cli, paths);
         range(0, serviceFilesList.size())
                 .forEach(i -> deployer.deploy(services.get(i), deployments.get(i), serviceFilesList.get(i)));
     }
 
-    private List<ClusterDeployment> deploymentsFromServiceFiles(List<ServiceFiles> serviceFilesList) {
+    private List<ServiceDeployment> deploymentsFromServiceFiles(List<ServiceFiles> serviceFilesList) {
         ServiceDeploymentMatcher matcher = serviceDeploymentMatcher(cli);
         return serviceFilesList.stream()
                 .map(matcher::match)
                 .collect(toUnmodifiableList());
     }
 
-    private List<DefaultClusterService> servicesFromDeployments(List<ClusterDeployment> deployments) {
+    private List<DefaultClusterService> servicesFromDeployments(List<ServiceDeployment> deployments) {
         return deployments.stream()
                 .map(deployment -> defaultClusterService(deployment.serviceName(), deployment.version(), cli))
                 .collect(toUnmodifiableList());

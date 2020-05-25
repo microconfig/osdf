@@ -17,10 +17,10 @@ class PodTest {
     @Test
     void testDelete() {
         OpenShiftCLI oc = mock(OpenShiftCLI.class);
-        when(oc.execute("oc delete pod pod")).thenReturn(output("deleted"));
+        when(oc.execute("delete pod pod")).thenReturn(output("deleted"));
 
         pod("pod", "component", oc).delete();
-        verify(oc).execute("oc delete pod pod");
+        verify(oc).execute("delete pod pod");
     }
 
     @Test

@@ -10,7 +10,7 @@ import static io.microconfig.osdf.components.info.DeploymentStatus.*;
 import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 
 @RequiredArgsConstructor
-public class DefaultClusterDeploymentInfo implements ClusterDeploymentInfo {
+public class DefaultServiceDeploymentInfo implements ServiceDeploymentInfo {
     private final int replicas;
     private final int availableReplicas;
     private final String configVersion;
@@ -18,7 +18,7 @@ public class DefaultClusterDeploymentInfo implements ClusterDeploymentInfo {
     private final String hash;
     private final DeploymentStatus status;
 
-    private DefaultClusterDeploymentInfo(int replicas, int available, int unavailable, String version,
+    private DefaultServiceDeploymentInfo(int replicas, int available, int unavailable, String version,
                                          String configVersion, String hash) {
         this.replicas = replicas;
         this.availableReplicas = available;
@@ -28,7 +28,7 @@ public class DefaultClusterDeploymentInfo implements ClusterDeploymentInfo {
         this.status = statusFromReplicas(replicas, available, unavailable);
     }
 
-    public static DefaultClusterDeploymentInfo deploymentInfo(String name, String resourceKind, ClusterCLI cli) {
+    public static DefaultServiceDeploymentInfo deploymentInfo(String name, String resourceKind, ClusterCLI cli) {
         List<String> lines = cli.execute("get " + resourceKind + " " + name + " -o custom-columns=" +
                 "replicas:.spec.replicas," +
                 "current:.status.replicas," +
@@ -49,11 +49,11 @@ public class DefaultClusterDeploymentInfo implements ClusterDeploymentInfo {
         String configVersion = fields[5];
         String hash = fields[6];
         if (replicas == null || current == null || available == null || unavailable == null) return of(FAILED);
-        return new DefaultClusterDeploymentInfo(replicas, available, unavailable, version, configVersion, hash);
+        return new DefaultServiceDeploymentInfo(replicas, available, unavailable, version, configVersion, hash);
     }
 
-    private static DefaultClusterDeploymentInfo of(DeploymentStatus status) {
-        return new DefaultClusterDeploymentInfo(0, 0,"?", "?", "?", status);
+    private static DefaultServiceDeploymentInfo of(DeploymentStatus status) {
+        return new DefaultServiceDeploymentInfo(0, 0,"?", "?", "?", status);
     }
 
 

@@ -2,7 +2,7 @@ package io.microconfig.osdf.develop.deployment.checkers;
 
 import io.microconfig.osdf.common.Credentials;
 import io.microconfig.osdf.components.checker.RegistryCredentials;
-import io.microconfig.osdf.develop.deployment.ClusterDeployment;
+import io.microconfig.osdf.develop.deployment.ServiceDeployment;
 import io.microconfig.osdf.develop.service.ServiceFiles;
 import io.microconfig.osdf.openshift.Pod;
 import io.microconfig.osdf.paths.OSDFPaths;
@@ -19,11 +19,11 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
 public class NewImageVersionChecker {
-    private final ClusterDeployment deployment;
+    private final ServiceDeployment deployment;
     private final ServiceFiles serviceFiles;
     private final OSDFPaths paths;
 
-    public static NewImageVersionChecker imageVersionChecker(ClusterDeployment deployment, ServiceFiles serviceFiles, OSDFPaths paths) {
+    public static NewImageVersionChecker imageVersionChecker(ServiceDeployment deployment, ServiceFiles serviceFiles, OSDFPaths paths) {
         return new NewImageVersionChecker(deployment, serviceFiles, paths);
     }
 

@@ -1,7 +1,7 @@
 package io.microconfig.osdf.develop.deployers;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.develop.deployment.ClusterDeployment;
+import io.microconfig.osdf.develop.deployment.ServiceDeployment;
 import io.microconfig.osdf.develop.service.ClusterService;
 import io.microconfig.osdf.develop.service.ServiceFiles;
 import io.microconfig.osdf.paths.OSDFPaths;
@@ -23,7 +23,7 @@ public class DefaultClusterDeployer implements ClusterDeployer {
     }
 
     @Override
-    public void deploy(ClusterService service, ClusterDeployment deployment, ServiceFiles files) {
+    public void deploy(ClusterService service, ServiceDeployment deployment, ServiceFiles files) {
         if (totalHashChecker(paths, cli).check(deployment, files)) return;
 
         resourceCleaner(cli).cleanOld(files.resources(), service.resources());
@@ -33,7 +33,7 @@ public class DefaultClusterDeployer implements ClusterDeployer {
         restartIfNecessary(deployment, files, configMapUpdated);
     }
 
-    private void restartIfNecessary(ClusterDeployment deployment, ServiceFiles files, boolean configMapUpdated) {
+    private void restartIfNecessary(ServiceDeployment deployment, ServiceFiles files, boolean configMapUpdated) {
         boolean latestImage = imageVersionChecker(deployment, files, paths).isLatest();
         if (configMapUpdated) info("Application configs were updated");
         if (!latestImage) info("Component doesn't have latest image");
@@ -45,7 +45,7 @@ public class DefaultClusterDeployer implements ClusterDeployer {
         }
     }
 
-    private boolean uploadResourcesAndCheckHash(ClusterService component, ClusterDeployment deployment, ServiceFiles files) {
+    private boolean uploadResourcesAndCheckHash(ClusterService component, ServiceDeployment deployment, ServiceFiles files) {
         String currentHash = deployment.info().hash();
         component.upload(files.resources());
         String deployedHash = deployment.info().hash();

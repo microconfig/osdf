@@ -12,7 +12,7 @@ public class DeploymentRestarter {
         return new DeploymentRestarter();
     }
 
-    public void restart(ClusterDeployment deployment, ServiceFiles files) {
+    public void restart(ServiceDeployment deployment, ServiceFiles files) {
         int replicas = deployment.info().replicas();
         if (replicas > 0) {
             deployment.scale(0);
@@ -22,7 +22,7 @@ public class DeploymentRestarter {
         }
     }
 
-    private void scaleFromConfigs(ClusterDeployment deployment, ServiceFiles files) {
+    private void scaleFromConfigs(ServiceDeployment deployment, ServiceFiles files) {
         Map<String, Object> deploy = loadFromPath(files.getPath("deploy.yaml"));
         Integer replicas = getInt(deploy, "replicas.count");
         deployment.scale(replicas);

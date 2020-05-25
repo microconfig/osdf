@@ -1,7 +1,7 @@
 package io.microconfig.osdf.develop.deployment.configmap;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.develop.deployment.ClusterDeployment;
+import io.microconfig.osdf.develop.deployment.ServiceDeployment;
 import io.microconfig.osdf.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +19,7 @@ public class DefaultConfigMapUploader {
         return new DefaultConfigMapUploader(cli);
     }
 
-    public boolean upload(List<Path> configs, ClusterDeployment deployment) {
+    public boolean upload(List<Path> configs, ServiceDeployment deployment) {
         String hash = computeHash(configs);
         String currentHash = currentRemoteHash(deployment.name());
         if (hash.equals(currentHash)) return false;
@@ -28,7 +28,7 @@ public class DefaultConfigMapUploader {
         return true;
     }
 
-    private void replaceConfigMap(ClusterDeployment deployment, List<Path> configMapFiles, String hash) {
+    private void replaceConfigMap(ServiceDeployment deployment, List<Path> configMapFiles, String hash) {
         deleteConfigMap(deployment.name());
         uploadConfigMap(deployment.name(), configMapFiles);
         labelConfigMap(deployment, hash);
@@ -47,7 +47,7 @@ public class DefaultConfigMapUploader {
                 .throwExceptionIfError();
     }
 
-    private void labelConfigMap(ClusterDeployment deployment, String hash) {
+    private void labelConfigMap(ServiceDeployment deployment, String hash) {
         String labelCommand = "label configmap " + deployment.name() +
                 " application=" + deployment.serviceName() +
                 " projectVersion=" + deployment.version() +

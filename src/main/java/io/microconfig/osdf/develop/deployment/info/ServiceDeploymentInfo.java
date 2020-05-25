@@ -2,7 +2,7 @@ package io.microconfig.osdf.develop.deployment.info;
 
 import io.microconfig.osdf.components.info.DeploymentStatus;
 
-public interface ClusterDeploymentInfo {
+public interface ServiceDeploymentInfo {
     int replicas();
 
     int availableReplicas();

@@ -1,7 +1,7 @@
 package io.microconfig.osdf.develop.deployment.checkers;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.develop.deployment.ClusterDeployment;
+import io.microconfig.osdf.develop.deployment.ServiceDeployment;
 import io.microconfig.osdf.develop.resources.TotalHashesStorage;
 import io.microconfig.osdf.develop.service.ServiceFiles;
 import io.microconfig.osdf.paths.OSDFPaths;
@@ -23,7 +23,7 @@ public class TotalHashChecker {
         return new TotalHashChecker(paths, cli);
     }
 
-    public boolean check(ClusterDeployment deployment, ServiceFiles files) {
+    public boolean check(ServiceDeployment deployment, ServiceFiles files) {
         if (!totalHashIsRecent(deployment, files)) return false;
 
         if (imageVersionChecker(deployment, files, paths).isLatest()) {
@@ -35,7 +35,7 @@ public class TotalHashChecker {
         return true;
     }
 
-    private boolean totalHashIsRecent(ClusterDeployment deployment, ServiceFiles files) {
+    private boolean totalHashIsRecent(ServiceDeployment deployment, ServiceFiles files) {
         if (deployment.info().status() == NOT_FOUND) return false;
 
         String totalHash = totalHashComputer(files).compute();
