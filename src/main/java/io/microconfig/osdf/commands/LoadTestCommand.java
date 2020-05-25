@@ -36,7 +36,8 @@ public class LoadTestCommand {
         List<JmeterComponent> slaveComponents = jmeterLoader.loadSlaves();
         JmeterComponent masterComponent = jmeterLoader.loadMaster();
 
-        try (JmeterResourcesCleaner ignore = jmeterResourcesCleaner(jmeterLoader)) {
+        try (JmeterResourcesCleaner ignore = jmeterResourcesCleaner(jmeterLoader,
+                jmeterConfigProcessor.getJmeterComponentsPath())) {
             deployDeployments(slaveComponents);
             setSlavesHosts(jmeterConfigProcessor, slaveComponents);
             deployDeployments(List.of(masterComponent));

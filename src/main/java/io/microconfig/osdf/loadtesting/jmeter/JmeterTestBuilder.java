@@ -1,111 +1,180 @@
 package io.microconfig.osdf.loadtesting.jmeter;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.jmeter.control.LoopController;
+import org.apache.jmeter.control.gui.LoopControlPanel;
+import org.apache.jmeter.control.gui.TestPlanGui;
+import org.apache.jmeter.protocol.http.control.Header;
+import org.apache.jmeter.protocol.http.control.HeaderManager;
+import org.apache.jmeter.protocol.http.control.gui.HttpTestSampleGui;
+import org.apache.jmeter.protocol.http.gui.HeaderPanel;
+import org.apache.jmeter.protocol.http.sampler.HTTPSamplerProxy;
+import org.apache.jmeter.save.SaveService;
+import org.apache.jmeter.testelement.TestElement;
+import org.apache.jmeter.testelement.TestPlan;
+import org.apache.jmeter.threads.ThreadGroup;
+import org.apache.jmeter.threads.gui.ThreadGroupGui;
+import org.apache.jmeter.util.JMeterUtils;
+import org.apache.jorphan.collections.HashTree;
+import org.apache.jorphan.collections.ListedHashTree;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-import static io.microconfig.osdf.utils.FileUtils.*;
 import static io.microconfig.osdf.utils.YamlUtils.*;
 import static java.nio.file.Path.of;
 
 @RequiredArgsConstructor
 public class JmeterTestBuilder {
     private final Path componentsPath;
-    private final Path componentTestPath;
     private final Map<String, String> componentsRoutes;
+    private final Map<String, HeaderManager> headerManagerMap;
 
-    public static JmeterTestBuilder jmeterConfigBuilder(String componentName, Path componentsPath,
-                                                        Map<String, String> componentsRoutes) {
-        Path componentTestPath = initNewTestPath(componentsPath, componentName);
-        return new JmeterTestBuilder(componentsPath, componentTestPath, componentsRoutes);
-    }
-
-    private static Path initNewTestPath(Path jmeterComponentsPath, String name) {
-        Path testConfigsPath = Path.of(jmeterComponentsPath + "/templates/tests");
-        Path newTestConfigPath = Path.of(jmeterComponentsPath + "/" + name + "/tests");
-        copyDirectory(testConfigsPath, newTestConfigPath);
-        return newTestConfigPath;
+    public static JmeterTestBuilder jmeterConfigBuilder(Path componentsPath, Map<String, String> componentsRoutes) {
+        return new JmeterTestBuilder(componentsPath, componentsRoutes, new HashMap<>());
     }
 
     public Path build() {
-        Path testTemplatePath = of(componentTestPath + "/jmetertest.jmx");
-        String testTemplate = readAll(testTemplatePath);
-
+        Path testTemplatePath = of(componentsPath + "/config/jmetertest.jmx");
         Path userTestConfigPath = Path.of(componentsPath + "/config/jmeter-test-config.yaml");
         Map<String, Object> userConfig = loadFromPath(userTestConfigPath);
-        List<Map<String, Object>> requests = getListOfMaps(userConfig, "requests");
-
-        testTemplate = buildSimpleRequestTemplate(testTemplate, requests);
-        testTemplate = prepareMainConfigParams(userConfig, testTemplate);
-        writeStringToFile(testTemplatePath, testTemplate);
+        prepareTestPlan(userConfig, testTemplatePath);
         return testTemplatePath;
     }
 
-    private String buildSimpleRequestTemplate(String testTemplate, List<Map<String, Object>> requests) {
-        for (Map<String, Object> request : requests) {
-            String httpTestName = getFirstKey(request);
-            Map<String, Object> requestConfig = getMap(request, httpTestName);
-            requestConfig.put("testname", httpTestName);
-            String simpleRequest = prepareSimpleHttpRequest(requestConfig);
-            testTemplate = addAndNotReplace("#HTTP_SIMPLE_REQUEST#", simpleRequest, testTemplate);
+    private void prepareTestPlan(Map<String, Object> userConfig, Path testTemplatePath) {
+        List<Map<String, Object>> requests = getListOfMaps(userConfig, "requests");
+        List<HTTPSamplerProxy> httpSamplers = prepareRequests(requests);
+        LoopController loopController = prepareLoopController();
+        ThreadGroup threadGroup = prepareThreadGroup(userConfig, loopController);
+
+        TestPlan testPlan = new TestPlan("Create JMeter Script From Java Code");
+        testPlan.setProperty(TestElement.TEST_CLASS, TestPlan.class.getName());
+        testPlan.setProperty(TestElement.GUI_CLASS, TestPlanGui.class.getName());
+
+        HashTree testPlanTree = new HashTree();
+        testPlanTree.add(testPlan);
+        HashTree threadGroupHashTree = testPlanTree.add(testPlan, threadGroup);
+        HashTree httpSamplerHashTree = new ListedHashTree();
+        for (HTTPSamplerProxy httpSampler : httpSamplers) {
+            httpSamplerHashTree.add(httpSampler, headerManagerMap.get(httpSampler.getName()));
         }
-        return testTemplate.replaceAll("#HTTP_SIMPLE_REQUEST#", "");
-    }
+        threadGroupHashTree.add(httpSamplerHashTree);
 
-    private String prepareMainConfigParams(Map<String, Object> params, String testTemplate) {
-        for (Map.Entry<String, Object> param : params.entrySet()) {
-            testTemplate = replaceParam(testTemplate, param.getKey(), String.valueOf(param.getValue()));
+        try {
+            JMeterUtils.setJMeterHome(Objects.requireNonNull(getClass().getClassLoader().getResource("jmeter")).getPath());
+            SaveService.saveTree(testPlanTree, new FileOutputStream(testTemplatePath.toString()));
+        } catch (IOException e) {
+            throw new RuntimeException("Error in saving jmetertest.jmx", e);
         }
-        return testTemplate;
     }
 
-    private String addAndNotReplace(String param, String value, String testTemplate) {
-        StringBuilder templateBuilder = new StringBuilder(testTemplate);
-        int index = testTemplate.indexOf(param);
-        templateBuilder.insert(index, value + "\n");
-        testTemplate = templateBuilder.toString();
-        return testTemplate;
+    private HeaderManager prepareHeaderManager(String httpRequestName) {
+        HeaderManager manager = new HeaderManager();
+        manager.add(new Header("content-type", "application/json"));
+        manager.setName(httpRequestName + "content-type");
+        manager.setProperty(TestElement.TEST_CLASS, HeaderManager.class.getName());
+        manager.setProperty(TestElement.GUI_CLASS, HeaderPanel.class.getName());
+        return manager;
     }
 
-    private String prepareSimpleHttpRequest(Map<String, Object> requestConfig) {
-        String httpTemplate = readAll(of(componentTestPath + "/http-simple-template.xml"));
-        httpTemplate = prepareRequestParams(componentTestPath, requestConfig, httpTemplate);
-        for (Map.Entry<String, Object> param : requestConfig.entrySet()) {
-            httpTemplate = replaceParam(httpTemplate, param.getKey(), String.valueOf(param.getValue()));
-        }
-        httpTemplate = insertDomainName(httpTemplate, String.valueOf(requestConfig.get("component")));
-        return httpTemplate;
+    private ThreadGroup prepareThreadGroup(Map<String, Object> userConfig, LoopController loopController) {
+        ThreadGroup threadGroup = new ThreadGroup();
+        threadGroup.setName("Jmeter Test Group");
+        threadGroup.setNumThreads(Integer.parseInt(checkForNullAndReturn(userConfig, "numberOfThreads")));
+        threadGroup.setRampUp(Integer.parseInt(checkForNullAndReturn(userConfig, "rampUpPeriod")));
+        threadGroup.setScheduler(true);
+        threadGroup.setDuration(Integer.parseInt(checkForNullAndReturn(userConfig, "duration")));
+        threadGroup.setSamplerController(loopController);
+        threadGroup.setProperty(TestElement.TEST_CLASS, ThreadGroup.class.getName());
+        threadGroup.setProperty(TestElement.GUI_CLASS, ThreadGroupGui.class.getName());
+        return threadGroup;
     }
 
-    private String prepareRequestParams(Path componentTestPath, Map<String, Object> requestConfig, String httpTemplate) {
+    private LoopController prepareLoopController() {
+        LoopController loopController = new LoopController();
+        loopController.setContinueForever(false);
+        loopController.setLoops(-1);
+        loopController.setFirst(true);
+        loopController.setProperty(TestElement.TEST_CLASS, LoopController.class.getName());
+        loopController.setProperty(TestElement.GUI_CLASS, LoopControlPanel.class.getName());
+        loopController.initialize();
+        return loopController;
+    }
+
+    private List<HTTPSamplerProxy> prepareRequests(List<Map<String, Object>> requests) {
+        return requests.stream()
+                .map(this::prepareSimpleRequest)
+                .collect(Collectors.toList());
+    }
+
+    private HTTPSamplerProxy prepareSimpleRequest(Map<String, Object> request) {
+        String httpRequestName = getFirstKey(request);
+        Map<String, Object> requestConfig = getMap(request, httpRequestName);
+
+        HTTPSamplerProxy httpSampler = new HTTPSamplerProxy();
         if (requestConfig.containsKey("params")) {
-            List<Map<String, Object>> params = getListOfMaps(requestConfig, "params");
-            if(params == null) throw  new RuntimeException("Params in test-config.yaml is null");
-            for (Map<String, Object> param : params) {
-                String paramsTemplate = readAll(of(componentTestPath + "/params-template.xml"));
-                String name = getFirstKey(param);
-                String value = String.valueOf(param.get(name));
-                paramsTemplate = replaceParam(paramsTemplate, "name", name);
-                paramsTemplate = replaceParam(paramsTemplate, "value", value);
-                httpTemplate = addAndNotReplace("#PARAMS_TEMPLATE#", paramsTemplate, httpTemplate);
-            }
+            Map<String, String> params = prepareRequestArguments(requestConfig);
+            params.forEach((key, value) -> httpSampler.addArgument(key, value, "="));
         }
-        return httpTemplate.replaceAll("#PARAMS_TEMPLATE#", "");
+        String method = checkForNullAndReturn(requestConfig, "method");
+        if (method.equals("POST")) {
+            String body = checkForNullAndReturn(requestConfig, "body");
+            httpSampler.setPostBodyRaw(true);
+            httpSampler.addNonEncodedArgument("Body Data", body, "=");
+        }
+        httpSampler.setDomain(prepareDomain(requestConfig));
+        httpSampler.setName(httpRequestName);
+        httpSampler.setMethod(method);
+        httpSampler.setPath(checkForNullAndReturn(requestConfig, "path"));
+        httpSampler.setProtocol(checkForNullAndReturn(requestConfig, "protocol"));
+
+        httpSampler.setUseKeepAlive(true);
+        httpSampler.setProperty(TestElement.TEST_CLASS, HTTPSamplerProxy.class.getName());
+        httpSampler.setProperty(TestElement.GUI_CLASS, HttpTestSampleGui.class.getName());
+
+        HeaderManager headerManager = prepareHeaderManager(httpRequestName);
+        headerManagerMap.put(httpRequestName, headerManager);
+        if (requestConfig.containsKey("headers")) {
+            getListOfMaps(requestConfig, "headers").forEach(header -> {
+                String name = getFirstKey(header);
+                String value = String.valueOf(header.get(name));
+                headerManager.add(new Header(name, value));
+            });
+            headerManagerMap.put(httpRequestName, headerManager);
+        }
+        return httpSampler;
     }
 
-    private String replaceParam(String template, String param, String value) {
-        String regex = "#" + param.toUpperCase() + "#";
-        template = template.replaceAll(regex, value);
-        return template;
+    private String prepareDomain(Map<String, Object> requestConfig) {
+        if (requestConfig.containsKey("component"))
+            return componentsRoutes.get(String.valueOf(requestConfig.get("component")));
+        if (requestConfig.containsKey("domain"))
+            return String.valueOf(requestConfig.get("domain"));
+        throw new RuntimeException("The domain request or target component name is null");
     }
 
-    private String insertDomainName(String httpTemplate, String componentName) {
-        String componentRoute = componentsRoutes.get(componentName);
-        if (componentRoute == null) throw new RuntimeException("Component: " + componentName + "hasn't route to test");
-        httpTemplate = httpTemplate.replaceAll("#DOMAIN#", componentRoute);
-        return httpTemplate;
+    private Map<String, String> prepareRequestArguments(Map<String, Object> requestConfig) {
+        Map<String, String> resultParams = new HashMap<>();
+        List<Map<String, Object>> params = getListOfMaps(requestConfig, "params");
+        params.forEach(param -> {
+            String name = getFirstKey(param);
+            String value = String.valueOf(param.get(name));
+            resultParams.put(name, value);
+        });
+        return resultParams;
+    }
+
+    private String checkForNullAndReturn(Map<String, Object> config, String param) {
+        if (!config.containsKey(param))
+            throw new RuntimeException("The '" + param + "' in jmeter-test-config is null");
+        return String.valueOf(config.get(param));
     }
 
     private String getFirstKey(Map<String, Object> map) {
