@@ -1,16 +1,18 @@
 package io.microconfig.osdf.develop.commands;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.develop.deployers.DefaultServiceDeployer;
+import io.microconfig.osdf.develop.deployers.ServiceDeployer;
 import io.microconfig.osdf.develop.jobrunner.DefaultJobRunner;
 import io.microconfig.osdf.develop.service.deployment.pack.ServiceDeployPack;
 import io.microconfig.osdf.develop.service.job.pack.ServiceJobPack;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 import static io.microconfig.osdf.develop.deployers.DefaultServiceDeployer.defaultClusterDeployer;
+import static io.microconfig.osdf.develop.deployers.RestrictedDeployer.restrictedDeployer;
 import static io.microconfig.osdf.develop.jobrunner.DefaultJobRunner.defaultJobRunner;
 import static io.microconfig.osdf.develop.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
 import static io.microconfig.osdf.develop.service.job.pack.loader.DefaultServiceJobPackLoader.defaultServiceJobPackLoader;
@@ -27,22 +29,31 @@ public class NewDeployCommand {
     }
 
     public void deploy(List<String> serviceNames, String mode) {
-        announce("Starting deployment. Mode is ignored for now");
+        announce("Starting deployment");
 
         List<ServiceJobPack> jobPacks = defaultServiceJobPackLoader(paths, serviceNames, cli).loadPacks();
         callRunner(jobPacks);
 
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, serviceNames, cli).loadPacks();
-        callDeployer(deployPacks);
+        callDeployer(deployPacks, getDeployer(mode));
     }
 
-    private void callDeployer(List<ServiceDeployPack> deployPacks) {
-        DefaultServiceDeployer deployer = defaultClusterDeployer(cli, paths);
+    private void callDeployer(List<ServiceDeployPack> deployPacks, ServiceDeployer deployer) {
         range(0, deployPacks.size()).forEach(i -> deployer.deploy(
                         deployPacks.get(i).service(),
                         deployPacks.get(i).deployment(),
                         deployPacks.get(i).files())
         );
+    }
+
+    private ServiceDeployer getDeployer(String mode) {
+        if (mode == null) {
+            return defaultClusterDeployer(cli, paths);
+        }
+        if (mode.equals("restricted")) {
+            return restrictedDeployer();
+        }
+        throw new OSDFException("Unknown deploy mode");
     }
 
     private void callRunner(List<ServiceJobPack> jobPacks) {
