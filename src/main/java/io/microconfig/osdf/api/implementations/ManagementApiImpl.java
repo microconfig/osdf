@@ -2,22 +2,16 @@ package io.microconfig.osdf.api.implementations;
 
 import io.microconfig.osdf.api.declarations.ManagementApi;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.commands.DeployCommand;
-import io.microconfig.osdf.deployers.Deployer;
 import io.microconfig.osdf.develop.service.deployment.pack.ServiceDeployPack;
-import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 import static io.microconfig.osdf.cluster.pod.PodDeleter.podDeleter;
-import static io.microconfig.osdf.deployers.HiddenDeployer.hiddenDeployer;
-import static io.microconfig.osdf.deployers.ReplaceDeployer.replaceDeployer;
-import static io.microconfig.osdf.deployers.RestrictedDeployer.restrictedDeployer;
+import static io.microconfig.osdf.develop.commands.NewDeployCommand.deployCommand;
 import static io.microconfig.osdf.develop.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
 import static io.microconfig.osdf.develop.service.deployment.tools.DeploymentRestarter.deploymentRestarter;
-import static io.microconfig.osdf.openshift.OpenShiftCLI.oc;
 import static io.microconfig.utils.Logger.info;
 
 @RequiredArgsConstructor
@@ -32,7 +26,7 @@ public class ManagementApiImpl implements ManagementApi {
     @Override
     public void deploy(List<String> components, String mode, Boolean wait) {
         cli.login();
-        new DeployCommand(paths, oc(cli), deployer(mode), wait).run(components);
+        deployCommand(paths, cli).deploy(components, mode, wait);
     }
 
     @Override
@@ -63,18 +57,5 @@ public class ManagementApiImpl implements ManagementApi {
             String output = cli.execute("delete dc " + pack.service().name() + "." + version).getOutput();
             info(output);
         });
-    }
-
-    private Deployer deployer(String mode) {
-        if (mode == null || mode.equals("replace")) {
-            return replaceDeployer(oc(cli), paths);
-        }
-        if (mode.equals("hidden")) {
-            return hiddenDeployer(oc(cli));
-        }
-        if (mode.equals("restricted")) {
-            return restrictedDeployer(oc(cli));
-        }
-        throw new OSDFException("Unknown deploy mode");
     }
 }

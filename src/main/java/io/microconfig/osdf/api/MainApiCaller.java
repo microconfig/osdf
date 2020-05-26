@@ -15,7 +15,6 @@ import static io.microconfig.osdf.api.implementations.InfoApiImpl.infoApi;
 import static io.microconfig.osdf.api.implementations.InitializationApiImpl.initializationApi;
 import static io.microconfig.osdf.api.implementations.InstallApiImpl.installApi;
 import static io.microconfig.osdf.api.implementations.ManagementApiImpl.managementApi;
-import static io.microconfig.osdf.api.implementations.NewManagementApiImpl.newManagementApi;
 import static io.microconfig.osdf.api.implementations.SystemApiImpl.systemApi;
 
 @RequiredArgsConstructor
@@ -42,7 +41,6 @@ public class MainApiCaller implements ApiCaller {
                 .addImpl(ManagementApi.class, managementApi(paths, cli))
                 .addImpl(InfoApi.class, infoApi(paths, cli))
                 .addImpl(SystemApi.class, systemApi(paths))
-                .addImpl(NewManagementApi.class, newManagementApi(paths, cli))
                 .build()
                 .call(args);
     }

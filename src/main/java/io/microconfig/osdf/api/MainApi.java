@@ -26,8 +26,4 @@ public interface MainApi {
 
     @Import(api = SystemApi.class, order = 7)
     void system();
-
-    @Named(as = "new")
-    @Import(api = NewManagementApi.class, order = 8)
-    void newManagement();
 }
