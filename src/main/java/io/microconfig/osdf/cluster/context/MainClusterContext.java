@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.cluster.cli.BaseClusterCLI.baseClusterCLI;
 import static io.microconfig.osdf.cluster.kubernetes.KubernetesCLI.kubernetes;
-import static io.microconfig.osdf.openshift.OpenShiftCLI.oc;
+import static io.microconfig.osdf.cluster.openshift.OpenShiftCLI.oc;
 import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
 
 @RequiredArgsConstructor

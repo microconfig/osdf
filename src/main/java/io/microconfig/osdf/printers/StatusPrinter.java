@@ -1,15 +1,14 @@
 package io.microconfig.osdf.printers;
 
-import io.microconfig.osdf.components.info.RowColumnsWithStatus;
-import io.microconfig.osdf.develop.service.deployment.pack.ServiceDeployPack;
-import io.microconfig.osdf.develop.service.job.pack.ServiceJobPack;
+import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
+import io.microconfig.osdf.service.job.pack.ServiceJobPack;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.microconfig.osdf.components.info.DeploymentStatusRows.deploymentStatusRows;
-import static io.microconfig.osdf.components.info.JobStatusRow.jobStatusRow;
+import static io.microconfig.osdf.service.deployment.info.DeploymentStatusRows.deploymentStatusRows;
+import static io.microconfig.osdf.service.job.info.JobStatusRow.jobStatusRow;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor

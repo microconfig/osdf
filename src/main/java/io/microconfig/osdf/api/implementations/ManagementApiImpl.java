@@ -2,16 +2,16 @@ package io.microconfig.osdf.api.implementations;
 
 import io.microconfig.osdf.api.declarations.ManagementApi;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.develop.service.deployment.pack.ServiceDeployPack;
+import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 import static io.microconfig.osdf.cluster.pod.PodDeleter.podDeleter;
-import static io.microconfig.osdf.develop.commands.NewDeployCommand.deployCommand;
-import static io.microconfig.osdf.develop.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
-import static io.microconfig.osdf.develop.service.deployment.tools.DeploymentRestarter.deploymentRestarter;
+import static io.microconfig.osdf.commands.DeployCommand.deployCommand;
+import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
+import static io.microconfig.osdf.service.deployment.tools.DeploymentRestarter.deploymentRestarter;
 import static io.microconfig.utils.Logger.info;
 
 @RequiredArgsConstructor

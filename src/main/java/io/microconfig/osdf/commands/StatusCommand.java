@@ -1,8 +1,8 @@
 package io.microconfig.osdf.commands;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.develop.service.deployment.pack.ServiceDeployPack;
-import io.microconfig.osdf.develop.service.job.pack.ServiceJobPack;
+import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
+import io.microconfig.osdf.service.job.pack.ServiceJobPack;
 import io.microconfig.osdf.exceptions.StatusCodeException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.printers.ColumnPrinter;
@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.osdf.develop.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
-import static io.microconfig.osdf.develop.service.job.pack.loader.DefaultServiceJobPackLoader.defaultServiceJobPackLoader;
+import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
+import static io.microconfig.osdf.service.job.pack.loader.DefaultServiceJobPackLoader.defaultServiceJobPackLoader;
 import static io.microconfig.osdf.printers.StatusPrinter.statusPrinter;
 
 @RequiredArgsConstructor

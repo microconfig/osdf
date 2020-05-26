@@ -1,7 +1,7 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.develop.service.deployment.pack.ServiceDeployPack;
-import io.microconfig.osdf.develop.service.files.ServiceFiles;
+import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
+import io.microconfig.osdf.service.files.ServiceFiles;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
-import static io.microconfig.osdf.develop.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
+import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
 import static io.microconfig.osdf.microconfig.files.DiffFilesCollector.collector;
 import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.info;

@@ -1,6 +1,6 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.openshift.OpenShiftCLI;
+import io.microconfig.osdf.cluster.openshift.OpenShiftCLI;
 import io.microconfig.osdf.printers.ColumnPrinter;
 import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;

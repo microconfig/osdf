@@ -6,7 +6,7 @@ import io.microconfig.osdf.cluster.context.ClusterType;
 import io.microconfig.osdf.cluster.kubernetes.KubernetesSettings;
 import io.microconfig.osdf.configs.ConfigsSettings;
 import io.microconfig.osdf.configs.ConfigsSource;
-import io.microconfig.osdf.openshift.OpenShiftCredentials;
+import io.microconfig.osdf.cluster.openshift.OpenShiftCredentials;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.state.OSDFVersionFile;
 import lombok.RequiredArgsConstructor;
