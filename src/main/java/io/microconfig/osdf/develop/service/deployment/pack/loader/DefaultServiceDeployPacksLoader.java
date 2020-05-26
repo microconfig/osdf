@@ -1,24 +1,24 @@
 package io.microconfig.osdf.develop.service.deployment.pack.loader;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.develop.component.ComponentDir;
 import io.microconfig.osdf.develop.service.ClusterService;
-import io.microconfig.osdf.develop.service.DefaultClusterService;
 import io.microconfig.osdf.develop.service.deployment.ServiceDeployment;
+import io.microconfig.osdf.develop.service.deployment.matchers.ServiceDeploymentMatcher;
 import io.microconfig.osdf.develop.service.deployment.pack.ServiceDeployPack;
+import io.microconfig.osdf.develop.service.files.DefaultServiceFiles;
 import io.microconfig.osdf.develop.service.files.ServiceFiles;
-import io.microconfig.osdf.develop.service.matchers.ServiceDeploymentMatcher;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.osdf.develop.component.MicroConfigComponentsLoader.componentsLoader;
+import static io.microconfig.osdf.develop.component.finder.MicroConfigComponentsFinder.componentsFinder;
+import static io.microconfig.osdf.develop.component.loader.ComponentsLoaderImpl.componentsLoader;
 import static io.microconfig.osdf.develop.service.DefaultClusterService.defaultClusterService;
+import static io.microconfig.osdf.develop.service.deployment.matchers.ServiceDeploymentMatcher.serviceDeploymentMatcher;
 import static io.microconfig.osdf.develop.service.deployment.pack.DefaultServiceDeployPack.serviceDeployPack;
-import static io.microconfig.osdf.develop.service.files.DefaultServiceFiles.serviceFiles;
-import static io.microconfig.osdf.develop.service.loaders.DefaultServicesLoader.servicesLoader;
-import static io.microconfig.osdf.develop.service.matchers.ServiceDeploymentMatcher.serviceDeploymentMatcher;
+import static io.microconfig.osdf.develop.service.loaders.DefaultServiceFilesLoader.servicesLoader;
+import static java.nio.file.Files.exists;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static java.util.stream.IntStream.range;
 
@@ -39,8 +39,7 @@ public class DefaultServiceDeployPacksLoader implements ServiceDeployPacksLoader
 
     @Override
     public List<ServiceDeployPack> loadPacks() {
-        List<ComponentDir> allComponents = componentsLoader(paths.componentsPath()).load();
-        List<ServiceFiles> serviceFilesList = servicesLoader(requiredServicesNames).load(allComponents);
+        List<ServiceFiles> serviceFilesList = servicesLoader(paths, requiredServicesNames, this::isDeploymentService).load();
         List<ServiceDeployment> deployments = deploymentsFromServiceFiles(serviceFilesList);
         List<ClusterService> services = servicesFromDeployments(deployments);
 
@@ -51,10 +50,9 @@ public class DefaultServiceDeployPacksLoader implements ServiceDeployPacksLoader
 
     @Override
     public ServiceDeployPack loadByName(String name) {
-        ComponentDir componentDir = componentsLoader(paths.componentsPath()).loadByName(name);
-        ServiceFiles serviceFiles = serviceFiles(componentDir);
+        ServiceFiles serviceFiles = componentsLoader().loadOne(name, componentsFinder(paths.componentsPath()), DefaultServiceFiles::serviceFiles);
         ServiceDeployment deployment = serviceDeploymentMatcher(cli).match(serviceFiles);
-        ClusterService service = DefaultClusterService.defaultClusterService(name, deployment.version(), cli);
+        ClusterService service = defaultClusterService(name, deployment.version(), cli);
 
         return serviceDeployPack(serviceFiles, deployment, service);
     }
@@ -70,5 +68,9 @@ public class DefaultServiceDeployPacksLoader implements ServiceDeployPacksLoader
         return deployments.stream()
                 .map(deployment -> defaultClusterService(deployment.serviceName(), deployment.version(), cli))
                 .collect(toUnmodifiableList());
+    }
+
+    private boolean isDeploymentService(ServiceFiles files) {
+        return exists(files.getPath("resources/deployment.yaml"));
     }
 }

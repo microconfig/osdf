@@ -1,17 +1,17 @@
 package io.microconfig.osdf.develop.service.deployment;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.develop.deployment.ClusterDeployment;
-import io.microconfig.osdf.develop.deployment.info.ServiceDeploymentInfo;
+import io.microconfig.osdf.develop.cluster.deployment.ClusterDeployment;
+import io.microconfig.osdf.develop.service.deployment.info.ServiceDeploymentInfo;
 import io.microconfig.osdf.openshift.Pod;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
 import java.util.List;
 
-import static io.microconfig.osdf.develop.deployment.DefaultClusterDeployment.defaultClusterDeployment;
-import static io.microconfig.osdf.develop.deployment.configmap.DefaultConfigMapUploader.configMapUploader;
-import static io.microconfig.osdf.develop.deployment.info.DefaultServiceDeploymentInfo.deploymentInfo;
+import static io.microconfig.osdf.develop.cluster.deployment.DefaultClusterDeployment.defaultClusterDeployment;
+import static io.microconfig.osdf.develop.cluster.configmap.DefaultConfigMapUploader.configMapUploader;
+import static io.microconfig.osdf.develop.service.deployment.info.DefaultServiceDeploymentInfo.deploymentInfo;
 
 @RequiredArgsConstructor
 public class DefaultServiceDeployment implements ServiceDeployment {
@@ -55,7 +55,7 @@ public class DefaultServiceDeployment implements ServiceDeployment {
 
     @Override
     public boolean createConfigMap(List<Path> configs) {
-        return configMapUploader(cli).upload(configs, this);
+        return configMapUploader(cli).upload(name, configs, this);
     }
 
     @Override
