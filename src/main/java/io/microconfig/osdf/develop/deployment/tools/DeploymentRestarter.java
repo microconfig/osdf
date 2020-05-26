@@ -25,7 +25,7 @@ public class DeploymentRestarter {
 
     private void scaleFromConfigs(ServiceDeployment deployment, ServiceFiles files) {
         Map<String, Object> deploy = loadFromPath(files.getPath("deploy.yaml"));
-        Integer replicas = getInt(deploy, "replicas.count");
+        Integer replicas = getInt(deploy, "replicas", "count");
         deployment.scale(replicas);
     }
 }

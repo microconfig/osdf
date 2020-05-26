@@ -33,6 +33,10 @@ public class DefaultServiceDeployPacksLoader implements ServiceDeployPacksLoader
         return new DefaultServiceDeployPacksLoader(paths, requiredServicesNames, cli);
     }
 
+    public static DefaultServiceDeployPacksLoader defaultServiceDeployPacksLoader(OSDFPaths paths, ClusterCLI cli) {
+        return new DefaultServiceDeployPacksLoader(paths, null, cli);
+    }
+
     @Override
     public List<ServiceDeployPack> loadPacks() {
         List<ComponentDir> allComponents = componentsLoader(paths.componentsPath()).load();
