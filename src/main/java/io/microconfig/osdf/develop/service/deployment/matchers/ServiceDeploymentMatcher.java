@@ -27,11 +27,12 @@ public class ServiceDeploymentMatcher {
         String deploymentResource = getString(deploy, "deployment" , "resource");
         String deploymentName = deploymentName(files.name(), version, serviceType);
         preprocessIfOldType(files, version, serviceType);
-        return defaultServiceDeployment(deploymentName, version, files.name(), deploymentResource, cli);
+        return defaultServiceDeployment(deploymentName, version, files.name(),
+                deploymentResource.equals("null") ? "dc" : deploymentResource, cli);
     }
 
     private void preprocessIfOldType(ServiceFiles files, String version, String serviceType) {
-        if (serviceType.contains("old")) {
+        if (serviceType.contains("old") || serviceType.equals("null")) {
             resourceVersionInserter(files.root(), serviceType.contains("istio") ? version : null)
                     .insert();
         }
