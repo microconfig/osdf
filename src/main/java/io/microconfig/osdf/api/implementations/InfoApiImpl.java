@@ -30,6 +30,6 @@ public class InfoApiImpl implements InfoApi {
     @Override
     public void status(List<String> components, Boolean withHealthCheck) {
         cli.login();
-        new StatusCommand(paths, oc(cli), printer(), withHealthCheck).run(components);
+        new StatusCommand(paths, cli, printer(), withHealthCheck).run(components);
     }
 }

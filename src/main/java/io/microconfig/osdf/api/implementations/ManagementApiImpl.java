@@ -12,13 +12,11 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import static io.microconfig.osdf.cluster.pod.PodDeleter.podDeleter;
-import static io.microconfig.osdf.deployers.CanaryDeployer.canaryDeployer;
 import static io.microconfig.osdf.deployers.HiddenDeployer.hiddenDeployer;
 import static io.microconfig.osdf.deployers.ReplaceDeployer.replaceDeployer;
 import static io.microconfig.osdf.deployers.RestrictedDeployer.restrictedDeployer;
-import static io.microconfig.osdf.develop.service.deployment.tools.DeploymentRestarter.deploymentRestarter;
 import static io.microconfig.osdf.develop.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
-import static io.microconfig.osdf.metrics.formats.PrometheusParser.prometheusParser;
+import static io.microconfig.osdf.develop.service.deployment.tools.DeploymentRestarter.deploymentRestarter;
 import static io.microconfig.osdf.openshift.OpenShiftCLI.oc;
 import static io.microconfig.utils.Logger.info;
 
@@ -73,9 +71,6 @@ public class ManagementApiImpl implements ManagementApi {
         }
         if (mode.equals("hidden")) {
             return hiddenDeployer(oc(cli));
-        }
-        if (mode.equals("canary")) {
-            return canaryDeployer(oc(cli), prometheusParser());
         }
         if (mode.equals("restricted")) {
             return restrictedDeployer(oc(cli));

@@ -1,6 +1,7 @@
 package io.microconfig.osdf.components.checker;
 
-import io.microconfig.osdf.components.DeploymentComponent;
+import io.microconfig.osdf.develop.service.deployment.ServiceDeployment;
+import io.microconfig.osdf.develop.service.files.ServiceFiles;
 import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.components.info.DeploymentStatus.RUNNING;
@@ -14,14 +15,14 @@ public class SuccessfulDeploymentChecker {
         return new SuccessfulDeploymentChecker();
     }
 
-    public boolean check(DeploymentComponent component) {
-        Integer podStartTime = deployProperties(component.getConfigDir()).getPodStartTime();
+    public boolean check(ServiceDeployment deployment, ServiceFiles files) {
+        Integer podStartTime = deployProperties(files.root()).getPodStartTime();
         int currentTime = 0;
-        while (!component.isRunning()) {
+        while (deployment.info().status() != RUNNING) {
             currentTime++;
             if (currentTime > podStartTime) return false;
             sleepSec(1);
         }
-        return component.info().getStatus() == RUNNING && podsInfo(component).isHealthy();
+        return deployment.info().status() == RUNNING && podsInfo(deployment, files).isHealthy();
     }
 }

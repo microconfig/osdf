@@ -1,6 +1,8 @@
 package io.microconfig.osdf.components.info;
 
-import io.microconfig.osdf.components.DeploymentComponent;
+import io.microconfig.osdf.develop.service.deployment.ServiceDeployment;
+import io.microconfig.osdf.develop.service.deployment.info.ServiceDeploymentInfo;
+import io.microconfig.osdf.develop.service.files.ServiceFiles;
 import io.microconfig.osdf.openshift.Pod;
 import io.microconfig.osdf.printers.ColumnPrinter;
 
@@ -12,21 +14,25 @@ import static io.microconfig.utils.ConsoleColor.green;
 import static io.microconfig.utils.ConsoleColor.red;
 import static java.util.stream.IntStream.range;
 
+
 public class DeploymentStatusRows implements RowColumnsWithStatus {
-    private final DeploymentComponent component;
+    private final ServiceDeployment deployment;
+    private final ServiceFiles files;
+
     private final ColumnPrinter printer;
     private final boolean withHealthCheck;
     private final boolean status;
 
-    public DeploymentStatusRows(DeploymentComponent component, ColumnPrinter printer, boolean withHealthCheck) {
-        this.component = component;
+    public DeploymentStatusRows(ServiceDeployment deployment, ServiceFiles files, ColumnPrinter printer, boolean withHealthCheck) {
+        this.deployment = deployment;
+        this.files = files;
         this.printer = printer;
         this.withHealthCheck = withHealthCheck;
         this.status = fetch();
     }
 
-    public static DeploymentStatusRows deploymentStatusRows(DeploymentComponent component, ColumnPrinter printer, boolean withHealthCheck) {
-        return new DeploymentStatusRows(component, printer, withHealthCheck);
+    public static DeploymentStatusRows deploymentStatusRows(ServiceDeployment deployment, ServiceFiles files, ColumnPrinter printer, boolean withHealthCheck) {
+        return new DeploymentStatusRows(deployment, files, printer, withHealthCheck);
     }
 
     @Override
@@ -45,14 +51,14 @@ public class DeploymentStatusRows implements RowColumnsWithStatus {
     }
 
     private boolean fetch() {
-        DeploymentInfo info = component.info();
-        printer.addRow(green(component.getName()), green(component.getVersion()), coloredStatus(info.getStatus()), green(replicas(info)));
+        ServiceDeploymentInfo info = deployment.info();
+        printer.addRow(green(deployment.serviceName()), green(deployment.version()), coloredStatus(info.status()), green(replicas(info)));
         if (withHealthCheck) {
-            PodsHealthcheckInfo podsInfo = podsInfo(component);
+            PodsHealthcheckInfo podsInfo = podsInfo(deployment, files);
             addPods(podsInfo.getPods(), podsInfo.getPodsHealth());
-            return podsInfo.isHealthy() && info.getStatus() == RUNNING;
+            return podsInfo.isHealthy() && info.status() == RUNNING;
         }
-        return info.getStatus() == RUNNING;
+        return info.status() == RUNNING;
     }
 
     private String coloredStatus(DeploymentStatus status) {
@@ -77,7 +83,7 @@ public class DeploymentStatusRows implements RowColumnsWithStatus {
         printer.addRow(" - " + pod.getName(), "", health ? green("OK") : red("BAD"), "");
     }
 
-    private String replicas(DeploymentInfo info) {
-        return info.getAvailableReplicas() + "/" + info.getReplicas();
+    private String replicas(ServiceDeploymentInfo info) {
+        return info.availableReplicas() + "/" + info.replicas();
     }
 }

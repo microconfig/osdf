@@ -29,13 +29,14 @@ public class NewDeployCommand {
     }
 
     public void deploy(List<String> serviceNames, String mode) {
+        ServiceDeployer deployer = getDeployer(mode);
         announce("Starting deployment");
 
         List<ServiceJobPack> jobPacks = defaultServiceJobPackLoader(paths, serviceNames, cli).loadPacks();
         callRunner(jobPacks);
 
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, serviceNames, cli).loadPacks();
-        callDeployer(deployPacks, getDeployer(mode));
+        callDeployer(deployPacks, deployer);
     }
 
     private void callDeployer(List<ServiceDeployPack> deployPacks, ServiceDeployer deployer) {

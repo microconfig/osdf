@@ -84,8 +84,6 @@ public class DeployCommand {
     }
 
     private boolean checkDeployment(SuccessfulDeploymentChecker checker, DeploymentComponent component) {
-        boolean status = checker.check(component);
-        if (!status) error("Component " + component.getName() + " failed");
-        return status;
+        throw new OSDFException("Checking deployment status is temporarily not supported");
     }
 }

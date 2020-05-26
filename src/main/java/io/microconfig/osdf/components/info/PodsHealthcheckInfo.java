@@ -1,7 +1,8 @@
 package io.microconfig.osdf.components.info;
 
-import io.microconfig.osdf.components.DeploymentComponent;
 import io.microconfig.osdf.components.checker.HealthChecker;
+import io.microconfig.osdf.develop.service.deployment.ServiceDeployment;
+import io.microconfig.osdf.develop.service.files.ServiceFiles;
 import io.microconfig.osdf.openshift.Pod;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,10 @@ public class PodsHealthcheckInfo {
     private final List<Boolean> podsHealth;
     private final boolean healthy;
 
-    public static PodsHealthcheckInfo podsInfo(DeploymentComponent component) {
-        HealthChecker healthChecker = healthCheckerFinder(component).get();
+    public static PodsHealthcheckInfo podsInfo(ServiceDeployment deployment, ServiceFiles files) {
+        HealthChecker healthChecker = healthCheckerFinder(files).get();
 
-        List<Pod> pods = component.pods();
+        List<Pod> pods = deployment.pods();
         List<Boolean> podsHealth = pods.parallelStream()
                 .map(healthChecker::check)
                 .collect(toUnmodifiableList());

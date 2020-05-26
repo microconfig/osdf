@@ -3,7 +3,8 @@ package io.microconfig.osdf.develop.service.job;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.components.info.JobStatus;
 import io.microconfig.osdf.develop.cluster.job.ClusterJob;
-import io.microconfig.osdf.develop.service.job.info.ClusterJobInfo;
+import io.microconfig.osdf.develop.service.job.info.DefaultServiceJobInfo;
+import io.microconfig.osdf.develop.service.job.info.ServiceJobInfo;
 import io.microconfig.utils.Logger;
 import lombok.RequiredArgsConstructor;
 
@@ -52,8 +53,8 @@ public class DefaultServiceJob implements ServiceJob {
     }
 
     @Override
-    public ClusterJobInfo info() {
-        return null;
+    public ServiceJobInfo info() {
+        return DefaultServiceJobInfo.info(name, cli);
     }
 
     @Override

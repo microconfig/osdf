@@ -1,16 +1,16 @@
 package io.microconfig.osdf.develop.deployers;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.develop.service.deployment.ServiceDeployment;
 import io.microconfig.osdf.develop.service.ClusterService;
+import io.microconfig.osdf.develop.service.deployment.ServiceDeployment;
 import io.microconfig.osdf.develop.service.files.ServiceFiles;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
-import static io.microconfig.osdf.develop.service.deployment.tools.DeploymentRestarter.deploymentRestarter;
+import static io.microconfig.osdf.develop.cluster.resource.tools.ResourceCleaner.resourceCleaner;
 import static io.microconfig.osdf.develop.service.deployment.checkers.NewImageVersionChecker.imageVersionChecker;
 import static io.microconfig.osdf.develop.service.deployment.checkers.TotalHashChecker.totalHashChecker;
-import static io.microconfig.osdf.develop.cluster.resource.tools.ResourceCleaner.resourceCleaner;
+import static io.microconfig.osdf.develop.service.deployment.tools.DeploymentRestarter.deploymentRestarter;
 import static io.microconfig.utils.Logger.info;
 
 @RequiredArgsConstructor
@@ -24,6 +24,7 @@ public class DefaultServiceDeployer implements ServiceDeployer {
 
     @Override
     public void deploy(ClusterService service, ServiceDeployment deployment, ServiceFiles files) {
+        info("Deploying " + service.name());
         if (totalHashChecker(paths, cli).check(deployment, files)) return;
 
         resourceCleaner(cli).cleanOld(files.resources(), service.resources());

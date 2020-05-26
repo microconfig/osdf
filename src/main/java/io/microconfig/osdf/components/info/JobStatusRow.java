@@ -1,6 +1,7 @@
 package io.microconfig.osdf.components.info;
 
-import io.microconfig.osdf.components.JobComponent;
+import io.microconfig.osdf.develop.service.job.ServiceJob;
+import io.microconfig.osdf.develop.service.job.info.ServiceJobInfo;
 import io.microconfig.osdf.printers.ColumnPrinter;
 
 import java.util.List;
@@ -9,18 +10,18 @@ import static io.microconfig.osdf.components.info.JobStatus.SUCCEEDED;
 import static io.microconfig.utils.ConsoleColor.*;
 
 public class JobStatusRow implements RowColumnsWithStatus {
-    private final JobComponent component;
+    private final ServiceJob job;
     private final ColumnPrinter printer;
     private final boolean status;
 
-    public JobStatusRow(JobComponent component, ColumnPrinter printer) {
-        this.component = component;
+    public JobStatusRow(ServiceJob job, ColumnPrinter printer) {
+        this.job = job;
         this.printer = printer;
         this.status = fetch();
     }
 
-    public static JobStatusRow jobStatusRow(JobComponent component, ColumnPrinter printer) {
-        return new JobStatusRow(component, printer);
+    public static JobStatusRow jobStatusRow(ServiceJob job, ColumnPrinter printer) {
+        return new JobStatusRow(job, printer);
     }
 
     @Override
@@ -39,9 +40,9 @@ public class JobStatusRow implements RowColumnsWithStatus {
     }
 
     private boolean fetch() {
-        JobInfo info = component.info();
-        printer.addRow(green(component.getName()), green(component.getVersion()), coloredStatus(info.getStatus()), green("-"));
-        return info.getStatus() == SUCCEEDED;
+        ServiceJobInfo info = job.info();
+        printer.addRow(green(job.serviceName()), green(job.version()), coloredStatus(info.status()), green("-"));
+        return info.status() == SUCCEEDED;
     }
 
     private String coloredStatus(JobStatus status) {

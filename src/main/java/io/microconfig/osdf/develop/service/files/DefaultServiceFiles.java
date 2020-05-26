@@ -4,7 +4,6 @@ import io.microconfig.osdf.develop.cluster.resource.LocalClusterResource;
 import io.microconfig.osdf.develop.cluster.resource.LocalClusterResourceImpl;
 import io.microconfig.osdf.develop.component.ComponentDir;
 import io.microconfig.osdf.exceptions.OSDFException;
-import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,17 +15,23 @@ import static java.nio.file.Files.exists;
 import static java.nio.file.Files.list;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
-@RequiredArgsConstructor
 public class DefaultServiceFiles implements ServiceFiles {
     private final ComponentDir componentDir;
     private final Path resourcesDir;
+    private final String resourcesDirName;
+
+    private DefaultServiceFiles(ComponentDir componentDir, String type) {
+        this.componentDir = componentDir;
+        this.resourcesDir = componentDir.getPath(type);
+        this.resourcesDirName = type;
+    }
 
     public static DefaultServiceFiles serviceFiles(ComponentDir componentDir) {
         if (exists(componentDir.getPath("resources"))) {
-            return new DefaultServiceFiles(componentDir, componentDir.getPath("resources"));
+            return new DefaultServiceFiles(componentDir, "resources");
         }
         if (exists(componentDir.getPath("openshift"))) {
-            return new DefaultServiceFiles(componentDir, componentDir.getPath("openshift"));
+            return new DefaultServiceFiles(componentDir, "openshift");
         }
         throw new OSDFException("Unknown component dir format for service");
     }
@@ -68,6 +73,9 @@ public class DefaultServiceFiles implements ServiceFiles {
 
     @Override
     public Path getPath(String identifier) {
+        if (identifier.startsWith("resources")) {
+            return componentDir.getPath(identifier.replaceFirst("resources", resourcesDirName));
+        }
         return componentDir.getPath(identifier);
     }
 }

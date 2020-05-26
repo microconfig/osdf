@@ -10,16 +10,16 @@ import static io.microconfig.osdf.components.info.JobStatus.*;
 import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 
 @RequiredArgsConstructor
-public class DefaultClusterJobInfo implements ClusterJobInfo {
+public class DefaultServiceJobInfo implements ServiceJobInfo {
     private final String version;
     private final String configVersion;
     private final JobStatus status;
 
-    private static DefaultClusterJobInfo notExecuted() {
-        return new DefaultClusterJobInfo("?", "?", NOT_EXECUTED);
+    private static DefaultServiceJobInfo notExecuted() {
+        return new DefaultServiceJobInfo("?", "?", NOT_EXECUTED);
     }
 
-    public static DefaultClusterJobInfo info(String name, ClusterCLI cli) {
+    public static DefaultServiceJobInfo info(String name, ClusterCLI cli) {
         List<String> lines = cli.execute("get job " + name + " -o custom-columns=" +
                 "failed:.status.failed," +
                 "succeeded:.status.succeeded," +
@@ -39,7 +39,7 @@ public class DefaultClusterJobInfo implements ClusterJobInfo {
         else if (valueGreaterThanZero(fields[1])) status = SUCCEEDED;
         else if (valueGreaterThanZero(fields[0])) status = FAILED;
 
-        return new DefaultClusterJobInfo(version, configVersion, status);
+        return new DefaultServiceJobInfo(version, configVersion, status);
     }
 
     private static boolean valueGreaterThanZero(String value) {
