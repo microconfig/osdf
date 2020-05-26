@@ -34,8 +34,8 @@ public class DefaultServiceJob implements ServiceJob {
     }
 
     @Override
-    public boolean createConfigMap(List<Path> configs) {
-        return configMapUploader(cli).upload(name, configs, this);
+    public void createConfigMap(List<Path> configs) {
+        configMapUploader(cli).upload(name, configs, this);
     }
 
     @Override

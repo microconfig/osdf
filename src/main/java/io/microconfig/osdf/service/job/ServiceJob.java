@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 public interface ServiceJob extends ClusterJob, ServiceResource {
-    boolean createConfigMap(List<Path> configs);
+    void createConfigMap(List<Path> configs);
 
     boolean waitUntilCompleted();
 
