@@ -1,14 +1,14 @@
 package io.microconfig.osdf.develop.deployment.checkers;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.develop.deployment.ServiceDeployment;
+import io.microconfig.osdf.develop.service.deployment.ServiceDeployment;
 import io.microconfig.osdf.develop.resources.TotalHashesStorage;
-import io.microconfig.osdf.develop.service.ServiceFiles;
+import io.microconfig.osdf.develop.service.files.ServiceFiles;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.components.info.DeploymentStatus.NOT_FOUND;
-import static io.microconfig.osdf.develop.deployment.DeploymentRestarter.deploymentRestarter;
+import static io.microconfig.osdf.develop.deployment.tools.DeploymentRestarter.deploymentRestarter;
 import static io.microconfig.osdf.develop.deployment.checkers.NewImageVersionChecker.imageVersionChecker;
 import static io.microconfig.osdf.develop.resources.TotalHashComputer.totalHashComputer;
 import static io.microconfig.osdf.develop.resources.TotalHashesStorage.totalHashesStorage;

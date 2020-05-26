@@ -1,6 +1,8 @@
-package io.microconfig.osdf.develop.service;
+package io.microconfig.osdf.develop.service.loaders;
 
 import io.microconfig.osdf.develop.component.ComponentDir;
+import io.microconfig.osdf.develop.service.files.DefaultServiceFiles;
+import io.microconfig.osdf.develop.service.files.ServiceFiles;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

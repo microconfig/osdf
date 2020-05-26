@@ -1,6 +1,6 @@
 package io.microconfig.osdf.develop.resources;
 
-import io.microconfig.osdf.develop.service.ServiceFiles;
+import io.microconfig.osdf.develop.service.files.ServiceFiles;
 import io.microconfig.osdf.develop.cluster.resource.LocalClusterResource;
 import io.microconfig.osdf.utils.FileUtils;
 import lombok.RequiredArgsConstructor;

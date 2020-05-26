@@ -4,4 +4,6 @@ import java.util.List;
 
 public interface ComponentsLoader {
     List<ComponentDir> load();
+
+    ComponentDir loadByName(String name);
 }

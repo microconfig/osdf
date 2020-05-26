@@ -1,7 +1,7 @@
 package io.microconfig.osdf.develop.deployment.configmap;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.develop.deployment.ServiceDeployment;
+import io.microconfig.osdf.develop.service.deployment.ServiceDeployment;
 import io.microconfig.osdf.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 

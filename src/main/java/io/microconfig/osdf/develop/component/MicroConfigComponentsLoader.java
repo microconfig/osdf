@@ -9,15 +9,18 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static io.microconfig.osdf.develop.component.MicroConfigComponentDir.*;
+import static java.nio.file.Files.exists;
 import static java.nio.file.Files.list;
+import static java.nio.file.Path.of;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
-public class AllMicroConfigComponentsLoader implements ComponentsLoader {
+public class MicroConfigComponentsLoader implements ComponentsLoader {
     private final Path componentsPath;
 
-    public static AllMicroConfigComponentsLoader componentsLoader(Path componentsPath) {
-        return new AllMicroConfigComponentsLoader(componentsPath);
+    public static MicroConfigComponentsLoader componentsLoader(Path componentsPath) {
+        return new MicroConfigComponentsLoader(componentsPath);
     }
 
     @Override
@@ -29,5 +32,12 @@ public class AllMicroConfigComponentsLoader implements ComponentsLoader {
         } catch (IOException e) {
             throw new OSDFException("Can't access " + componentsPath);
         }
+    }
+
+    @Override
+    public ComponentDir loadByName(String name) {
+        Path componentRoot = of(componentsPath + "/" + name);
+        if (!exists(componentRoot)) throw new OSDFException("Component " + name + " not found");
+        return componentDir(componentRoot);
     }
 }

@@ -2,8 +2,8 @@ package io.microconfig.osdf.develop.deployment.checkers;
 
 import io.microconfig.osdf.common.Credentials;
 import io.microconfig.osdf.components.checker.RegistryCredentials;
-import io.microconfig.osdf.develop.deployment.ServiceDeployment;
-import io.microconfig.osdf.develop.service.ServiceFiles;
+import io.microconfig.osdf.develop.service.deployment.ServiceDeployment;
+import io.microconfig.osdf.develop.service.files.ServiceFiles;
 import io.microconfig.osdf.openshift.Pod;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;

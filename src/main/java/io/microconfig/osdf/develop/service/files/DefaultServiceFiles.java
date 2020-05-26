@@ -1,4 +1,4 @@
-package io.microconfig.osdf.develop.service;
+package io.microconfig.osdf.develop.service.files;
 
 import io.microconfig.osdf.develop.cluster.resource.LocalClusterResource;
 import io.microconfig.osdf.develop.cluster.resource.LocalClusterResourceImpl;

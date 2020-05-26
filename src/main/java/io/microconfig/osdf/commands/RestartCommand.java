@@ -1,22 +1,17 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.components.DeploymentComponent;
-import io.microconfig.osdf.openshift.OpenShiftCLI;
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.osdf.components.loader.ComponentsLoaderImpl.componentsLoader;
-
 @RequiredArgsConstructor
 public class RestartCommand {
     private final OSDFPaths paths;
-    private final OpenShiftCLI oc;
+    private final ClusterCLI cli;
 
-    public void run(List<String> components) {
-        componentsLoader(paths, components, oc)
-                .load(DeploymentComponent.class)
-                .forEach(DeploymentComponent::restart);
+    public void run(List<String> serviceNames) {
+
     }
 }

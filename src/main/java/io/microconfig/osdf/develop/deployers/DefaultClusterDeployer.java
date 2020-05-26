@@ -1,13 +1,13 @@
 package io.microconfig.osdf.develop.deployers;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.develop.deployment.ServiceDeployment;
+import io.microconfig.osdf.develop.service.deployment.ServiceDeployment;
 import io.microconfig.osdf.develop.service.ClusterService;
-import io.microconfig.osdf.develop.service.ServiceFiles;
+import io.microconfig.osdf.develop.service.files.ServiceFiles;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
-import static io.microconfig.osdf.develop.deployment.DeploymentRestarter.deploymentRestarter;
+import static io.microconfig.osdf.develop.deployment.tools.DeploymentRestarter.deploymentRestarter;
 import static io.microconfig.osdf.develop.deployment.checkers.NewImageVersionChecker.imageVersionChecker;
 import static io.microconfig.osdf.develop.deployment.checkers.TotalHashChecker.totalHashChecker;
 import static io.microconfig.osdf.develop.resources.ResourceCleaner.resourceCleaner;

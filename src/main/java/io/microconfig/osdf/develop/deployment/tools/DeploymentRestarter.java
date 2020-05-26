@@ -1,6 +1,7 @@
-package io.microconfig.osdf.develop.deployment;
+package io.microconfig.osdf.develop.deployment.tools;
 
-import io.microconfig.osdf.develop.service.ServiceFiles;
+import io.microconfig.osdf.develop.service.deployment.ServiceDeployment;
+import io.microconfig.osdf.develop.service.files.ServiceFiles;
 
 import java.util.Map;
 

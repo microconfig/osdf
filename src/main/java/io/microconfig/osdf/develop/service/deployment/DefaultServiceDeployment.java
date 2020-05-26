@@ -1,6 +1,7 @@
-package io.microconfig.osdf.develop.deployment;
+package io.microconfig.osdf.develop.service.deployment;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.microconfig.osdf.develop.deployment.ClusterDeployment;
 import io.microconfig.osdf.develop.deployment.info.ServiceDeploymentInfo;
 import io.microconfig.osdf.openshift.Pod;
 import lombok.RequiredArgsConstructor;

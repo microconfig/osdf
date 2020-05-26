@@ -1,12 +1,13 @@
-package io.microconfig.osdf.develop.service;
+package io.microconfig.osdf.develop.service.matchers;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.develop.deployment.ServiceDeployment;
+import io.microconfig.osdf.develop.service.deployment.ServiceDeployment;
+import io.microconfig.osdf.develop.service.files.ServiceFiles;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
-import static io.microconfig.osdf.develop.deployment.DefaultServiceDeployment.defaultServiceDeployment;
+import static io.microconfig.osdf.develop.service.deployment.DefaultServiceDeployment.defaultServiceDeployment;
 import static io.microconfig.osdf.resources.ResourceVersionInserter.resourceVersionInserter;
 import static io.microconfig.osdf.utils.YamlUtils.getString;
 import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;

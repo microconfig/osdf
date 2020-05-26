@@ -1,5 +1,6 @@
-package io.microconfig.osdf.develop.deployment;
+package io.microconfig.osdf.develop.service.deployment;
 
+import io.microconfig.osdf.develop.deployment.ClusterDeployment;
 import io.microconfig.osdf.develop.deployment.info.ServiceDeploymentInfo;
 
 import java.nio.file.Path;
