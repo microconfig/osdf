@@ -52,12 +52,14 @@ public class InitializationApiImpl implements InitializationApi {
     }
 
     @Override
-    public void openshift(Credentials credentials, String token) {
+    public void openshift(Credentials credentials, String token, Boolean loginImmediately) {
         if (credentials == null && token == null) throw new OSDFException("Provide credentials (-c) or token (-t) parameter");
         if (credentials != null && token != null) throw new OSDFException("Choose only one authentication type");
         updateOpenShiftSettings(credentials, token);
         updateClusterContextSettings(OPENSHIFT);
-        oc(paths).login();
+        if (loginImmediately) {
+            oc(paths).login();
+        }
     }
 
     @Override

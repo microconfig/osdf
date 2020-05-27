@@ -25,7 +25,8 @@ public interface InitializationApi {
 
     @ApiCommand(description = "Set OpenShift credentials", order = 4)
     void openshift(@ConsoleParam(ClusterCredentialsParameter.class) Credentials credentials,
-                   @ConsoleParam(OpenShiftTokenParameter.class) String token);
+                   @ConsoleParam(OpenShiftTokenParameter.class) String token,
+                   @ConsoleParam(LoginImmediatelyParameter.class) Boolean loginImmediately);
 
     @ApiCommand(description = "Set Kubernetes credentials", order = 4)
     void kubernetes(@ConsoleParam(value = ClusterCredentialsParameter.class, type = REQUIRED) Credentials credentials);
