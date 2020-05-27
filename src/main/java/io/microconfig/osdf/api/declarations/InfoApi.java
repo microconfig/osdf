@@ -17,4 +17,7 @@ public interface InfoApi {
     @ApiCommand(description = "Show status info of services from OpenShift", order = 2)
     void status(@ConsoleParam(ComponentsParameter.class) List<String> components,
                 @ConsoleParam(HealthCheckParameter.class) Boolean withHealthCheck);
+
+    @ApiCommand(description = "Show all running services with their versions", order = 2)
+    void showAll();
 }

@@ -3,6 +3,7 @@ package io.microconfig.osdf.api.implementations;
 import io.microconfig.osdf.api.declarations.InfoApi;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.commands.LogsCommand;
+import io.microconfig.osdf.commands.ShowAllCommand;
 import io.microconfig.osdf.commands.StatusCommand;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +31,11 @@ public class InfoApiImpl implements InfoApi {
     public void status(List<String> components, Boolean withHealthCheck) {
         cli.login();
         new StatusCommand(paths, cli, printer(), withHealthCheck).run(components);
+    }
+
+    @Override
+    public void showAll() {
+        cli.login();
+        new ShowAllCommand(cli, printer()).run();
     }
 }

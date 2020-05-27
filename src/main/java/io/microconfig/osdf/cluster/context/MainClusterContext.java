@@ -8,6 +8,7 @@ import static io.microconfig.osdf.cluster.cli.BaseClusterCLI.baseClusterCLI;
 import static io.microconfig.osdf.cluster.kubernetes.KubernetesCLI.kubernetes;
 import static io.microconfig.osdf.cluster.openshift.OpenShiftCLI.oc;
 import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
+import static java.nio.file.Files.exists;
 
 @RequiredArgsConstructor
 public class MainClusterContext implements ClusterContext {
@@ -19,6 +20,7 @@ public class MainClusterContext implements ClusterContext {
 
     @Override
     public ClusterCLI cli() {
+        if (!exists(paths.settings().clusterContext())) return baseClusterCLI();
         ClusterType type = settingsFile(ClusterContextSettings.class, paths.settings().clusterContext()).getSettings().getType();
         switch(type) {
             case OPENSHIFT: return oc(paths);
