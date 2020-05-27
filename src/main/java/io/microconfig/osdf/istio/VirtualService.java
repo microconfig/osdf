@@ -1,10 +1,10 @@
 package io.microconfig.osdf.istio;
 
-import io.microconfig.osdf.components.DeploymentComponent;
+import io.microconfig.osdf.deprecated.components.DeploymentComponent;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.istio.rules.HeaderRule;
 import io.microconfig.osdf.istio.rules.MainRule;
-import io.microconfig.osdf.openshift.OpenShiftCLI;
+import io.microconfig.osdf.cluster.openshift.OpenShiftCLI;
 import lombok.AllArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 
@@ -13,7 +13,7 @@ import java.util.Map;
 
 import static io.microconfig.osdf.istio.Destination.destination;
 import static io.microconfig.osdf.istio.rules.HeaderRule.headerRule;
-import static io.microconfig.osdf.openshift.OpenShiftResource.uploadResource;
+import static io.microconfig.osdf.cluster.openshift.OpenShiftResource.uploadResource;
 import static io.microconfig.osdf.utils.FileUtils.readAllFromResource;
 import static io.microconfig.osdf.utils.YamlUtils.getList;
 import static io.microconfig.osdf.utils.YamlUtils.getMap;

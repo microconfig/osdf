@@ -2,6 +2,10 @@ helloworld:
   components:
     - helloworld-springboot
 
+kubernetes:
+  components:
+    - cloud-service-example
+
 helloworld-istio:
   components:
     - helloworld-springboot-istio

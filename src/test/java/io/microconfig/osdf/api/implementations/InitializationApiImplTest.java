@@ -67,20 +67,20 @@ class InitializationApiImplTest {
 
     @Test
     void exceptionIfNoArgsForOpenShiftInit() {
-        assertThrows(OSDFException.class, () -> initializationApi(context.getPaths()).openshift(null, null));
+        assertThrows(OSDFException.class, () -> initializationApi(context.getPaths()).openshift(null, null, false));
     }
 
     @Test
     void exceptionIfBothArgsForOpenShiftInit() {
-        assertThrows(OSDFException.class, () -> initializationApi(context.getPaths()).openshift(Credentials.of("user:pass"), "token"));
+        assertThrows(OSDFException.class, () -> initializationApi(context.getPaths()).openshift(Credentials.of("user:pass"), "token", false));
     }
 
     @Test
     void initOpenShift() {
-        initializationApi(context.getPaths()).openshift(Credentials.of("user:pass"), null);
+        initializationApi(context.getPaths()).openshift(Credentials.of("user:pass"), null, false);
         exists(context.getPaths().settings().openshift());
 
-        initializationApi(context.getPaths()).openshift(null, "token");
+        initializationApi(context.getPaths()).openshift(null, "token", false);
         exists(context.getPaths().settings().openshift());
     }
 }

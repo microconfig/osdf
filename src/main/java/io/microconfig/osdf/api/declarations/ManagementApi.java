@@ -2,6 +2,7 @@ package io.microconfig.osdf.api.declarations;
 
 import io.microconfig.osdf.api.annotation.ApiCommand;
 import io.microconfig.osdf.api.annotation.ConsoleParam;
+import io.microconfig.osdf.api.annotation.Hidden;
 import io.microconfig.osdf.api.parameter.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public interface ManagementApi {
     void deletePod(@ConsoleParam(value = ComponentParameter.class, type = REQUIRED) String component,
                    @ConsoleParam(value = PodsParameter.class, type = REQUIRED) List<String> pods);
 
+    @Hidden
     @ApiCommand(description = "Delete deployment configs for given version", order = 5)
     void clearDeployments(@ConsoleParam(value = ConfigVersionParameter.class, type = REQUIRED) String version);
 }

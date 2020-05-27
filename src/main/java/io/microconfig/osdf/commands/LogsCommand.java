@@ -1,25 +1,27 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.components.DeploymentComponent;
-import io.microconfig.osdf.openshift.OpenShiftCLI;
-import io.microconfig.osdf.openshift.Pod;
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.microconfig.osdf.service.deployment.ServiceDeployment;
+import io.microconfig.osdf.cluster.pod.Pod;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
-import static io.microconfig.osdf.components.DeploymentComponent.component;
-import static io.microconfig.osdf.openshift.Pod.fromPods;
+import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
+import static io.microconfig.osdf.cluster.pod.Pod.fromPods;
 import static io.microconfig.utils.Logger.error;
 
 @RequiredArgsConstructor
 public class LogsCommand {
     private final OSDFPaths paths;
-    private final OpenShiftCLI oc;
+    private final ClusterCLI cli;
 
 
-    public void show(String componentName, String podName) {
-        DeploymentComponent component = component(componentName, paths, oc);
+    public void show(String serviceName, String podName) {
+        ServiceDeployment deployment = defaultServiceDeployPacksLoader(paths, cli)
+                .loadByName(serviceName)
+                .deployment();
 
-        Pod pod = fromPods(component.pods(), podName);
+        Pod pod = fromPods(deployment.pods(), podName);
         if (pod == null) {
             error("Pod " + podName + " not found");
             return;

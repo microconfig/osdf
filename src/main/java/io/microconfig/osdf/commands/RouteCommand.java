@@ -1,15 +1,15 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.components.DeploymentComponent;
+import io.microconfig.osdf.deprecated.components.DeploymentComponent;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.istio.rulesetters.RoutingRuleSetter;
-import io.microconfig.osdf.openshift.OpenShiftCLI;
+import io.microconfig.osdf.cluster.openshift.OpenShiftCLI;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.osdf.components.DeploymentComponent.component;
+import static io.microconfig.osdf.deprecated.components.DeploymentComponent.component;
 
 @RequiredArgsConstructor
 public class RouteCommand {

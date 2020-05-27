@@ -1,73 +1,53 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.components.DeploymentComponent;
-import io.microconfig.osdf.components.JobComponent;
-import io.microconfig.osdf.components.checker.SuccessfulDeploymentChecker;
-import io.microconfig.osdf.components.loader.ComponentsLoaderImpl;
-import io.microconfig.osdf.deployers.Deployer;
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.microconfig.osdf.deployers.ServiceDeployer;
+import io.microconfig.osdf.jobrunners.DefaultJobRunner;
+import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
+import io.microconfig.osdf.service.job.pack.ServiceJobPack;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.exceptions.StatusCodeException;
-import io.microconfig.osdf.openshift.OpenShiftCLI;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.osdf.components.checker.SuccessfulDeploymentChecker.successfulDeploymentChecker;
-import static io.microconfig.osdf.components.info.JobStatus.SUCCEEDED;
-import static io.microconfig.osdf.components.loader.ComponentsLoaderImpl.componentsLoader;
-import static io.microconfig.osdf.resources.ResourceVersionInserter.resourceVersionInserter;
+import static io.microconfig.osdf.deployers.DefaultServiceDeployer.defaultClusterDeployer;
+import static io.microconfig.osdf.deployers.RestrictedDeployer.restrictedDeployer;
+import static io.microconfig.osdf.jobrunners.DefaultJobRunner.defaultJobRunner;
+import static io.microconfig.osdf.service.deployment.checkers.DeployStatusChecker.deployStatusChecker;
+import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
+import static io.microconfig.osdf.service.job.pack.loader.DefaultServiceJobPackLoader.defaultServiceJobPackLoader;
 import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.error;
+import static java.util.stream.IntStream.range;
 
 @RequiredArgsConstructor
 public class DeployCommand {
     private final OSDFPaths paths;
-    private final OpenShiftCLI oc;
-    private final Deployer deployer;
-    private final boolean wait;
+    private final ClusterCLI cli;
 
-    public void run(List<String> components) {
-        ComponentsLoaderImpl componentsLoader = componentsLoader(paths, components, oc);
-
-        List<DeploymentComponent> deploymentComponents = componentsLoader.load(DeploymentComponent.class);
-        List<JobComponent> jobComponents = componentsLoader.load(JobComponent.class);
-
-        deployJobs(jobComponents);
-        deployDeployments(deploymentComponents);
-        printDeploymentStatus(deploymentComponents);
+    public static DeployCommand deployCommand(OSDFPaths paths, ClusterCLI cli) {
+        return new DeployCommand(paths, cli);
     }
 
-    private void deployDeployments(List<DeploymentComponent> deploymentComponents) {
-        deploymentComponents.forEach(component -> {
-            insertVersion(component);
-            deployer.deploy(component);
-            announce("Loaded component " + component);
-        });
+    public void deploy(List<String> serviceNames, String mode, boolean wait) {
+        ServiceDeployer deployer = getDeployer(mode);
+        announce("Starting deployment");
+
+        List<ServiceJobPack> jobPacks = defaultServiceJobPackLoader(paths, serviceNames, cli).loadPacks();
+        callRunner(jobPacks);
+
+        List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, serviceNames, cli).loadPacks();
+        callDeployer(deployPacks, deployer);
+
+        if (wait) {
+            printDeploymentStatus(deployPacks);
+        }
     }
 
-    private void insertVersion(DeploymentComponent component) {
-        resourceVersionInserter(component.getConfigDir(), component.isPrimary() ? null : component.getVersion()).insert();
-    }
-
-    private void deployJobs(List<JobComponent> jobComponents) {
-        jobComponents.forEach(component -> {
-            if (component.exists() && component.status() == SUCCEEDED) return;
-
-            component.delete();
-            component.createConfigMap();
-            component.upload();
-
-            if (!component.waitUntilCompleted()) {
-                throw new OSDFException("Job " + component.getName() + " failed");
-            }
-
-            announce("Completed job " + component);
-        });
-    }
-
-    private void printDeploymentStatus(List<DeploymentComponent> deploymentComponents) {
-        if (checkIfSuccessful(deploymentComponents)) {
+    private void printDeploymentStatus(List<ServiceDeployPack> deployPacks) {
+        if (deployStatusChecker().check(deployPacks)) {
             announce("OK");
         } else {
             error("Some components didn't start in time or had failures");
@@ -75,17 +55,30 @@ public class DeployCommand {
         }
     }
 
-    private boolean checkIfSuccessful(List<DeploymentComponent> deploymentComponents) {
-        if (wait) {
-            SuccessfulDeploymentChecker checker = successfulDeploymentChecker();
-            return deploymentComponents.parallelStream().allMatch(component -> checkDeployment(checker, component));
-        }
-        return true;
+    private void callDeployer(List<ServiceDeployPack> deployPacks, ServiceDeployer deployer) {
+        range(0, deployPacks.size()).forEach(i -> deployer.deploy(
+                        deployPacks.get(i).service(),
+                        deployPacks.get(i).deployment(),
+                        deployPacks.get(i).files())
+        );
     }
 
-    private boolean checkDeployment(SuccessfulDeploymentChecker checker, DeploymentComponent component) {
-        boolean status = checker.check(component);
-        if (!status) error("Component " + component.getName() + " failed");
-        return status;
+    private ServiceDeployer getDeployer(String mode) {
+        if (mode == null) {
+            return defaultClusterDeployer(cli, paths);
+        }
+        if (mode.equals("restricted")) {
+            return restrictedDeployer();
+        }
+        throw new OSDFException("Unknown deploy mode");
+    }
+
+    private void callRunner(List<ServiceJobPack> jobPacks) {
+        DefaultJobRunner runner = defaultJobRunner();
+        range(0, jobPacks.size()).forEach(i -> runner.run(
+                jobPacks.get(i).service(),
+                jobPacks.get(i).job(),
+                jobPacks.get(i).files())
+        );
     }
 }

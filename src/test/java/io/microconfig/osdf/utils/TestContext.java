@@ -15,6 +15,7 @@ import static io.microconfig.osdf.state.OSDFVersion.fromString;
 import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
 import static io.microconfig.osdf.utils.ConfigUnzipper.configUnzipper;
 import static io.microconfig.osdf.utils.DefaultConfigsCreator.defaultConfigsCreator;
+import static java.nio.file.Files.exists;
 
 @RequiredArgsConstructor
 public class TestContext {
@@ -29,6 +30,9 @@ public class TestContext {
     }
 
     public void install() {
+        if (!exists(Path.of("/tmp/osdf"))) {
+            execute("mkdir /tmp/osdf");
+        }
         osdfInstaller(paths, fakeJarInstaller(paths, fromString("1.0.0")), true, true).install();
     }
 
@@ -47,7 +51,7 @@ public class TestContext {
     public void initDev() throws IOException {
         install();
         prepareConfigs();
-        initializationApi(paths).openshift(of("user:pass"), null);
+        initializationApi(paths).openshift(of("user:pass"), null, false);
         initializationApi(paths).localConfigs(CONFIGS_PATH);
         initializationApi(paths).configs("dev", null);
     }

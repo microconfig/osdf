@@ -4,15 +4,15 @@ import io.microconfig.osdf.api.declarations.InitializationApi;
 import io.microconfig.osdf.cluster.context.ClusterContextSettings;
 import io.microconfig.osdf.cluster.context.ClusterType;
 import io.microconfig.osdf.cluster.kubernetes.KubernetesSettings;
+import io.microconfig.osdf.cluster.openshift.OpenShiftCredentials;
 import io.microconfig.osdf.common.Credentials;
-import io.microconfig.osdf.components.checker.RegistryCredentials;
 import io.microconfig.osdf.configfetcher.git.GitFetcherSettings;
 import io.microconfig.osdf.configfetcher.local.LocalFetcherSettings;
 import io.microconfig.osdf.configfetcher.nexus.NexusFetcherSettings;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.nexus.NexusArtifact;
-import io.microconfig.osdf.openshift.OpenShiftCredentials;
 import io.microconfig.osdf.paths.OSDFPaths;
+import io.microconfig.osdf.service.deployment.checkers.image.RegistryCredentials;
 import io.microconfig.osdf.settings.SettingsFile;
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +20,7 @@ import java.nio.file.Path;
 
 import static io.microconfig.osdf.cluster.context.ClusterType.KUBERNETES;
 import static io.microconfig.osdf.cluster.context.ClusterType.OPENSHIFT;
+import static io.microconfig.osdf.cluster.openshift.OpenShiftCLI.oc;
 import static io.microconfig.osdf.configs.ConfigsSource.*;
 import static io.microconfig.osdf.configs.ConfigsUpdater.configsUpdater;
 import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
@@ -51,11 +52,14 @@ public class InitializationApiImpl implements InitializationApi {
     }
 
     @Override
-    public void openshift(Credentials credentials, String token) {
+    public void openshift(Credentials credentials, String token, Boolean loginImmediately) {
         if (credentials == null && token == null) throw new OSDFException("Provide credentials (-c) or token (-t) parameter");
         if (credentials != null && token != null) throw new OSDFException("Choose only one authentication type");
         updateOpenShiftSettings(credentials, token);
         updateClusterContextSettings(OPENSHIFT);
+        if (loginImmediately) {
+            oc(paths).login();
+        }
     }
 
     @Override

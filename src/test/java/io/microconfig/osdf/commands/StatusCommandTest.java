@@ -1,6 +1,6 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.openshift.OpenShiftCLI;
+import io.microconfig.osdf.cluster.openshift.OpenShiftCLI;
 import io.microconfig.osdf.printers.ColumnPrinter;
 import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,13 +42,13 @@ class StatusCommandTest {
 
     private OpenShiftCLI mockOc() {
         OpenShiftCLI oc = loggedInOc();
-        when(oc.execute("oc get dc " + COMPONENT_NAME + " " + deploymentInfoCustomColumns())).thenReturn(output(
+        when(oc.execute("get dc " + COMPONENT_NAME + " " + deploymentInfoCustomColumns())).thenReturn(output(
                 "replicas   current   available   unavailable   projectVersion   configVersion  configHash" + "\n" +
                 "1          1         1           0             " + COMPONENT_VERSION + "           local   hash"
         ));
-        when(oc.execute("oc get virtualservice " + COMPONENT_NAME + " -o yaml"))
+        when(oc.execute("get virtualservice " + COMPONENT_NAME + " -o yaml"))
                 .thenReturn(output("not found"));
-        when(oc.execute("oc get pods -l \"application in (" + COMPONENT_NAME + "), projectVersion in (" + COMPONENT_VERSION + ")\" -o name"))
+        when(oc.execute("get pods -l \"application in (" + COMPONENT_NAME + "), projectVersion in (" + COMPONENT_VERSION + ")\" -o name"))
                 .thenReturn(output("pod/pod"));
         return oc;
     }
@@ -67,7 +67,7 @@ class StatusCommandTest {
     private String getStatusOutput(OpenShiftCLI oc, ColumnPrinter printer) {
         ByteArrayOutputStream actualOut = new ByteArrayOutputStream();
         System.setOut(new PrintStream(actualOut));
-        new StatusCommand(context.getPaths(), oc, printer, false).run(List.of(COMPONENT_NAME)); //TODO
+        new StatusCommand(context.getPaths(), oc, printer, false).run(List.of(COMPONENT_NAME));
         return actualOut.toString();
     }
 }

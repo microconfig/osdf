@@ -1,6 +1,7 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.components.AbstractOpenShiftComponent;
+import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
+import io.microconfig.osdf.service.files.ServiceFiles;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
-import static io.microconfig.osdf.components.loader.ComponentsLoaderImpl.componentsLoader;
+import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
+import static io.microconfig.osdf.microconfig.files.DiffFilesCollector.collector;
 import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.info;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -20,12 +22,17 @@ import static java.nio.file.Files.newInputStream;
 public class PropertiesDiffCommand {
     private final OSDFPaths paths;
 
-    public void show(List<String> components) {
-        componentsLoader(paths, components, null).load().forEach(this::showDiff);
+    public void show(List<String> serviceNames) {
+        defaultServiceDeployPacksLoader(paths, serviceNames, null)
+                .loadPacks().stream()
+                .map(ServiceDeployPack::files)
+                .forEach(this::showDiff);
     }
 
-    private void showDiff(AbstractOpenShiftComponent component) {
-        component.diffFiles().forEach(this::printDiffFile);
+    private void showDiff(ServiceFiles files) {
+        collector(files.root())
+                .collect()
+                .forEach(this::printDiffFile);
     }
 
     private void printDiffFile(Path file) {

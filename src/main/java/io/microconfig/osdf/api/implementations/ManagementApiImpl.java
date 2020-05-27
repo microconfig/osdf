@@ -2,25 +2,17 @@ package io.microconfig.osdf.api.implementations;
 
 import io.microconfig.osdf.api.declarations.ManagementApi;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.commands.DeletePodCommand;
-import io.microconfig.osdf.commands.DeployCommand;
-import io.microconfig.osdf.commands.RestartCommand;
-import io.microconfig.osdf.commands.StopCommand;
-import io.microconfig.osdf.components.DeploymentComponent;
-import io.microconfig.osdf.deployers.Deployer;
-import io.microconfig.osdf.exceptions.OSDFException;
+import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.osdf.components.loader.ComponentsLoaderImpl.componentsLoader;
-import static io.microconfig.osdf.deployers.CanaryDeployer.canaryDeployer;
-import static io.microconfig.osdf.deployers.HiddenDeployer.hiddenDeployer;
-import static io.microconfig.osdf.deployers.ReplaceDeployer.replaceDeployer;
-import static io.microconfig.osdf.deployers.RestrictedDeployer.restrictedDeployer;
-import static io.microconfig.osdf.metrics.formats.PrometheusParser.prometheusParser;
-import static io.microconfig.osdf.openshift.OpenShiftCLI.oc;
+import static io.microconfig.osdf.cluster.pod.PodDeleter.podDeleter;
+import static io.microconfig.osdf.commands.DeployCommand.deployCommand;
+import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
+import static io.microconfig.osdf.service.deployment.tools.DeploymentRestarter.deploymentRestarter;
+import static io.microconfig.utils.Logger.info;
 
 @RequiredArgsConstructor
 public class ManagementApiImpl implements ManagementApi {
@@ -34,48 +26,36 @@ public class ManagementApiImpl implements ManagementApi {
     @Override
     public void deploy(List<String> components, String mode, Boolean wait) {
         cli.login();
-        new DeployCommand(paths, oc(cli), deployer(mode), wait).run(components);
+        deployCommand(paths, cli).deploy(components, mode, wait);
     }
 
     @Override
     public void restart(List<String> components) {
         cli.login();
-        new RestartCommand(paths, oc(cli)).run(components);
+        List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
+        deployPacks.forEach(pack -> deploymentRestarter().restart(pack.deployment(), pack.files()));
     }
 
     @Override
     public void stop(List<String> components) {
         cli.login();
-        new StopCommand(paths, oc(cli)).run(components);
+        List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
+        deployPacks.forEach(pack -> pack.deployment().scale(0));
     }
 
     @Override
     public void deletePod(String component, List<String> pods) {
         cli.login();
-        new DeletePodCommand(paths, oc(cli)).delete(component, pods);
+        podDeleter(paths, cli).delete(component, pods);
     }
 
     @Override
     public void clearDeployments(String version) {
         cli.login();
-        componentsLoader(paths, null, oc(cli))
-                .load(DeploymentComponent.class)
-                .forEach(component -> component.deleteDeploymentConfig(version));
-    }
-
-    private Deployer deployer(String mode) {
-        if (mode == null || mode.equals("replace")) {
-            return replaceDeployer(oc(cli), paths);
-        }
-        if (mode.equals("hidden")) {
-            return hiddenDeployer(oc(cli));
-        }
-        if (mode.equals("canary")) {
-            return canaryDeployer(oc(cli), prometheusParser());
-        }
-        if (mode.equals("restricted")) {
-            return restrictedDeployer(oc(cli));
-        }
-        throw new OSDFException("Unknown deploy mode");
+        List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, cli).loadPacks();
+        deployPacks.forEach(pack -> {
+            String output = cli.execute("delete dc " + pack.service().name() + "." + version).getOutput();
+            info(output);
+        });
     }
 }
