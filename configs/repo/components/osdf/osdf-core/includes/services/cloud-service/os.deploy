@@ -1,0 +1,19 @@
+#include openshift-urls
+#include osdf-version-labels
+#include osdf-pod-deployment
+#include osdf-component-settings
+
+#var microconfig.template.deployment.fromFile: ${cloud-service@configDir}/templates/deployment.yaml
+#var microconfig.template.deployment.toFile: resources/deployment.yaml
+
+#var microconfig.template.service.fromFile: ${cloud-service@configDir}/templates/service.yaml
+#var microconfig.template.service.toFile: resources/service.yaml
+
+server.port: ${app::this@server.port}
+image.name: ${this@name}
+istioInject: false
+image.url: ${this@registry.project.url}/${this@image.name}:${this@image.version}
+version-suffix:
+
+deployment.resource: deployment
+service.type: default

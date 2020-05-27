@@ -41,7 +41,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: ${this@name}.${this@version}
+            name: ${this@name}
         - name: secrets
           secret:
             secretName: limit-manager

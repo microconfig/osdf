@@ -4,7 +4,7 @@ import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.Test;
 
 import static io.microconfig.osdf.api.MainApiCaller.mainApi;
-import static io.microconfig.osdf.openshift.OCExecutor.oc;
+import static io.microconfig.osdf.cluster.openshift.OpenShiftCLI.oc;
 import static io.microconfig.osdf.utils.TestContext.defaultContext;
 import static java.util.List.of;
 

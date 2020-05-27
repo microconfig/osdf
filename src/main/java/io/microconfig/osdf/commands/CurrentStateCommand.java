@@ -1,13 +1,17 @@
 package io.microconfig.osdf.commands;
 
 
+import io.microconfig.osdf.cluster.context.ClusterContextSettings;
+import io.microconfig.osdf.cluster.context.ClusterType;
+import io.microconfig.osdf.cluster.kubernetes.KubernetesSettings;
 import io.microconfig.osdf.configs.ConfigsSettings;
 import io.microconfig.osdf.configs.ConfigsSource;
-import io.microconfig.osdf.openshift.OpenShiftCredentials;
+import io.microconfig.osdf.cluster.openshift.OpenShiftCredentials;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.state.OSDFVersionFile;
 import lombok.RequiredArgsConstructor;
 
+import static io.microconfig.osdf.cluster.context.ClusterType.OPENSHIFT;
 import static io.microconfig.osdf.configfetcher.ConfigsFetcher.fetcher;
 import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
 import static io.microconfig.utils.Logger.announce;
@@ -21,7 +25,7 @@ public class CurrentStateCommand {
     public void show() {
         osdf();
         configSource();
-        openshift();
+        cluster();
         configs();
     }
 
@@ -41,9 +45,19 @@ public class CurrentStateCommand {
         info(fetcher(configsSource, paths).toString().strip());
     }
 
-    private void openshift() {
-        announce("OpenShift");
-        info(settingsFile(OpenShiftCredentials.class, paths.settings().openshift()).getSettings().toString().strip());
+    private void cluster() {
+        announce("Cluster");
+        ClusterType type = settingsFile(ClusterContextSettings.class, paths.settings().clusterContext()).getSettings().getType();
+        if (type == null) {
+            info("Not configured");
+            return;
+        }
+        info("Type: " + type);
+        if (type == OPENSHIFT) {
+            info(settingsFile(OpenShiftCredentials.class, paths.settings().openshift()).getSettings().toString().strip());
+        } else {
+            info(settingsFile(KubernetesSettings.class, paths.settings().kubernetes()).getSettings().toString().strip());
+        }
     }
 
     private void configs() {

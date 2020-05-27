@@ -1,9 +1,10 @@
 package io.microconfig.osdf.api.implementations;
 
 import io.microconfig.osdf.api.declarations.InfoApi;
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.commands.LogsCommand;
+import io.microconfig.osdf.commands.ShowAllCommand;
 import io.microconfig.osdf.commands.StatusCommand;
-import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
@@ -14,19 +15,27 @@ import static io.microconfig.osdf.printers.ColumnPrinter.printer;
 @RequiredArgsConstructor
 public class InfoApiImpl implements InfoApi {
     private final OSDFPaths paths;
-    private final OCExecutor oc;
+    private final ClusterCLI cli;
 
-    public static InfoApi infoApi(OSDFPaths paths, OCExecutor oc) {
-        return new InfoApiImpl(paths, oc);
+    public static InfoApi infoApi(OSDFPaths paths, ClusterCLI cli) {
+        return new InfoApiImpl(paths, cli);
     }
 
     @Override
     public void logs(String component, String pod) {
-        new LogsCommand(paths, oc).show(component, pod);
+        cli.login();
+        new LogsCommand(paths, cli).show(component, pod);
     }
 
     @Override
     public void status(List<String> components, Boolean withHealthCheck) {
-        new StatusCommand(paths, oc, printer(), withHealthCheck).run(components);
+        cli.login();
+        new StatusCommand(paths, cli, printer(), withHealthCheck).run(components);
+    }
+
+    @Override
+    public void showAll() {
+        cli.login();
+        new ShowAllCommand(cli, printer()).run();
     }
 }

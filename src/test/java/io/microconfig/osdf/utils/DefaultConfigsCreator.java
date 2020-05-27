@@ -5,7 +5,7 @@ import io.microconfig.osdf.configfetcher.local.LocalFetcherSettings;
 import io.microconfig.osdf.configfetcher.nexus.NexusFetcherSettings;
 import io.microconfig.osdf.configs.ConfigsSettings;
 import io.microconfig.osdf.install.UpdateSettings;
-import io.microconfig.osdf.openshift.OpenShiftCredentials;
+import io.microconfig.osdf.cluster.openshift.OpenShiftCredentials;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.settings.SettingsFile;
 import lombok.RequiredArgsConstructor;

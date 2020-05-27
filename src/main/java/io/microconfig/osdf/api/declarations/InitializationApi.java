@@ -23,9 +23,13 @@ public interface InitializationApi {
     @ApiCommand(description = "Initialize local configs", order = 3)
     void localConfigs(@ConsoleParam(LocalConfigsParameter.class) Path path);
 
-    @ApiCommand(description = "Set openshift credentials", order = 4)
-    void openshift(@ConsoleParam(OpenShiftCredentialsParameter.class) Credentials credentials,
-                   @ConsoleParam(OpenShiftTokenParameter.class) String token);
+    @ApiCommand(description = "Set OpenShift credentials", order = 4)
+    void openshift(@ConsoleParam(ClusterCredentialsParameter.class) Credentials credentials,
+                   @ConsoleParam(OpenShiftTokenParameter.class) String token,
+                   @ConsoleParam(LoginImmediatelyParameter.class) Boolean loginImmediately);
+
+    @ApiCommand(description = "Set Kubernetes credentials", order = 4)
+    void kubernetes(@ConsoleParam(value = ClusterCredentialsParameter.class, type = REQUIRED) Credentials credentials);
 
     @ApiCommand(description = "Set config parameters", order = 5)
     void configs(@ConsoleParam(EnvParameter.class) String env,

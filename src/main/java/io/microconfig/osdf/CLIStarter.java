@@ -1,12 +1,13 @@
 package io.microconfig.osdf;
 
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.exceptions.StatusCodeException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
+import static io.microconfig.osdf.cluster.context.MainClusterContext.mainClusterContext;
 import static io.microconfig.osdf.exceptions.BugTracker.bugTracker;
-import static io.microconfig.osdf.openshift.OCExecutor.oc;
 import static io.microconfig.osdf.paths.OSDFPaths.paths;
 import static io.microconfig.utils.Logger.error;
 import static java.lang.System.exit;
@@ -16,7 +17,8 @@ public class CLIStarter {
     public static void main(String[] args) {
         OSDFPaths paths = paths();
         try {
-            new OSDFStarter(paths, oc(paths)).run(args);
+            ClusterCLI cli = mainClusterContext(paths).cli();
+            new OSDFStarter(paths, cli).run(args);
         } catch (StatusCodeException e) {
             exit(e.getStatusCode());
         } catch (OSDFException e) {

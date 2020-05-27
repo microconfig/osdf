@@ -1,0 +1,53 @@
+kind: Deployment
+apiVersion: v1
+metadata:
+  name: ${this@name}${this@version-suffix}
+  labels:
+    application: ${this@name}
+    projectVersion: ${this@version}
+    configVersion: ${this@config.version}
+    configHash: <CONFIG_HASH>
+spec:
+  selector:
+    application: ${this@name}
+    projectVersion: ${this@version}
+    configVersion: ${this@config.version}
+  template:
+    metadata:
+      labels:
+        application: ${this@name}
+        projectVersion: ${this@version}
+        configVersion: ${this@config.version}
+        configHash: <CONFIG_HASH>
+    spec:
+      containers:
+        - image: ${this@image.url}
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: ${this@java.opts}
+          imagePullPolicy: Always
+          name: ${this@name}
+          ports:
+            - containerPort: ${this@server.port}
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /app/resources/application.yaml
+              name: resources
+              subPath: application.yaml
+            ${this@additional.mounts:}
+          resources:
+            requests:
+              cpu: ${this@requests.cpu}
+              memory: ${this@requests.memory}
+            limits:
+              cpu: ${this@limits.cpu}
+              memory: ${this@limits.memory}
+      volumes:
+        - name: resources
+          configMap:
+            name: ${this@name}${this@version-suffix}
+        ${this@additional.volumes:}
+      restartPolicy: Always
+  replicas: ${this@replicas.count}
+  strategy:
+    type: Recreate

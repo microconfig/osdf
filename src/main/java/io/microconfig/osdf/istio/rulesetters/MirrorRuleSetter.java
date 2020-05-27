@@ -1,16 +1,16 @@
 package io.microconfig.osdf.istio.rulesetters;
 
-import io.microconfig.osdf.components.DeploymentComponent;
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.deprecated.components.DeploymentComponent;
+import io.microconfig.osdf.cluster.openshift.OpenShiftCLI;
 import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.istio.VirtualService.virtualService;
 
 @RequiredArgsConstructor
 public class MirrorRuleSetter implements RoutingRuleSetter {
-    private final OCExecutor oc;
+    private final OpenShiftCLI oc;
 
-    public static MirrorRuleSetter mirrorRule(OCExecutor oc) {
+    public static MirrorRuleSetter mirrorRule(OpenShiftCLI oc) {
         return new MirrorRuleSetter(oc);
     }
 

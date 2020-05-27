@@ -30,6 +30,10 @@ public class SettingsPaths {
         return of(settingsRootPath + "/openshift.yaml");
     }
 
+    public Path kubernetes() {
+        return of(settingsRootPath + "/kubernetes.yaml");
+    }
+
     public Path configs() {
         return of(settingsRootPath + "/configs.yaml");
     }
@@ -44,5 +48,9 @@ public class SettingsPaths {
 
     public Path registryCredentials() {
         return of(settingsRootPath + "/registryCredentials.yaml");
+    }
+
+    public Path clusterContext() {
+        return of(settingsRootPath + "/cluster-context.yaml");
     }
 }
