@@ -1,14 +1,14 @@
 steps:
   - number: 1
-#    components:            # List of components affected in this step
-#      - component-1
-#      - component-2
+    #    components:            # List of components affected in this step
+    #      - component-1
+    #      - component-2
     duration: 60            # Step duration in second
     severity: 10            # Abstract severity [1:100] shows the degree of destructive impact on the system
     chaosSet:
       httpDelay: 3          # Delay in seconds which will be injected into Istio Virtual Services
-#      httpAbort: 503       # Error code which will be injected into Istio Virtual Services
-#      podChaosTimeout: 10  # Period in seconds with which the pods of the selected components will be killed
+      #      httpAbort: 503       # Error code which will be injected into Istio Virtual Services
+      #      podChaosTimeout: 10  # Period in seconds with which the pods of the selected components will be killed
       ioChaosTimeout: 25    # Duration in seconds of IO-chaos
 
   - number: 2

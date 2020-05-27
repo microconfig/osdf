@@ -4,17 +4,15 @@ import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.AllArgsConstructor;
 
-import java.nio.file.Path;
-
 @AllArgsConstructor
 public class ChaosTest {
     final private ChaosTestPlan testPlan;
     final private OSDFPaths paths;
     final private OCExecutor ocExecutor;
 
-    public static ChaosTest chaosTest(OSDFPaths paths, OCExecutor ocExecutor, Path pathToPlan) {
+    public static ChaosTest chaosTest(OSDFPaths paths, OCExecutor ocExecutor) {
         return new ChaosTest(
-                ChaosTestPlan.fromYaml(pathToPlan),
+                ChaosTestPlan.fromYaml(paths.chaosPlanPath()),
                 paths,
                 ocExecutor
         );

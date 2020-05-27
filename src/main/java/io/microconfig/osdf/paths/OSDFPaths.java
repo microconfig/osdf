@@ -52,6 +52,10 @@ public class OSDFPaths {
         return of(configsPath() + "/components/system/versions/config-version.proc");
     }
 
+    public Path chaosPlanPath() {
+        return of(componentsPath() + "/chaos/experimentPlan.yaml");
+    }
+
     public SettingsPaths settings() {
         return settingsPaths(settingsRoot());
     }

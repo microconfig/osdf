@@ -44,7 +44,7 @@ spec:
             limits:
               cpu: ${this@limits.cpu}
               memory: ${this@limits.memory}
-        - image: ${this@stress.registry.project.url}/stress:latest
+        - image: ${this@stress.image.url}
           name: stress-sidecar
           resources:
             requests:

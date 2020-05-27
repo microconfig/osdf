@@ -7,8 +7,6 @@ import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.AllArgsConstructor;
 
-import java.nio.file.Path;
-
 @AllArgsConstructor
 public class ChaosApiImpl implements ChaosApi {
     private final OSDFPaths paths;
@@ -19,12 +17,12 @@ public class ChaosApiImpl implements ChaosApi {
     }
 
     @Override
-    public void runChaosExperiment(Path pathToPlan) {
-        new ChaosExperimentCommand(paths, oc, pathToPlan).run();
+    public void runChaosExperiment() {
+        new ChaosExperimentCommand(paths, oc).run();
     }
 
     @Override
     public void stopChaos() {
-        ChaosRunnersLoader.init(paths,oc).getAllImplementations().forEach(impl -> impl.stop(null));
+        ChaosRunnersLoader.init(paths, oc).getAllImplementations().forEach(impl -> impl.stop(null));
     }
 }

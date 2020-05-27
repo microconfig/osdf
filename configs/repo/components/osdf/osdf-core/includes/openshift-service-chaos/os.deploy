@@ -13,3 +13,4 @@ server.port: ${app::this@server.port}
 image.name: ${this@name}
 istioInject: false
 image.url: ${this@registry.project.url}/${this@image.name}:${this@image.version}
+stress.image.url: ${this@registry.project.url}/stress:latest

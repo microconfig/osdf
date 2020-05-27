@@ -30,7 +30,6 @@ public class PodChaosRunner implements ChaosRunner {
 
     @Override
     public void run(List<String> components, ChaosSet chaosSet, Integer severity, Integer duration) {
-        System.out.println("This is " + this.toString());
         ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
         service.scheduleAtFixedRate(() -> kill(components, severity), 0, chaosSet.getKillPodTimeout(), TimeUnit.SECONDS);
         sleepSec(duration);

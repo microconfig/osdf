@@ -1,0 +1,2 @@
+#var microconfig.template.experimentPlan.fromFile: ${openshift-chaos@configDir}/templates/experimentPlan.yaml
+#var microconfig.template.experimentPlan.toFile: experimentPlan.yaml

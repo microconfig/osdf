@@ -5,3 +5,7 @@ helloworld:
 helloworld-istio:
   components:
     - helloworld-springboot-istio
+
+chaos:
+  components:
+    - chaos
