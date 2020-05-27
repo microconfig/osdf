@@ -1,22 +1,19 @@
 package io.microconfig.osdf.chaos;
 
-import io.microconfig.osdf.commands.KillPodsCommand;
-import io.microconfig.osdf.commands.NetworkChaosCommand;
-import io.microconfig.osdf.commands.StartIoStressCommand;
-import io.microconfig.osdf.deployers.NetworkChaosDeployer;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static io.microconfig.osdf.chaos.ChaosSet.chaosSet;
 import static io.microconfig.osdf.utils.ThreadUtils.sleepSec;
 import static io.microconfig.osdf.utils.YamlUtils.*;
+import static io.microconfig.utils.Logger.announce;
+import static java.lang.System.nanoTime;
 
 @AllArgsConstructor
 public class ChaosStep {
@@ -46,72 +43,40 @@ public class ChaosStep {
     }
 
     public void runStep(OSDFPaths paths, OCExecutor ocExecutor) {
-        long start = System.nanoTime();
-
-        runHttpFaultInjection(paths, ocExecutor);
-        runIOStress(paths, ocExecutor);
-        runPodKill(paths, ocExecutor, start);
-
-        long current = System.nanoTime();
+        announce("Step " + number + " started.");
+        long start = nanoTime();
+        ChaosRunnersLoader loader = ChaosRunnersLoader.init(paths, ocExecutor);
+        chaosSet.faults().forEach(type -> loader.byType(type).run(components, chaosSet, severity, duration));
 
         //wait if finished earlier
+        long current = nanoTime();
         sleepSec(duration - TimeUnit.NANOSECONDS.toSeconds(current - start));
 
-        //If network faults were injected at this step, remove them
-        stopNetworkChaos(paths, ocExecutor);
-    }
-
-    private void stopNetworkChaos(OSDFPaths paths, OCExecutor ocExecutor) {
-        if (chaosSet.isHttpDelay() || chaosSet.isHttpError()) {
-            new NetworkChaosCommand(paths, ocExecutor, new NetworkChaosDeployer(ocExecutor, null)).run(components);
-        }
-    }
-
-    private void runPodKill(OSDFPaths paths, OCExecutor ocExecutor, long start) {
-        if (chaosSet.isKillPod()) {
-            ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-            service.scheduleAtFixedRate(() -> new KillPodsCommand(paths, ocExecutor, severity).run(components), 0, chaosSet.getKillPodTimeout(), TimeUnit.SECONDS);
-            long current = System.nanoTime();
-            sleepSec(duration - TimeUnit.NANOSECONDS.toSeconds(current - start));
-            service.shutdownNow();
-        }
-    }
-
-    private void runIOStress(OSDFPaths paths, OCExecutor ocExecutor) {
-        if (chaosSet.isIOStress()) {
-            new StartIoStressCommand(paths, ocExecutor, chaosSet.getIoStressTimeout(), severity).run(components);
-        }
-    }
-
-    private void runHttpFaultInjection(OSDFPaths paths, OCExecutor ocExecutor) {
-        if (chaosSet.isHttpError() || chaosSet.isHttpDelay()) {
-            new NetworkChaosCommand(
-                    paths,
-                    ocExecutor,
-                    new NetworkChaosDeployer(ocExecutor, chaosSet.getHttpFault(severity))
-            ).run(components);
-        }
+        //If faults were injected at this step, remove them
+        announce("Step " + number + " cleaning up.");
+        chaosSet.faults().forEach(type -> loader.byType(type).stop(components));
+        announce("Step " + number + " finished.");
     }
 
     public void checkValues() {
         if (number == null) {
-            throw new RuntimeException("Assign numbers for all steps in test plan!");
+            throw new OSDFException("Assign numbers for all steps in test plan!");
         }
 
         if (severity == null) {
-            throw new RuntimeException("Assign severity for step " + number);
+            throw new OSDFException("Assign severity for step " + number);
         }
 
         if (severity < 0 || severity > 100) {
-            throw new RuntimeException("Incorrect severity " + severity + " in step " + number);
+            throw new OSDFException("Incorrect severity " + severity + " in step " + number);
         }
 
         if (duration == null) {
-            throw new RuntimeException("Assign duration for step " + number);
+            throw new OSDFException("Assign duration for step " + number);
         }
 
         if (duration < 0) {
-            throw new RuntimeException("Incorrect duration " + duration + " in step " + number);
+            throw new OSDFException("Incorrect duration " + duration + " in step " + number);
         }
     }
 }

@@ -14,13 +14,13 @@ import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
 public class ChaosTestPlan {
     private final List<ChaosStep> steps;
 
-    public List<ChaosStep> steps() {
-        return steps;
-    }
-
     public static ChaosTestPlan fromYaml(Path pathToPlan) {
         Map<String, Object> yml = loadFromPath(pathToPlan);
         List<Object> steps = getList(yml, "steps");
         return new ChaosTestPlan(steps.stream().map(ChaosStep::fromMap).collect(Collectors.toUnmodifiableList()));
+    }
+
+    public List<ChaosStep> steps() {
+        return steps;
     }
 }

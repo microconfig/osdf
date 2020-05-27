@@ -4,6 +4,9 @@ import io.microconfig.osdf.istio.faults.Fault;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static io.microconfig.osdf.istio.faults.Fault.fault;
 
 @Getter
@@ -36,6 +39,16 @@ public class ChaosSet {
 
     public boolean isKillPod() {
         return killPodTimeout != null;
+    }
+
+    List<String> faults() {
+        List<String> list = new ArrayList<>();
+
+        if (isHttpError() || isHttpDelay()) list.add("network");
+        if (isIOStress()) list.add("io");
+        if (isKillPod()) list.add("pods");
+
+        return list;
     }
 
 }

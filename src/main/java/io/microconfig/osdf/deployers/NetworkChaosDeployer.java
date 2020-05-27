@@ -28,6 +28,10 @@ public class NetworkChaosDeployer implements Deployer {
         if (!component.isIstioService()) return;
         VirtualService virtualService = virtualService(oc, component);
         virtualService.setFault(fault).upload();
-        announce("Loaded component " + component);
+        if (fault != null) {
+            announce("Network fault injected into " + component);
+        } else {
+            announce("Network faults removed from " + component);
+        }
     }
 }
