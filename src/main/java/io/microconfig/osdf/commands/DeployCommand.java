@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.osdf.deployers.DefaultServiceDeployer.defaultClusterDeployer;
+import static io.microconfig.osdf.deployers.BaseServiceDeployer.baseServiceDeployer;
 import static io.microconfig.osdf.deployers.RestrictedDeployer.restrictedDeployer;
 import static io.microconfig.osdf.jobrunners.DefaultJobRunner.defaultJobRunner;
 import static io.microconfig.osdf.service.deployment.checkers.DeployStatusChecker.deployStatusChecker;
@@ -40,9 +40,7 @@ public class DeployCommand {
         List<ServiceJobPack> jobPacks = defaultServiceJobPackLoader(paths, serviceNames, cli).loadPacks();
         callRunner(jobPacks);
 
-        List<ServiceDeployPack> deployPacks = deployRequiredFilter(paths, cli)
-                .filter(defaultServiceDeployPacksLoader(paths, serviceNames, cli).loadPacks());
-        printDeployPacks(deployPacks);
+        List<ServiceDeployPack> deployPacks = getDeployPacks(serviceNames);
         if (deployPacks.isEmpty()) return;
 
         callDeployer(deployPacks, deployer);
@@ -51,7 +49,9 @@ public class DeployCommand {
         }
     }
 
-    private void printDeployPacks(List<ServiceDeployPack> deployPacks) {
+    private List<ServiceDeployPack> getDeployPacks(List<String> serviceNames) {
+        List<ServiceDeployPack> deployPacks = deployRequiredFilter(paths, cli)
+                .filter(defaultServiceDeployPacksLoader(paths, serviceNames, cli).loadPacks());
         if (deployPacks.isEmpty())  {
             announce("No services to deploy");
         } else {
@@ -61,6 +61,7 @@ public class DeployCommand {
                             .map(deployPack -> deployPack.service().name())
                             .collect(joining(" ")));
         }
+        return deployPacks;
     }
 
     private void printDeploymentStatus(List<ServiceDeployPack> deployPacks) {
@@ -82,7 +83,7 @@ public class DeployCommand {
 
     private ServiceDeployer getDeployer(String mode) {
         if (mode == null) {
-            return defaultClusterDeployer(cli, paths);
+            return baseServiceDeployer(cli, paths);
         }
         if (mode.equals("restricted")) {
             return restrictedDeployer();

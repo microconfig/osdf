@@ -1,24 +1,20 @@
 package io.microconfig.osdf.istio.rulesetters;
 
-import io.microconfig.osdf.deprecated.components.DeploymentComponent;
-import io.microconfig.osdf.cluster.openshift.OpenShiftCLI;
+import io.microconfig.osdf.service.deployment.istio.IstioServiceDeployment;
+import io.microconfig.osdf.service.istio.IstioService;
 import lombok.RequiredArgsConstructor;
-
-import static io.microconfig.osdf.istio.VirtualService.virtualService;
 
 @RequiredArgsConstructor
 public class MirrorRuleSetter implements RoutingRuleSetter {
-    private final OpenShiftCLI oc;
-
-    public static MirrorRuleSetter mirrorRule(OpenShiftCLI oc) {
-        return new MirrorRuleSetter(oc);
+    public static MirrorRuleSetter mirrorRule() {
+        return new MirrorRuleSetter();
     }
 
     @Override
-    public boolean set(DeploymentComponent component, String rule) {
+    public boolean set(IstioService service, IstioServiceDeployment deployment, String rule) {
         if (!rule.equals("mirror")) return false;
-        virtualService(oc, component)
-                .setMirror()
+        service.virtualService()
+                .setMirror(deployment.encodedVersion())
                 .upload();
         return true;
     }
