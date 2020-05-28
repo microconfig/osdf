@@ -10,6 +10,12 @@ helloworld-istio:
   components:
     - helloworld-springboot-istio
 
-chaos:
+#chaos:
+#  components:
+#    - chaos
+
+demo:
   components:
+    - demo-backend
+    - demo-frontend
     - chaos

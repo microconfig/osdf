@@ -1,7 +1,7 @@
 package io.microconfig.osdf.chaos;
 
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.OSDFException;
-import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.AllArgsConstructor;
 
@@ -42,10 +42,10 @@ public class ChaosStep {
         );
     }
 
-    public void runStep(OSDFPaths paths, OCExecutor ocExecutor) {
+    public void runStep(OSDFPaths paths, ClusterCLI cli) {
         announce("Step " + number + " started.");
         long start = nanoTime();
-        ChaosRunnersLoader loader = ChaosRunnersLoader.init(paths, ocExecutor);
+        ChaosRunnersLoader loader = ChaosRunnersLoader.init(paths, cli);
         chaosSet.faults().forEach(type -> loader.byType(type).run(components, chaosSet, severity, duration));
 
         //wait if finished earlier

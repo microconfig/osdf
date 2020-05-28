@@ -42,7 +42,7 @@ public class MainApiCaller implements ApiCaller {
                 .addImpl(ManagementApi.class, managementApi(paths, cli))
                 .addImpl(InfoApi.class, infoApi(paths, cli))
                 .addImpl(SystemApi.class, systemApi(paths))
-                .addImpl(ChaosApi.class, chaosApi(paths, oc))
+                .addImpl(ChaosApi.class, chaosApi(paths, cli))
                 .build()
                 .call(args);
     }

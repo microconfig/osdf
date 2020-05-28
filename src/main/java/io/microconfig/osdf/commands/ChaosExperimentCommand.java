@@ -1,20 +1,20 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.paths.OSDFPaths;
 
 import static io.microconfig.osdf.chaos.ChaosTest.chaosTest;
 
 public class ChaosExperimentCommand {
     private final OSDFPaths paths;
-    private final OCExecutor ocExecutor;
+    private final ClusterCLI cli;
 
-    public ChaosExperimentCommand(OSDFPaths paths, OCExecutor ocExecutor) {
+    public ChaosExperimentCommand(OSDFPaths paths, ClusterCLI cli) {
         this.paths = paths;
-        this.ocExecutor = ocExecutor;
+        this.cli = cli;
     }
 
     public void run() {
-        chaosTest(paths, ocExecutor).run();
+        chaosTest(paths, cli).run();
     }
 }

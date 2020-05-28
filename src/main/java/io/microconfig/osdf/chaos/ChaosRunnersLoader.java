@@ -1,8 +1,8 @@
 package io.microconfig.osdf.chaos;
 
 import io.microconfig.osdf.chaos.chaosRunners.ChaosRunner;
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.OSDFException;
-import io.microconfig.osdf.openshift.OCExecutor;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.AllArgsConstructor;
 
@@ -20,11 +20,11 @@ public class ChaosRunnersLoader {
 
     final private Map<String, ChaosRunner> implementations;
 
-    static public ChaosRunnersLoader init(OSDFPaths paths, OCExecutor ocExecutor) {
+    static public ChaosRunnersLoader init(OSDFPaths paths, ClusterCLI cli) {
         Map<String, ChaosRunner> implementations = new HashMap<>();
-        implementations.put("io", ioChaosRunner(paths, ocExecutor));
-        implementations.put("network", networkChaosRunner(paths, ocExecutor));
-        implementations.put("pods", podChaosRunner(paths, ocExecutor));
+        implementations.put("io", ioChaosRunner(paths, cli));
+        implementations.put("network", networkChaosRunner(paths, cli));
+        implementations.put("pods", podChaosRunner(paths, cli));
         return new ChaosRunnersLoader(implementations);
     }
 

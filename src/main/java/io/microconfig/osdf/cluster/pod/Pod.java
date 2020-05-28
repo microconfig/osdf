@@ -51,7 +51,7 @@ public class Pod implements Comparable<Pod> {
     }
 
     public void forceDelete() {
-        oc.execute("oc delete pod " + name + " --grace-period=0 --force")
+        cli.execute("oc delete pod " + name + " --grace-period=0 --force")
                 .throwExceptionIfError();
     }
 
@@ -80,7 +80,7 @@ public class Pod implements Comparable<Pod> {
     }
 
     public boolean checkStressContainer() {
-        return oc.execute("oc get pod " + name + " -o jsonpath=\"{.spec.containers[*].name}\"")
+        return cli.execute("oc get pod " + name + " -o jsonpath=\"{.spec.containers[*].name}\"")
                 .throwExceptionIfError()
                 .getOutputLines()
                 .stream()

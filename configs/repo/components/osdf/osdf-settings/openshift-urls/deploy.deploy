@@ -1,4 +1,5 @@
-cluster.url.base: unknown
-cluster.url.api: unknown
-project: unknown
-registry.project.url: unknown
+cluster.url.base: unknown1
+cluster.url.api: https://api.us-west-1.starter.openshift-online.com:6443
+project: default-project
+registry.project.url: nvprotas
+stress.registry.project.url: nvprotas

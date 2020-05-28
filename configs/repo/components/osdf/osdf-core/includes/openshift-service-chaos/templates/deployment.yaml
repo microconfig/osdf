@@ -1,7 +1,7 @@
 kind: DeploymentConfig
 apiVersion: apps.openshift.io/v1
 metadata:
-  name: ${this@name}.${this@version}
+  name: ${this@name}<VERSION>
   labels:
     application: ${this@name}
     projectVersion: ${this@version}
@@ -59,7 +59,7 @@ spec:
       volumes:
         - name: resources
           configMap:
-            name: ${this@name}.${this@version}
+            name: ${this@name}<VERSION>
         ${this@additional.volumes:}
       restartPolicy: Always
   triggers:

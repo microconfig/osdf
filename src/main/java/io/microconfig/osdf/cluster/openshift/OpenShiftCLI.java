@@ -30,6 +30,11 @@ public class OpenShiftCLI implements ClusterCLI {
     }
 
     @Override
+    public void executeAndForget(String command) {
+        cli.executeAndForget("oc " + stripCLIName(command));
+    }
+
+    @Override
     public void login() {
         openShiftAuthentication(paths, this).connect();
     }

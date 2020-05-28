@@ -1,6 +1,6 @@
 package io.microconfig.osdf.chaos;
 
-import io.microconfig.osdf.openshift.OCExecutor;
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.AllArgsConstructor;
 
@@ -8,19 +8,19 @@ import lombok.AllArgsConstructor;
 public class ChaosTest {
     final private ChaosTestPlan testPlan;
     final private OSDFPaths paths;
-    final private OCExecutor ocExecutor;
+    final private ClusterCLI cli;
 
-    public static ChaosTest chaosTest(OSDFPaths paths, OCExecutor ocExecutor) {
+    public static ChaosTest chaosTest(OSDFPaths paths, ClusterCLI cli) {
         return new ChaosTest(
                 ChaosTestPlan.fromYaml(paths.chaosPlanPath()),
                 paths,
-                ocExecutor
+                cli
         );
     }
 
     public void run() {
         checkSteps();
-        testPlan.steps().forEach(chaosStep -> chaosStep.runStep(paths, ocExecutor));
+        testPlan.steps().forEach(chaosStep -> chaosStep.runStep(paths, cli));
     }
 
     private void checkSteps() {
