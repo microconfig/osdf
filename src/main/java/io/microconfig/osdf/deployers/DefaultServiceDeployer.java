@@ -1,15 +1,14 @@
 package io.microconfig.osdf.deployers;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.service.ClusterService;
 import io.microconfig.osdf.service.deployment.ServiceDeployment;
 import io.microconfig.osdf.service.files.ServiceFiles;
-import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.cluster.resource.tools.ResourceCleaner.resourceCleaner;
 import static io.microconfig.osdf.service.deployment.checkers.image.ImageVersionChecker.imageVersionChecker;
-import static io.microconfig.osdf.service.deployment.checkers.TotalHashChecker.totalHashChecker;
 import static io.microconfig.osdf.service.deployment.tools.DeploymentRestarter.deploymentRestarter;
 import static io.microconfig.utils.Logger.info;
 
@@ -25,7 +24,6 @@ public class DefaultServiceDeployer implements ServiceDeployer {
     @Override
     public void deploy(ClusterService service, ServiceDeployment deployment, ServiceFiles files) {
         info("Deploying " + service.name());
-        if (totalHashChecker(paths, cli).check(deployment, files)) return;
 
         resourceCleaner(cli).cleanOld(files.resources(), service.resources());
         boolean configMapUpdated = deployment.createConfigMap(files.configs());

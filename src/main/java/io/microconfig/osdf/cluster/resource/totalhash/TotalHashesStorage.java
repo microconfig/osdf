@@ -24,12 +24,12 @@ public class TotalHashesStorage {
         return new TotalHashesStorage(cli);
     }
 
-    public boolean contains(String component, String hash) {
+    public synchronized boolean contains(String component, String hash) {
         String actualHash = table.get(component);
         return hash.equals(actualHash);
     }
 
-    public void setHash(String component, String hash) {
+    public synchronized void setHash(String component, String hash) {
         table.put(component, hash);
     }
 

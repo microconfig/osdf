@@ -2,12 +2,12 @@ package io.microconfig.osdf.commands;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.deployers.ServiceDeployer;
-import io.microconfig.osdf.jobrunners.DefaultJobRunner;
-import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
-import io.microconfig.osdf.service.job.pack.ServiceJobPack;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.exceptions.StatusCodeException;
+import io.microconfig.osdf.jobrunners.DefaultJobRunner;
 import io.microconfig.osdf.paths.OSDFPaths;
+import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
+import io.microconfig.osdf.service.job.pack.ServiceJobPack;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -17,9 +17,11 @@ import static io.microconfig.osdf.deployers.RestrictedDeployer.restrictedDeploye
 import static io.microconfig.osdf.jobrunners.DefaultJobRunner.defaultJobRunner;
 import static io.microconfig.osdf.service.deployment.checkers.DeployStatusChecker.deployStatusChecker;
 import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
+import static io.microconfig.osdf.service.deployment.tools.DeployRequiredFilter.deployRequiredFilter;
 import static io.microconfig.osdf.service.job.pack.loader.DefaultServiceJobPackLoader.defaultServiceJobPackLoader;
 import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.error;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.IntStream.range;
 
 @RequiredArgsConstructor
@@ -38,11 +40,26 @@ public class DeployCommand {
         List<ServiceJobPack> jobPacks = defaultServiceJobPackLoader(paths, serviceNames, cli).loadPacks();
         callRunner(jobPacks);
 
-        List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, serviceNames, cli).loadPacks();
-        callDeployer(deployPacks, deployer);
+        List<ServiceDeployPack> deployPacks = deployRequiredFilter(paths, cli)
+                .filter(defaultServiceDeployPacksLoader(paths, serviceNames, cli).loadPacks());
+        printDeployPacks(deployPacks);
+        if (deployPacks.isEmpty()) return;
 
+        callDeployer(deployPacks, deployer);
         if (wait) {
             printDeploymentStatus(deployPacks);
+        }
+    }
+
+    private void printDeployPacks(List<ServiceDeployPack> deployPacks) {
+        if (deployPacks.isEmpty())  {
+            announce("No services to deploy");
+        } else {
+            announce("Deploying: " +
+                    deployPacks
+                            .stream()
+                            .map(deployPack -> deployPack.service().name())
+                            .collect(joining(" ")));
         }
     }
 
