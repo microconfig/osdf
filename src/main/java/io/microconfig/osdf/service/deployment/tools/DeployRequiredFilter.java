@@ -29,10 +29,11 @@ public class DeployRequiredFilter {
 
     public List<ServiceDeployPack> filter(List<ServiceDeployPack> services) {
         TotalHashesStorage totalHashesStorage = totalHashesStorage(cli);
-
-        return services.parallelStream()
+        List<ServiceDeployPack> requiredPacks = services.parallelStream()
                 .filter(service -> !isUpToDate(service, totalHashesStorage))
                 .collect(toUnmodifiableList());
+        totalHashesStorage.save();
+        return requiredPacks;
     }
 
     public boolean isUpToDate(ServiceDeployPack deployPack, TotalHashesStorage totalHashesStorage) {
@@ -52,7 +53,6 @@ public class DeployRequiredFilter {
         if (totalHashesStorage.contains(deployment.name(), totalHash)) return true;
 
         totalHashesStorage.setHash(deployment.name(), totalHash);
-        totalHashesStorage.save();
         return false;
     }
 }
