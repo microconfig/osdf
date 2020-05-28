@@ -1,8 +1,8 @@
 package io.microconfig.osdf.service.deployment.checkers.healthcheck;
 
-import io.microconfig.osdf.service.files.ServiceFiles;
-import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.cluster.pod.Pod;
+import io.microconfig.osdf.exceptions.OSDFException;
+import io.microconfig.osdf.service.files.ServiceFiles;
 import io.microconfig.osdf.utils.PropertiesUtils;
 import lombok.RequiredArgsConstructor;
 
@@ -14,6 +14,7 @@ import java.util.Properties;
 import static io.microconfig.osdf.utils.ThreadUtils.sleepSec;
 import static io.microconfig.osdf.utils.YamlUtils.getInt;
 import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
+import static io.microconfig.utils.Logger.warn;
 import static java.lang.Runtime.getRuntime;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Optional.ofNullable;
@@ -40,10 +41,16 @@ public class LogHealthChecker implements HealthChecker {
                 long startTime = currentTimeMillis();
                 StringBuilder logContent = new StringBuilder();
                 boolean gotLogs = false;
+                int numLines = 0;
                 while (true) {
                     if (reader.ready()) {
                         gotLogs = true;
                         String str = reader.readLine();
+                        numLines++;
+                        if (numLines > 500) {
+                            warn("Line limit exceeded for " + pod.getName() + " in log healthcheck.");
+                            return true;
+                        }
                         logContent.append(str);
                         if (logContent.indexOf(marker) >= 0) return true;
                         if (logContent.length() > marker.length())
