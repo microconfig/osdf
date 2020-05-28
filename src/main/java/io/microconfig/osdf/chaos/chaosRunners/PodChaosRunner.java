@@ -29,46 +29,25 @@ public class PodChaosRunner implements ChaosRunner {
     @Override
     public void run(List<String> components, ChaosSet chaosSet, Integer severity, Integer duration) {
         ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(() -> kill2(components, severity), 0, chaosSet.getKillPodTimeout(), TimeUnit.SECONDS);
+        service.scheduleAtFixedRate(() -> kill(components, severity), 0, chaosSet.getKillPodTimeout(), TimeUnit.SECONDS);
         sleepSec(duration);
         service.shutdownNow();
     }
 
-    private void kill2(List<String> components, Integer severity) {
+    private void kill(List<String> components, Integer severity) {
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
         deployPacks.forEach(
-                pack -> { //todo test me
-                    pack.deployment().pods()
-                            .stream()
-                            .filter(pod -> r.nextInt(100) <= severity)
-                            .forEach(
-                                    pod -> {
-                                        pod.forceDelete();
-                                        announce(pod.getName() + " killed.");
-                                    }
-                            );
-                }
+                pack -> pack.deployment().pods()
+                        .stream()
+                        .filter(pod -> r.nextInt(100) <= severity)
+                        .forEach(
+                                pod -> {
+                                    pod.forceDelete();
+                                    announce(pod.getName() + " killed.");
+                                }
+                        )
         );
     }
-
-    //todo
-//    void kill(List<String> components, Integer severity) {
-//        try (OpenShiftProject ignored = create(paths, oc).connect()) {
-//            componentsLoader(paths, components, oc)
-//                    .load(DeploymentComponent.class)
-//                    .forEach(component -> killPods(component, severity));
-//        }
-//    }
-//
-//    private void killPods(DeploymentComponent component, int chaosChance) {
-//        component.pods()
-//                .stream()
-//                .filter(pod -> r.nextInt(100) <= chaosChance)
-//                .forEach(pod -> {
-//                    pod.forceDelete();
-//                    announce(pod.getName() + " killed.");
-//                });
-//    }
 
     @Override
     public void stop(List<String> components) {

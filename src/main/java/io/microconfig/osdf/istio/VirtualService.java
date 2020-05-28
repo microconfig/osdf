@@ -2,6 +2,7 @@ package io.microconfig.osdf.istio;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.OSDFException;
+import io.microconfig.osdf.istio.faults.Fault;
 import io.microconfig.osdf.istio.rules.HeaderRule;
 import io.microconfig.osdf.istio.rules.MainRule;
 import lombok.AllArgsConstructor;
@@ -91,6 +92,15 @@ public class VirtualService {
 
         setRules(ruleSet.toYaml());
         upload();
+    }
+
+    public VirtualService setFault(Fault fault) {
+        if (virtualService == null) throw new RuntimeException("Virtual Service not found");
+        RuleSet ruleSet = RuleSet.from(getRules());
+        MainRule rule = ruleSet.getMainRule();
+        rule.setFault(fault);
+        setRules(ruleSet.toYaml());
+        return this;
     }
 
     public void upload() {

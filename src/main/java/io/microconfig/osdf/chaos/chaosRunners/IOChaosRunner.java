@@ -23,16 +23,6 @@ public class IOChaosRunner implements ChaosRunner {
         return new IOChaosRunner(paths, oc);
     }
 
-
-//    public void run(List<String> components, ChaosSet chaosSet, Integer severity, Integer duration) {
-//        try (OpenShiftProject ignored = create(paths, oc).connect()) {
-//            componentsLoader(paths, components, oc)
-//                    .load(DeploymentComponent.class)
-//                    .forEach(component -> startStress(component, severity, chaosSet.getIoStressTimeout()));
-//        }
-//    }
-
-
     @Override
     public void run(List<String> components, ChaosSet chaosSet, Integer severity, Integer duration) {
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
@@ -53,51 +43,18 @@ public class IOChaosRunner implements ChaosRunner {
                 );
     }
 
-
     @Override
     public void stop(List<String> components) {
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
-        deployPacks.forEach(this::stopStress2);
+        deployPacks.forEach(this::stopStress);
     }
 
-    private void stopStress2(ServiceDeployPack pack) {
+    private void stopStress(ServiceDeployPack pack) {
         pack.deployment().pods()
                 .stream()
                 .filter(Pod::checkStressContainer)
                 .forEach(this::killSidecar);
     }
-//todo
-
-//    @Override
-//    public void stop(List<String> components) {
-//        try (OpenShiftProject ignored = create(paths, oc).connect()) {
-//
-//            componentsLoader(paths, components, oc)
-//                    .load(DeploymentComponent.class)
-//                    .forEach(this::stopStress);
-//        }
-//    }
-
-//    private void startStress(DeploymentComponent component, int chaosChance, int timeout) {
-//        component.pods()
-//                .stream()
-//                .filter(Pod::checkStressContainer)
-//                .filter(pod -> r.nextInt(100) <= chaosChance)
-//                .forEach(pod -> {
-//                    oc.executeAndForget("oc exec " + pod.getName() + " -c stress-sidecar -- /bin/sh -c \"cd /fs; stress-ng --all 0 -t "
-//                            + timeout + "s --class io\"");
-//                    announce("IO chaos started in " + pod.getName());
-//                });
-//    }
-
-
-//
-//    private void stopStress(DeploymentComponent component) {
-//        component.pods()
-//                .stream()
-//                .filter(Pod::checkStressContainer)
-//                .forEach(this::killSidecar);
-//    }
 
     private void killSidecar(Pod pod) {
         cli.execute("exec " + pod.getName() + " -c stress-sidecar -- /bin/sh -c \"kill 1\"");
