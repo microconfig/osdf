@@ -40,6 +40,6 @@ public class NetworkChaosRunner implements ChaosRunner {
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
         deployPacks.stream()
                 .filter(pack -> isIstioService(pack.service()))
-                .forEach(pack -> deployer.deploy(pack.service(), pack.deployment(), pack.files()));
+                .forEach(pack -> deployer.deploy(pack.service()));
     }
 }

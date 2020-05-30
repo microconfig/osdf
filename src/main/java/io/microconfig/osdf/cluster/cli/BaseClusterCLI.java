@@ -24,7 +24,6 @@ public class BaseClusterCLI implements ClusterCLI {
         throwIfClusterError(output.getOutput());
         return output;
     }
-
     @Override
     public void login() {
         throw new OSDFException("Specify cluster context");

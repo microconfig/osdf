@@ -51,7 +51,7 @@ public class Pod implements Comparable<Pod> {
     }
 
     public void forceDelete() {
-        cli.execute("oc delete pod " + name + " --grace-period=0 --force")
+        cli.execute("delete pod " + name + " --grace-period=0 --force")
                 .throwExceptionIfError();
     }
 

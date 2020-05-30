@@ -26,10 +26,10 @@ public class IOChaosRunner implements ChaosRunner {
     @Override
     public void run(List<String> components, ChaosSet chaosSet, Integer severity, Integer duration) {
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
-        deployPacks.forEach(pack -> startStress2(pack, severity, chaosSet.getIoStressTimeout()));
+        deployPacks.forEach(pack -> startStress(pack, severity, chaosSet.getIoStressTimeout()));
     }
 
-    private void startStress2(ServiceDeployPack pack, int chaosChance, int timeout) {
+    private void startStress(ServiceDeployPack pack, int chaosChance, int timeout) {
         pack.deployment().pods()
                 .stream()
                 .filter(Pod::checkStressContainer)
