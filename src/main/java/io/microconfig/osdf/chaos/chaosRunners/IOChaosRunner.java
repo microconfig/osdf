@@ -36,8 +36,8 @@ public class IOChaosRunner implements ChaosRunner {
                 .filter(pod -> r.nextInt(100) <= chaosChance)
                 .forEach(
                         pod -> {
-                            cli.executeAndForget("exec " + pod.getName() + " -c stress-sidecar -- /bin/sh -c \"cd /fs; stress-ng --all 0 -t "
-                                    + timeout + "s --class io\"");
+                            cli.execute("exec " + pod.getName() + " -c stress-sidecar -- /bin/sh -c \"cd /fs; stress-ng --all 0 -t "
+                                    + timeout + "s --class io\" &");
                             announce("IO chaos started in " + pod.getName());
                         }
                 );

@@ -4,12 +4,9 @@ import io.microconfig.osdf.commandline.CommandLineOutput;
 import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 
-import java.io.IOException;
-
 import static io.microconfig.osdf.commandline.CommandLineOutput.outputOf;
 import static io.microconfig.utils.Logger.info;
 import static java.lang.System.getenv;
-import static java.lang.Thread.currentThread;
 
 @RequiredArgsConstructor
 public class BaseClusterCLI implements ClusterCLI {
@@ -26,17 +23,6 @@ public class BaseClusterCLI implements ClusterCLI {
         log(output.getOutput());
         throwIfClusterError(output.getOutput());
         return output;
-    }
-
-    @Override
-    public void executeAndForget(String command) {
-        try {
-            log(command);
-            new ProcessBuilder("/bin/sh", "-c", command).start();
-        } catch (IOException e) {
-            currentThread().interrupt();
-            throw new RuntimeException("Couldn't execute command: " + command, e);
-        }
     }
 
     @Override

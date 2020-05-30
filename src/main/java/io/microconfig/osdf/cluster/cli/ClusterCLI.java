@@ -5,7 +5,5 @@ import io.microconfig.osdf.commandline.CommandLineOutput;
 public interface ClusterCLI {
     CommandLineOutput execute(String command);
 
-    void executeAndForget(String command);
-
     void login();
 }
