@@ -31,7 +31,7 @@ public class PropertyGetter {
                     microconfig.resolver()
             );
         } catch (RuntimeException e) {
-            throw new MicroConfigException();
+            throw new MicroConfigException(e);
         }
     }
 
