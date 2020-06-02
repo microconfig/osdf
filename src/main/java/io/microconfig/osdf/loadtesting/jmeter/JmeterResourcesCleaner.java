@@ -1,7 +1,6 @@
 package io.microconfig.osdf.loadtesting.jmeter;
 
-import io.microconfig.osdf.components.JmeterComponent;
-import io.microconfig.osdf.components.loader.JmeterComponentsLoader;
+import io.microconfig.osdf.loadtesting.jmeter.loader.JmeterComponentsLoader;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;

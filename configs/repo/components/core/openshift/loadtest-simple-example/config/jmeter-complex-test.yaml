@@ -38,6 +38,6 @@ requests:
               	"number": 1234,
               	"nextData": "nextData"
               }'
-numberOfThreads: 30
+numberOfThreads: 10
 rampUpPeriod: 1
 duration: 20

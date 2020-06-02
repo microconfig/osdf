@@ -9,12 +9,16 @@ import org.apache.jmeter.protocol.http.control.HeaderManager;
 import org.apache.jmeter.protocol.http.control.gui.HttpTestSampleGui;
 import org.apache.jmeter.protocol.http.gui.HeaderPanel;
 import org.apache.jmeter.protocol.http.sampler.HTTPSamplerProxy;
+import org.apache.jmeter.reporters.ResultCollector;
+import org.apache.jmeter.reporters.Summariser;
 import org.apache.jmeter.save.SaveService;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.testelement.TestPlan;
+import org.apache.jmeter.testelement.property.StringProperty;
 import org.apache.jmeter.threads.ThreadGroup;
 import org.apache.jmeter.threads.gui.ThreadGroupGui;
 import org.apache.jmeter.util.JMeterUtils;
+import org.apache.jmeter.visualizers.SummaryReport;
 import org.apache.jorphan.collections.HashTree;
 import org.apache.jorphan.collections.ListedHashTree;
 
@@ -28,27 +32,37 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static io.microconfig.osdf.utils.YamlUtils.*;
+import static java.nio.file.Files.exists;
 import static java.nio.file.Path.of;
 
 @RequiredArgsConstructor
 public class JmeterTestBuilder {
-    private final Path componentsPath;
+    private final Path jmeterComponentsPath;
+    private final String configName;
     private final Map<String, String> componentsRoutes;
     private final Map<String, HeaderManager> headerManagerMap;
 
-    public static JmeterTestBuilder jmeterConfigBuilder(Path componentsPath, Map<String, String> componentsRoutes) {
-        return new JmeterTestBuilder(componentsPath, componentsRoutes, new HashMap<>());
+    public static JmeterTestBuilder jmeterConfigBuilder(Path jmeterComponentsPath, String configName,
+                                                        Map<String, String> componentsRoutes) {
+        return new JmeterTestBuilder(jmeterComponentsPath, configName, componentsRoutes, new HashMap<>());
     }
 
     public Path build() {
-        Path testTemplatePath = of(componentsPath + "/config/jmetertest.jmx");
-        Path userTestConfigPath = Path.of(componentsPath + "/config/jmeter-test-config.yaml");
+        Path testTemplatePath = of(jmeterComponentsPath + "/config/jmetertest.jmx");
+        Path userTestConfigPath = getUserTestConfigPath();
         Map<String, Object> userConfig = loadFromPath(userTestConfigPath);
         prepareTestPlan(userConfig, testTemplatePath);
         return testTemplatePath;
     }
 
+    private Path getUserTestConfigPath() {
+        Path userTestConfigPath = of(jmeterComponentsPath + "/config/" + configName);
+        if (!exists(userTestConfigPath)) throw new RuntimeException("The config test with name: " + configName + " not exists");
+        return userTestConfigPath;
+    }
+
     private void prepareTestPlan(Map<String, Object> userConfig, Path testTemplatePath) {
+        initJmeterEngineConfigs();
         List<Map<String, Object>> requests = getListOfMaps(userConfig, "requests");
         List<HTTPSamplerProxy> httpSamplers = prepareRequests(requests);
         LoopController loopController = prepareLoopController();
@@ -67,12 +81,36 @@ public class JmeterTestBuilder {
         }
         threadGroupHashTree.add(httpSamplerHashTree);
 
+        ResultCollector logger = prepareResultCollector();
+        threadGroupHashTree.add(logger);
+
         try {
-            JMeterUtils.setJMeterHome(Objects.requireNonNull(getClass().getClassLoader().getResource("jmeter")).getPath());
             SaveService.saveTree(testPlanTree, new FileOutputStream(testTemplatePath.toString()));
         } catch (IOException e) {
             throw new RuntimeException("Error in saving jmetertest.jmx", e);
         }
+    }
+
+    private void initJmeterEngineConfigs() {
+        String jmeterResourcesPath = Objects.requireNonNull(getClass().getClassLoader().getResource("jmeter")).getPath();
+        JMeterUtils.setJMeterHome(jmeterResourcesPath);
+        JMeterUtils.loadJMeterProperties(jmeterResourcesPath + "/bin/jmeter.properties");
+    }
+
+    private ResultCollector prepareResultCollector() {
+        Summariser summer = null;
+        String summariserName = JMeterUtils.getPropDefault("summariser.name", "summary");
+        if (summariserName.length() > 0) {
+            summer = new Summariser(summariserName);
+        }
+
+        String logFile = "/tmp/summary-result.jtl";
+        ResultCollector logger = new ResultCollector(summer);
+        logger.setFilename(logFile);
+        logger.setName("Summary Report");
+        logger.setProperty(TestElement.TEST_CLASS, ResultCollector.class.getName());
+        logger.setProperty(TestElement.GUI_CLASS, SummaryReport.class.getName());
+        return logger;
     }
 
     private HeaderManager prepareHeaderManager(String httpRequestName) {
@@ -92,6 +130,7 @@ public class JmeterTestBuilder {
         threadGroup.setScheduler(true);
         threadGroup.setDuration(Integer.parseInt(checkForNullAndReturn(userConfig, "duration")));
         threadGroup.setSamplerController(loopController);
+        threadGroup.setProperty(new StringProperty(ThreadGroup.ON_SAMPLE_ERROR, "continue"));
         threadGroup.setProperty(TestElement.TEST_CLASS, ThreadGroup.class.getName());
         threadGroup.setProperty(TestElement.GUI_CLASS, ThreadGroupGui.class.getName());
         return threadGroup;
@@ -124,7 +163,7 @@ public class JmeterTestBuilder {
             params.forEach((key, value) -> httpSampler.addArgument(key, value, "="));
         }
         String method = checkForNullAndReturn(requestConfig, "method");
-        if (method.equals("POST")) {
+        if (!method.equals("GET")) {
             String body = checkForNullAndReturn(requestConfig, "body");
             httpSampler.setPostBodyRaw(true);
             httpSampler.addNonEncodedArgument("Body Data", body, "=");

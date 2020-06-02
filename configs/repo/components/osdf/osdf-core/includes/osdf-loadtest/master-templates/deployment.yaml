@@ -6,7 +6,6 @@ metadata:
     application: <CONFIG_NAME>
     projectVersion: ${this@version}
     configVersion: ${this@config.version}
-    configHash: <CONFIG_HASH>
 spec:
   selector:
     application: <CONFIG_NAME>
@@ -18,16 +17,23 @@ spec:
         application: <CONFIG_NAME>
         projectVersion: ${this@version}
         configVersion: ${this@config.version}
-        configHash: <CONFIG_HASH>
       annotations:
         sidecar.istio.io/inject: '${this@istioInject}'
     spec:
       containers:
-        - image: ${this@image-slave.url}
+        - image: ${this@image-master.url}
+          volumeMounts:
+            - name: jmeter-props
+              mountPath: /app/resources
+          env:
+            - name: SLAVE_HOSTS
+              value: <SLAVE_HOSTS>
+            - name: PATH_TO_JMETERPLAN
+              value: /app/resources/testplan.jmx
           imagePullPolicy: Always
           name: <CONFIG_NAME>
           ports:
-            - containerPort: ${this@slave.port}
+            - containerPort: ${this@master.port}
               protocol: TCP
           resources:
             requests:
@@ -36,9 +42,13 @@ spec:
             limits:
               cpu: ${this@limits.cpu}
               memory: ${this@limits.memory}
+      volumes:
+        - name: jmeter-props
+          configMap:
+            name: jmeter-test-template
       restartPolicy: Always
   triggers:
     - type: ConfigChange
-  replicas: ${this@replicas.count}
+  replicas: 1
   strategy:
-    type: Recreate
+    type: Rolling

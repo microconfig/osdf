@@ -1,6 +1,6 @@
 package io.microconfig.osdf.loadtesting.jmeter;
 
-import io.microconfig.osdf.openshift.Pod;
+import io.microconfig.osdf.cluster.pod.Pod;
 import lombok.RequiredArgsConstructor;
 
 import java.io.BufferedReader;
