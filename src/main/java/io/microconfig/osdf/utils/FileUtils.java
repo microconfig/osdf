@@ -54,15 +54,7 @@ public class FileUtils {
         try {
             org.apache.commons.io.FileUtils.copyFile(from.toFile(), to.toFile());
         } catch (IOException e) {
-            throw new RuntimeException("Couldn't copy file " + from.getFileName() + ", to " + to.getFileName());
-        }
-    }
-
-    public static void copyDirectory(Path from, Path to) {
-        try {
-            org.apache.commons.io.FileUtils.copyDirectory(from.toFile(), to.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException("Couldn't copy directory " + from.getFileName() + ", to " + to.getFileName());
+            throw new RuntimeException("Couldn't copy file " + from + ", to " + to);
         }
     }
 
@@ -73,6 +65,7 @@ public class FileUtils {
             throw new RuntimeException("Couldn't delete directory " + path.getFileName());
         }
     }
+
     public static void deleteFile(Path path) {
         try {
             Files.deleteIfExists(path);
@@ -80,6 +73,7 @@ public class FileUtils {
             throw new RuntimeException("Couldn't delete file " + path.getFileName());
         }
     }
+
 
     public static void deleteIfEmpty(Path dir) {
         try (Stream<Path> list = list(dir)) {

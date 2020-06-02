@@ -48,14 +48,14 @@ public class JmeterComponentConfig {
     protected void setConfigName(Path configFilePath, String componentName) {
         String newContent = readAll(configFilePath).replace("<CONFIG_NAME>", componentName);
         Path resultFilePath = Path.of(jmeterComponentsPath + "/" + name +
-                "/openshift/" + configFilePath.getFileName().toString());
+                "/resources/" + configFilePath.getFileName().toString());
         writeStringToFile(resultFilePath, newContent);
     }
 
     private void prepareConfigPathsForComponent() {
         Path componentPath = Path.of(jmeterComponentsPath + "/" + name);
         createDirectoryIfNotExists(componentPath);
-        createDirectoryIfNotExists(Path.of(componentPath + "/openshift"));
+        createDirectoryIfNotExists(Path.of(componentPath + "/resources"));
 
         //Copy deploy.yaml and process.properties to master and slave path
         copyConfigFile(componentPath, "deploy.yaml");

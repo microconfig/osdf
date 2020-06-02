@@ -81,13 +81,6 @@ public class OpenShiftResource {
         info("Uploaded: " + toString());
     }
 
-    public boolean isExists() {
-        List<String> output = oc.execute("oc get " + kind + " " + name)
-                .getOutputLines();
-        if (output.get(0).toLowerCase().contains("no resources found")) return false;
-        return true;
-    }
-
     private String getRemoteHash() {
         List<String> output = oc.execute("oc get " + kind + " " + name + " -o custom-columns=\"hash:.metadata.labels.configHash\"")
                 .getOutputLines();

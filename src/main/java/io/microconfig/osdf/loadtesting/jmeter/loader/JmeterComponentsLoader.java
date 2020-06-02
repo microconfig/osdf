@@ -1,8 +1,8 @@
-package io.microconfig.osdf.components.loader;
+package io.microconfig.osdf.loadtesting.jmeter.loader;
 
-import io.microconfig.osdf.components.JmeterComponent;
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.microconfig.osdf.loadtesting.jmeter.JmeterComponent;
 import io.microconfig.osdf.loadtesting.jmeter.configs.JmeterConfigProcessor;
-import io.microconfig.osdf.openshift.OpenShiftCLI;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static io.microconfig.osdf.components.JmeterComponent.jmeterComponent;
+import static io.microconfig.osdf.loadtesting.jmeter.JmeterComponent.jmeterComponent;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Files.list;
 import static java.nio.file.Path.of;
@@ -26,14 +26,14 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 @RequiredArgsConstructor
 public class JmeterComponentsLoader {
 
+    private final ClusterCLI cli;
     private final JmeterConfigProcessor jmeterConfigProcessor;
-    private final OpenShiftCLI oc;
 
-    public static JmeterComponentsLoader componentsLoader(JmeterConfigProcessor jmeterConfigProcessor, OpenShiftCLI oc) {
-        return new JmeterComponentsLoader(jmeterConfigProcessor, oc);
+    public static JmeterComponentsLoader jmeterComponentsLoader(ClusterCLI cli, JmeterConfigProcessor jmeterConfigProcessor) {
+        return new JmeterComponentsLoader(cli, jmeterConfigProcessor);
     }
 
-    public  List<JmeterComponent> load() {
+    public List<JmeterComponent> load() {
         return loadComponents(allComponents());
     }
 
@@ -73,11 +73,11 @@ public class JmeterComponentsLoader {
 
     private JmeterComponent nameToComponent(String componentName) {
         Path componentPath = of(jmeterConfigProcessor.getJmeterComponentsPath() + "/" + componentName);
-        return jmeterComponent(componentName, componentPath, oc);
+        return jmeterComponent(componentName, componentPath, cli);
     }
 
     private boolean hasOpenShift(String component) {
-        return exists(get(jmeterConfigProcessor.getJmeterComponentsPath().toString(), component, "openshift"));
+        return exists(get(jmeterConfigProcessor.getJmeterComponentsPath().toString(), component, "resources"));
     }
 
     private List<Path> getComponentPaths(boolean isSlaveNode) {
