@@ -1,5 +1,7 @@
 package io.microconfig.osdf.utils;
 
+import io.microconfig.osdf.exceptions.PossibleBugException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -14,7 +16,7 @@ public class PropertiesUtils {
             properties.load(inputStream);
             return properties;
         } catch (IOException e) {
-            throw new RuntimeException("Couldn't open file at " + path, e);
+            throw new PossibleBugException("Couldn't open file at " + path, e);
         }
     }
 }

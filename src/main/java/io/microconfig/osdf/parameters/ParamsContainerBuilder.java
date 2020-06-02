@@ -1,5 +1,6 @@
 package io.microconfig.osdf.parameters;
 
+import io.microconfig.osdf.exceptions.PossibleBugException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.cli.*;
 
@@ -50,7 +51,7 @@ public class ParamsContainerBuilder {
         try {
             return clazz.getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException("Couldn't find default constructor for parameter " + clazz.getSimpleName(), e);
+            throw new PossibleBugException("Couldn't find default constructor for parameter " + clazz.getSimpleName(), e);
         }
     }
 

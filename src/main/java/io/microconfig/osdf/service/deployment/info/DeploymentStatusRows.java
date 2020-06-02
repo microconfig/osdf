@@ -79,7 +79,7 @@ public class DeploymentStatusRows implements RowColumnsWithStatus {
         range(0, pods.size()).forEach(i -> addPodRow(pods.get(i), podsHealth.get(i)));
     }
 
-    private void addPodRow(Pod pod, Boolean health) {
+    private void addPodRow(Pod pod, boolean health) {
         printer.addRow(" - " + pod.getName(), "", health ? green("OK") : red("BAD"), "");
     }
 

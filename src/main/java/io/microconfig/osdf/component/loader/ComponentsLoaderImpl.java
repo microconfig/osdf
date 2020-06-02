@@ -13,7 +13,7 @@ public class ComponentsLoaderImpl implements ComponentsLoader {
     }
 
     @Override
-    public <T> List<T> load(ComponentsFinder finder, ComponentTypeChecker<? super T> checker, ComponentMapper<? extends T> mapper) {
+    public <T> List<T> load(ComponentsFinder finder, ComponentTypeChecker checker, ComponentMapper<? extends T> mapper) {
         return finder.findAll()
                 .stream()
                 .filter(checker::check)

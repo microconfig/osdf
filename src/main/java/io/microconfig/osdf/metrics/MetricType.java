@@ -17,5 +17,5 @@ public enum MetricType {
         }
     };
 
-    abstract public boolean check(double baseline, double actual, double deviation);
+    public abstract boolean check(double baseline, double actual, double deviation);
 }

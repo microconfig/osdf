@@ -14,14 +14,14 @@ import static java.util.Arrays.stream;
 
 @RequiredArgsConstructor
 public class ApiCallFinder {
-    private final Class<?> apiClass;
+    private final Class<?> mainApiClass;
 
     public static ApiCallFinder finder(Class<?> apiClass) {
         return new ApiCallFinder(apiClass);
     }
 
     public ApiCall find(List<String> args) {
-        return stream(apiClass.getMethods())
+        return stream(mainApiClass.getMethods())
                 .filter(method -> hasAnnotation(method, Import.class))
                 .map(method -> resolve(method, args))
                 .filter(Objects::nonNull)

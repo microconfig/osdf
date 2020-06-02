@@ -1,6 +1,7 @@
 package io.microconfig.osdf.cluster.resource;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +20,7 @@ public class ClusterResourceImpl implements ClusterResource {
     public static ClusterResourceImpl fromOpenShiftNotation(String notation) {
         String[] split = notation.split("/");
         if (split.length != 2) {
-            throw new RuntimeException("Wrong notation format: " + notation);
+            throw new OSDFException("Wrong notation format: " + notation);
         }
         String kind = split[0].split("\\.")[0].toLowerCase();
         String name = split[1];

@@ -2,6 +2,7 @@ package io.microconfig.osdf;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.OSDFException;
+import io.microconfig.osdf.exceptions.PossibleBugException;
 import io.microconfig.osdf.exceptions.StatusCodeException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +22,22 @@ public class CLIStarter {
             new OSDFStarter(paths, cli).run(args);
         } catch (StatusCodeException e) {
             exit(e.getStatusCode());
+        } catch (PossibleBugException e) {
+            error(e.getMessage());
+            saveException(args, paths, e);
+            exit(1);
         } catch (OSDFException e) {
             error(e.getMessage());
             exit(1);
         } catch (Exception e) {
             error("Bug!");
-            bugTracker(paths.root()).save(args.length > 0 ? args[0] : "", e);
+            saveException(args, paths, e);
             e.printStackTrace();
             exit(1);
         }
+    }
+
+    private static void saveException(String[] args, OSDFPaths paths, Exception e) {
+        bugTracker(paths.root()).save(args.length > 0 ? args[0] : "", e);
     }
 }
