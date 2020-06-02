@@ -9,8 +9,7 @@ import static java.nio.file.Files.newInputStream;
 
 public class PropertiesUtils {
     public static Properties loadFromPath(Path path) {
-        try {
-            InputStream inputStream = newInputStream(path);
+        try (InputStream inputStream = newInputStream(path)) {
             Properties properties = new Properties();
             properties.load(inputStream);
             return properties;
