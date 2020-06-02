@@ -2,13 +2,12 @@ package io.microconfig.osdf.api.implementations;
 
 import io.microconfig.osdf.api.declarations.LoadTestingApi;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.commands.LoadTestCommand;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
 
-import static io.microconfig.osdf.openshift.OpenShiftCLI.oc;
+import static io.microconfig.osdf.commands.LoadTestCommand.loadTestCommand;
 
 @RequiredArgsConstructor
 public class LoadTestingApiImpl implements LoadTestingApi {
@@ -20,8 +19,12 @@ public class LoadTestingApiImpl implements LoadTestingApi {
     }
 
     @Override
-    public void loadTest(Path jmeterPlanPath, Integer numberOfSlaves) {
+    public void loadTest(Path jmeterPlanPath, String configName, Integer numberOfSlaves) {
+        if(configName == null && jmeterPlanPath == null)
+            throw new RuntimeException("Please use --config to choose name of test config or" +
+                    " --file parameter to mention path of jmeter jmx testplan");
         int number = numberOfSlaves != null ? numberOfSlaves : 3;
-        new LoadTestCommand(paths, jmeterPlanPath, number, oc(cli)).run();
+        if (configName != null) loadTestCommand(paths, cli, configName, number).run();
+        if (jmeterPlanPath != null) loadTestCommand(paths, cli, jmeterPlanPath, number).run();
     }
 }
