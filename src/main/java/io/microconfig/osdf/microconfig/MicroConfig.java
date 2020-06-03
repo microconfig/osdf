@@ -55,7 +55,7 @@ public class MicroConfig {
                     .forEachComponent(resolveTemplatesBy(searchConfigsIn(from.toFile()).withDestinationDir(to.toFile()).resolver()))
                     .save(toFileIn(to.toFile(), withConfigDiff()));
         } catch (RuntimeException e) {
-            throw new MicroConfigException();
+            throw new MicroConfigException(e);
         }
         createDirectoryIfNotExists(to);
     }

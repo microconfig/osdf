@@ -1,5 +1,6 @@
 package io.microconfig.osdf.utils;
 
+import io.microconfig.osdf.exceptions.PossibleBugException;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -32,12 +33,12 @@ public class CommandLineExecutor {
                 String errorOutput = IOUtils.toString(process.getErrorStream(), UTF_8.name());
                 if (allowErrors) return errorOutput;
                 error(errorOutput);
-                throw new RuntimeException("Non-zero exit code (" + process.exitValue() + ") of command: " + command);
+                throw new PossibleBugException("Non-zero exit code (" + process.exitValue() + ") of command: " + command);
             }
             return IOUtils.toString(process.getInputStream(), UTF_8.name());
         } catch (IOException | InterruptedException e) {
             currentThread().interrupt();
-            throw new RuntimeException("Couldn't execute command: " + command, e);
+            throw new PossibleBugException("Couldn't execute command: " + command, e);
         }
     }
 }

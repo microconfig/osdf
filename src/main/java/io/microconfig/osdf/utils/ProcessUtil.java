@@ -1,5 +1,7 @@
 package io.microconfig.osdf.utils;
 
+import io.microconfig.osdf.exceptions.PossibleBugException;
+
 import java.io.IOException;
 
 import static java.lang.Thread.currentThread;
@@ -10,7 +12,7 @@ public class ProcessUtil {
             return startProcess(processBuilder).waitFor();
         } catch (InterruptedException e) {
             currentThread().interrupt();
-            throw new RuntimeException(e);
+            throw new PossibleBugException("Process error", e);
         }
     }
 
@@ -18,7 +20,7 @@ public class ProcessUtil {
         try {
             return processBuilder.start();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new PossibleBugException("Process error", e);
         }
     }
 }

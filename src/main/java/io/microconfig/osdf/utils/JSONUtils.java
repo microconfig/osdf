@@ -2,6 +2,7 @@ package io.microconfig.osdf.utils;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.microconfig.osdf.exceptions.PossibleBugException;
 
 import java.io.IOException;
 
@@ -12,7 +13,7 @@ public class JSONUtils {
         try {
             return mapper.readValue(repr, clazz);
         } catch (IOException e) {
-            throw new RuntimeException("Couldn't create object from string representation", e);
+            throw new PossibleBugException("Couldn't create object from string representation", e);
         }
     }
 }

@@ -29,7 +29,7 @@ public class ActiveComponents {
             }
             return new ActiveComponents(toComponentNames(environment.getGroupWithName(group).getComponents()));
         } catch (RuntimeException e) {
-            throw new MicroConfigException();
+            throw new MicroConfigException(e);
         }
     }
 

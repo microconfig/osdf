@@ -1,5 +1,6 @@
 package io.microconfig.osdf.utils;
 
+import io.microconfig.osdf.exceptions.PossibleBugException;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -19,13 +20,13 @@ public class FileUtils {
         try {
             return readString(file);
         } catch (IOException e) {
-            throw new RuntimeException("Couldn't read file " + file, e);
+            throw new PossibleBugException("Couldn't read file " + file, e);
         }
     }
 
     public static String readAllFromResource(String resource) {
         InputStream input = FileUtils.class.getClassLoader().getResourceAsStream(resource);
-        if (input == null) throw new RuntimeException("Couldn't open resource " + resource);
+        if (input == null) throw new PossibleBugException("Couldn't open resource " + resource);
         try {
             return IOUtils.toString(input, UTF_8.name());
         } catch (IOException e) {
@@ -37,7 +38,7 @@ public class FileUtils {
         try {
             writeString(file, content);
         } catch (IOException e) {
-            throw new RuntimeException("Couldn't create file " + file, e);
+            throw new PossibleBugException("Couldn't create file " + file, e);
         }
     }
 
@@ -45,7 +46,7 @@ public class FileUtils {
         try {
             writeString(file, content, APPEND, CREATE);
         } catch (IOException e) {
-            throw new RuntimeException("Couldn't create file " + file, e);
+            throw new PossibleBugException("Couldn't create file " + file, e);
         }
     }
 
@@ -55,7 +56,7 @@ public class FileUtils {
                 delete(dir);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Can't delete folder " + dir);
+            throw new PossibleBugException("Can't delete folder " + dir, e);
         }
     }
 
@@ -64,7 +65,7 @@ public class FileUtils {
             try {
                 createDirectory(dir);
             } catch (IOException e) {
-                throw new RuntimeException("Can't create directory " + dir);
+                throw new PossibleBugException("Can't create directory " + dir, e);
             }
         }
     }

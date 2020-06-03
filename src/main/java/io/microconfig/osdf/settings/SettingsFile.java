@@ -1,5 +1,6 @@
 package io.microconfig.osdf.settings;
 
+import io.microconfig.osdf.exceptions.PossibleBugException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +27,7 @@ public class SettingsFile<T> {
         try {
             return clazz.getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException("Can't create " + clazz.getSimpleName(), e);
+            throw new PossibleBugException("Can't create " + clazz.getSimpleName(), e);
         }
     }
 

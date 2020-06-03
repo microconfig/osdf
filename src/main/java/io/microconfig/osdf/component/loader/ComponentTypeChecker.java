@@ -2,6 +2,6 @@ package io.microconfig.osdf.component.loader;
 
 import io.microconfig.osdf.component.ComponentDir;
 
-public interface ComponentTypeChecker<T> {
+public interface ComponentTypeChecker {
     boolean check(ComponentDir componentDir);
 }

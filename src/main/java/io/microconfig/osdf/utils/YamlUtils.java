@@ -1,5 +1,6 @@
 package io.microconfig.osdf.utils;
 
+import io.microconfig.osdf.exceptions.PossibleBugException;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.representer.Representer;
@@ -25,7 +26,7 @@ public class YamlUtils {
             Yaml yaml = new Yaml(new Constructor(clazz), representer);
             return yaml.load(inputStream);
         } catch (IOException e) {
-            throw new RuntimeException("Couldn't open file " + path, e);
+            throw new PossibleBugException("Couldn't open file " + path, e);
         }
     }
 
@@ -40,7 +41,7 @@ public class YamlUtils {
         try {
             return new Yaml().load(new FileInputStream(path.toString()));
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("Couldn't load yaml from path " + path, e);
+            throw new PossibleBugException("Couldn't load yaml from path " + path, e);
         }
     }
 
@@ -50,7 +51,7 @@ public class YamlUtils {
             representer.addClassTag(object.getClass(), MAP);
             new Yaml(representer).dump(object, newBufferedWriter(path));
         } catch (IOException e) {
-            throw new RuntimeException("Couldn't dump yaml file", e);
+            throw new PossibleBugException("Couldn't dump yaml file", e);
         }
     }
 

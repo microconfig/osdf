@@ -97,7 +97,7 @@ public class MainRule {
 
     private WeightRoute getOtherRoute(String subset) {
         List<WeightRoute> otherRoutes = getOtherRoutes(subset);
-        if (otherRoutes.size() == 0) return null;
+        if (otherRoutes.isEmpty()) return null;
         if (otherRoutes.size() != 1) throw new OSDFException("Only one other version must exist");
         return otherRoutes.get(0);
     }

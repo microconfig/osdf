@@ -34,7 +34,7 @@ public class BaseServiceDeployer implements ServiceDeployer {
 
         resourceCleaner(cli).cleanOld(files.resources(), service.resources());
         boolean configMapUpdated = deployment.createConfigMap(files.configs());
-        if (uploadResourcesAndCheckHash(service, deployment, files)) return;
+        if (!uploadResourcesAndCheckHashIsSame(service, deployment, files)) return;
 
         restartIfNecessary(deployment, files, configMapUpdated);
     }
@@ -51,7 +51,7 @@ public class BaseServiceDeployer implements ServiceDeployer {
         }
     }
 
-    private boolean uploadResourcesAndCheckHash(ClusterService service, ServiceDeployment deployment, ServiceFiles files) {
+    private boolean uploadResourcesAndCheckHashIsSame(ClusterService service, ServiceDeployment deployment, ServiceFiles files) {
         String currentHash = deployment.info().hash();
         service.upload(files.resources());
         deployHook.call(service, deployment, files);

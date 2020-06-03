@@ -23,7 +23,7 @@ public class VirtualService {
     private final ClusterCLI cli;
     private final String name;
 
-    private Map<String, Object> virtualService;
+    private Map<String, Object> virtualServiceYaml;
 
     public static VirtualService virtualService(ClusterCLI cli, String name) {
         String yaml = cli.execute("get virtualservice " + name + " -o yaml").getOutput();
@@ -39,12 +39,12 @@ public class VirtualService {
                 .replace("${application-name}", name)
                 .replace("${application-version}", encodedVersion)
                 .replace("${project}", project);
-        virtualService = new Yaml().load(yaml);
+        virtualServiceYaml = new Yaml().load(yaml);
         return this;
     }
 
     public VirtualService setWeight(String encodedVersion, int weight) {
-        if (virtualService == null) throw new OSDFException("Virtual Service not found");
+        checkVirtualServiceIsNotEmpty();
 
         RuleSet ruleSet = RuleSet.from(getRules());
         MainRule rule = ruleSet.getMainRule();
@@ -55,7 +55,7 @@ public class VirtualService {
     }
 
     public VirtualService setMirror(String encodedVersion) {
-        if (virtualService == null) throw new OSDFException("Virtual Service not found");
+        checkVirtualServiceIsNotEmpty();
 
         RuleSet ruleSet = RuleSet.from(getRules());
         MainRule rule = ruleSet.getMainRule();
@@ -66,7 +66,7 @@ public class VirtualService {
     }
 
     public VirtualService setHeader(String encodedVersion) {
-        if (virtualService == null) throw new OSDFException("Virtual Service not found");
+        checkVirtualServiceIsNotEmpty();
 
         HeaderRule headerRule = headerRule(destination(getHost(), encodedVersion),
                 "route-version", encodedVersion);
@@ -79,7 +79,7 @@ public class VirtualService {
     }
 
     public void deleteRules(String encodedVersion) {
-        if (virtualService == null) return;
+        if (virtualServiceYaml == null) return;
 
         RuleSet ruleSet = RuleSet.from(getRules());
         MainRule rule = ruleSet.getMainRule();
@@ -95,7 +95,7 @@ public class VirtualService {
     }
 
     public VirtualService setFault(Fault fault) {
-        if (virtualService == null) throw new RuntimeException("Virtual Service not found");
+        checkVirtualServiceIsNotEmpty();
         RuleSet ruleSet = RuleSet.from(getRules());
         MainRule rule = ruleSet.getMainRule();
         rule.setFault(fault);
@@ -105,17 +105,17 @@ public class VirtualService {
 
     public void upload() {
         Path tmpPath = of("/tmp/resource.yaml");
-        dump(virtualService, tmpPath);
+        dump(virtualServiceYaml, tmpPath);
         cli.execute("apply -f " + tmpPath)
                 .throwExceptionIfError();
     }
 
     public boolean exists() {
-        return virtualService != null;
+        return virtualServiceYaml != null;
     }
 
     public String getTrafficStatus(String encodedVersion) {
-        if (virtualService == null) return "uniform";
+        if (virtualServiceYaml == null) return "uniform";
         return RuleSet.from(getRules()).getTrafficStatus(encodedVersion);
     }
 
@@ -124,16 +124,20 @@ public class VirtualService {
     }
 
     private List<Object> getRules() {
-        return getList(virtualService, "spec", "http");
+        return getList(virtualServiceYaml, "spec", "http");
     }
 
     private void setRules(List<Object> rules) {
-        Map<String, Object> spec = getMap(virtualService, "spec");
+        Map<String, Object> spec = getMap(virtualServiceYaml, "spec");
         spec.put("http", rules);
     }
 
     private String getHost() {
-        List<Object> hosts = getList(virtualService, "spec", "hosts");
+        List<Object> hosts = getList(virtualServiceYaml, "spec", "hosts");
         return (String) hosts.get(0);
+    }
+
+    private void checkVirtualServiceIsNotEmpty() {
+        if (virtualServiceYaml == null) throw new OSDFException("Virtual Service not found");
     }
 }

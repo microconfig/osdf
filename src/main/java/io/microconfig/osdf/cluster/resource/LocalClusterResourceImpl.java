@@ -1,6 +1,7 @@
 package io.microconfig.osdf.cluster.resource;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
@@ -29,7 +30,7 @@ public class LocalClusterResourceImpl implements LocalClusterResource {
     @Override
     public void upload(ClusterCLI cli) {
         if (getRemoteHash(cli).equals(getLocalHash())) return;
-        cli.execute("oc apply -f " + path);
+        cli.execute("oc apply -f " + path).throwExceptionIfError(new OSDFException("Error uploading " + name() + ""));
     }
 
     @Override
