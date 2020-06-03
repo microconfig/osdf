@@ -9,6 +9,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PodAndIOChaosIntersectionValidator {
+    private PodAndIOChaosIntersectionValidator() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static void podAndIOChaosIntersectionCheck(Set<Chaos> chaosSet) {
         Set<String> ioComponents = chaosSet.stream().
                 filter(chaos -> chaos.type().equals("io")).

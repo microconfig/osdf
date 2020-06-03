@@ -1,6 +1,5 @@
 package io.microconfig.osdf.istio;
 
-import io.microconfig.osdf.istio.faults.Fault;
 import io.microconfig.osdf.istio.rules.HeaderRule;
 import io.microconfig.osdf.istio.rules.MainRule;
 import org.junit.jupiter.api.Test;

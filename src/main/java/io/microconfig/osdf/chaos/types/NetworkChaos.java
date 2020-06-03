@@ -3,7 +3,7 @@ package io.microconfig.osdf.chaos.types;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.deployers.NetworkChaosDeployer;
 import io.microconfig.osdf.exceptions.OSDFException;
-import io.microconfig.osdf.istio.faults.Fault;
+import io.microconfig.osdf.istio.Fault;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
 import lombok.EqualsAndHashCode;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static io.microconfig.osdf.deployers.NetworkChaosDeployer.chaosDeployer;
-import static io.microconfig.osdf.istio.faults.Fault.fault;
+import static io.microconfig.osdf.istio.Fault.fault;
 import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
 import static io.microconfig.osdf.utils.IstioUtils.isIstioService;
 import static io.microconfig.osdf.utils.YamlUtils.getInt;
@@ -23,19 +23,20 @@ import static io.microconfig.osdf.utils.YamlUtils.getList;
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class NetworkChaos implements Chaos {
+    private final static String PARAMS = "params";
     @Getter
-    final private String name;
+    private final String name;
     @Getter
-    final private List<String> components;
-    final private Fault fault;
+    private final List<String> components;
+    private final Fault fault;
 
     @SuppressWarnings("unchecked")
     public static NetworkChaos networkChaos(String name, Map<String, Object> yaml) {
         List<String> components = (List<String>) (Object) getList(yaml, "components");
-        Integer abortCode = getInt(yaml, "params", "http-error", "code");
-        Integer abortPercentage = getInt(yaml, "params", "http-error", "percentage");
-        Integer delay = getInt(yaml, "params", "http-delay", "delay");
-        Integer delayPercentage = getInt(yaml, "params", "http-delay", "percentage");
+        Integer abortCode = getInt(yaml, PARAMS, "http-error", "code");
+        Integer abortPercentage = getInt(yaml, PARAMS, "http-error", "percentage");
+        Integer delay = getInt(yaml, PARAMS, "http-delay", "delay");
+        Integer delayPercentage = getInt(yaml, PARAMS, "http-delay", "percentage");
         return new NetworkChaos(name, components, fault(abortCode, abortPercentage, delay, delayPercentage));
     }
 

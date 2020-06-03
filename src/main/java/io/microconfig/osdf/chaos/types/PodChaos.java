@@ -24,13 +24,14 @@ import static java.lang.Thread.currentThread;
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class PodChaos implements Chaos {
+    private final static String PARAMS = "params";
     @Getter
-    final private String name;
+    private final String name;
     @Getter
-    final private List<String> components;
-    final private Integer timeout;
-    final private Integer duration;
-    final private Integer severity;
+    private final List<String> components;
+    private final Integer timeout;
+    private final Integer duration;
+    private final Integer severity;
 
     @EqualsAndHashCode.Exclude
     Random r = new Random();
@@ -38,9 +39,9 @@ public class PodChaos implements Chaos {
     @SuppressWarnings("unchecked")
     public static PodChaos podChaos(String name, Map<String, Object> yaml) {
         List<String> components = (List<String>) (Object) getList(yaml, "components");
-        Integer timeout = getInt(yaml, "params", "timeout");
-        Integer duration = getInt(yaml, "params", "duration");
-        Integer severity = getInt(yaml, "params", "severity");
+        Integer timeout = getInt(yaml, PARAMS, "timeout");
+        Integer duration = getInt(yaml, PARAMS, "duration");
+        Integer severity = getInt(yaml, PARAMS, "severity");
         return new PodChaos(name, components, timeout, duration, severity);
     }
 
@@ -58,7 +59,7 @@ public class PodChaos implements Chaos {
         } catch (InterruptedException e) {
             service.shutdownNow();
             currentThread().interrupt();
-            throw new RuntimeException(e);
+            throw new OSDFException("Pod chaos execution interrupted", e);
         }
         service.shutdownNow();
     }

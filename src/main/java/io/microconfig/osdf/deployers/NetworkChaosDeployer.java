@@ -1,6 +1,6 @@
 package io.microconfig.osdf.deployers;
 
-import io.microconfig.osdf.istio.faults.Fault;
+import io.microconfig.osdf.istio.Fault;
 import io.microconfig.osdf.service.ClusterService;
 import io.microconfig.osdf.service.istio.IstioService;
 import lombok.AllArgsConstructor;

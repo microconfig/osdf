@@ -21,11 +21,11 @@ import static java.lang.Thread.currentThread;
 
 @RequiredArgsConstructor
 public class ChaosExperiment {
-    final private OSDFPaths paths;
-    final private ClusterCLI cli;
-    final private Set<Chaos> chaosSet;
+    private final OSDFPaths paths;
+    private final ClusterCLI cli;
+    private final Set<Chaos> chaosSet;
 
-    static public ChaosExperiment chaosExperiment(OSDFPaths paths, ClusterCLI cli, ChaosComponent component) {
+    public static ChaosExperiment chaosExperiment(OSDFPaths paths, ClusterCLI cli, ChaosComponent component) {
         Map<String, Object> rules = getMap(loadFromPath(component.getPathToPlan()), "rules");
         Set<Chaos> chaosSet = rules.entrySet().stream().map(Chaos::chaos).collect(Collectors.toSet());
         check(chaosSet);
@@ -39,7 +39,7 @@ public class ChaosExperiment {
         podAndIOChaosIntersectionCheck(chaosSet);
     }
 
-    static public void stop(OSDFPaths paths, ClusterCLI cli) {
+    public static void stop(OSDFPaths paths, ClusterCLI cli) {
         Chaos.getAllChaosImpls().forEach(chaos -> chaos.stop(paths, cli));
     }
 

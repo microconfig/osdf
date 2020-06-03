@@ -9,6 +9,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class BasicValidator {
+    private BasicValidator() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static void basicCheck(Set<Chaos> chaosSet) {
         chaosSet.parallelStream().forEach(Chaos::check);
     }

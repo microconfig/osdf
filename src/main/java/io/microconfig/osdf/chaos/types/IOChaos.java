@@ -23,11 +23,11 @@ import static io.microconfig.utils.Logger.announce;
 @RequiredArgsConstructor
 public class IOChaos implements Chaos {
     @Getter
-    final private String name;
+    private final String name;
     @Getter
-    final private List<String> components;
-    final private Integer severity;
-    final private Integer timeout;
+    private final List<String> components;
+    private final Integer severity;
+    private final Integer timeout;
 
     @EqualsAndHashCode.Exclude
     Random r = new Random();
