@@ -7,6 +7,7 @@ import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.AllArgsConstructor;
 
 import static io.microconfig.osdf.chaos.ChaosExperiment.chaosExperiment;
+import static io.microconfig.osdf.chaos.loader.ChaosComponentLoader.chaosComponentLoader;
 
 @AllArgsConstructor
 public class ChaosApiImpl implements ChaosApi {
@@ -18,8 +19,8 @@ public class ChaosApiImpl implements ChaosApi {
     }
 
     @Override
-    public void runChaosExperiment() {
-        chaosExperiment(paths, cli).run();
+    public void runChaosExperiment(String componentName) {
+        chaosExperiment(paths, cli, chaosComponentLoader(paths).loadByName(componentName)).run();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package io.microconfig.osdf.chaos;
 
+import io.microconfig.osdf.chaos.components.ChaosComponent;
 import io.microconfig.osdf.chaos.types.Chaos;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.paths.OSDFPaths;
@@ -24,8 +25,8 @@ public class ChaosExperiment {
     final private ClusterCLI cli;
     final private Set<Chaos> chaosSet;
 
-    static public ChaosExperiment chaosExperiment(OSDFPaths paths, ClusterCLI cli) {
-        Map<String, Object> rules = getMap(loadFromPath(paths.chaosPlanPath()), "rules");
+    static public ChaosExperiment chaosExperiment(OSDFPaths paths, ClusterCLI cli, ChaosComponent component) {
+        Map<String, Object> rules = getMap(loadFromPath(component.getPathToPlan()), "rules");
         Set<Chaos> chaosSet = rules.entrySet().stream().map(Chaos::chaos).collect(Collectors.toSet());
         check(chaosSet);
         return new ChaosExperiment(paths, cli, chaosSet);
@@ -82,5 +83,4 @@ public class ChaosExperiment {
     private boolean checkMetrics() {
         return true;
     }
-
 }
