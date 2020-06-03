@@ -1,13 +1,1 @@
 #include osdf-loadtest
-
-#var microconfig.template.get.test.fromFile: ${loadtest-simple-example@configDir}/config/jmeter-get-test.yaml
-#var microconfig.template.get.test.toFile: config/jmeter-get-test.yaml
-
-#var microconfig.template.post.test.fromFile: ${loadtest-simple-example@configDir}/config/jmeter-post-test.yaml
-#var microconfig.template.post.test.toFile: config/jmeter-post-test.yaml
-
-#var microconfig.template.complex.test.fromFile: ${loadtest-simple-example@configDir}/config/jmeter-complex-test.yaml
-#var microconfig.template.complex.test.toFile: config/jmeter-complex-test.yaml
-
-#var microconfig.template.put.test.fromFile: ${loadtest-simple-example@configDir}/config/jmeter-put-delete-test.yaml
-#var microconfig.template.put.test.toFile: config/jmeter-put-delete-test.yaml
