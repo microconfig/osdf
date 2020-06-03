@@ -1,1 +1,18 @@
-#include openshift-chaos
+rules:
+  helloworld-istio-network:
+    type: network
+    components:
+      - helloworld-springboot-istio
+    params:
+      http-error:
+        code: 503
+        percentage: 5
+
+  kill-helloworld:
+    type: pod
+    components:
+      - helloworld-springboot
+    params:
+      severity: 30
+      timeout: 5
+      duration: 30

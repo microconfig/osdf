@@ -1,11 +1,12 @@
 package io.microconfig.osdf.api.implementations;
 
 import io.microconfig.osdf.api.declarations.ChaosApi;
-import io.microconfig.osdf.chaos.ChaosRunnersLoader;
+import io.microconfig.osdf.chaos.ChaosExperiment;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.commands.ChaosExperimentCommand;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.AllArgsConstructor;
+
+import static io.microconfig.osdf.chaos.ChaosExperiment.chaosExperiment;
 
 @AllArgsConstructor
 public class ChaosApiImpl implements ChaosApi {
@@ -18,11 +19,11 @@ public class ChaosApiImpl implements ChaosApi {
 
     @Override
     public void runChaosExperiment() {
-        new ChaosExperimentCommand(paths, cli).run();
+        chaosExperiment(paths, cli).run();
     }
 
     @Override
     public void stopChaos() {
-        ChaosRunnersLoader.init(paths, cli).getAllImplementations().forEach(impl -> impl.stop(null));
+        ChaosExperiment.stop(paths, cli);
     }
 }

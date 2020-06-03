@@ -53,7 +53,7 @@ public class OSDFPaths {
     }
 
     public Path chaosPlanPath() {
-        return of(componentsPath() + "/chaos/experimentPlan.yaml");
+        return of(componentsPath() + "/chaos/application.yaml");
     }
 
     public SettingsPaths settings() {

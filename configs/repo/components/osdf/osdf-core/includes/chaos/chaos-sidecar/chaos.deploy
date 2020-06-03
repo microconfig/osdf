@@ -1,0 +1,4 @@
+additional:
+    container: - {image: '${this@stress.image.url}', name: stress-sidecar, requests: {cpu: '${this@sidecar.requests.cpu}', memory: '${this@sidecar.requests.memory}'}, limits: {cpu: '${this@sidecar.limits.cpu}', memory: '${this@sidecar.limits.memory}'}, volumeMounts: [{mountPath: /fs, name: fs-volume}]}
+
+stress.image.url: ${this@registry.project.url}/stress:latest
