@@ -11,5 +11,6 @@ public class EmptyHook implements DeployHook {
 
     @Override
     public void call(ClusterService service, ServiceDeployment deployment, ServiceFiles files) {
+        //no operation hook
     }
 }

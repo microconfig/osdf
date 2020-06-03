@@ -42,25 +42,25 @@ class ApiArgsGetterTest {
     void methodWithSecondOptional(@ConsoleParam(FirstString.class) String first,
                                   @ConsoleParam(ListParameter.class) List<String> list,
                                   @ConsoleParam(SecondString.class) String second) {
-        assertEquals(first, "first");
-        assertEquals(list, of("a", "b", "c"));
+        assertEquals("first", first);
+        assertEquals(of("a", "b", "c"), list);
         if (second != null) {
-            assertEquals(second, "second");
+            assertEquals("second", second);
         }
     }
 
     void methodWithSecondRequired(@ConsoleParam(FirstString.class) String first,
                                   @ConsoleParam(ListParameter.class) List<String> list,
                                   @ConsoleParam(value = SecondString.class, type = REQUIRED) String second) {
-        assertEquals(first, "first");
-        assertEquals(second, "second");
-        assertEquals(list, of("a", "b", "c"));
+        assertEquals( "first", first);
+        assertEquals("second", second);
+        assertEquals(of("a", "b", "c"), list);
     }
 
     void methodWithoutSecond(@ConsoleParam(FirstString.class) String first,
                              @ConsoleParam(ListParameter.class) List<String> list) {
-        assertEquals(first, "first");
-        assertEquals(list, of("a", "b", "c"));
+        assertEquals("first", first);
+        assertEquals(of("a", "b", "c"), list);
     }
 
     @Test

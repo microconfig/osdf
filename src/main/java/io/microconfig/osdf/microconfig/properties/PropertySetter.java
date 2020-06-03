@@ -1,5 +1,6 @@
 package io.microconfig.osdf.microconfig.properties;
 
+import io.microconfig.osdf.exceptions.PossibleBugException;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class PropertySetter {
         try {
             writeString(path, result);
         } catch (IOException e) {
-            throw new RuntimeException("Error writing project version file: " + path, e);
+            throw new PossibleBugException("Error writing project version file: " + path, e);
         }
     }
 
@@ -38,7 +39,7 @@ public class PropertySetter {
                 result.append(newLine(key, newValue, scanner.nextLine().strip())).append("\n");
             }
         } catch (IOException e) {
-            throw new RuntimeException("Error reading project version file: " + file, e);
+            throw new PossibleBugException("Error reading project version file: " + file, e);
         }
         return result.toString();
     }

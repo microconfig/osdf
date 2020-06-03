@@ -33,7 +33,7 @@ public class NexusClient {
                 deleteIfExists(destination);
             } catch (IOException ignored) {
             }
-            throw new OSDFException("Can't download artifact from Nexus. May be check credentials.");
+            throw new OSDFException("Can't download artifact from Nexus. Maybe check credentials.");
         }
     }
 

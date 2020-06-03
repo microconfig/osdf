@@ -1,5 +1,7 @@
 package io.microconfig.osdf.utils;
 
+import io.microconfig.osdf.exceptions.PossibleBugException;
+
 import static io.microconfig.osdf.utils.ColorSymbol.RESET;
 import static io.microconfig.osdf.utils.ColorSymbol.values;
 import static java.lang.Integer.parseInt;
@@ -37,7 +39,7 @@ public class StringUtils {
         try {
             return parseInt(s);
         } catch (NumberFormatException e) {
-            throw new RuntimeException("Can't cast to int", e);
+            throw new PossibleBugException("Can't cast to int", e);
         }
     }
 
