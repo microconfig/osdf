@@ -33,7 +33,7 @@ public class JmeterComponent {
     public void deploy() {
         List<LocalClusterResource> resources = getJmeterServiceFiles().resources();
         resources.forEach(clusterResource -> {
-            if (isExists(clusterResource)) {
+            if (exists(clusterResource)) {
                 clusterResource.delete(cli);
             }
         });
@@ -65,11 +65,10 @@ public class JmeterComponent {
         return deploymentsFromServiceFiles().pods();
     }
 
-    private boolean isExists(ClusterResource clusterResource) {
+    private boolean exists(ClusterResource clusterResource) {
         List<String> output = cli.execute("oc get " + clusterResource.kind() + " " + clusterResource.name())
                 .getOutputLines();
-        if (output.get(0).toLowerCase().contains("no resources found")) return false;
-        return true;
+        return !output.get(0).toLowerCase().contains("no resources found");
     }
 
     private ServiceDeployment deploymentsFromServiceFiles() {

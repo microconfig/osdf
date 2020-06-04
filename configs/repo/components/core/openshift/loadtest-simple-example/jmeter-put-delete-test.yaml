@@ -1,0 +1,29 @@
+plan.put-test:
+  requests:
+    - put-request:
+        component: helloworld-springboot
+        method: PUT
+        path: /put-hello
+        headers:
+          - headerPutName: headerPutValue
+        protocol: http
+        body: '{
+                  "data": "put-data",
+                  "number": 54342,
+                  "nextData": "nextData"
+                }'
+    - delete-request:
+        component: helloworld-springboot
+        method: DELETE
+        path: /delete-hello
+        protocol: http
+        headers:
+          - headerDeleteName: headerDeleteValue
+        body: '{
+                  "data": "delete-data",
+                  "number": 1234,
+                  "nextData": "nextData"
+                }'
+  numberOfThreads: 10
+  rampUpPeriod: 1
+  duration: 20

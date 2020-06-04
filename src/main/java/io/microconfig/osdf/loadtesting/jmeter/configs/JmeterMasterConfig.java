@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static io.microconfig.osdf.loadtesting.jmeter.JmeterTestBuilder.jmeterConfigBuilder;
 import static io.microconfig.osdf.utils.FileUtils.readAll;
 import static io.microconfig.osdf.utils.FileUtils.writeStringToFile;
 import static io.microconfig.osdf.utils.YamlUtils.getInt;
@@ -25,11 +24,6 @@ public class JmeterMasterConfig {
     private JmeterComponentConfig jmeterConfig;
 
     public static JmeterMasterConfig jmeterMasterConfig(Path jmeterComponentsPath, Path jmeterPlanPath) {
-        return new JmeterMasterConfig("jmeter-master", jmeterComponentsPath, jmeterPlanPath);
-    }
-
-    public static JmeterMasterConfig jmeterMasterConfig(Path jmeterComponentsPath, String configName, Map<String, String> routes) {
-        Path jmeterPlanPath = jmeterConfigBuilder(jmeterComponentsPath, configName, routes).build();
         return new JmeterMasterConfig("jmeter-master", jmeterComponentsPath, jmeterPlanPath);
     }
 
@@ -66,7 +60,7 @@ public class JmeterMasterConfig {
 
     public int getDuration(String configName) {
         if (configName != null) {
-            Path userTestConfigPath = Path.of(jmeterComponentsPath + "/config/" + configName);
+            Path userTestConfigPath = Path.of(jmeterComponentsPath + "/config/" + configName + ".yaml");
             Map<String, Object> userConfig = loadFromPath(userTestConfigPath);
             return getInt(userConfig, "duration");
         } else {

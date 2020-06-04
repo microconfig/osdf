@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static io.microconfig.osdf.utils.FileUtils.deleteDirectory;
-import static io.microconfig.osdf.utils.FileUtils.deleteFile;
 import static io.microconfig.utils.Logger.announce;
 import static java.nio.file.Path.of;
 import static java.util.stream.IntStream.range;
@@ -32,7 +31,7 @@ public class JmeterResourcesCleaner implements AutoCloseable {
                     component.deleteAll();
                     deleteDirectory(component.getComponentPath());
                 });
-        deleteFile(of(componentsPath + "/config/jmetertest.jmx"));
+        deleteDirectory(of(componentsPath + "/config"));
         announce("Clean has been finished");
     }
 

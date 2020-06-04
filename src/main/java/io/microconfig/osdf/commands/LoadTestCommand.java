@@ -67,12 +67,12 @@ public class LoadTestCommand {
 
     private void setSlavesHosts(JmeterConfigProcessor jmeterConfigProcessor, List<JmeterComponent> slaveComponents) {
         List<String> slaveHosts = new ArrayList<>();
-        slaveComponents.forEach(component ->slaveHosts.add(component.getServiceIp()));
+        slaveComponents.forEach(component -> slaveHosts.add(component.getServiceIp()));
         jmeterConfigProcessor.getMasterConfig().setHostsInMasterTemplateConfig(slaveHosts);
     }
 
-    private void deployDeployments(List<JmeterComponent> сomponents) {
-        сomponents.forEach(component -> {
+    private void deployDeployments(List<JmeterComponent> components) {
+        components.forEach(component -> {
             announce("Deploy " + component.getComponentName());
             component.deploy();
         });
@@ -95,10 +95,10 @@ public class LoadTestCommand {
                 .filter(deployPack -> deployPack.deployment().info().availableReplicas() > 0)
                 .filter(deployPack -> deployPack.deployment().info().status().equals(DeploymentStatus.RUNNING))
                 .map(deployPack -> deployPack.deployment().name())
-                .collect(Collectors.toMap(name -> name, this::getRoute));
+                .collect(Collectors.toMap(name -> name, this::getUserServiceRoutes));
     }
 
-    private String getRoute(String name) {
+    private String getUserServiceRoutes(String name) {
         String command = "oc get route " + name + " -o custom-columns=HOST:.spec.host";
         List<String> output = cli.execute(command).getOutputLines();
         if (output.get(0).toLowerCase().contains("not found"))

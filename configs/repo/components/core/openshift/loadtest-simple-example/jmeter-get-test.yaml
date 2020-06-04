@@ -1,0 +1,22 @@
+plan.get-test:
+  requests:
+    - hello-request:
+        component: helloworld-springboot            #Name of component or 'domain: target system domain'
+        method: GET
+        path: /hello
+        protocol: http
+        headers:
+          - headerName: headerValue
+        params:                                     #Request params '- name: value'
+          - paramName: test-param-value
+          - nextParamName: next-test-param-value
+    - next-hello-request:
+        component: helloworld-springboot
+        method: GET
+        path: /next-hello
+        protocol: http
+        params:
+          - name: test-param-value
+  numberOfThreads: 10
+  rampUpPeriod: 1
+  duration: 20

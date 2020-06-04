@@ -2,8 +2,8 @@ package io.microconfig.osdf.api.parameter;
 
 import io.microconfig.osdf.parameters.ArgParameter;
 
-public class JmeterTestNameParametr extends ArgParameter<String> {
-    public JmeterTestNameParametr() {
+public class JmeterTestNameParameter extends ArgParameter<String> {
+    public JmeterTestNameParameter() {
         super("testConfigName", "config", "The name of test config file.");
     }
 
