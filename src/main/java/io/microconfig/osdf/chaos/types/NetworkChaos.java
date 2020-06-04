@@ -23,7 +23,7 @@ import static io.microconfig.osdf.utils.YamlUtils.getList;
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class NetworkChaos implements Chaos {
-    private final static String PARAMS = "params";
+    private static final String PARAMS = "params";
     @Getter
     private final String name;
     @Getter

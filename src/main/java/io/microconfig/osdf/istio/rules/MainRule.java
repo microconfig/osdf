@@ -18,8 +18,8 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 
 @AllArgsConstructor
 public class MainRule {
-    private static final String FAULT = "fault";
-    private static final String MIRROR = "mirror";
+    private static final String FAULT_TAG = "fault";
+    private static final String MIRROR_TAG = "mirror";
 
     private List<WeightRoute> routes;
     private Destination mirror;
@@ -31,11 +31,11 @@ public class MainRule {
 
         Destination mirror = null;
         Fault fault = null;
-        if (rule.containsKey(MIRROR)) {
-            mirror = Destination.fromYaml(rule.get(MIRROR));
+        if (rule.containsKey(MIRROR_TAG)) {
+            mirror = Destination.fromYaml(rule.get(MIRROR_TAG));
         }
-        if (rule.containsKey(FAULT)) {
-            fault = Fault.fromYaml(rule.get(FAULT));
+        if (rule.containsKey(FAULT_TAG)) {
+            fault = Fault.fromYaml(rule.get(FAULT_TAG));
         }
         List<WeightRoute> routes = getList(rule, "route")
                 .stream()
@@ -121,10 +121,10 @@ public class MainRule {
 
         route.put("route", routes.stream().map(WeightRoute::toYaml).collect(toUnmodifiableList()));
         if (mirror != null) {
-            route.put(MIRROR, mirror.toYaml());
+            route.put(MIRROR_TAG, mirror.toYaml());
         }
         if (fault != null) {
-            route.put(FAULT, fault.toYaml());
+            route.put(FAULT_TAG, fault.toYaml());
         }
         return route;
     }
