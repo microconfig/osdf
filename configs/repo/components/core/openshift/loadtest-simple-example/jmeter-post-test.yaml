@@ -1,9 +1,9 @@
-
+plan.post-test:
  requests:
    - post-request:
        component: helloworld-springboot
        method: POST
-       path: /post-hello?name=NAME1
+       path: /post-hello
        protocol: http
        body: '{
                	"data": "data",
@@ -13,7 +13,7 @@
    - post-request-header:
        component: helloworld-springboot
        method: POST
-       path: /post-hello-header?name=NAME2
+       path: /post-hello-header
        protocol: http
        headers:
          - headerName: headerValue
@@ -22,6 +22,6 @@
                	"number": 1234,
                	"nextData": "nextData"
                }'
- numberOfThreads: 10
+ numberOfThreads: 2
  rampUpPeriod: 1
- duration: 20
+ duration: 4

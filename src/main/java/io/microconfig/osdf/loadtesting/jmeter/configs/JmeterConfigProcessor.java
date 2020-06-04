@@ -11,7 +11,11 @@ import java.util.stream.IntStream;
 
 import static io.microconfig.osdf.loadtesting.jmeter.configs.JmeterMasterConfig.jmeterMasterConfig;
 import static io.microconfig.osdf.loadtesting.jmeter.configs.JmeterSlaveConfig.jmeterSlaveConfig;
+import static io.microconfig.osdf.loadtesting.jmeter.testplan.JmeterTestBuilder.jmeterConfigBuilder;
+import static io.microconfig.osdf.utils.FileUtils.createDirectoryIfNotExists;
+import static io.microconfig.osdf.utils.YamlUtils.*;
 import static io.microconfig.utils.Logger.announce;
+import static java.nio.file.Path.of;
 
 @Getter
 @RequiredArgsConstructor
@@ -20,19 +24,28 @@ public class JmeterConfigProcessor {
     private final List<JmeterSlaveConfig> slaveConfigs;
     private final Path jmeterComponentsPath;
 
-    public static JmeterConfigProcessor jmeterConfigProcessor(Path jmeterComponentsPath, int numberOfSlaves, String configName,
-                                           Map<String, String> routes) {
-        JmeterMasterConfig masterConfig = jmeterMasterConfig(jmeterComponentsPath, configName, routes);
-        return jmeterConfigProcessor(jmeterComponentsPath, numberOfSlaves, masterConfig);
+    public static JmeterConfigProcessor jmeterConfigProcessor(Path jmeterComponentsPath, int numberOfSlaves,
+                                                              String configName, Map<String, String> routes) {
+        Path userTestConfigPath = findAndSaveTestConfig(jmeterComponentsPath, configName);
+        Path jmeterPlanPath = jmeterConfigBuilder(jmeterComponentsPath, routes).build(userTestConfigPath);
+        return jmeterConfigProcessor(jmeterComponentsPath, numberOfSlaves, jmeterPlanPath);
+    }
+
+    private static Path findAndSaveTestConfig(Path jmeterComponentsPath, String configName) {
+        Map<String, Object> applicationYaml = loadFromPath(of(jmeterComponentsPath + "/application.yaml"));
+        Map<String, Object> userPlanMap = getMap(applicationYaml, "plan");
+        if (userPlanMap.containsKey(configName)) {
+            Path configPath = of(jmeterComponentsPath + "/config");
+            createDirectoryIfNotExists(configPath);
+            Path userTestPlanPath = of(configPath + "/" + configName + ".yaml");
+            dump(userPlanMap.get(configName), userTestPlanPath);
+            return userTestPlanPath;
+        }
+        throw new RuntimeException("Test plan with name: " + configName + " not found.");
     }
 
     public static JmeterConfigProcessor jmeterConfigProcessor(Path jmeterComponentsPath, int numberOfSlaves, Path jmeterPlanPath) {
         JmeterMasterConfig masterConfig = jmeterMasterConfig(jmeterComponentsPath, jmeterPlanPath);
-        return jmeterConfigProcessor(jmeterComponentsPath, numberOfSlaves, masterConfig);
-    }
-
-    private static JmeterConfigProcessor jmeterConfigProcessor(Path jmeterComponentsPath, int numberOfSlaves,
-                                                               JmeterMasterConfig masterConfig) {
         List<JmeterSlaveConfig> slaveConfigs = IntStream.range(0, numberOfSlaves)
                 .map(i -> i + 1)
                 .mapToObj(i -> "jmeter-slave-" + i)
@@ -40,7 +53,6 @@ public class JmeterConfigProcessor {
                 .collect(Collectors.toList());
         return new JmeterConfigProcessor(masterConfig, slaveConfigs, jmeterComponentsPath);
     }
-
 
     public void init() {
         announce("Init configs");

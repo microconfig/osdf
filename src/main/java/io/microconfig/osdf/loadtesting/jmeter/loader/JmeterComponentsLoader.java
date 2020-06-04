@@ -34,7 +34,9 @@ public class JmeterComponentsLoader {
     }
 
     public List<JmeterComponent> load() {
-        return loadComponents(allComponents());
+        Stream<Path> allPaths = Stream.concat(getComponentPaths(true).stream(),
+                getComponentPaths(false).stream());
+        return loadComponents(pathsToComponents(allPaths));
     }
 
     public JmeterComponent loadMaster() {
@@ -59,21 +61,13 @@ public class JmeterComponentsLoader {
         return pathsToComponents(componentPathStream);
     }
 
-    private Stream<JmeterComponent> allComponents() {
-        Stream<Path> allPaths = Stream.concat(getComponentPaths(true).stream(),
-                getComponentPaths(false).stream());
-        return pathsToComponents(allPaths);
-    }
-
     private Stream<JmeterComponent> pathsToComponents(Stream<Path> paths) {
         return paths.map(path -> path.getFileName().toString())
                 .filter(this::hasOpenShift)
-                .map(this::nameToComponent);
-    }
-
-    private JmeterComponent nameToComponent(String componentName) {
-        Path componentPath = of(jmeterConfigProcessor.getJmeterComponentsPath() + "/" + componentName);
-        return jmeterComponent(componentName, componentPath, cli);
+                .map(componentName -> {
+                    Path componentPath = of(jmeterConfigProcessor.getJmeterComponentsPath() + "/" + componentName);
+                    return jmeterComponent(componentName, componentPath, cli);
+                });
     }
 
     private boolean hasOpenShift(String component) {
