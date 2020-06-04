@@ -14,7 +14,7 @@ public class DefaultChaosComponent implements ChaosComponent {
     private final Path pathToPlan;
 
     public static ChaosComponent chaosFiles(ComponentDir componentDir) {
-        if ((componentDir.name().contains("chaos")) && (exists(componentDir.getPath("application.yaml")))) {
+        if (exists(componentDir.getPath("application.yaml"))) {
             return new DefaultChaosComponent(Paths.get(componentDir.root() + "/application.yaml"));
         }
         throw new OSDFException("Can't access chaos plan " + componentDir.name());
