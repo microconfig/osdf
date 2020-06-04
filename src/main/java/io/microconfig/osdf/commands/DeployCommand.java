@@ -51,7 +51,7 @@ public class DeployCommand {
 
     private List<ServiceDeployPack> getDeployPacks(List<String> serviceNames, String mode) {
         List<ServiceDeployPack> allPacks = defaultServiceDeployPacksLoader(paths, serviceNames, cli).loadPacks();
-        List<ServiceDeployPack> deployPacks = mode.equals("restricted") ? allPacks : deployRequiredFilter(paths, cli).filter(allPacks);
+        List<ServiceDeployPack> deployPacks = "restricted".equals(mode) ? allPacks : deployRequiredFilter(paths, cli).filter(allPacks);
 
         if (deployPacks.isEmpty())  {
             announce("No services to deploy");
