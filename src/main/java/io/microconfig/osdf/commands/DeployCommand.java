@@ -40,7 +40,7 @@ public class DeployCommand {
         List<ServiceJobPack> jobPacks = defaultServiceJobPackLoader(paths, serviceNames, cli).loadPacks();
         callRunner(jobPacks);
 
-        List<ServiceDeployPack> deployPacks = getDeployPacks(serviceNames);
+        List<ServiceDeployPack> deployPacks = getDeployPacks(serviceNames, mode);
         if (deployPacks.isEmpty()) return;
 
         callDeployer(deployPacks, deployer);
@@ -49,9 +49,10 @@ public class DeployCommand {
         }
     }
 
-    private List<ServiceDeployPack> getDeployPacks(List<String> serviceNames) {
-        List<ServiceDeployPack> deployPacks = deployRequiredFilter(paths, cli)
-                .filter(defaultServiceDeployPacksLoader(paths, serviceNames, cli).loadPacks());
+    private List<ServiceDeployPack> getDeployPacks(List<String> serviceNames, String mode) {
+        List<ServiceDeployPack> allPacks = defaultServiceDeployPacksLoader(paths, serviceNames, cli).loadPacks();
+        List<ServiceDeployPack> deployPacks = mode.equals("restricted") ? allPacks : deployRequiredFilter(paths, cli).filter(allPacks);
+
         if (deployPacks.isEmpty())  {
             announce("No services to deploy");
         } else {

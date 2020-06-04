@@ -18,10 +18,10 @@ class OpenShiftAuthenticationTest {
 
     @BeforeEach
     void setUp() {
-        commands.put("login", "oc login url -u \"username\" -p \"password\"");
+        commands.put("login", "oc login url -u \"username\" -p \"password\" --insecure-skip-tls-verify");
+        commands.put("loginWithToken", "oc login url --token=oc-token --insecure-skip-tls-verify");
         commands.put("project", "oc project default");
         commands.put("whoami", "oc whoami");
-        commands.put("loginWithToken", "oc login url --token=oc-token");
         commands.put("logout", "oc logout");
 
         oc = mock(OpenShiftCLI.class);
