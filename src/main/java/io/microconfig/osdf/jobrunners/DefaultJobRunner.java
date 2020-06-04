@@ -1,11 +1,12 @@
 package io.microconfig.osdf.jobrunners;
 
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.service.ClusterService;
 import io.microconfig.osdf.service.files.ServiceFiles;
 import io.microconfig.osdf.service.job.ServiceJob;
-import io.microconfig.osdf.exceptions.OSDFException;
 
 import static io.microconfig.osdf.service.job.info.JobStatus.SUCCEEDED;
+import static io.microconfig.utils.Logger.announce;
 
 public class DefaultJobRunner implements JobRunner {
     public static DefaultJobRunner defaultJobRunner() {
@@ -14,6 +15,7 @@ public class DefaultJobRunner implements JobRunner {
 
     @Override
     public void run(ClusterService service, ServiceJob job, ServiceFiles files) {
+        announce("Running " + service.name());
         if (job.exists() && job.info().status() == SUCCEEDED) return;
         job.delete();
         job.createConfigMap(files.configs());

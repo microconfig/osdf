@@ -30,7 +30,7 @@ public class OpenShiftAuthentication {
     }
 
     private void login() {
-        oc.execute("oc login " + clusterUrl + credentials.getLoginParams())
+        oc.execute("oc login " + clusterUrl + credentials.getLoginParams() + " --insecure-skip-tls-verify")
                 .throwExceptionIfError();
     }
 
