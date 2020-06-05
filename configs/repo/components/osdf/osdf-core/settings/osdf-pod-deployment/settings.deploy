@@ -1,5 +1,5 @@
 #var unfiltered.java.opts: ${process::this@java.opts:}
-java.opts: #{'${this@unfiltered.java.opts}'.replace('${process::this@java.opts.mem}', '')}
+java.opts: #{'${this@unfiltered.java.opts}'.replace('${process::this@java.opts.mem:}', '')}
 replicas:
   count: 1
 requests:
