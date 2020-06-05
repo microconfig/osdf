@@ -1,9 +1,11 @@
 package io.microconfig.osdf.loadtesting.jmeter.configs;
 
+import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,11 +39,11 @@ public class JmeterConfigProcessor {
         if (userPlanMap.containsKey(configName)) {
             Path configPath = of(jmeterComponentsPath + "/config");
             createDirectoryIfNotExists(configPath);
-            Path userTestPlanPath = of(configPath + "/" + configName + ".yaml");
+            Path userTestPlanPath = Paths.get(configPath.toString(), configName + ".yaml");
             dump(userPlanMap.get(configName), userTestPlanPath);
             return userTestPlanPath;
         }
-        throw new RuntimeException("Test plan with name: " + configName + " not found.");
+        throw new OSDFException("Test plan with name: " + configName + " not found.");
     }
 
     public static JmeterConfigProcessor jmeterConfigProcessor(Path jmeterComponentsPath, int numberOfSlaves, Path jmeterPlanPath) {

@@ -1,11 +1,11 @@
 package io.microconfig.osdf.loadtesting.jmeter.testplan.utils;
 
+import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 import org.apache.jmeter.protocol.http.control.Header;
 import org.apache.jmeter.protocol.http.control.HeaderManager;
 import org.apache.jmeter.protocol.http.control.gui.HttpTestSampleGui;
 import org.apache.jmeter.protocol.http.sampler.HTTPSamplerProxy;
-import org.apache.jmeter.testelement.TestElement;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +16,8 @@ import static io.microconfig.osdf.loadtesting.jmeter.testplan.utils.HeaderManage
 import static io.microconfig.osdf.loadtesting.jmeter.testplan.utils.ParamChecker.checkForNullAndReturn;
 import static io.microconfig.osdf.utils.YamlUtils.getListOfMaps;
 import static io.microconfig.osdf.utils.YamlUtils.getMap;
+import static org.apache.jmeter.testelement.TestElement.GUI_CLASS;
+import static org.apache.jmeter.testelement.TestElement.TEST_CLASS;
 
 @RequiredArgsConstructor
 public class SimpleRequestBuilder {
@@ -56,8 +58,8 @@ public class SimpleRequestBuilder {
         httpSampler.setProtocol(checkForNullAndReturn(requestConfig, "protocol"));
 
         httpSampler.setUseKeepAlive(true);
-        httpSampler.setProperty(TestElement.TEST_CLASS, HTTPSamplerProxy.class.getName());
-        httpSampler.setProperty(TestElement.GUI_CLASS, HttpTestSampleGui.class.getName());
+        httpSampler.setProperty(TEST_CLASS, HTTPSamplerProxy.class.getName());
+        httpSampler.setProperty(GUI_CLASS, HttpTestSampleGui.class.getName());
 
         HeaderManager headerManager = prepareHeaderManager(httpRequestName);
         headerManagerMap.put(httpRequestName, headerManager);
@@ -77,7 +79,7 @@ public class SimpleRequestBuilder {
             return componentsRoutes.get(String.valueOf(requestConfig.get("component")));
         if (requestConfig.containsKey("domain"))
             return String.valueOf(requestConfig.get("domain"));
-        throw new RuntimeException("The domain request or target component name is null");
+        throw new OSDFException("The domain request or target component name is null");
     }
 
     private Map<String, String> prepareRequestArguments(Map<String, Object> requestConfig) {

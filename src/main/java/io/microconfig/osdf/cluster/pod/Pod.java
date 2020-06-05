@@ -9,9 +9,7 @@ import lombok.RequiredArgsConstructor;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
-import static io.microconfig.osdf.utils.CommandLineExecutor.executeAndReadLines;
 import static io.microconfig.osdf.utils.StringUtils.castToInteger;
 import static java.lang.Thread.currentThread;
 

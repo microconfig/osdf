@@ -2,6 +2,7 @@ package io.microconfig.osdf.commands;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.cluster.pod.Pod;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.loadtesting.jmeter.JmeterComponent;
 import io.microconfig.osdf.loadtesting.jmeter.JmeterLogResult;
 import io.microconfig.osdf.loadtesting.jmeter.JmeterResourcesCleaner;
@@ -102,7 +103,7 @@ public class LoadTestCommand {
         String command = "oc get route " + name + " -o custom-columns=HOST:.spec.host";
         List<String> output = cli.execute(command).getOutputLines();
         if (output.get(0).toLowerCase().contains("not found"))
-            throw new RuntimeException("Pod " + name + " ip not found");
+            throw new OSDFException("Pod " + name + " ip not found");
         return output.get(1).strip();
     }
 }

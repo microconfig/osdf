@@ -6,12 +6,12 @@ import io.microconfig.osdf.utils.PropertiesUtils;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.stream.Stream;
 
 import static io.microconfig.osdf.resources.ResourcesHashComputer.resourcesHashComputer;
 import static io.microconfig.osdf.utils.FileUtils.*;
-import static io.microconfig.osdf.utils.FileUtils.createDirectoryIfNotExists;
 import static java.nio.file.Files.list;
 
 public class JmeterComponentConfig {
@@ -34,12 +34,12 @@ public class JmeterComponentConfig {
     }
 
     protected void setHashValue() {
-        Path componentPath = Path.of(jmeterComponentsPath + "/" + name);
+        Path componentPath = Paths.get(jmeterComponentsPath.toString(), name);
         resourcesHashComputer(componentPath).computeAll();
     }
 
     protected void setHealthCheckMarker(String marker) {
-        Path propsFilePath = Path.of(jmeterComponentsPath + "/" + name + "/process.properties");
+        Path propsFilePath = Paths.get(jmeterComponentsPath.toString(),name, "process.properties");
         Properties processProperties = PropertiesUtils.loadFromPath(propsFilePath);
         processProperties.setProperty("healthcheck.marker.success", marker);
         PropertiesUtils.dumpProperties(processProperties, propsFilePath);
@@ -47,13 +47,13 @@ public class JmeterComponentConfig {
 
     protected void setConfigName(Path configFilePath, String componentName) {
         String newContent = readAll(configFilePath).replace("<CONFIG_NAME>", componentName);
-        Path resultFilePath = Path.of(jmeterComponentsPath + "/" + name +
-                "/resources/" + configFilePath.getFileName().toString());
+        Path resultFilePath = Paths.get(jmeterComponentsPath.toString(), name,
+                "resources", configFilePath.getFileName().toString());
         writeStringToFile(resultFilePath, newContent);
     }
 
     private void prepareConfigPathsForComponent() {
-        Path componentPath = Path.of(jmeterComponentsPath + "/" + name);
+        Path componentPath = Paths.get(jmeterComponentsPath.toString(), name);
         createDirectoryIfNotExists(componentPath);
         createDirectoryIfNotExists(Path.of(componentPath + "/resources"));
 
@@ -63,7 +63,7 @@ public class JmeterComponentConfig {
     }
 
     private void copyConfigFile(Path componentPath, String configFileName) {
-        Path configFilePath = Path.of(jmeterComponentsPath + "/" + configFileName);
-        FileUtils.copyFile(configFilePath, Path.of(componentPath + "/" + configFileName));
+        Path configFilePath = Paths.get(jmeterComponentsPath.toString(), configFileName);
+        FileUtils.copyFile(configFilePath, Paths.get(componentPath.toString(), configFileName));
     }
 }

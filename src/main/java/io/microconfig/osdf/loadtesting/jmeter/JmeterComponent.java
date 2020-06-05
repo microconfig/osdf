@@ -4,6 +4,7 @@ import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.cluster.pod.Pod;
 import io.microconfig.osdf.cluster.resource.ClusterResource;
 import io.microconfig.osdf.cluster.resource.LocalClusterResource;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.service.deployment.ServiceDeployment;
 import io.microconfig.osdf.service.deployment.matchers.ServiceDeploymentMatcher;
 import io.microconfig.osdf.service.files.DefaultServiceFiles;
@@ -40,7 +41,7 @@ public class JmeterComponent {
         defaultClusterService(componentName, deploymentsFromServiceFiles().version(), cli).upload(resources);
         if (!checkDeploy()) {
             announce(componentName + " hasn't been started. Please wait a cleaning resources.");
-            throw new RuntimeException(componentName + " hasn't been started");
+            throw new OSDFException(componentName + " hasn't been started");
         }
     }
 
@@ -48,7 +49,7 @@ public class JmeterComponent {
         String command = "oc get service " + componentName + "-service -o custom-columns=CLUSTER-IP:.spec.clusterIP";
         List<String> output = cli.execute(command).getOutputLines();
         if (output.get(0).toLowerCase().contains("not found"))
-            throw new RuntimeException("Service " + componentName + " ip not found");
+            throw new OSDFException("Service " + componentName + " ip not found");
         return output.get(1).strip();
     }
 

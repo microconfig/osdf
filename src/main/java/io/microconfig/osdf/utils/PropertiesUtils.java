@@ -27,7 +27,7 @@ public class PropertiesUtils {
             OutputStream outputStream = newOutputStream(path);
             props.store(outputStream, null);
         } catch (IOException e) {
-            throw new RuntimeException("Couldn't write in file at " + path, e);
+            throw new PossibleBugException("Couldn't write in file at " + path, e);
         }
     }
 }
