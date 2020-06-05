@@ -2,11 +2,16 @@ package io.microconfig.osdf.loadtesting.jmeter.testplan.utils;
 
 import org.apache.jmeter.reporters.ResultCollector;
 import org.apache.jmeter.reporters.Summariser;
-import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jmeter.visualizers.SummaryReport;
 
+import static org.apache.jmeter.testelement.TestElement.GUI_CLASS;
+import static org.apache.jmeter.testelement.TestElement.TEST_CLASS;
+
 public class ResultCollectorBuilder {
+
+    private ResultCollectorBuilder() {}
+
     public static ResultCollector prepareResultCollector() {
         Summariser summer = null;
         String summariserName = JMeterUtils.getPropDefault("summariser.name", "summary");
@@ -18,8 +23,8 @@ public class ResultCollectorBuilder {
         ResultCollector logger = new ResultCollector(summer);
         logger.setFilename(logFile);
         logger.setName("Summary Report");
-        logger.setProperty(TestElement.TEST_CLASS, ResultCollector.class.getName());
-        logger.setProperty(TestElement.GUI_CLASS, SummaryReport.class.getName());
+        logger.setProperty(TEST_CLASS, ResultCollector.class.getName());
+        logger.setProperty(GUI_CLASS, SummaryReport.class.getName());
         return logger;
     }
 }

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -18,7 +19,6 @@ import java.util.stream.Stream;
 import static io.microconfig.osdf.loadtesting.jmeter.JmeterComponent.jmeterComponent;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Files.list;
-import static java.nio.file.Path.of;
 import static java.nio.file.Paths.get;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
@@ -65,7 +65,7 @@ public class JmeterComponentsLoader {
         return paths.map(path -> path.getFileName().toString())
                 .filter(this::hasOpenShift)
                 .map(componentName -> {
-                    Path componentPath = of(jmeterConfigProcessor.getJmeterComponentsPath() + "/" + componentName);
+                    Path componentPath = Paths.get(jmeterConfigProcessor.getJmeterComponentsPath().toString(), componentName);
                     return jmeterComponent(componentName, componentPath, cli);
                 });
     }

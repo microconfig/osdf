@@ -1,5 +1,6 @@
 package io.microconfig.osdf.loadtesting.jmeter.testplan;
 
+import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.control.gui.TestPlanGui;
@@ -81,7 +82,7 @@ public class JmeterTestBuilder {
         try {
             SaveService.saveTree(testPlanTree, new FileOutputStream(testTemplatePath.toString()));
         } catch (IOException e) {
-            throw new RuntimeException("Error in saving jmetertest.jmx", e);
+            throw new OSDFException("Error in saving jmetertest.jmx", e);
         }
     }
 

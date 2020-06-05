@@ -1,5 +1,6 @@
 package io.microconfig.osdf.loadtesting.jmeter.configs;
 
+import io.microconfig.osdf.exceptions.OSDFException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -7,6 +8,7 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -48,7 +50,7 @@ public class JmeterMasterConfig {
         jmeterConfig.initGeneralConfigs(Path.of(jmeterComponentsPath + "/templates/master"));
         jmeterConfig.setHealthCheckMarker("Remote engines have been started");
 
-        Path configMapPath = Path.of(jmeterComponentsPath + "/" + masterName + "/resources/configmap.yaml");
+        Path configMapPath = Paths.get(jmeterComponentsPath.toString(), masterName + "/resources/configmap.yaml");
         setJmeterPlanInMasterTemplateConfig(jmeterPlanPath, configMapPath);
     }
 
@@ -87,7 +89,7 @@ public class JmeterMasterConfig {
                     .findFirst()
                     .orElseThrow(() -> new RuntimeException(jmeterPlanPath + "not contains 'ThreadGroup.duration' tag"));
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse " + jmeterPlanPath);
+            throw new OSDFException("Failed to parse " + jmeterPlanPath);
         }
     }
 }

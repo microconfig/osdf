@@ -1,6 +1,7 @@
 package io.microconfig.osdf.loadtesting.jmeter;
 
 import io.microconfig.osdf.cluster.pod.Pod;
+import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 
 import java.io.BufferedReader;
@@ -33,23 +34,33 @@ public class JmeterLogResult {
                         gotLogs = true;
                         String str = reader.readLine();
                         logContent.append(str);
-                        if (logContent.indexOf(summaryMarker) >= 0) {
-                            summary.append(str).append("\n");
-                        };
+                        checkForSummaryMarker(logContent, summary, str);
                         if (logContent.indexOf(finishMarker) >= 0) {
                             return summary.toString();
-                        };
-                        if (logContent.length() > summaryMarker.length())
-                            logContent.delete(0, logContent.length() - summaryMarker.length());
+                        }
+                        cleanLogContent(logContent);
                         continue;
                     }
-                    if (!gotLogs && calcSecFrom(startTime) > 10) return "Test result hasn't been got";
-                    if (calcSecFrom(startTime) > timeoutInSec) return "Test result hasn't been got";
+                    if (!gotLogs && calcSecFrom(startTime) > 10 || calcSecFrom(startTime) > timeoutInSec) {
+                        return "Test result hasn't been got";
+                    }
                     sleepSec(1);
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Test result hasn't been got. " + e.getMessage());
+            throw new OSDFException("Test result hasn't been got. " + e.getMessage());
+        }
+    }
+
+    private void cleanLogContent(StringBuilder logContent) {
+        if (logContent.length() > summaryMarker.length()) {
+            logContent.delete(0, logContent.length() - summaryMarker.length());
+        }
+    }
+
+    private void checkForSummaryMarker(StringBuilder logContent, StringBuilder summary, String str) {
+        if (logContent.indexOf(summaryMarker) >= 0) {
+            summary.append(str).append("\n");
         }
     }
 
