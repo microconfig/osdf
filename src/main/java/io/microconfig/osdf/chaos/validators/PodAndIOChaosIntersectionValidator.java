@@ -4,12 +4,12 @@ import io.microconfig.osdf.chaos.types.Chaos;
 import io.microconfig.osdf.exceptions.OSDFException;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import static io.microconfig.osdf.chaos.types.ChaosType.IO;
 import static io.microconfig.osdf.chaos.types.ChaosType.POD;
+import static java.util.Collections.disjoint;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
 public class PodAndIOChaosIntersectionValidator {
@@ -33,7 +33,7 @@ public class PodAndIOChaosIntersectionValidator {
                 .flatMap(Collection::stream)
                 .collect(toUnmodifiableSet());
 
-        if (!Collections.disjoint(ioComponents, podComponents)) {
+        if (!disjoint(ioComponents, podComponents)) {
             throw new OSDFException("Components in io and pod chaos should not intersect");
         }
     }

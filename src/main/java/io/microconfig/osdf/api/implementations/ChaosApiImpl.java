@@ -7,6 +7,7 @@ import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.AllArgsConstructor;
 
 import static io.microconfig.osdf.chaos.ChaosExperiment.chaosExperiment;
+import static io.microconfig.osdf.chaos.ChaosExperiment.stop;
 import static io.microconfig.osdf.chaos.loader.ChaosComponentLoader.chaosComponentLoader;
 
 @AllArgsConstructor
@@ -27,6 +28,6 @@ public class ChaosApiImpl implements ChaosApi {
 
     @Override
     public void stopChaos() {
-        ChaosExperiment.stop(paths,cli);
+        stop(paths, cli);
     }
 }

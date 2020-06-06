@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static io.microconfig.osdf.chaos.DurationParams.fromYaml;
+import static io.microconfig.osdf.chaos.types.Chaos.getAllChaosImpls;
 import static io.microconfig.osdf.chaos.types.Chaos.parameterizedChaosList;
 import static io.microconfig.osdf.chaos.validators.BasicValidator.*;
 import static io.microconfig.osdf.chaos.validators.PodAndIOChaosIntersectionValidator.podAndIOChaosIntersectionCheck;
@@ -36,7 +37,7 @@ public class ChaosExperiment {
     }
 
     public static void stop(OSDFPaths paths, ClusterCLI cli) {
-        Chaos.getAllChaosImpls(paths, cli).forEach(Chaos::forceStop);
+        getAllChaosImpls(paths, cli).forEach(Chaos::forceStop);
     }
 
     public void check() {
