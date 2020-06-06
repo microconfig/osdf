@@ -5,26 +5,33 @@ import io.microconfig.osdf.exceptions.OSDFException;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import static io.microconfig.osdf.chaos.types.ChaosType.IO;
+import static io.microconfig.osdf.chaos.types.ChaosType.POD;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 
 public class PodAndIOChaosIntersectionValidator {
     private PodAndIOChaosIntersectionValidator() {
         throw new IllegalStateException("Utility class");
     }
 
-    public static void podAndIOChaosIntersectionCheck(Set<Chaos> chaosSet) {
-        Set<String> ioComponents = chaosSet.stream().
-                filter(chaos -> chaos.type().equals("io")).
-                map(Chaos::getComponents).
-                flatMap(Collection::stream).
-                collect(Collectors.toUnmodifiableSet());
+    //just check the first list items, because the rest have the same component lists
+    public static void podAndIOChaosIntersectionCheck(Set<List<Chaos>> chaosSet) {
+        Set<String> ioComponents = chaosSet.stream()
+                .map(chaosList -> chaosList.get(0))
+                .filter(chaos -> chaos.type().equals(IO))
+                .map(Chaos::getComponents)
+                .flatMap(Collection::stream)
+                .collect(toUnmodifiableSet());
 
-        Set<String> podComponents = chaosSet.stream().
-                filter(chaos -> chaos.type().equals("pod")).
-                map(Chaos::getComponents).
-                flatMap(Collection::stream).
-                collect(Collectors.toUnmodifiableSet());
+        Set<String> podComponents = chaosSet.stream()
+                .map(chaosList -> chaosList.get(0))
+                .filter(chaos -> chaos.type().equals(POD))
+                .map(Chaos::getComponents)
+                .flatMap(Collection::stream)
+                .collect(toUnmodifiableSet());
 
         if (!Collections.disjoint(ioComponents, podComponents)) {
             throw new OSDFException("Components in io and pod chaos should not intersect");

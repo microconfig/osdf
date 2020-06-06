@@ -1,5 +1,6 @@
 package io.microconfig.osdf.chaos.types;
 
+import io.microconfig.osdf.chaos.DurationParams;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
@@ -8,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -15,61 +17,69 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static io.microconfig.osdf.chaos.types.Chaos.intParamToList;
+import static io.microconfig.osdf.chaos.types.ChaosType.POD;
 import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
-import static io.microconfig.osdf.utils.YamlUtils.getInt;
 import static io.microconfig.osdf.utils.YamlUtils.getList;
+import static io.microconfig.osdf.utils.YamlUtils.getObjectOrNull;
 import static io.microconfig.utils.Logger.announce;
-import static java.lang.Thread.currentThread;
 
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class PodChaos implements Chaos {
     private static final String PARAMS = "params";
+    private final OSDFPaths paths;
+    private final ClusterCLI cli;
     @Getter
     private final String name;
     @Getter
     private final List<String> components;
     private final Integer timeout;
-    private final Integer duration;
     private final Integer severity;
 
     @EqualsAndHashCode.Exclude
-    Random r = new Random();
+    private final Random r = new Random();
+    @EqualsAndHashCode.Exclude
+    private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+
+    public static PodChaos emptyPodChaos(OSDFPaths paths, ClusterCLI cli) {
+        return new PodChaos(paths, cli, "emptyPod", null, null, null);
+    }
 
     @SuppressWarnings("unchecked")
-    public static PodChaos podChaos(String name, Map<String, Object> yaml) {
+    public static List<Chaos> parameterizedPodChaos(OSDFPaths paths, ClusterCLI cli, Map.Entry<String, Object> entry, DurationParams durationParams) {
+        String name = entry.getKey();
+        Map<String, Object> yaml = (Map<String, Object>) entry.getValue();
         List<String> components = (List<String>) (Object) getList(yaml, "components");
-        Integer timeout = getInt(yaml, PARAMS, "timeout");
-        Integer duration = getInt(yaml, PARAMS, "duration");
-        Integer severity = getInt(yaml, PARAMS, "severity");
-        return new PodChaos(name, components, timeout, duration, severity);
-    }
-
-    public static PodChaos emptyPodChaos() {
-        return new PodChaos("emptyPod", null, null, null, null);
-    }
-
-    @Override
-    public void run(OSDFPaths paths, ClusterCLI cli) {
-        ScheduledExecutorService service = Executors.newScheduledThreadPool(10);
-        service.scheduleAtFixedRate(() -> kill(paths, cli, components, severity), 0, timeout, TimeUnit.SECONDS);
-
-        try {
-            Thread.sleep(TimeUnit.MILLISECONDS.convert(duration, TimeUnit.SECONDS));
-        } catch (InterruptedException e) {
-            service.shutdownNow();
-            currentThread().interrupt();
-            throw new OSDFException("Pod chaos execution interrupted", e);
+        List<Integer> severities = intParamToList(getObjectOrNull(yaml, PARAMS, "severity"), durationParams.getStagesNum());
+        List<Integer> timeouts = intParamToList(getObjectOrNull(yaml, PARAMS, "timeout"), durationParams.getStagesNum());
+        List<Chaos> chaosList = new ArrayList<>();
+        for (int i = 0; i < durationParams.getStagesNum(); i++) {
+            String chaosName = name + "-" + (i + 1);
+            chaosList.add(new PodChaos(paths, cli, chaosName, components, timeouts.get(i), severities.get(i)));
         }
-        service.shutdownNow();
+        return chaosList;
     }
 
     @Override
-    public void stop(OSDFPaths paths, ClusterCLI cli) {
-        //No implementation necessary
+    public void run() {
+        Chaos.announceLaunching(name);
+        service.scheduleAtFixedRate(() -> kill(components, severity), 0, timeout, TimeUnit.SECONDS);
+        announce(name + ":\t pod chaos launched for " + components.toString());
     }
 
-    private void kill(OSDFPaths paths, ClusterCLI cli, List<String> components, Integer severity) {
+    @Override
+    public void stop() {
+        service.shutdownNow();
+        Chaos.announceStopped(name);
+    }
+
+    @Override
+    public void forceStop() {
+        stop();
+    }
+
+    private void kill(List<String> components, Integer severity) {
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
         deployPacks.forEach(
                 pack -> pack.deployment().pods()
@@ -86,9 +96,6 @@ public class PodChaos implements Chaos {
 
     @Override
     public void check() {
-        if (duration == null || duration < 1) {
-            throw new OSDFException("Duration is incorrect or missing in " + name);
-        }
         if (timeout == null || timeout < 1) {
             throw new OSDFException("Timeout is incorrect or missing in " + name);
         }
@@ -98,7 +105,7 @@ public class PodChaos implements Chaos {
     }
 
     @Override
-    public String type() {
-        return "pod";
+    public ChaosType type() {
+        return POD;
     }
 }

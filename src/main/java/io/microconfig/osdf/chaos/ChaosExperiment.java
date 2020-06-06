@@ -3,84 +3,66 @@ package io.microconfig.osdf.chaos;
 import io.microconfig.osdf.chaos.components.ChaosComponent;
 import io.microconfig.osdf.chaos.types.Chaos;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import static io.microconfig.osdf.chaos.DurationParams.fromYaml;
+import static io.microconfig.osdf.chaos.types.Chaos.parameterizedChaosList;
 import static io.microconfig.osdf.chaos.validators.BasicValidator.*;
 import static io.microconfig.osdf.chaos.validators.PodAndIOChaosIntersectionValidator.podAndIOChaosIntersectionCheck;
-import static io.microconfig.osdf.utils.ThreadUtils.sleepSec;
 import static io.microconfig.osdf.utils.YamlUtils.getMap;
 import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
 import static io.microconfig.utils.Logger.announce;
-import static io.microconfig.utils.Logger.error;
 import static java.lang.Thread.currentThread;
+import static java.lang.Thread.sleep;
+import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 
 @RequiredArgsConstructor
 public class ChaosExperiment {
-    private final OSDFPaths paths;
-    private final ClusterCLI cli;
-    private final Set<Chaos> chaosSet;
+    private final Set<List<Chaos>> chaosSet;
+    private final DurationParams durationParams;
 
     public static ChaosExperiment chaosExperiment(OSDFPaths paths, ClusterCLI cli, ChaosComponent component) {
+        DurationParams durationParams = fromYaml(loadFromPath(component.getPathToPlan()));
         Map<String, Object> rules = getMap(loadFromPath(component.getPathToPlan()), "rules");
-        Set<Chaos> chaosSet = rules.entrySet().stream().map(Chaos::chaos).collect(Collectors.toSet());
-        check(chaosSet);
-        return new ChaosExperiment(paths, cli, chaosSet);
+        Set<List<Chaos>> chaosSet = rules.entrySet().stream().map(entry -> parameterizedChaosList(paths, cli, entry, durationParams)).collect(toSet());
+        return new ChaosExperiment(chaosSet, durationParams);
     }
 
-    public static void check(Set<Chaos> chaosSet) {
+    public static void stop(OSDFPaths paths, ClusterCLI cli) {
+        Chaos.getAllChaosImpls(paths, cli).forEach(Chaos::forceStop);
+    }
+
+    public void check() {
         basicCheck(chaosSet);
         checkNetworkChaosIntersections(chaosSet);
         checkPodChaosIntersections(chaosSet);
         podAndIOChaosIntersectionCheck(chaosSet);
     }
 
-    public static void stop(OSDFPaths paths, ClusterCLI cli) {
-        Chaos.getAllChaosImpls().forEach(chaos -> chaos.stop(paths, cli));
-    }
-
     public void run() {
         announce("Launch of chaos");
-        Set<Runnable> runnables = chaosSet.stream().map(this::toRunnable).collect(Collectors.toUnmodifiableSet());
-        Set<Thread> threads = runnables.stream().map(Thread::new).collect(Collectors.toUnmodifiableSet());
-        threads.forEach(Thread::start);
-        announce("Chaos launched");
-
-        while (threads.stream().anyMatch(Thread::isAlive)) {
-            if (!checkMetrics()) {
-                error("Metrics check failed");
-                stopAll(threads);
-            }
-            sleepSec(1);
-        }
-
-        chaosSet.forEach(chaos -> chaos.stop(paths, cli));
-        announce("Chaos stopped");
-    }
-
-    private void stopAll(Set<Thread> threads) {
-        threads.forEach(Thread::interrupt);
-        threads.forEach(thread -> {
+        for (int stage = 0; stage < durationParams.getStagesNum(); stage++) {
+            announce("Launch of chaos stage " + (stage + 1));
+            int finalStage = stage;
+            Set<Chaos> currentStageChaosSet = chaosSet.stream().map(list -> list.get(finalStage)).collect(toUnmodifiableSet());
+            currentStageChaosSet.forEach(Chaos::run);
             try {
-                thread.join();
+                sleep(durationParams.getStageDurationInMillis());
             } catch (InterruptedException e) {
+                currentStageChaosSet.forEach(Chaos::forceStop);
                 currentThread().interrupt();
-                e.printStackTrace();
+                throw new OSDFException("Chaos experiment was interrupted on stage " + stage, e);
             }
-        });
-        error("All chaos threads joined");
-    }
-
-    Runnable toRunnable(Chaos chaos) {
-        return () -> chaos.run(paths, cli);
-    }
-
-    //TODO implement metrics checking
-    private boolean checkMetrics() {
-        return true;
+            currentStageChaosSet.forEach(Chaos::stop);
+            announce("Chaos stage " + (stage + 1) + " stopped");
+        }
+        announce("Chaos stopped");
     }
 }

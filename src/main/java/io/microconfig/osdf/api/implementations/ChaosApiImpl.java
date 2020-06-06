@@ -20,11 +20,13 @@ public class ChaosApiImpl implements ChaosApi {
 
     @Override
     public void runChaosExperiment(String componentName) {
-        chaosExperiment(paths, cli, chaosComponentLoader(paths).loadByName(componentName)).run();
+        ChaosExperiment experiment = chaosExperiment(paths, cli, chaosComponentLoader(paths).loadByName(componentName));
+        experiment.check();
+        experiment.run();
     }
 
     @Override
     public void stopChaos() {
-        ChaosExperiment.stop(paths, cli);
+        ChaosExperiment.stop(paths,cli);
     }
 }

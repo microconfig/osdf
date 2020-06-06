@@ -7,7 +7,7 @@ import io.microconfig.osdf.service.deployment.istio.IstioServiceDeployment;
 import io.microconfig.osdf.service.files.ServiceFiles;
 import io.microconfig.osdf.service.istio.IstioService;
 
-import static io.microconfig.osdf.utils.IstioUtils.toIstioService;
+import static io.microconfig.osdf.service.istio.IstioService.toIstioService;
 
 public class UploadVirtualServiceHook implements DeployHook {
     public static UploadVirtualServiceHook uploadVirtualServiceHook() {
