@@ -1,18 +1,22 @@
+duration: 10M30S   #Duration in hHmMsS
+stages: 5
+
 rules:
   helloworld-istio-network:
     type: network
     components:
       - helloworld-springboot-istio
     params:
+      # Each parameter is a single value or a list of values. If a list of values is
+      # specified, then the number of values must be equal to the number of stages.
       http-error:
         code: 503
-        percentage: 5
+        percentage: [1, 3, 5, 10, 20]
 
   kill-helloworld:
     type: pod
     components:
       - helloworld-springboot
     params:
-      severity: 30
-      timeout: 5
-      duration: 30
+      severity: [5, 20, 50, 75, 100]
+      timeout: 15
