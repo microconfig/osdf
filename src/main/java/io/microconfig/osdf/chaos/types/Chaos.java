@@ -48,7 +48,7 @@ public interface Chaos {
     }
 
     @SuppressWarnings("unchecked")
-    static List<Integer> intParamToList(Object o, Integer stagesNum) throws OSDFException { // is trows needed?
+    static List<Integer> intParamToList(Object o, Integer stagesNum) {
         if (o instanceof List) {
             List<Integer> paramList = (List<Integer>) o;
             if (paramList.size() == stagesNum) {
@@ -67,7 +67,7 @@ public interface Chaos {
         throw new OSDFException("Can't parse param");
     }
 
-    static List<Integer> intParamToListOrEmpty(Object o, Integer stagesNum) { // is trows needed?
+    static List<Integer> intParamToListOrEmpty(Object o, Integer stagesNum) {
         if (o == null) return emptyList();
         return intParamToList(o, stagesNum);
     }

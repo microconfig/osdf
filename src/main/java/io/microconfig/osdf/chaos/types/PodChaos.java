@@ -69,7 +69,7 @@ public class PodChaos implements Chaos {
     @Override
     public void run() {
         Chaos.announceLaunching(name);
-        service.scheduleAtFixedRate(() -> kill(components, severity), 0, timeout, TimeUnit.SECONDS);
+        service.scheduleAtFixedRate(this::kill, 0, timeout, TimeUnit.SECONDS);
         announce(name + ":\t pod chaos launched for " + components.toString());
     }
 
@@ -84,23 +84,23 @@ public class PodChaos implements Chaos {
         stop();
     }
 
-    private void kill(List<String> components, Integer severity) {
+    private void kill() {
         switch (mode) {
             case PROBABILITY:
-                probabilityKill(components, severity);
+                probabilityKill();
                 break;
             case FIXED:
-                fixedKill(components, severity);
+                fixedKill();
                 break;
             case PERCENT:
-                percentKill(components, severity);
+                percentKill();
                 break;
             default:
                 break;
         }
     }
 
-    private void percentKill(List<String> components, Integer severity) {
+    private void percentKill() {
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
         deployPacks.forEach(
                 pack -> {
@@ -113,7 +113,7 @@ public class PodChaos implements Chaos {
         );
     }
 
-    private void fixedKill(List<String> components, Integer severity) {
+    private void fixedKill() {
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
         deployPacks.forEach(
                 pack -> pack.deployment().pods()
@@ -123,7 +123,7 @@ public class PodChaos implements Chaos {
         );
     }
 
-    private void probabilityKill(List<String> components, Integer severity) {
+    private void probabilityKill() {
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
         deployPacks.forEach(
                 pack -> pack.deployment().pods()
