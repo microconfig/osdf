@@ -4,7 +4,6 @@ import io.microconfig.osdf.chaos.DurationParams;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
-import io.microconfig.osdf.utils.YamlUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +17,7 @@ import static io.microconfig.osdf.chaos.types.NetworkChaos.emptyNetworkChaos;
 import static io.microconfig.osdf.chaos.types.NetworkChaos.parameterizedNetworkChaos;
 import static io.microconfig.osdf.chaos.types.PodChaos.emptyPodChaos;
 import static io.microconfig.osdf.chaos.types.PodChaos.parameterizedPodChaos;
+import static io.microconfig.osdf.utils.YamlUtils.getString;
 import static io.microconfig.utils.Logger.announce;
 import static java.util.Collections.emptyList;
 
@@ -33,7 +33,7 @@ public interface Chaos {
     @SuppressWarnings("unchecked")
     static List<Chaos> parameterizedChaosList(OSDFPaths paths, ClusterCLI cli, Entry<String, Object> entry, DurationParams durationParams) {
         Map<String, Object> yaml = (Map<String, Object>) entry.getValue();
-        ChaosType type = valueOf(YamlUtils.getString(yaml, "type").toUpperCase());
+        ChaosType type = valueOf(getString(yaml, "type").toUpperCase());
         String name = entry.getKey();
         switch (type) {
             case IO:
