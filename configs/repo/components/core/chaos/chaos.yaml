@@ -15,8 +15,14 @@ rules:
 
   kill-helloworld:
     type: pod
+
+    # Modes:
+    #   * fixed: affect specified number of pods
+    #   * probability: with a given probability [0-100] affect every pod
+    #   * percent: affect % of pods, number to kill is calculated as follows: floor(num_pods * severity / 100)
+    mode: fixed
     components:
       - helloworld-springboot
     params:
-      severity: [5, 20, 50, 75, 100]
+      severity: [1, 1, 1, 2, 2]
       timeout: 15
