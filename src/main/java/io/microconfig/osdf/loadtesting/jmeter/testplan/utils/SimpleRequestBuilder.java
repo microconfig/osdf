@@ -1,6 +1,5 @@
 package io.microconfig.osdf.loadtesting.jmeter.testplan.utils;
 
-import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.exceptions.PossibleBugException;
 import lombok.RequiredArgsConstructor;
 import org.apache.jmeter.protocol.http.control.Header;
@@ -8,11 +7,14 @@ import org.apache.jmeter.protocol.http.control.HeaderManager;
 import org.apache.jmeter.protocol.http.control.gui.HttpTestSampleGui;
 import org.apache.jmeter.protocol.http.sampler.HTTPSamplerProxy;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import static io.microconfig.osdf.loadtesting.jmeter.testplan.utils.DomainBuilder.domainBuilder;
 import static io.microconfig.osdf.loadtesting.jmeter.testplan.utils.HeaderManagerBuilder.prepareHeaderManager;
-import static io.microconfig.osdf.loadtesting.jmeter.testplan.utils.ParamChecker.checkForNullAndReturn;
+import static io.microconfig.osdf.loadtesting.jmeter.testplan.utils.ParamUtils.*;
 import static io.microconfig.osdf.utils.YamlUtils.getListOfMaps;
 import static io.microconfig.osdf.utils.YamlUtils.getMap;
 import static org.apache.jmeter.testelement.TestElement.GUI_CLASS;
@@ -43,10 +45,10 @@ public class SimpleRequestBuilder {
         Map<String, Object> requestConfig = getMap(request, httpRequestName);
 
         HTTPSamplerProxy httpSampler = new HTTPSamplerProxy();
-        httpSampler.setDomain(prepareDomain(requestConfig));
+        httpSampler.setDomain(domainBuilder(componentsRoutes).prepareDomain(requestConfig));
         httpSampler.setName(httpRequestName);
         httpSampler.setMethod(checkForNullAndReturn(requestConfig, "method"));
-        httpSampler.setPath(checkForNullAndReturn(requestConfig, "path"));
+        httpSampler.setPath(addPath(requestConfig));
         httpSampler.setProtocol(checkForNullAndReturn(requestConfig, "protocol"));
         httpSampler.setUseKeepAlive(true);
         httpSampler.setProperty(TEST_CLASS, HTTPSamplerProxy.class.getName());
@@ -55,6 +57,11 @@ public class SimpleRequestBuilder {
         addBody(requestConfig, httpSampler);
         addHeaderManager(headerManager, httpRequestName, requestConfig);
         return httpSampler;
+    }
+
+    private String addPath(Map<String, Object> requestConfig) {
+        String path = checkForNullAndReturn(requestConfig, "path");
+        return addPathParamsIfExists(path, requestConfig);
     }
 
     private void addHeaderManager(Map<String, HeaderManager> headerManagerMap, String httpRequestName,
@@ -71,7 +78,8 @@ public class SimpleRequestBuilder {
     }
 
     private void addParams(Map<String, Object> requestConfig, HTTPSamplerProxy httpSampler) {
-        if (requestConfig.containsKey("params")) {
+        String method = checkForNullAndReturn(requestConfig, "method");
+        if (method.equals("GET") && requestConfig.containsKey("params")) {
             Map<String, String> params = prepareRequestParams(requestConfig);
             params.forEach((key, value) -> httpSampler.addArgument(key, value, "="));
         }
@@ -86,28 +94,13 @@ public class SimpleRequestBuilder {
         }
     }
 
-    private String prepareDomain(Map<String, Object> requestConfig) {
-        if (requestConfig.containsKey("component"))
-            return componentsRoutes.get(String.valueOf(requestConfig.get("component")));
-        if (requestConfig.containsKey("domain"))
-            return String.valueOf(requestConfig.get("domain"));
-        throw new OSDFException("The domain request or target component name is null");
-    }
-
-    private Map<String, String> prepareRequestParams(Map<String, Object> requestConfig) {
-        Map<String, String> resultParams = new HashMap<>();
-        List<Map<String, Object>> params = getListOfMaps(requestConfig, "params");
-        params.forEach(param -> {
-            String name = getFirstKey(param);
-            resultParams.put(name, String.valueOf(param.get(name)));
-        });
-        return resultParams;
-    }
-
-    private String getFirstKey(Map<String, Object> map) {
-        return map.keySet()
-                .stream()
-                .findFirst()
-                .orElseThrow();
+    private String addPathParamsIfExists(String path, Map<String, Object> requestConfig) {
+        String method = checkForNullAndReturn(requestConfig, "method");
+        StringJoiner pathWithParams = new StringJoiner("&", path + "?", "");
+        if (!method.equals("GET") && requestConfig.containsKey("params")) {
+            prepareRequestParams(requestConfig).forEach((key, value) -> pathWithParams.add(key + "=" + value));
+            return pathWithParams.toString();
+        }
+        return path;
     }
 }

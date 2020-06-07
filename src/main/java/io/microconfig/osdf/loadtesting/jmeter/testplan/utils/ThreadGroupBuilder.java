@@ -7,7 +7,7 @@ import org.apache.jmeter.threads.gui.ThreadGroupGui;
 
 import java.util.Map;
 
-import static io.microconfig.osdf.loadtesting.jmeter.testplan.utils.ParamChecker.checkForNullAndReturn;
+import static io.microconfig.osdf.loadtesting.jmeter.testplan.utils.ParamUtils.checkForNullAndReturn;
 import static org.apache.jmeter.testelement.TestElement.GUI_CLASS;
 import static org.apache.jmeter.testelement.TestElement.TEST_CLASS;
 import static org.apache.jmeter.threads.AbstractThreadGroup.ON_SAMPLE_ERROR;

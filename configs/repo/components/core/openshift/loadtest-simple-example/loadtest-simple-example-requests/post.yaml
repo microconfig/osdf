@@ -4,6 +4,8 @@ plan.post.requests:
       method: POST
       path: /post-hello
       protocol: http
+      params:                                     #Request params '- name: value'
+        - name: test-value
       body: '{
               "data": "data",
               "number": 1234,
@@ -16,6 +18,8 @@ plan.post.requests:
       protocol: http
       headers:
        - headerName: headerValue
+      params:                                     #Request params '- name: value'
+        - name: test-post-param-value
       body: '{
               "data": "data",
               "number": 1234,
