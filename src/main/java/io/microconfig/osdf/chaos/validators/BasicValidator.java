@@ -3,6 +3,7 @@ package io.microconfig.osdf.chaos.validators;
 import io.microconfig.osdf.chaos.types.Chaos;
 import io.microconfig.osdf.chaos.types.ChaosType;
 import io.microconfig.osdf.exceptions.OSDFException;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -13,25 +14,28 @@ import static io.microconfig.osdf.chaos.types.ChaosType.NETWORK;
 import static io.microconfig.osdf.chaos.types.ChaosType.POD;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
+@RequiredArgsConstructor
 public class BasicValidator {
-    private BasicValidator() {
-        throw new IllegalStateException("Utility class");
+    private final Set<List<Chaos>> chaosSet;
+
+    public static BasicValidator basicValidator(Set<List<Chaos>> chaosSet) {
+        return new BasicValidator(chaosSet);
     }
 
-    public static void basicCheck(Set<List<Chaos>> chaosSet) {
+    public void basicCheck() {
         chaosSet.parallelStream().forEach(list -> list.forEach(Chaos::check));
     }
 
-    public static void checkNetworkChaosIntersections(Set<List<Chaos>> chaosSet) {
-        checkIntersection(chaosSet, NETWORK);
+    public void checkNetworkChaosIntersections() {
+        checkIntersection(NETWORK);
     }
 
-    public static void checkPodChaosIntersections(Set<List<Chaos>> chaosSet) {
-        checkIntersection(chaosSet, POD);
+    public void checkPodChaosIntersections() {
+        checkIntersection(POD);
     }
 
     //just check the first list items, because the rest have the same component lists
-    private static void checkIntersection(Set<List<Chaos>> chaosSet, ChaosType type) {
+    private void checkIntersection(ChaosType type) {
         Set<Chaos> filteredSet = chaosSet.stream()
                 .map(chaosList -> chaosList.get(0))
                 .filter(chaos -> chaos.type().equals(type))

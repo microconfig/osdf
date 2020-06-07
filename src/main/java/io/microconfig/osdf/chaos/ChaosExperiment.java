@@ -2,6 +2,7 @@ package io.microconfig.osdf.chaos;
 
 import io.microconfig.osdf.chaos.components.ChaosComponent;
 import io.microconfig.osdf.chaos.types.Chaos;
+import io.microconfig.osdf.chaos.validators.BasicValidator;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
@@ -14,8 +15,8 @@ import java.util.Set;
 import static io.microconfig.osdf.chaos.DurationParams.fromYaml;
 import static io.microconfig.osdf.chaos.types.Chaos.getAllChaosImpls;
 import static io.microconfig.osdf.chaos.types.Chaos.parameterizedChaosList;
-import static io.microconfig.osdf.chaos.validators.BasicValidator.*;
-import static io.microconfig.osdf.chaos.validators.PodAndIOChaosIntersectionValidator.podAndIOChaosIntersectionCheck;
+import static io.microconfig.osdf.chaos.validators.BasicValidator.basicValidator;
+import static io.microconfig.osdf.chaos.validators.PodAndIOChaosIntersectionValidator.podAndIOChaosIntersectionValidator;
 import static io.microconfig.osdf.utils.YamlUtils.getMap;
 import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
 import static io.microconfig.utils.Logger.announce;
@@ -41,10 +42,11 @@ public class ChaosExperiment {
     }
 
     public void check() {
-        basicCheck(chaosSet);
-        checkNetworkChaosIntersections(chaosSet);
-        checkPodChaosIntersections(chaosSet);
-        podAndIOChaosIntersectionCheck(chaosSet);
+        BasicValidator basicValidator = basicValidator(chaosSet);
+        basicValidator.basicCheck();
+        basicValidator.checkPodChaosIntersections();
+        basicValidator.checkNetworkChaosIntersections();
+        podAndIOChaosIntersectionValidator(chaosSet).podAndIOChaosIntersectionCheck();
     }
 
     public void run() {
