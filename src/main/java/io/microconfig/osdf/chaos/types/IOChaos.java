@@ -6,12 +6,16 @@ import io.microconfig.osdf.cluster.pod.Pod;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
+import io.microconfig.osdf.utils.ChaosUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import static io.microconfig.osdf.chaos.types.Chaos.*;
 import static io.microconfig.osdf.chaos.types.ChaosMode.*;
@@ -19,15 +23,12 @@ import static io.microconfig.osdf.chaos.types.ChaosType.IO;
 import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
 import static io.microconfig.osdf.utils.YamlUtils.*;
 import static io.microconfig.utils.Logger.announce;
-import static java.lang.Math.floorDiv;
 import static java.util.Set.of;
 
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class IOChaos implements Chaos {
-    private static final Set<ChaosMode> SUPPORTED_MODES = of(PROBABILITY, PERCENT, FIXED);
-    @EqualsAndHashCode.Exclude
-    private final Random r = new Random();
+    private static final Set<ChaosMode> SUPPORTED_MODES = of(PERCENT, FIXED);
     private final OSDFPaths paths;
     private final ClusterCLI cli;
     @Getter
@@ -60,49 +61,11 @@ public class IOChaos implements Chaos {
     @Override
     public void run() {
         announceLaunching(name);
-        switch (mode) {
-            case PROBABILITY:
-                probabilityRun();
-                break;
-            case FIXED:
-                fixedRun();
-                break;
-            case PERCENT:
-                percentRun();
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void percentRun() {
-        List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
-        deployPacks.forEach(pack -> {
-                    List<Pod> pods = pack.deployment().pods();
-                    int numberToRun = floorDiv(pods.size() * severity, 100);
-                    pods.parallelStream()
-                            .filter(Pod::checkStressContainer)
-                            .limit(numberToRun)
-                            .forEach(this::runAndAnnouce);
-                }
-        );
-    }
-
-    private void fixedRun() {
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
         deployPacks.forEach(pack -> pack.deployment().pods()
                 .parallelStream()
                 .filter(Pod::checkStressContainer)
-                .limit(severity)
-                .forEach(this::runAndAnnouce));
-    }
-
-    private void probabilityRun() {
-        List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
-        deployPacks.forEach(pack -> pack.deployment().pods()
-                .parallelStream()
-                .filter(Pod::checkStressContainer)
-                .filter(pod -> r.nextInt(100) <= severity)
+                .limit(ChaosUtils.calcLimit(pack.deployment().pods().size(), severity, mode))
                 .forEach(this::runAndAnnouce));
     }
 

@@ -6,12 +6,16 @@ import io.microconfig.osdf.cluster.pod.Pod;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
+import io.microconfig.osdf.utils.ChaosUtils;
 import io.microconfig.osdf.utils.YamlUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -23,16 +27,13 @@ import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceD
 import static io.microconfig.osdf.utils.YamlUtils.getList;
 import static io.microconfig.osdf.utils.YamlUtils.getObjectOrNull;
 import static io.microconfig.utils.Logger.announce;
-import static java.lang.Math.floorDiv;
 import static java.util.Set.of;
 
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class PodChaos implements Chaos {
     private static final String PARAMS = "params";
-    private static final Set<ChaosMode> SUPPORTED_MODES = of(PROBABILITY, PERCENT, FIXED);
-    @EqualsAndHashCode.Exclude
-    private final Random r = new Random();
+    private static final Set<ChaosMode> SUPPORTED_MODES = of(PERCENT, FIXED);
     private final OSDFPaths paths;
     private final ClusterCLI cli;
     @Getter
@@ -85,50 +86,11 @@ public class PodChaos implements Chaos {
     }
 
     private void kill() {
-        switch (mode) {
-            case PROBABILITY:
-                probabilityKill();
-                break;
-            case FIXED:
-                fixedKill();
-                break;
-            case PERCENT:
-                percentKill();
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void percentKill() {
-        List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
-        deployPacks.forEach(
-                pack -> {
-                    List<Pod> pods = pack.deployment().pods();
-                    int numberToKill = floorDiv(pods.size() * severity, 100);
-                    pods.stream()
-                            .limit(numberToKill)
-                            .forEach(this::killPodAndAnnounce);
-                }
-        );
-    }
-
-    private void fixedKill() {
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
         deployPacks.forEach(
                 pack -> pack.deployment().pods()
                         .stream()
-                        .limit(severity)
-                        .forEach(this::killPodAndAnnounce)
-        );
-    }
-
-    private void probabilityKill() {
-        List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
-        deployPacks.forEach(
-                pack -> pack.deployment().pods()
-                        .stream()
-                        .filter(pod -> r.nextInt(100) <= severity)
+                        .limit(ChaosUtils.calcLimit(pack.deployment().pods().size(), severity, mode))
                         .forEach(this::killPodAndAnnounce)
         );
     }
