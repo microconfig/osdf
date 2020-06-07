@@ -23,9 +23,10 @@ public class JmeterMasterConfig {
     private final String masterName;
     private final Path jmeterComponentsPath;
     private final Path jmeterPlanPath;
-    private final String healthCheckMarker = "Remote engines have been started";
-    private final int waitSec = 25;
     private JmeterComponentConfig jmeterConfig;
+
+    private static final String HEALTH_CHECK_MARKER = "Remote engines have been started";
+    private static final int WAIT_SEC = 25;
 
     public static JmeterMasterConfig jmeterMasterConfig(Path jmeterComponentsPath, Path jmeterPlanPath) {
         return new JmeterMasterConfig("jmeter-master", jmeterComponentsPath, jmeterPlanPath);
@@ -50,7 +51,7 @@ public class JmeterMasterConfig {
 
     public void init() {
         jmeterConfig.initGeneralConfigs(Path.of(jmeterComponentsPath + "/templates/master"));
-        jmeterConfig.setHealthCheckMarker(healthCheckMarker, waitSec);
+        jmeterConfig.setHealthCheckMarker(HEALTH_CHECK_MARKER, WAIT_SEC);
         Path configMapPath = get(jmeterComponentsPath.toString(), masterName + "/resources/configmap.yaml");
         setJmeterPlanInMasterTemplateConfig(jmeterPlanPath, configMapPath);
     }
