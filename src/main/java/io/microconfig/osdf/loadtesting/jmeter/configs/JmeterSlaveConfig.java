@@ -8,6 +8,8 @@ import java.nio.file.Path;
 public class JmeterSlaveConfig {
     private final String name;
     private final Path jmeterComponentsPath;
+    private final String healthCheckMarker = "Created remote object";
+    private final int waitSec = 25;
     private JmeterComponentConfig jmeterConfig;
 
     public static JmeterSlaveConfig jmeterSlaveConfig(String componentName, Path jmeterComponentsPath) {
@@ -22,6 +24,6 @@ public class JmeterSlaveConfig {
 
     public void init() {
         jmeterConfig.initGeneralConfigs(Path.of(jmeterComponentsPath + "/templates/slave"));
-        jmeterConfig.setHealthCheckMarker("Created remote object");
+        jmeterConfig.setHealthCheckMarker(healthCheckMarker, waitSec);
     }
 }

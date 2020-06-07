@@ -2,13 +2,16 @@ package io.microconfig.osdf.api.implementations;
 
 import io.microconfig.osdf.api.declarations.LoadTestingApi;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.exceptions.OSDFException;
+import io.microconfig.osdf.loadtesting.jmeter.configs.JmeterConfigProcessor;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
 
 import static io.microconfig.osdf.commands.LoadTestCommand.loadTestCommand;
+import static io.microconfig.osdf.loadtesting.jmeter.JmeterPlanPathGenerator.jmeterPlanPathGenerator;
+import static io.microconfig.osdf.loadtesting.jmeter.configs.JmeterConfigProcessor.configProcessor;
+import static io.microconfig.osdf.loadtesting.jmeter.loader.JmeterPathLoader.pathLoader;
 
 @RequiredArgsConstructor
 public class LoadTestingApiImpl implements LoadTestingApi {
@@ -20,12 +23,12 @@ public class LoadTestingApiImpl implements LoadTestingApi {
     }
 
     @Override
-    public void loadTest(Path jmeterPlanPath, String configName, Integer numberOfSlaves) {
-        if (configName == null && jmeterPlanPath == null)
-            throw new OSDFException("Please use --config to choose name of test config or" +
-                    " --file parameter to mention path of jmeter jmx testplan");
+    public void loadTest(Path jmeterPlanPath, String componentName, Integer numberOfSlaves) {
         int number = numberOfSlaves != null ? numberOfSlaves : 3;
-        if (configName != null) loadTestCommand(paths, cli, configName, number).run();
-        if (jmeterPlanPath != null) loadTestCommand(paths, cli, jmeterPlanPath, number).run();
+        Path path = pathLoader(paths, componentName).jmeterComponentsPathLoad();
+        JmeterConfigProcessor configProcessor = jmeterPlanPath != null ?
+                configProcessor(path, number, jmeterPlanPath, true) :
+                configProcessor(path, number, jmeterPlanPathGenerator(paths, cli, componentName).generate(), false);
+        loadTestCommand(cli, configProcessor).run();
     }
 }

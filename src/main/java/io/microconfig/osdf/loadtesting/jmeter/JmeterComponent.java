@@ -33,11 +33,9 @@ public class JmeterComponent {
 
     public void deploy() {
         List<LocalClusterResource> resources = getJmeterServiceFiles().resources();
-        resources.forEach(clusterResource -> {
-            if (exists(clusterResource)) {
-                clusterResource.delete(cli);
-            }
-        });
+        resources.stream()
+                .filter(this::exists)
+                .forEach(clusterResource -> clusterResource.delete(cli));
         defaultClusterService(componentName, deploymentsFromServiceFiles().version(), cli).upload(resources);
         if (!checkDeploy()) {
             announce(componentName + " hasn't been started. Please wait a cleaning resources.");
@@ -58,8 +56,7 @@ public class JmeterComponent {
     }
 
     public boolean checkDeploy() {
-        DefaultServiceFiles jmeterServiceFiles = getJmeterServiceFiles();
-        return successfulDeploymentChecker().check(deploymentsFromServiceFiles(), jmeterServiceFiles);
+        return successfulDeploymentChecker().check(deploymentsFromServiceFiles(), getJmeterServiceFiles());
     }
 
     public List<Pod> pods() {

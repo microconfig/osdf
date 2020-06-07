@@ -9,7 +9,6 @@ import static org.apache.jmeter.testelement.TestElement.GUI_CLASS;
 import static org.apache.jmeter.testelement.TestElement.TEST_CLASS;
 
 public class ResultCollectorBuilder {
-
     private ResultCollectorBuilder() {}
 
     public static ResultCollector prepareResultCollector() {

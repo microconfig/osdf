@@ -8,7 +8,6 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -17,12 +16,15 @@ import static io.microconfig.osdf.utils.FileUtils.readAll;
 import static io.microconfig.osdf.utils.FileUtils.writeStringToFile;
 import static io.microconfig.osdf.utils.YamlUtils.getInt;
 import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
+import static java.nio.file.Paths.get;
 import static java.util.stream.IntStream.range;
 
 public class JmeterMasterConfig {
     private final String masterName;
     private final Path jmeterComponentsPath;
     private final Path jmeterPlanPath;
+    private final String healthCheckMarker = "Remote engines have been started";
+    private final int waitSec = 25;
     private JmeterComponentConfig jmeterConfig;
 
     public static JmeterMasterConfig jmeterMasterConfig(Path jmeterComponentsPath, Path jmeterPlanPath) {
@@ -48,9 +50,8 @@ public class JmeterMasterConfig {
 
     public void init() {
         jmeterConfig.initGeneralConfigs(Path.of(jmeterComponentsPath + "/templates/master"));
-        jmeterConfig.setHealthCheckMarker("Remote engines have been started");
-
-        Path configMapPath = Paths.get(jmeterComponentsPath.toString(), masterName + "/resources/configmap.yaml");
+        jmeterConfig.setHealthCheckMarker(healthCheckMarker, waitSec);
+        Path configMapPath = get(jmeterComponentsPath.toString(), masterName + "/resources/configmap.yaml");
         setJmeterPlanInMasterTemplateConfig(jmeterPlanPath, configMapPath);
     }
 
@@ -60,9 +61,9 @@ public class JmeterMasterConfig {
         writeStringToFile(configMapPath, newContent);
     }
 
-    public int getDuration(String configName) {
-        if (configName != null) {
-            Path userTestConfigPath = Path.of(jmeterComponentsPath + "/config/" + configName + ".yaml");
+    public int getDuration(boolean isJmxConfig) {
+        if (!isJmxConfig) {
+            Path userTestConfigPath = Path.of(jmeterComponentsPath + "/application.yaml");
             Map<String, Object> userConfig = loadFromPath(userTestConfigPath);
             return getInt(userConfig, "duration");
         } else {

@@ -17,9 +17,6 @@
 #var microconfig.template.slave.service.fromFile: ${osdf-loadtest@configDir}/slave-templates/service.yaml
 #var microconfig.template.slave.service.toFile: templates/slave/service.yaml
 
-#var microconfig.template.mark.fromFile: ${osdf-loadtest@configDir}/loadtest-mark.yaml
-#var microconfig.template.mark.toFile: loadtest-mark.yaml
-
 image-master.url: ${this@registry.project.url}/jmeter-master:latest
 image-slave.url: ${this@registry.project.url}/jmeter-slave:latest
 

@@ -1,16 +1,15 @@
 package io.microconfig.osdf.loadtesting.jmeter.loader;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.microconfig.osdf.exceptions.PossibleBugException;
 import io.microconfig.osdf.loadtesting.jmeter.JmeterComponent;
 import io.microconfig.osdf.loadtesting.jmeter.configs.JmeterConfigProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -25,7 +24,6 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 @Setter
 @RequiredArgsConstructor
 public class JmeterComponentsLoader {
-
     private final ClusterCLI cli;
     private final JmeterConfigProcessor jmeterConfigProcessor;
 
@@ -65,7 +63,7 @@ public class JmeterComponentsLoader {
         return paths.map(path -> path.getFileName().toString())
                 .filter(this::hasOpenShift)
                 .map(componentName -> {
-                    Path componentPath = Paths.get(jmeterConfigProcessor.getJmeterComponentsPath().toString(), componentName);
+                    Path componentPath = get(jmeterConfigProcessor.getJmeterComponentsPath().toString(), componentName);
                     return jmeterComponent(componentName, componentPath, cli);
                 });
     }
@@ -81,7 +79,7 @@ public class JmeterComponentsLoader {
                     .filter(Files::isDirectory)
                     .collect(Collectors.toList());
         } catch (IOException e) {
-            throw new UncheckedIOException("Couldn't open dir at " + componentsPath, e);
+            throw new PossibleBugException("Couldn't open dir at " + componentsPath, e);
         }
     }
 

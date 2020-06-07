@@ -1,4 +1,3 @@
-#include osdf-loadtest
 #include loadtest-simple-example-requests
 
 numberOfThreads: 10

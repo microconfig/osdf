@@ -8,27 +8,19 @@ import java.nio.file.Path;
 
 import static io.microconfig.osdf.component.finder.MicroConfigComponentsFinder.componentsFinder;
 import static io.microconfig.osdf.component.loader.ComponentsLoaderImpl.componentsLoader;
-import static java.nio.file.Files.exists;
 
 @RequiredArgsConstructor
 public class JmeterPathLoader {
     private final OSDFPaths paths;
-    private final String markerFile;
+    private final String componentName;
 
-    public static JmeterPathLoader jmeterPathLoader(OSDFPaths paths) {
-        return new JmeterPathLoader(paths, "loadtest-mark.yaml");
+    public static JmeterPathLoader pathLoader(OSDFPaths paths, String componentName) {
+        return new JmeterPathLoader(paths, componentName);
     }
 
     public Path jmeterComponentsPathLoad() {
         return componentsLoader()
-                .load(componentsFinder(paths.componentsPath()), this::check, this::mapper)
-                .stream()
-                .findFirst()
-                .orElseThrow();
-    }
-
-    private boolean check(ComponentDir componentDir) {
-        return exists(componentDir.getPath(markerFile));
+                .loadOne(componentName, componentsFinder(paths.componentsPath()), this::mapper);
     }
 
     private Path mapper(ComponentDir componentDir) {

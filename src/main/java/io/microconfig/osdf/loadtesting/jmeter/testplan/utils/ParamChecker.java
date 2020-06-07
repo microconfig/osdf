@@ -1,11 +1,9 @@
 package io.microconfig.osdf.loadtesting.jmeter.testplan.utils;
 
 import io.microconfig.osdf.exceptions.OSDFException;
-
 import java.util.Map;
 
 public class ParamChecker {
-
     private ParamChecker(){}
 
     public static String checkForNullAndReturn(Map<String, Object> config, String param) {

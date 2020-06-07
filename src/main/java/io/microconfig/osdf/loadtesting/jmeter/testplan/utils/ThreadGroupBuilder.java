@@ -13,7 +13,6 @@ import static org.apache.jmeter.testelement.TestElement.TEST_CLASS;
 import static org.apache.jmeter.threads.AbstractThreadGroup.ON_SAMPLE_ERROR;
 
 public class ThreadGroupBuilder {
-
     private ThreadGroupBuilder() {}
 
     public static ThreadGroup prepareThreadGroup(Map<String, Object> userConfig, LoopController loopController) {

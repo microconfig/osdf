@@ -1,18 +1,17 @@
 package io.microconfig.osdf.loadtesting.jmeter.configs;
 
-import io.microconfig.osdf.utils.FileUtils;
+import io.microconfig.osdf.exceptions.PossibleBugException;
 import io.microconfig.osdf.utils.PropertiesUtils;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.stream.Stream;
 
 import static io.microconfig.osdf.resources.ResourcesHashComputer.resourcesHashComputer;
 import static io.microconfig.osdf.utils.FileUtils.*;
 import static java.nio.file.Files.list;
+import static java.nio.file.Paths.get;
 
 public class JmeterComponentConfig {
     private final String name;
@@ -29,41 +28,40 @@ public class JmeterComponentConfig {
             list.forEach(path -> setConfigName(path, name));
             setHashValue();
         } catch (IOException e) {
-            throw new UncheckedIOException("Couldn't open dir at " + templatePath, e);
+            throw new PossibleBugException("Couldn't open dir at " + templatePath, e);
         }
     }
 
     protected void setHashValue() {
-        Path componentPath = Paths.get(jmeterComponentsPath.toString(), name);
+        Path componentPath = get(jmeterComponentsPath.toString(), name);
         resourcesHashComputer(componentPath).computeAll();
     }
 
-    protected void setHealthCheckMarker(String marker) {
-        Path propsFilePath = Paths.get(jmeterComponentsPath.toString(),name, "process.properties");
+    protected void setHealthCheckMarker(String marker, int waitSec) {
+        Path propsFilePath = get(jmeterComponentsPath.toString(),name, "process.properties");
         Properties processProperties = PropertiesUtils.loadFromPath(propsFilePath);
         processProperties.setProperty("healthcheck.marker.success", marker);
+        processProperties.setProperty("mgmt.start.waitSec=", String.valueOf(waitSec));
         PropertiesUtils.dumpProperties(processProperties, propsFilePath);
     }
 
     protected void setConfigName(Path configFilePath, String componentName) {
         String newContent = readAll(configFilePath).replace("<CONFIG_NAME>", componentName);
-        Path resultFilePath = Paths.get(jmeterComponentsPath.toString(), name,
+        Path resultFilePath = get(jmeterComponentsPath.toString(), name,
                 "resources", configFilePath.getFileName().toString());
         writeStringToFile(resultFilePath, newContent);
     }
 
     private void prepareConfigPathsForComponent() {
-        Path componentPath = Paths.get(jmeterComponentsPath.toString(), name);
+        Path componentPath = get(jmeterComponentsPath.toString(), name);
         createDirectoryIfNotExists(componentPath);
         createDirectoryIfNotExists(Path.of(componentPath + "/resources"));
-
-        //Copy deploy.yaml and process.properties to master and slave path
+        createFileIfNotExists(Path.of(componentPath + "/process.properties"));
         copyConfigFile(componentPath, "deploy.yaml");
-        copyConfigFile(componentPath, "process.properties");
     }
 
     private void copyConfigFile(Path componentPath, String configFileName) {
-        Path configFilePath = Paths.get(jmeterComponentsPath.toString(), configFileName);
-        FileUtils.copyFile(configFilePath, Paths.get(componentPath.toString(), configFileName));
+        Path configFilePath = get(jmeterComponentsPath.toString(), configFileName);
+        copyFile(configFilePath, get(componentPath.toString(), configFileName));
     }
 }

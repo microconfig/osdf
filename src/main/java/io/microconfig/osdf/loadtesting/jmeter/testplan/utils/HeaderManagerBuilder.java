@@ -8,7 +8,6 @@ import static org.apache.jmeter.testelement.TestElement.GUI_CLASS;
 import static org.apache.jmeter.testelement.TestElement.TEST_CLASS;
 
 public class HeaderManagerBuilder {
-
     private HeaderManagerBuilder(){}
 
     public static HeaderManager prepareHeaderManager(String httpRequestName) {
