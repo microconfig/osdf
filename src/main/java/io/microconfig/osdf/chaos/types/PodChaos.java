@@ -42,8 +42,6 @@ public class PodChaos implements Chaos {
     private final ChaosMode mode;
 
     @EqualsAndHashCode.Exclude
-    private final Random r = new Random();
-    @EqualsAndHashCode.Exclude
     private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 
     public static PodChaos emptyPodChaos(OSDFPaths paths, ClusterCLI cli) {
@@ -124,6 +122,7 @@ public class PodChaos implements Chaos {
     }
 
     private void probabilityKill() {
+        Random r = new Random();
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
         deployPacks.forEach(
                 pack -> pack.deployment().pods()

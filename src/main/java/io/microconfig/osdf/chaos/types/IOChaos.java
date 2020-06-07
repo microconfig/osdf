@@ -36,9 +36,6 @@ public class IOChaos implements Chaos {
     private final Long timeout;
     private final ChaosMode mode;
 
-    @EqualsAndHashCode.Exclude
-    private final Random r = new Random();
-
     public static IOChaos emptyIoChaos(OSDFPaths paths, ClusterCLI cli) {
         return new IOChaos(paths, cli, "EmptyIO", null, null, null, null);
     }
@@ -84,9 +81,7 @@ public class IOChaos implements Chaos {
                     pods.parallelStream()
                             .filter(Pod::checkStressContainer)
                             .limit(numberToRun)
-                            .forEach(
-                                    this::runAndAnnouce
-                            );
+                            .forEach(this::runAndAnnouce);
                 }
         );
     }
@@ -97,20 +92,17 @@ public class IOChaos implements Chaos {
                 .parallelStream()
                 .filter(Pod::checkStressContainer)
                 .limit(severity)
-                .forEach(
-                        this::runAndAnnouce
-                ));
+                .forEach(this::runAndAnnouce));
     }
 
     private void probabilityRun() {
+        Random r = new Random();
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
         deployPacks.forEach(pack -> pack.deployment().pods()
                 .parallelStream()
                 .filter(Pod::checkStressContainer)
                 .filter(pod -> r.nextInt(100) <= severity)
-                .forEach(
-                        this::runAndAnnouce
-                ));
+                .forEach(this::runAndAnnouce));
     }
 
     private void runAndAnnouce(Pod pod) {
