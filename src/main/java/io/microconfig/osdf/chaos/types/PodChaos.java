@@ -12,7 +12,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,7 +62,6 @@ public class PodChaos implements Chaos {
         List<Integer> severities = extractor.intParamToList(getObjectOrNull(yaml, PARAMS, "severity"), durationParams.getStagesNum());
         List<Integer> timeouts = extractor.intParamToList(getObjectOrNull(yaml, PARAMS, "timeout"), durationParams.getStagesNum());
         ChaosMode mode = valueOf(YamlUtils.getString(yaml, "mode").toUpperCase());
-        List<Chaos> chaosList = new ArrayList<>();
         return range(0, durationParams.getStagesNum())
                 .mapToObj(i -> {
                     String chaosName = name + "-" + (i + 1);
