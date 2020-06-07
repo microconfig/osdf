@@ -6,7 +6,6 @@ import io.microconfig.osdf.cluster.pod.Pod;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
-import io.microconfig.osdf.utils.ChaosUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +15,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import static io.microconfig.osdf.chaos.types.Chaos.*;
+import static io.microconfig.osdf.chaos.ParamsExtractor.paramsExtractor;
 import static io.microconfig.osdf.chaos.types.ChaosMode.*;
 import static io.microconfig.osdf.chaos.types.ChaosType.IO;
 import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
 import static io.microconfig.osdf.utils.YamlUtils.*;
 import static io.microconfig.utils.Logger.announce;
+import static java.lang.Math.floorDiv;
 import static java.util.Set.of;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static java.util.stream.IntStream.range;
@@ -49,7 +49,7 @@ public class IOChaos implements Chaos {
         String name = entry.getKey();
         Map<String, Object> yaml = (Map<String, Object>) entry.getValue();
         List<String> components = (List<String>) (Object) getList(yaml, "components");
-        List<Integer> severities = intParamToList(getObjectOrNull(yaml, "params", "severity"), durationParams.getStagesNum());
+        List<Integer> severities = paramsExtractor().intParamToList(getObjectOrNull(yaml, "params", "severity"), durationParams.getStagesNum());
         ChaosMode mode = valueOf(getString(yaml, "mode").toUpperCase());
         return range(0, durationParams.getStagesNum())
                 .mapToObj(i -> {
@@ -59,14 +59,17 @@ public class IOChaos implements Chaos {
                 .collect(toUnmodifiableList());
     }
 
+    private int calcLimit(int size, int severity, ChaosMode mode) {
+        return mode == PERCENT ? floorDiv(size * severity, 100) : severity;
+    }
+
     @Override
     public void run() {
-        announceLaunching(name);
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
         deployPacks.forEach(pack -> pack.deployment().pods()
                 .parallelStream()
                 .filter(Pod::checkStressContainer)
-                .limit(ChaosUtils.calcLimit(pack.deployment().pods().size(), severity, mode))
+                .limit(calcLimit(pack.deployment().pods().size(), severity, mode))
                 .forEach(this::runAndAnnouce));
     }
 
@@ -95,7 +98,6 @@ public class IOChaos implements Chaos {
                     cli.execute("exec " + pod.getName() + " -c stress-sidecar -- /bin/sh -c \"kill 1\"");
                     announce(name + ":\t IO chaos stopped in " + pod.getName());
                 }));
-        announceStopped(name);
     }
 
     @Override

@@ -2,6 +2,7 @@ package io.microconfig.osdf.chaos.types;
 
 import io.microconfig.osdf.chaos.DurationParams;
 import io.microconfig.osdf.chaos.NetworkChaosInjector;
+import io.microconfig.osdf.chaos.ParamsExtractor;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.istio.Fault;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import static io.microconfig.osdf.chaos.NetworkChaosInjector.chaosInjector;
-import static io.microconfig.osdf.chaos.types.Chaos.intParamToListOrEmpty;
+import static io.microconfig.osdf.chaos.ParamsExtractor.paramsExtractor;
 import static io.microconfig.osdf.chaos.types.ChaosType.NETWORK;
 import static io.microconfig.osdf.istio.Fault.fault;
 import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
@@ -43,10 +44,12 @@ public class NetworkChaos implements Chaos {
         Map<String, Object> yaml = (Map<String, Object>) entry.getValue();
         List<String> components = (List<String>) (Object) getList(yaml, "components");
 
-        List<Integer> abortCodes = intParamToListOrEmpty(getObjectOrNull(yaml, PARAMS, "http-error", "code"), durationParams.getStagesNum());
-        List<Integer> abortPercentages = intParamToListOrEmpty(getObjectOrNull(yaml, PARAMS, "http-error", "percentage"), durationParams.getStagesNum());
-        List<Integer> delays = intParamToListOrEmpty(getObjectOrNull(yaml, PARAMS, "http-delay", "delay"), durationParams.getStagesNum());
-        List<Integer> delayPercentages = intParamToListOrEmpty(getObjectOrNull(yaml, PARAMS, "http-delay", "percentage"), durationParams.getStagesNum());
+        ParamsExtractor extractor = paramsExtractor();
+
+        List<Integer> abortCodes = extractor.intParamToListOrEmpty(getObjectOrNull(yaml, PARAMS, "http-error", "code"), durationParams.getStagesNum());
+        List<Integer> abortPercentages = extractor.intParamToListOrEmpty(getObjectOrNull(yaml, PARAMS, "http-error", "percentage"), durationParams.getStagesNum());
+        List<Integer> delays = extractor.intParamToListOrEmpty(getObjectOrNull(yaml, PARAMS, "http-delay", "delay"), durationParams.getStagesNum());
+        List<Integer> delayPercentages = extractor.intParamToListOrEmpty(getObjectOrNull(yaml, PARAMS, "http-delay", "percentage"), durationParams.getStagesNum());
 
         return range(0, durationParams.getStagesNum())
                 .mapToObj(i -> {
@@ -67,14 +70,12 @@ public class NetworkChaos implements Chaos {
 
     @Override
     public void run() {
-        Chaos.announceLaunching(name);
         deploy(components, fault);
     }
 
     @Override
     public void stop() {
         deploy(components, null);
-        Chaos.announceStopped(name);
     }
 
     @Override

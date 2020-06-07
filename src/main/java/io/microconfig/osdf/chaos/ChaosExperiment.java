@@ -15,7 +15,6 @@ import java.util.stream.IntStream;
 
 import static io.microconfig.osdf.chaos.DurationParams.fromYaml;
 import static io.microconfig.osdf.chaos.types.Chaos.getAllChaosImpls;
-import static io.microconfig.osdf.chaos.types.Chaos.parameterizedChaosList;
 import static io.microconfig.osdf.chaos.validators.BasicValidator.basicValidator;
 import static io.microconfig.osdf.chaos.validators.PodAndIOChaosIntersectionValidator.podAndIOChaosIntersectionValidator;
 import static io.microconfig.osdf.utils.YamlUtils.getMap;
@@ -34,7 +33,8 @@ public class ChaosExperiment {
     public static ChaosExperiment chaosExperiment(OSDFPaths paths, ClusterCLI cli, ChaosComponent component) {
         DurationParams durationParams = fromYaml(loadFromPath(component.getPathToPlan()));
         Map<String, Object> rules = getMap(loadFromPath(component.getPathToPlan()), "rules");
-        Set<List<Chaos>> chaosSet = rules.entrySet().stream().map(entry -> parameterizedChaosList(paths, cli, entry, durationParams)).collect(toSet());
+        ChaosListLoader loader = ChaosListLoader.chaosListLoader(paths, cli, durationParams);
+        Set<List<Chaos>> chaosSet = rules.entrySet().stream().map(loader::loadChaosList).collect(toSet());
         return new ChaosExperiment(chaosSet, durationParams);
     }
 

@@ -1,12 +1,12 @@
 package io.microconfig.osdf.chaos.types;
 
 import io.microconfig.osdf.chaos.DurationParams;
+import io.microconfig.osdf.chaos.ParamsExtractor;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.cluster.pod.Pod;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
-import io.microconfig.osdf.utils.ChaosUtils;
 import io.microconfig.osdf.utils.YamlUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -21,13 +21,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static io.microconfig.osdf.chaos.types.Chaos.intParamToList;
+import static io.microconfig.osdf.chaos.ParamsExtractor.paramsExtractor;
 import static io.microconfig.osdf.chaos.types.ChaosMode.*;
 import static io.microconfig.osdf.chaos.types.ChaosType.POD;
 import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
 import static io.microconfig.osdf.utils.YamlUtils.getList;
 import static io.microconfig.osdf.utils.YamlUtils.getObjectOrNull;
 import static io.microconfig.utils.Logger.announce;
+import static java.lang.Math.floorDiv;
 import static java.util.Set.of;
 import static java.util.stream.IntStream.range;
 
@@ -58,8 +59,9 @@ public class PodChaos implements Chaos {
         String name = entry.getKey();
         Map<String, Object> yaml = (Map<String, Object>) entry.getValue();
         List<String> components = (List<String>) (Object) getList(yaml, "components");
-        List<Integer> severities = intParamToList(getObjectOrNull(yaml, PARAMS, "severity"), durationParams.getStagesNum());
-        List<Integer> timeouts = intParamToList(getObjectOrNull(yaml, PARAMS, "timeout"), durationParams.getStagesNum());
+        ParamsExtractor extractor = paramsExtractor();
+        List<Integer> severities = extractor.intParamToList(getObjectOrNull(yaml, PARAMS, "severity"), durationParams.getStagesNum());
+        List<Integer> timeouts = extractor.intParamToList(getObjectOrNull(yaml, PARAMS, "timeout"), durationParams.getStagesNum());
         ChaosMode mode = valueOf(YamlUtils.getString(yaml, "mode").toUpperCase());
         List<Chaos> chaosList = new ArrayList<>();
         return range(0, durationParams.getStagesNum())
@@ -72,15 +74,12 @@ public class PodChaos implements Chaos {
 
     @Override
     public void run() {
-        Chaos.announceLaunching(name);
         service.scheduleAtFixedRate(this::kill, 0, timeout, TimeUnit.SECONDS);
-        announce(name + ":\t pod chaos launched for " + components.toString());
     }
 
     @Override
     public void stop() {
         service.shutdownNow();
-        Chaos.announceStopped(name);
     }
 
     @Override
@@ -93,9 +92,13 @@ public class PodChaos implements Chaos {
         deployPacks.forEach(
                 pack -> pack.deployment().pods()
                         .stream()
-                        .limit(ChaosUtils.calcLimit(pack.deployment().pods().size(), severity, mode))
+                        .limit(calcLimit(pack.deployment().pods().size(), severity, mode))
                         .forEach(this::killPodAndAnnounce)
         );
+    }
+
+    private int calcLimit(int size, int severity, ChaosMode mode) {
+        return mode == PERCENT ? floorDiv(size * severity, 100) : severity;
     }
 
     private void killPodAndAnnounce(Pod pod) {
