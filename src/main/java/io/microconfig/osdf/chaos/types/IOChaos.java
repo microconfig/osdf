@@ -26,6 +26,8 @@ import static java.util.Set.of;
 @RequiredArgsConstructor
 public class IOChaos implements Chaos {
     private static final Set<ChaosMode> SUPPORTED_MODES = of(PROBABILITY, PERCENT, FIXED);
+    @EqualsAndHashCode.Exclude
+    private final Random r = new Random();
     private final OSDFPaths paths;
     private final ClusterCLI cli;
     @Getter
@@ -96,7 +98,6 @@ public class IOChaos implements Chaos {
     }
 
     private void probabilityRun() {
-        Random r = new Random();
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
         deployPacks.forEach(pack -> pack.deployment().pods()
                 .parallelStream()
