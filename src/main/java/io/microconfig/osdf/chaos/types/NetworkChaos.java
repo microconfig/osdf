@@ -11,7 +11,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +22,8 @@ import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceD
 import static io.microconfig.osdf.service.istio.IstioService.isIstioService;
 import static io.microconfig.osdf.utils.YamlUtils.getList;
 import static io.microconfig.osdf.utils.YamlUtils.getObjectOrNull;
+import static java.util.stream.Collectors.toUnmodifiableList;
+import static java.util.stream.IntStream.range;
 
 @EqualsAndHashCode
 @RequiredArgsConstructor
@@ -47,18 +48,17 @@ public class NetworkChaos implements Chaos {
         List<Integer> delays = intParamToListOrEmpty(getObjectOrNull(yaml, PARAMS, "http-delay", "delay"), durationParams.getStagesNum());
         List<Integer> delayPercentages = intParamToListOrEmpty(getObjectOrNull(yaml, PARAMS, "http-delay", "percentage"), durationParams.getStagesNum());
 
-        List<Chaos> chaosList = new ArrayList<>();
-        for (int i = 0; i < durationParams.getStagesNum(); i++) {
-            String chaosName = name + "-" + (i + 1);
-            Fault fault = fault(
-                    abortCodes.isEmpty() ? null : abortCodes.get(i),
-                    abortPercentages.isEmpty() ? null : abortPercentages.get(i),
-                    delays.isEmpty() ? null : delays.get(i),
-                    delayPercentages.isEmpty() ? null : delayPercentages.get(i)
-            );
-            chaosList.add(new NetworkChaos(paths, cli, chaosName, components, fault));
-        }
-        return chaosList;
+        return range(0, durationParams.getStagesNum())
+                .mapToObj(i -> {
+                    String chaosName = name + "-" + (i + 1);
+                    Fault fault = fault(
+                            abortCodes.isEmpty() ? null : abortCodes.get(i),
+                            abortPercentages.isEmpty() ? null : abortPercentages.get(i),
+                            delays.isEmpty() ? null : delays.get(i),
+                            delayPercentages.isEmpty() ? null : delayPercentages.get(i)
+                    );
+                    return new NetworkChaos(paths, cli, chaosName, components, fault);
+                }).collect(toUnmodifiableList());
     }
 
     public static NetworkChaos emptyNetworkChaos(OSDFPaths paths, ClusterCLI cli) {

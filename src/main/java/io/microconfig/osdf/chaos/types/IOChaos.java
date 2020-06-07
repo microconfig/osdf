@@ -11,7 +11,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,6 +23,8 @@ import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceD
 import static io.microconfig.osdf.utils.YamlUtils.*;
 import static io.microconfig.utils.Logger.announce;
 import static java.util.Set.of;
+import static java.util.stream.Collectors.toUnmodifiableList;
+import static java.util.stream.IntStream.range;
 
 @EqualsAndHashCode
 @RequiredArgsConstructor
@@ -50,12 +51,12 @@ public class IOChaos implements Chaos {
         List<String> components = (List<String>) (Object) getList(yaml, "components");
         List<Integer> severities = intParamToList(getObjectOrNull(yaml, "params", "severity"), durationParams.getStagesNum());
         ChaosMode mode = valueOf(getString(yaml, "mode").toUpperCase());
-        List<Chaos> chaosList = new ArrayList<>();
-        for (int i = 0; i < durationParams.getStagesNum(); i++) {
-            String chaosName = name + "-" + (i + 1);
-            chaosList.add(new IOChaos(paths, cli, chaosName, components, severities.get(i), durationParams.getStageDurationInSec(), mode));
-        }
-        return chaosList;
+        return range(0, durationParams.getStagesNum())
+                .mapToObj(i -> {
+                    String chaosName = name + "-" + (i + 1);
+                    return new IOChaos(paths, cli, chaosName, components, severities.get(i), durationParams.getStageDurationInSec(), mode);
+                })
+                .collect(toUnmodifiableList());
     }
 
     @Override

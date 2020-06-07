@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import static io.microconfig.osdf.chaos.DurationParams.fromYaml;
 import static io.microconfig.osdf.chaos.types.Chaos.getAllChaosImpls;
@@ -51,10 +52,9 @@ public class ChaosExperiment {
 
     public void run() {
         announce("Launch of chaos");
-        for (int stage = 0; stage < durationParams.getStagesNum(); stage++) {
+        IntStream.range(0, durationParams.getStagesNum()).forEach(stage -> {
             announce("Launch of chaos stage " + (stage + 1));
-            int finalStage = stage;
-            Set<Chaos> currentStageChaosSet = chaosSet.stream().map(list -> list.get(finalStage)).collect(toUnmodifiableSet());
+            Set<Chaos> currentStageChaosSet = chaosSet.stream().map(list -> list.get(stage)).collect(toUnmodifiableSet());
             currentStageChaosSet.forEach(Chaos::run);
             try {
                 sleep(durationParams.getStageDurationInMillis());
@@ -65,7 +65,7 @@ public class ChaosExperiment {
             }
             currentStageChaosSet.forEach(Chaos::stop);
             announce("Chaos stage " + (stage + 1) + " stopped");
-        }
+        });
         announce("Chaos stopped");
     }
 }

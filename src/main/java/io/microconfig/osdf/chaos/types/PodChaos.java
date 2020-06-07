@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static io.microconfig.osdf.chaos.types.Chaos.intParamToList;
 import static io.microconfig.osdf.chaos.types.ChaosMode.*;
@@ -28,6 +29,7 @@ import static io.microconfig.osdf.utils.YamlUtils.getList;
 import static io.microconfig.osdf.utils.YamlUtils.getObjectOrNull;
 import static io.microconfig.utils.Logger.announce;
 import static java.util.Set.of;
+import static java.util.stream.IntStream.range;
 
 @EqualsAndHashCode
 @RequiredArgsConstructor
@@ -60,11 +62,12 @@ public class PodChaos implements Chaos {
         List<Integer> timeouts = intParamToList(getObjectOrNull(yaml, PARAMS, "timeout"), durationParams.getStagesNum());
         ChaosMode mode = valueOf(YamlUtils.getString(yaml, "mode").toUpperCase());
         List<Chaos> chaosList = new ArrayList<>();
-        for (int i = 0; i < durationParams.getStagesNum(); i++) {
-            String chaosName = name + "-" + (i + 1);
-            chaosList.add(new PodChaos(paths, cli, chaosName, components, timeouts.get(i), severities.get(i), mode));
-        }
-        return chaosList;
+        return range(0, durationParams.getStagesNum())
+                .mapToObj(i -> {
+                    String chaosName = name + "-" + (i + 1);
+                    return new PodChaos(paths, cli, chaosName, components, timeouts.get(i), severities.get(i), mode);
+                })
+                .collect(Collectors.toUnmodifiableList());
     }
 
     @Override
