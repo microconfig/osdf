@@ -23,6 +23,7 @@ import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceD
 import static io.microconfig.osdf.service.istio.IstioService.isIstioService;
 import static io.microconfig.osdf.utils.YamlUtils.getList;
 import static io.microconfig.osdf.utils.YamlUtils.getObjectOrNull;
+import static io.microconfig.utils.Logger.announce;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static java.util.stream.IntStream.range;
 
@@ -88,7 +89,7 @@ public class NetworkChaos implements Chaos {
         List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
         deployPacks.parallelStream()
                 .filter(pack -> isIstioService(pack.service()))
-                .forEach(pack -> deployer.inject(pack.service()));
+                .forEach(pack -> announce(name + ":\t" + deployer.inject(pack.service())));
     }
 
     @Override
