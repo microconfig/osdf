@@ -18,7 +18,6 @@ rules:
 
     # Modes:
     #   * fixed: affect specified number of pods
-    #   * probability: with a given probability [0-100] affect every pod
     #   * percent: affect % of pods, number to kill is calculated as follows: floor(num_pods * severity / 100)
     mode: fixed
     components:
