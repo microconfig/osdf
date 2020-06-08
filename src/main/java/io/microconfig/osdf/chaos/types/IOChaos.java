@@ -76,10 +76,10 @@ public class IOChaos implements Chaos {
                 .parallelStream()
                 .filter(Pod::checkStressContainer)
                 .limit(calcLimit(pack.deployment().pods().size(), severity, mode))
-                .forEach(this::runAndAnnouce));
+                .forEach(this::runAndAnnounce));
     }
 
-    private void runAndAnnouce(Pod pod) {
+    private void runAndAnnounce(Pod pod) {
         cli.execute(getRunCommand(pod));
         announce(name + ":\t IO chaos launched in " + pod.getName() + " for " + timeout + "s");
     }
