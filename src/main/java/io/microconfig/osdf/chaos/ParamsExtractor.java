@@ -29,6 +29,22 @@ public class ParamsExtractor {
         throw new OSDFException("Can't parse param");
     }
 
+    @SuppressWarnings("unchecked")
+    public List<String> strParamToList(Object o, Integer num) {
+        if (o instanceof List) {
+            List<String> paramList = (List<String>) o;
+            if (paramList.size() == num) {
+                return paramList;
+            }
+            throw new OSDFException("Wrong num of params. Expected: " + num + ", actual: " + paramList.size());
+        }
+        if (o instanceof String) {
+            String value = (String) o;
+            return range(0, num).mapToObj(i -> value).collect(Collectors.toUnmodifiableList());
+        }
+        throw new OSDFException("Can't parse param");
+    }
+
     public List<Integer> intParamToListOrEmpty(Object o, Integer stagesNum) {
         if (o == null) return emptyList();
         return intParamToList(o, stagesNum);

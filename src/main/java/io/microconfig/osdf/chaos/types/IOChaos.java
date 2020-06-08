@@ -1,6 +1,7 @@
 package io.microconfig.osdf.chaos.types;
 
 import io.microconfig.osdf.chaos.DurationParams;
+import io.microconfig.osdf.chaos.ParamsExtractor;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.cluster.pod.Pod;
 import io.microconfig.osdf.exceptions.OSDFException;
@@ -38,10 +39,11 @@ public class IOChaos implements Chaos {
     private final List<String> components;
     private final Integer severity;
     private final Long timeout;
+    private final String volumePath;
     private final ChaosMode mode;
 
     public static IOChaos emptyIoChaos(OSDFPaths paths, ClusterCLI cli) {
-        return new IOChaos(paths, cli, "EmptyIO", null, null, null, null);
+        return new IOChaos(paths, cli, "EmptyIO", null, null, null, null, null);
     }
 
     @SuppressWarnings("unchecked")
@@ -49,12 +51,16 @@ public class IOChaos implements Chaos {
         String name = entry.getKey();
         Map<String, Object> yaml = (Map<String, Object>) entry.getValue();
         List<String> components = (List<String>) (Object) getList(yaml, "components");
-        List<Integer> severities = paramsExtractor().intParamToList(getObjectOrNull(yaml, "params", "severity"), durationParams.getStagesNum());
+
+        ParamsExtractor extractor = paramsExtractor();
+        List<Integer> severities = extractor.intParamToList(getObjectOrNull(yaml, "params", "severity"), durationParams.getStagesNum());
+        List<String> volumePaths = extractor.strParamToList(getObjectOrNull(yaml, "params", "path"), durationParams.getStagesNum());
+
         ChaosMode mode = valueOf(getString(yaml, "mode").toUpperCase());
         return range(0, durationParams.getStagesNum())
                 .mapToObj(i -> {
                     String chaosName = name + "-" + (i + 1);
-                    return new IOChaos(paths, cli, chaosName, components, severities.get(i), durationParams.getStageDurationInSec(), mode);
+                    return new IOChaos(paths, cli, chaosName, components, severities.get(i), durationParams.getStageDurationInSec(), volumePaths.get(i), mode);
                 })
                 .collect(toUnmodifiableList());
     }
@@ -79,7 +85,7 @@ public class IOChaos implements Chaos {
     }
 
     private String getRunCommand(Pod pod) {
-        return "exec " + pod.getName() + " -c stress-sidecar -- /bin/sh -c \"cd /fs; stress-ng --all 0 -t "
+        return "exec " + pod.getName() + " -c stress-sidecar -- /bin/sh -c \"cd "+ volumePath +"; stress-ng --all 0 -t "
                 + timeout + "s --class io\" &";
     }
 
