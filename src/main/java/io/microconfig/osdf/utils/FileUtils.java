@@ -5,7 +5,6 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
@@ -30,7 +29,7 @@ public class FileUtils {
         try {
             return IOUtils.toString(input, UTF_8.name());
         } catch (IOException e) {
-            throw new UncheckedIOException("Couldn't read resource " + resource, e);
+            throw new PossibleBugException("Couldn't read resource " + resource, e);
         }
     }
 
@@ -50,6 +49,22 @@ public class FileUtils {
         }
     }
 
+    public static void copyFile(Path from, Path to) {
+        try {
+            org.apache.commons.io.FileUtils.copyFile(from.toFile(), to.toFile());
+        } catch (IOException e) {
+            throw new PossibleBugException("Couldn't copy file " + from + ", to " + to);
+        }
+    }
+
+    public static void deleteDirectory(Path path) {
+        try {
+            org.apache.commons.io.FileUtils.deleteDirectory(path.toFile());
+        } catch (IOException e) {
+            throw new PossibleBugException("Couldn't delete directory " + path.getFileName());
+        }
+    }
+
     public static void deleteIfEmpty(Path dir) {
         try (Stream<Path> list = list(dir)) {
             if (list.findAny().isEmpty()) {
@@ -57,6 +72,16 @@ public class FileUtils {
             }
         } catch (IOException e) {
             throw new PossibleBugException("Can't delete folder " + dir, e);
+        }
+    }
+
+    public static void createFileIfNotExists(Path file) {
+        if (!exists(file)) {
+            try {
+                createFile(file);
+            } catch (IOException e) {
+                throw new PossibleBugException("Can't create directory " + file, e);
+            }
         }
     }
 

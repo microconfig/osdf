@@ -9,3 +9,7 @@ kubernetes:
 helloworld-istio:
   components:
     - helloworld-springboot-istio
+
+jmeter:
+  components:
+    - loadtest-simple-example

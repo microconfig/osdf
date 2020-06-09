@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: <CONFIG_NAME>-service
+  labels:
+    application: <CONFIG_NAME>
+spec:
+  selector:
+    application: <CONFIG_NAME>
+  ports:
+    - port: ${this@master.port}
+      protocol: TCP
+      targetPort: ${this@master.port}
+      name: http-${this@master.port}
