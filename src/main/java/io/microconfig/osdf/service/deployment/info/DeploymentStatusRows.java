@@ -52,13 +52,18 @@ public class DeploymentStatusRows implements RowColumnsWithStatus {
 
     private boolean fetch() {
         ServiceDeploymentInfo info = deployment.info();
-        printer.addRow(green(deployment.serviceName()), green(deployment.version()), coloredStatus(info.status()), green(replicas(info)));
+        printer.addRow(green(deployment.serviceName()), green(versionDescription(deployment, info)), green(info.configVersion()), coloredStatus(info.status()), green(replicas(info)));
         if (withHealthCheck) {
             PodsHealthcheckInfo podsInfo = podsInfo(deployment, files);
             addPods(podsInfo.getPods(), podsInfo.getPodsHealth());
             return podsInfo.isHealthy() && info.status() == RUNNING;
         }
         return info.status() == RUNNING;
+    }
+
+    private String versionDescription(ServiceDeployment deployment, ServiceDeploymentInfo info) {
+        if (deployment.version().equalsIgnoreCase(info.version())) return info.version();
+        return info.version() + " [" + deployment.version() + "]";
     }
 
     private String coloredStatus(DeploymentStatus status) {
