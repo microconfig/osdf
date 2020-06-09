@@ -21,7 +21,7 @@ public class StatusPrinter {
     }
 
     public boolean checkStatusAndPrint(List<ServiceDeployPack> deployments, List<ServiceJobPack> jobs) {
-        printer.addColumns("COMPONENT", "VERSION", "STATUS", "REPLICAS");
+        printer.addColumns("COMPONENT", "VERSION", "CONFIGS", "STATUS", "REPLICAS");
 
         List<Object> services = concatenate(deployments, jobs);
         List<RowColumnsWithStatus> statuses = fetchStatuses(services);

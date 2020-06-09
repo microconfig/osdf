@@ -58,8 +58,8 @@ class StatusCommandTest {
         System.setOut(new PrintStream(expectedOut));
 
         ColumnPrinter printer = printer();
-        printer.addColumns("COMPONENT", "VERSION", "STATUS", "REPLICAS");
-        printer.addRow(green(COMPONENT_NAME), green(COMPONENT_VERSION), green("RUNNING"), green("1/1"));
+        printer.addColumns("COMPONENT", "VERSION", "CONFIGS", "STATUS", "REPLICAS");
+        printer.addRow(green(COMPONENT_NAME), green(COMPONENT_VERSION), green("local"), green("RUNNING"), green("1/1"));
         printer.print();
         return expectedOut.toString();
     }

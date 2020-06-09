@@ -15,8 +15,8 @@ public class DefaultJobRunner implements JobRunner {
 
     @Override
     public void run(ClusterService service, ServiceJob job, ServiceFiles files) {
-        announce("Running " + service.name());
         if (job.exists() && job.info().status() == SUCCEEDED) return;
+        announce("Running " + service.name());
         job.delete();
         job.createConfigMap(files.configs());
         service.upload(files.resources());
