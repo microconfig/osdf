@@ -10,12 +10,12 @@ helloworld-istio:
   components:
     - helloworld-springboot-istio
 
-#chaos:
-#  components:
-#    - chaos
-
 demo:
   components:
     - demo-backend
     - demo-frontend
     - chaos
+
+jmeter:
+  components:
+    - loadtest-simple-example

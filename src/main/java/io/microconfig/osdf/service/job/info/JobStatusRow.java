@@ -41,7 +41,7 @@ public class JobStatusRow implements RowColumnsWithStatus {
 
     private boolean fetch() {
         ServiceJobInfo info = job.info();
-        printer.addRow(green(job.serviceName()), green(job.version()), coloredStatus(info.status()), green("-"));
+        printer.addRow(green(job.serviceName()), green(job.version()), green(info.configVersion()), coloredStatus(info.status()), green("-"));
         return info.status() == SUCCEEDED;
     }
 

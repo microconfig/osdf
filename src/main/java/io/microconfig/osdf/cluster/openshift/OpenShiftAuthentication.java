@@ -30,7 +30,7 @@ public class OpenShiftAuthentication {
     }
 
     private void login() {
-        oc.execute("oc login " + clusterUrl + credentials.getLoginParams())
+        oc.execute("oc login " + clusterUrl + credentials.getLoginParams() + " --insecure-skip-tls-verify")
                 .throwExceptionIfError();
     }
 
@@ -43,7 +43,7 @@ public class OpenShiftAuthentication {
         String user = oc.execute("oc whoami").getOutput().toLowerCase();
         if (user.contains("error")) return false;
         if (credentials.getCredentials() != null) {
-            return user.strip().equals(credentials.getCredentials().getUsername());
+            return user.strip().equalsIgnoreCase(credentials.getCredentials().getUsername());
         }
         return false;
     }

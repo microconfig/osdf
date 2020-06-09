@@ -44,6 +44,10 @@ public class OSDFPaths {
         return of(root() + "/buildConfigs");
     }
 
+    public Path systemComponentsPath() {
+        return of(root() + "/system");
+    }
+
     public Path projectVersionPath() {
         return of(configsPath() + "/components/system/versions/project-version.proc");
     }

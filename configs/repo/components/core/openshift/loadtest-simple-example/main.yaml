@@ -1,0 +1,5 @@
+#include loadtest-simple-example-requests
+
+numberOfThreads: 10
+rampUpPeriod: 1
+duration: 20

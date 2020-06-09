@@ -23,7 +23,7 @@ public class NexusClient {
 
     public void download(NexusArtifact artifact, Path destination) {
         String url = artifact.getDownloadUrl(nexusUrl);
-        execute(withCredentials("curl " + url + " --output " + destination));
+        execute(withCredentials("curl -k " + url + " --output " + destination));
         throwExceptionIfFileIsEmpty(destination);
     }
 

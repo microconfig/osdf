@@ -31,7 +31,7 @@ public class BaseClusterCLI implements ClusterCLI {
     }
 
     private void throwIfClusterError(String output) {
-        if (output.toLowerCase().contains("unable to connect")) throw new OSDFException("Unable to connect to cluster");
+        if (output.toLowerCase().contains("unable to connect")) throw new OSDFException("Unable to connect to cluster: " + output);
     }
 
     private void log(String string) {
