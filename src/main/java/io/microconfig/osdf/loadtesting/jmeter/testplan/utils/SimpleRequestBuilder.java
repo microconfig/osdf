@@ -43,25 +43,26 @@ public class SimpleRequestBuilder {
     private HTTPSamplerProxy prepareSimpleRequest(Map<String, Object> request, Map<String, HeaderManager> headerManager) {
         String httpRequestName = getFirstKey(request);
         Map<String, Object> requestConfig = getMap(request, httpRequestName);
+        String method = checkForNullAndReturn(requestConfig, "method");
 
         HTTPSamplerProxy httpSampler = new HTTPSamplerProxy();
         httpSampler.setDomain(domainBuilder(componentsRoutes).prepareDomain(requestConfig));
         httpSampler.setName(httpRequestName);
-        httpSampler.setMethod(checkForNullAndReturn(requestConfig, "method"));
-        httpSampler.setPath(addPath(requestConfig));
+        httpSampler.setMethod(method);
+        httpSampler.setPath(addPath(requestConfig, method));
         httpSampler.setProtocol(checkForNullAndReturn(requestConfig, "protocol"));
         httpSampler.setUseKeepAlive(true);
         httpSampler.setProperty(TEST_CLASS, HTTPSamplerProxy.class.getName());
         httpSampler.setProperty(GUI_CLASS, HttpTestSampleGui.class.getName());
-        addParams(requestConfig, httpSampler);
-        addBody(requestConfig, httpSampler);
+        addParams(requestConfig, httpSampler, method);
+        addBody(requestConfig, httpSampler, method);
         addHeaderManager(headerManager, httpRequestName, requestConfig);
         return httpSampler;
     }
 
-    private String addPath(Map<String, Object> requestConfig) {
+    private String addPath(Map<String, Object> requestConfig, String method) {
         String path = checkForNullAndReturn(requestConfig, "path");
-        return addPathParamsIfExists(path, requestConfig);
+        return addPathParamsIfExists(path, requestConfig, method);
     }
 
     private void addHeaderManager(Map<String, HeaderManager> headerManagerMap, String httpRequestName,
@@ -77,16 +78,14 @@ public class SimpleRequestBuilder {
         }
     }
 
-    private void addParams(Map<String, Object> requestConfig, HTTPSamplerProxy httpSampler) {
-        String method = checkForNullAndReturn(requestConfig, "method");
+    private void addParams(Map<String, Object> requestConfig, HTTPSamplerProxy httpSampler, String method) {
         if (method.equals("GET") && requestConfig.containsKey("params")) {
             Map<String, String> params = prepareRequestParams(requestConfig);
             params.forEach((key, value) -> httpSampler.addArgument(key, value, "="));
         }
     }
 
-    private void addBody(Map<String, Object> requestConfig, HTTPSamplerProxy httpSampler) {
-        String method = checkForNullAndReturn(requestConfig, "method");
+    private void addBody(Map<String, Object> requestConfig, HTTPSamplerProxy httpSampler, String method) {
         if (!method.equals("GET")) {
             String body = checkForNullAndReturn(requestConfig, "body");
             httpSampler.setPostBodyRaw(true);
@@ -94,8 +93,7 @@ public class SimpleRequestBuilder {
         }
     }
 
-    private String addPathParamsIfExists(String path, Map<String, Object> requestConfig) {
-        String method = checkForNullAndReturn(requestConfig, "method");
+    private String addPathParamsIfExists(String path, Map<String, Object> requestConfig, String method) {
         StringJoiner pathWithParams = new StringJoiner("&", path + "?", "");
         if (!method.equals("GET") && requestConfig.containsKey("params")) {
             prepareRequestParams(requestConfig).forEach((key, value) -> pathWithParams.add(key + "=" + value));

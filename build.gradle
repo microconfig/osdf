@@ -13,7 +13,8 @@ version '1.3.6'
 jar {
     manifest {
         attributes(
-                'Main-Class': 'io.microconfig.osdf.CLIStarter'
+                'Main-Class': 'io.microconfig.osdf.CLIStarter',
+                'Multi-Release': true
         )
     }
     from {
