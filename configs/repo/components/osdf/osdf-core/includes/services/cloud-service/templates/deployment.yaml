@@ -42,6 +42,7 @@ spec:
             limits:
               cpu: ${this@limits.cpu}
               memory: ${this@limits.memory}
+        ${this@additional.container:}
       volumes:
         - name: resources
           configMap:

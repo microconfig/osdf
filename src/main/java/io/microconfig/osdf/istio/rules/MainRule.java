@@ -2,6 +2,7 @@ package io.microconfig.osdf.istio.rules;
 
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.istio.Destination;
+import io.microconfig.osdf.istio.Fault;
 import io.microconfig.osdf.istio.WeightRoute;
 import lombok.AllArgsConstructor;
 
@@ -17,22 +18,30 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 
 @AllArgsConstructor
 public class MainRule {
+    private static final String FAULT_TAG = "fault";
+    private static final String MIRROR_TAG = "mirror";
+
     private List<WeightRoute> routes;
     private Destination mirror;
+    private Fault fault;
 
     @SuppressWarnings("unchecked")
     public static MainRule fromYaml(Object ruleObject) {
         Map<String, Object> rule = (Map<String, Object>) ruleObject;
 
         Destination mirror = null;
-        if (rule.containsKey("mirror")) {
-            mirror = Destination.fromYaml(rule.get("mirror"));
+        Fault fault = null;
+        if (rule.containsKey(MIRROR_TAG)) {
+            mirror = Destination.fromYaml(rule.get(MIRROR_TAG));
+        }
+        if (rule.containsKey(FAULT_TAG)) {
+            fault = Fault.fromYaml(rule.get(FAULT_TAG));
         }
         List<WeightRoute> routes = getList(rule, "route")
                 .stream()
                 .map(WeightRoute::fromYaml)
                 .collect(toUnmodifiableList());
-        return new MainRule(routes, mirror);
+        return new MainRule(routes, mirror, fault);
     }
 
     public void setWeight(String subset, int weight) {
@@ -98,9 +107,13 @@ public class MainRule {
 
     private List<WeightRoute> getOtherRoutes(String subset) {
         return routes
-                    .stream()
-                    .filter(r -> !r.getDestination().getSubset().equals(subset))
-                    .collect(toUnmodifiableList());
+                .stream()
+                .filter(r -> !r.getDestination().getSubset().equals(subset))
+                .collect(toUnmodifiableList());
+    }
+
+    public void setFault(Fault fault) {
+        this.fault = fault;
     }
 
     public Object toYaml() {
@@ -108,7 +121,10 @@ public class MainRule {
 
         route.put("route", routes.stream().map(WeightRoute::toYaml).collect(toUnmodifiableList()));
         if (mirror != null) {
-            route.put("mirror", mirror.toYaml());
+            route.put(MIRROR_TAG, mirror.toYaml());
+        }
+        if (fault != null) {
+            route.put(FAULT_TAG, fault.toYaml());
         }
         return route;
     }

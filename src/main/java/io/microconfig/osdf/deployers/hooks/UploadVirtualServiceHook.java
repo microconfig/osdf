@@ -7,6 +7,8 @@ import io.microconfig.osdf.service.deployment.istio.IstioServiceDeployment;
 import io.microconfig.osdf.service.files.ServiceFiles;
 import io.microconfig.osdf.service.istio.IstioService;
 
+import static io.microconfig.osdf.service.istio.IstioService.toIstioService;
+
 public class UploadVirtualServiceHook implements DeployHook {
     public static UploadVirtualServiceHook uploadVirtualServiceHook() {
         return new UploadVirtualServiceHook();
@@ -14,17 +16,12 @@ public class UploadVirtualServiceHook implements DeployHook {
 
     @Override
     public void call(ClusterService service, ServiceDeployment deployment, ServiceFiles files) {
-        IstioService istioService = istioService(service);
+        IstioService istioService = toIstioService(service);
         IstioServiceDeployment istioDeployment = istioDeployment(deployment);
 
         istioService.virtualService()
                 .createEmpty(istioDeployment.encodedVersion())
                 .upload();
-    }
-
-    public IstioService istioService(ClusterService service) {
-        if (service instanceof IstioService) return (IstioService) service;
-        throw new OSDFException(service.name() + " is not istio service");
     }
 
     public IstioServiceDeployment istioDeployment(ServiceDeployment deployment) {

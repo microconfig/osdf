@@ -49,7 +49,7 @@ public class OSDFPaths {
     }
 
     public Path projectVersionPath() {
-        return of( configsPath() + "/components/system/versions/project-version.proc");
+        return of(configsPath() + "/components/system/versions/project-version.proc");
     }
 
     public Path configVersionPath() {

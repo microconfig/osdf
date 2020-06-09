@@ -29,4 +29,7 @@ public interface MainApi {
 
     @Import(api = SystemApi.class, order = 8)
     void system();
+
+    @Import(api = ChaosApi.class, order = 8)
+    void chaos();
 }

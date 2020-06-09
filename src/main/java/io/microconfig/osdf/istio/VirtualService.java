@@ -93,6 +93,15 @@ public class VirtualService {
         upload();
     }
 
+    public VirtualService setFault(Fault fault) {
+        checkVirtualServiceIsNotEmpty();
+        RuleSet ruleSet = RuleSet.from(getRules());
+        MainRule rule = ruleSet.getMainRule();
+        rule.setFault(fault);
+        setRules(ruleSet.toYaml());
+        return this;
+    }
+
     public void upload() {
         Path tmpPath = of("/tmp/resource.yaml");
         dump(virtualServiceYaml, tmpPath);
