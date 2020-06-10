@@ -24,7 +24,8 @@ public class BashrcInstaller implements FileReplacer {
         String shellPath = executeAndReadLines("echo $SHELL").get(0);
         String shellrc = shellPath.substring(shellPath.lastIndexOf("/") + 1) + "rc";
         if (shellrc.contains("bash") && getProperty("os.name").contains("Mac")){
-            shellrc = "bash_profile";
+            return new BashrcInstaller(paths, of(paths.tmp() + "/bash_profile"),
+                    of(getUserDirectoryPath() + "/.bash_profile"));
         }
         return new BashrcInstaller(paths, of(paths.tmp() + "/" + shellrc),
                 of(getUserDirectoryPath() + "/." + shellrc));
