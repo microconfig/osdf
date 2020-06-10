@@ -21,14 +21,18 @@ public class BashrcInstaller implements FileReplacer {
     private final Path dest;
 
     public static BashrcInstaller bashrcInstaller(OSDFPaths paths) {
-        String bashFile = getProperty("os.name").contains("Mac") ? "/.bash_profile" : "/.bashrc";
-        return new BashrcInstaller(paths, of(paths.tmp() + "/bashrc"), of(getUserDirectoryPath() + bashFile));
+        String shellPath = executeAndReadLines("echo $SHELL").get(0);
+        String shellrc = shellPath.substring(shellPath.lastIndexOf("/") + 1) + "rc";
+        if (shellrc.contains("bash") && getProperty("os.name").contains("Mac")){
+            shellrc = "bash_profile";
+        }
+        return new BashrcInstaller(paths, of(paths.tmp() + "/" + shellrc),
+                of(getUserDirectoryPath() + "/." + shellrc));
     }
 
     @Override
     public void prepare() {
         writeStringToFile(tmpPath, content());
-        synchroniseShellSource();
     }
 
     private String content() {
@@ -36,21 +40,11 @@ public class BashrcInstaller implements FileReplacer {
         if (!exists(dest)) {
             return newEntry;
         }
-        String bashrcContent = readAll(dest);
-        if (bashrcContent.contains(newEntry)) {
-            return bashrcContent;
+        String shellrcContent = readAll(dest);
+        if (shellrcContent.contains(newEntry)) {
+            return shellrcContent;
         }
-        return bashrcContent + "\n" + newEntry + "\n";
-    }
-
-    public void synchroniseShellSource() {
-        if (executeAndReadLines("echo $SHELL").get(0).contains("zsh")) {
-            String zshrcContent = readAll(of(getUserDirectoryPath() + "/.zshrc"));
-            String newEntry = "PATH=$PATH:" + paths.bin() + "/";
-            if (!zshrcContent.contains(newEntry))
-                zshrcContent += "\n" + newEntry + "\n";
-            writeStringToFile(of(getUserDirectoryPath() + "/.zshrc"), zshrcContent);
-        }
+        return shellrcContent + "\n" + newEntry + "\n";
     }
 
     @Override
