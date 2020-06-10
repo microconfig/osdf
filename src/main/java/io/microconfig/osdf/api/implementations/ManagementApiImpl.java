@@ -59,4 +59,14 @@ public class ManagementApiImpl implements ManagementApi {
             info(output);
         });
     }
+
+    @Override
+    public void delete(List<String> components) {
+        serviceLoader(paths, requiredComponentsFilter(components), cli)
+                .loadPacks()
+                .forEach(pack -> {
+                    pack.service().delete();
+                    info("Deleted " + pack.service().name());
+                });
+    }
 }

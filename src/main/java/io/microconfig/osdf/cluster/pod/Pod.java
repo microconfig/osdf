@@ -75,7 +75,7 @@ public class Pod implements Comparable<Pod> {
         List<String> outputLines = cli.execute("get pod " + name + " -o custom-columns=\"full:.status.containerStatuses[].imageID\"")
                 .throwExceptionIfError()
                 .getOutputLines();
-        if (outputLines.size() == 1) return "unknown";
+        if (outputLines.size() == 1 || outputLines.get(1).contains("@")) return "unknown";
         return outputLines.get(1).split("@")[1];
     }
 

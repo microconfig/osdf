@@ -45,7 +45,8 @@ public class DefaultClusterDeployment implements ClusterDeployment {
     }
 
     private String label() {
-        String rawLabelString = cli.execute("get " + resourceKind + " " + name + " -o custom-columns=\"label:.spec.selector\"")
+        String selectorKey = resourceKind.equals("deployment") ? ".spec.selector.matchLabels" : ".spec.selector" ;
+        String rawLabelString = cli.execute("get " + resourceKind + " " + name + " -o custom-columns=\"label:" + selectorKey + "\"")
                 .throwExceptionIfError()
                 .getOutputLines()
                 .get(1);

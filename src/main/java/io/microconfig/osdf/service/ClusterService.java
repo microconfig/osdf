@@ -13,4 +13,6 @@ public interface ClusterService {
     List<ClusterResource> resources();
 
     void upload(List<LocalClusterResource> resources);
+
+    void delete();
 }
