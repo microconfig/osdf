@@ -6,8 +6,10 @@ import lombok.RequiredArgsConstructor;
 import java.nio.file.Path;
 
 import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
+import static io.microconfig.osdf.utils.CommandLineExecutor.executeAndReadLines;
 import static io.microconfig.osdf.utils.FileUtils.readAll;
 import static io.microconfig.osdf.utils.FileUtils.writeStringToFile;
+import static java.lang.System.getProperty;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Path.of;
 import static org.apache.commons.io.FileUtils.getUserDirectoryPath;
@@ -19,7 +21,14 @@ public class BashrcInstaller implements FileReplacer {
     private final Path dest;
 
     public static BashrcInstaller bashrcInstaller(OSDFPaths paths) {
-        return new BashrcInstaller(paths, of(paths.tmp() + "/bashrc"), of(getUserDirectoryPath() + "/.bashrc"));
+        String shellPath = executeAndReadLines("echo $SHELL").get(0);
+        String shellrc = shellPath.substring(shellPath.lastIndexOf("/") + 1) + "rc";
+        if (shellrc.contains("bash") && getProperty("os.name").contains("Mac")){
+            return new BashrcInstaller(paths, of(paths.tmp() + "/bash_profile"),
+                    of(getUserDirectoryPath() + "/.bash_profile"));
+        }
+        return new BashrcInstaller(paths, of(paths.tmp() + "/" + shellrc),
+                of(getUserDirectoryPath() + "/." + shellrc));
     }
 
     @Override
@@ -32,11 +41,11 @@ public class BashrcInstaller implements FileReplacer {
         if (!exists(dest)) {
             return newEntry;
         }
-        String bashrcContent = readAll(dest);
-        if (bashrcContent.contains(newEntry)) {
-            return bashrcContent;
+        String shellrcContent = readAll(dest);
+        if (shellrcContent.contains(newEntry)) {
+            return shellrcContent;
         }
-        return bashrcContent + "\n" + newEntry + "\n";
+        return shellrcContent + "\n" + newEntry + "\n";
     }
 
     @Override
