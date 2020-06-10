@@ -33,7 +33,7 @@ public class BaseServiceDeployer implements ServiceDeployer {
         info("Deploying " + service.name());
 
         resourceCleaner(cli).cleanOld(files.resources(), service.resources());
-        boolean configMapUpdated = deployment.createConfigMap(files.configs());
+        boolean configMapUpdated = deployment.createConfigMap(files);
         if (!uploadResourcesAndCheckHashIsSame(service, deployment, files)) return;
 
         restartIfNecessary(deployment, files, configMapUpdated);

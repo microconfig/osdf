@@ -28,7 +28,8 @@ public class DefaultServiceDeployPacksLoader implements ServiceDeployPacksLoader
     private final List<String> requiredServicesNames;
     private final ClusterCLI cli;
 
-    public static DefaultServiceDeployPacksLoader defaultServiceDeployPacksLoader(OSDFPaths paths, List<String> requiredServicesNames,
+    public static DefaultServiceDeployPacksLoader defaultServiceDeployPacksLoader(OSDFPaths paths,
+                                                                                  List<String> requiredServicesNames,
                                                                                   ClusterCLI cli) {
         return new DefaultServiceDeployPacksLoader(paths, requiredServicesNames, cli);
     }
@@ -50,7 +51,8 @@ public class DefaultServiceDeployPacksLoader implements ServiceDeployPacksLoader
 
     @Override
     public ServiceDeployPack loadByName(String name) {
-        ServiceFiles serviceFiles = componentsLoader().loadOne(name, componentsFinder(paths.componentsPath()), DefaultServiceFiles::serviceFiles);
+        ServiceFiles serviceFiles = componentsLoader().loadOne(name,
+                componentsFinder(paths.componentsPath()), DefaultServiceFiles::serviceFiles);
         ServiceDeployment deployment = serviceDeploymentMatcher(cli).match(serviceFiles);
         ClusterService service = matcher(cli).match(deployment);
 

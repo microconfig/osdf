@@ -2,18 +2,20 @@ package io.microconfig.osdf.service.deployment;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.cluster.deployment.ClusterDeployment;
-import io.microconfig.osdf.service.deployment.info.ServiceDeploymentInfo;
 import io.microconfig.osdf.cluster.pod.Pod;
 import io.microconfig.osdf.service.deployment.info.DefaultServiceDeploymentInfo;
+import io.microconfig.osdf.service.deployment.info.ServiceDeploymentInfo;
+import io.microconfig.osdf.service.files.ServiceFiles;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.nio.file.Path;
 import java.util.List;
 
-import static io.microconfig.osdf.cluster.deployment.DefaultClusterDeployment.defaultClusterDeployment;
 import static io.microconfig.osdf.cluster.configmap.DefaultConfigMapUploader.configMapUploader;
+import static io.microconfig.osdf.cluster.deployment.DefaultClusterDeployment.defaultClusterDeployment;
 
 @RequiredArgsConstructor
+@Getter
 public class DefaultServiceDeployment implements ServiceDeployment {
     private final String name;
     private final String version;
@@ -54,8 +56,8 @@ public class DefaultServiceDeployment implements ServiceDeployment {
     }
 
     @Override
-    public boolean createConfigMap(List<Path> configs) {
-        return configMapUploader(cli).upload(name, configs, this);
+    public boolean createConfigMap(ServiceFiles files) {
+        return configMapUploader(cli).upload(name, files.configs(), this);
     }
 
     @Override

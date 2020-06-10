@@ -7,7 +7,7 @@ import io.microconfig.osdf.cluster.resource.LocalClusterResource;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.service.deployment.ServiceDeployment;
 import io.microconfig.osdf.service.deployment.matchers.ServiceDeploymentMatcher;
-import io.microconfig.osdf.service.files.DefaultServiceFiles;
+import io.microconfig.osdf.service.files.ServiceFiles;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -74,7 +74,7 @@ public class JmeterComponent {
         return matcher.match(getJmeterServiceFiles());
     }
 
-    private DefaultServiceFiles getJmeterServiceFiles() {
+    private ServiceFiles getJmeterServiceFiles() {
         return serviceFiles(componentsFinder(componentPath.getParent()).findByName(componentName));
     }
 }

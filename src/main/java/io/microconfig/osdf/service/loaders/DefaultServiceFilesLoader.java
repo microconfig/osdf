@@ -22,7 +22,9 @@ public class DefaultServiceFilesLoader implements ServiceFilesLoader {
     private final List<String> activeComponentNames;
     private final Predicate<ServiceFiles> filter;
 
-    public static DefaultServiceFilesLoader servicesLoader(OSDFPaths paths, List<String> requiredServicesNames, Predicate<ServiceFiles> filter) {
+    public static DefaultServiceFilesLoader servicesLoader(OSDFPaths paths,
+                                                           List<String> requiredServicesNames,
+                                                           Predicate<ServiceFiles> filter) {
         return new DefaultServiceFilesLoader(paths, requiredServicesNames, activeComponents(paths).get(), filter);
     }
 
@@ -40,7 +42,9 @@ public class DefaultServiceFilesLoader implements ServiceFilesLoader {
     }
 
     private boolean isService(ComponentDir componentDir) {
-        return exists(componentDir.getPath("resources")) || exists(componentDir.getPath("openshift"));
+        return exists(componentDir.getPath("resources"))
+                || exists(componentDir.getPath("openshift"))
+                || exists(componentDir.getPath("common"));
     }
 
     private boolean isRequired(ComponentDir componentDir) {

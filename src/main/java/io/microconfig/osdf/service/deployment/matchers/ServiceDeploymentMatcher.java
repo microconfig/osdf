@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Map;
 
 import static io.microconfig.osdf.resources.ResourceVersionInserter.resourceVersionInserter;
+import static io.microconfig.osdf.service.deployment.CommonServiceDelpoyment.commonServiceDelpoyment;
 import static io.microconfig.osdf.service.deployment.DefaultServiceDeployment.defaultServiceDeployment;
 import static io.microconfig.osdf.service.deployment.istio.DefaultIstioServiceDeployment.istioServiceDeployment;
 import static io.microconfig.osdf.utils.YamlUtils.getString;
@@ -25,13 +26,17 @@ public class ServiceDeploymentMatcher {
         Map<String, Object> deploy = loadFromPath(files.getPath("deploy.yaml"));
         String version = getString(deploy, "version");
         String serviceType = getString(deploy, "service", "type");
-        String deploymentResource = deploymentResource(getString(deploy, "deployment" , "resource"));
+        String deploymentResource = deploymentResource(getString(deploy, "deployment", "resource"));
         String deploymentName = deploymentName(files.name(), version, serviceType);
 
         preprocessIfOldType(files, version, serviceType);
 
         if (serviceType.contains("istio")) {
             return istioServiceDeployment(deploymentName, version, files.name(), deploymentResource, cli);
+        } else if (serviceType.contains("common")) {
+            return commonServiceDelpoyment(deploymentName,
+                    version, files.name(),
+                    deploymentResource, cli, files.resources());
         }
         return defaultServiceDeployment(deploymentName, version, files.name(), deploymentResource, cli);
     }

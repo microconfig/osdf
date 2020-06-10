@@ -4,9 +4,9 @@ import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.cluster.pod.Pod;
 import io.microconfig.osdf.service.deployment.DefaultServiceDeployment;
 import io.microconfig.osdf.service.deployment.info.ServiceDeploymentInfo;
+import io.microconfig.osdf.service.files.ServiceFiles;
 import lombok.RequiredArgsConstructor;
 
-import java.nio.file.Path;
 import java.util.List;
 
 import static io.microconfig.osdf.service.deployment.DefaultServiceDeployment.defaultServiceDeployment;
@@ -26,8 +26,8 @@ public class DefaultIstioServiceDeployment implements IstioServiceDeployment {
     }
 
     @Override
-    public boolean createConfigMap(List<Path> configs) {
-        return deployment.createConfigMap(configs);
+    public boolean createConfigMap(ServiceFiles files) {
+        return deployment.createConfigMap(files);
     }
 
     @Override

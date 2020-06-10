@@ -14,7 +14,7 @@ public class RestrictedDeployer implements ServiceDeployer {
     @Override
     public void deploy(ClusterService service, ServiceDeployment deployment, ServiceFiles files) {
         info("Deploying " + service.name());
-        deployment.createConfigMap(files.configs());
+        deployment.createConfigMap(files);
         service.upload(files.resources());
     }
 }
