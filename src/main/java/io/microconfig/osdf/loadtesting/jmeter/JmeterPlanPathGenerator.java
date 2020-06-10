@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import static io.microconfig.osdf.loadtesting.jmeter.loader.JmeterPathLoader.pathLoader;
 import static io.microconfig.osdf.loadtesting.jmeter.testplan.JmeterTestBuilder.jmeterConfigBuilder;
 import static io.microconfig.osdf.service.deployment.info.DeploymentStatus.RUNNING;
-import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
+import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
 
 @RequiredArgsConstructor
 public class JmeterPlanPathGenerator {
@@ -33,7 +33,7 @@ public class JmeterPlanPathGenerator {
 
 
     private Map<String, String> getCurrentRoutesMap(ClusterCLI cli, OSDFPaths paths) {
-        return defaultServiceDeployPacksLoader(paths, cli).loadPacks()
+        return serviceLoader(paths, cli).loadPacks()
                 .stream()
                 .filter(deployPack -> deployPack.deployment().info().availableReplicas() > 0)
                 .filter(deployPack -> deployPack.deployment().info().status().equals(RUNNING))

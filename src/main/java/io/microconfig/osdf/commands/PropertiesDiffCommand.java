@@ -1,9 +1,9 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
-import io.microconfig.osdf.service.files.ServiceFiles;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
+import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
+import io.microconfig.osdf.service.files.ServiceFiles;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 
@@ -11,8 +11,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
-import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
 import static io.microconfig.osdf.microconfig.files.DiffFilesCollector.collector;
+import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
+import static io.microconfig.osdf.service.loaders.filters.RequiredComponentsFilter.requiredComponentsFilter;
 import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.info;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -23,7 +24,7 @@ public class PropertiesDiffCommand {
     private final OSDFPaths paths;
 
     public void show(List<String> serviceNames) {
-        defaultServiceDeployPacksLoader(paths, serviceNames, null)
+        serviceLoader(paths, requiredComponentsFilter(serviceNames), null)
                 .loadPacks().stream()
                 .map(ServiceDeployPack::files)
                 .forEach(this::showDiff);

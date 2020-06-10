@@ -19,7 +19,8 @@ import java.util.Set;
 import static io.microconfig.osdf.chaos.ParamsExtractor.paramsExtractor;
 import static io.microconfig.osdf.chaos.types.ChaosMode.*;
 import static io.microconfig.osdf.chaos.types.ChaosType.IO;
-import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
+import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
+import static io.microconfig.osdf.service.loaders.filters.RequiredComponentsFilter.requiredComponentsFilter;
 import static io.microconfig.osdf.utils.YamlUtils.*;
 import static io.microconfig.utils.Logger.announce;
 import static java.lang.Math.floorDiv;
@@ -71,7 +72,7 @@ public class IOChaos implements Chaos {
 
     @Override
     public void run() {
-        List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
+        List<ServiceDeployPack> deployPacks = serviceLoader(paths, requiredComponentsFilter(components), cli).loadPacks();
         deployPacks.forEach(pack -> pack.deployment().pods()
                 .parallelStream()
                 .filter(Pod::checkStressContainer)
@@ -96,7 +97,7 @@ public class IOChaos implements Chaos {
 
     @Override
     public void forceStop() {
-        List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
+        List<ServiceDeployPack> deployPacks = serviceLoader(paths, requiredComponentsFilter(components), cli).loadPacks();
         deployPacks.forEach(pack -> pack.deployment().pods()
                 .stream()
                 .filter(Pod::checkStressContainer)
