@@ -19,8 +19,9 @@ import static io.microconfig.osdf.chaos.NetworkChaosInjector.chaosInjector;
 import static io.microconfig.osdf.chaos.ParamsExtractor.paramsExtractor;
 import static io.microconfig.osdf.chaos.types.ChaosType.NETWORK;
 import static io.microconfig.osdf.istio.Fault.fault;
-import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
+import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
 import static io.microconfig.osdf.service.istio.IstioService.isIstioService;
+import static io.microconfig.osdf.service.loaders.filters.RequiredComponentsFilter.requiredComponentsFilter;
 import static io.microconfig.osdf.utils.YamlUtils.getList;
 import static io.microconfig.osdf.utils.YamlUtils.getObjectOrNull;
 import static io.microconfig.utils.Logger.announce;
@@ -86,7 +87,7 @@ public class NetworkChaos implements Chaos {
 
     private void deploy(List<String> components, Fault fault) {
         NetworkChaosInjector deployer = chaosInjector(fault);
-        List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, components, cli).loadPacks();
+        List<ServiceDeployPack> deployPacks = serviceLoader(paths, requiredComponentsFilter(components), cli).loadPacks();
         deployPacks.parallelStream()
                 .filter(pack -> isIstioService(pack.service()))
                 .forEach(pack -> announce(name + ":\t" + deployer.inject(pack.service())));

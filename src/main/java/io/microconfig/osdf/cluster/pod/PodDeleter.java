@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
+import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
 import static io.microconfig.osdf.cluster.pod.Pod.fromPods;
 import static io.microconfig.utils.Logger.announce;
 
@@ -22,7 +22,7 @@ public class PodDeleter {
     }
 
     public void delete(String componentName, List<String> podNames) {
-        ServiceDeployPack deployPack = defaultServiceDeployPacksLoader(paths, cli).loadByName(componentName);
+        ServiceDeployPack deployPack = serviceLoader(paths, cli).loadByName(componentName);
         podNames.forEach(podName -> deletePods(deployPack.deployment(), podNames));
     }
 

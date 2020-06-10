@@ -16,9 +16,10 @@ import static io.microconfig.osdf.deployers.BaseServiceDeployer.baseServiceDeplo
 import static io.microconfig.osdf.deployers.RestrictedDeployer.restrictedDeployer;
 import static io.microconfig.osdf.jobrunners.DefaultJobRunner.defaultJobRunner;
 import static io.microconfig.osdf.service.deployment.checkers.DeployStatusChecker.deployStatusChecker;
-import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
+import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
 import static io.microconfig.osdf.service.deployment.tools.DeployRequiredFilter.deployRequiredFilter;
-import static io.microconfig.osdf.service.job.pack.loader.DefaultServiceJobPackLoader.defaultServiceJobPackLoader;
+import static io.microconfig.osdf.service.job.pack.loader.DefaultServiceJobPackLoader.jobLoader;
+import static io.microconfig.osdf.service.loaders.filters.RequiredComponentsFilter.requiredComponentsFilter;
 import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.error;
 import static java.util.stream.Collectors.joining;
@@ -37,7 +38,7 @@ public class DeployCommand {
         ServiceDeployer deployer = getDeployer(mode);
         announce("Starting deployment");
 
-        List<ServiceJobPack> jobPacks = defaultServiceJobPackLoader(paths, serviceNames, cli).loadPacks();
+        List<ServiceJobPack> jobPacks = jobLoader(paths, serviceNames, cli).loadPacks();
         callRunner(jobPacks);
 
         List<ServiceDeployPack> deployPacks = getDeployPacks(serviceNames, mode);
@@ -45,20 +46,20 @@ public class DeployCommand {
 
         callDeployer(deployPacks, deployer);
         if (wait) {
+            announce("Waiting for services to deploy");
             printDeploymentStatus(deployPacks);
         }
     }
 
     private List<ServiceDeployPack> getDeployPacks(List<String> serviceNames, String mode) {
-        List<ServiceDeployPack> allPacks = defaultServiceDeployPacksLoader(paths, serviceNames, cli).loadPacks();
+        List<ServiceDeployPack> allPacks = serviceLoader(paths, requiredComponentsFilter(serviceNames), cli).loadPacks();
         List<ServiceDeployPack> deployPacks = "restricted".equals(mode) ? allPacks : deployRequiredFilter(paths, cli).filter(allPacks);
 
         if (deployPacks.isEmpty())  {
             announce("No services to deploy");
         } else {
             announce("Deploying: " +
-                    deployPacks
-                            .stream()
+                    deployPacks.stream()
                             .map(deployPack -> deployPack.service().name())
                             .collect(joining(" ")));
         }

@@ -5,24 +5,43 @@ import io.microconfig.osdf.service.files.ServiceFiles;
 import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.service.deployment.info.DeploymentStatus.RUNNING;
-import static io.microconfig.osdf.service.deployment.info.PodsHealthcheckInfo.podsInfo;
+import static io.microconfig.osdf.healthcheck.HealthcheckerFromFiles.podsInfo;
 import static io.microconfig.osdf.deprecated.components.properties.DeployProperties.deployProperties;
 import static io.microconfig.osdf.utils.ThreadUtils.sleepSec;
+import static java.lang.Math.max;
+import static java.lang.System.currentTimeMillis;
 
 @RequiredArgsConstructor
 public class SuccessfulDeploymentChecker {
+    private final int timeout;
+
     public static SuccessfulDeploymentChecker successfulDeploymentChecker() {
-        return new SuccessfulDeploymentChecker();
+        return new SuccessfulDeploymentChecker(0);
+    }
+
+    public static SuccessfulDeploymentChecker successfulDeploymentChecker(int timeout) {
+        return new SuccessfulDeploymentChecker(timeout);
     }
 
     public boolean check(ServiceDeployment deployment, ServiceFiles files) {
-        Integer podStartTime = deployProperties(files.root()).getPodStartTime();
+        long startTime = currentTimeMillis();
+        Integer podStartTime = podStartTime(files);
         int currentTime = 0;
         while (deployment.info().status() != RUNNING) {
             currentTime++;
             if (currentTime > podStartTime) return false;
             sleepSec(1);
         }
-        return deployment.info().status() == RUNNING && podsInfo(deployment, files).isHealthy();
+        int timeLeft = max(1, timeout - calcSecFrom(startTime));
+        return deployment.info().status() == RUNNING && podsInfo(deployment, files, timeLeft).isHealthy();
+    }
+
+    private Integer podStartTime(ServiceFiles files) {
+        if (timeout > 0) return timeout;
+        return deployProperties(files.root()).getPodStartTime();
+    }
+
+    private int calcSecFrom(long startTime) {
+        return (int) ((currentTimeMillis() - startTime) / 1000);
     }
 }

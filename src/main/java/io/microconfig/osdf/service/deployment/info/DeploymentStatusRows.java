@@ -1,5 +1,6 @@
 package io.microconfig.osdf.service.deployment.info;
 
+import io.microconfig.osdf.healthcheck.HealthcheckerFromFiles;
 import io.microconfig.osdf.printers.RowColumnsWithStatus;
 import io.microconfig.osdf.service.deployment.ServiceDeployment;
 import io.microconfig.osdf.service.files.ServiceFiles;
@@ -9,7 +10,7 @@ import io.microconfig.osdf.printers.ColumnPrinter;
 import java.util.List;
 
 import static io.microconfig.osdf.service.deployment.info.DeploymentStatus.RUNNING;
-import static io.microconfig.osdf.service.deployment.info.PodsHealthcheckInfo.podsInfo;
+import static io.microconfig.osdf.healthcheck.HealthcheckerFromFiles.podsInfo;
 import static io.microconfig.utils.ConsoleColor.green;
 import static io.microconfig.utils.ConsoleColor.red;
 import static java.util.stream.IntStream.range;
@@ -54,7 +55,7 @@ public class DeploymentStatusRows implements RowColumnsWithStatus {
         ServiceDeploymentInfo info = deployment.info();
         printer.addRow(green(deployment.serviceName()), green(versionDescription(deployment, info)), green(info.configVersion()), coloredStatus(info.status()), green(replicas(info)));
         if (withHealthCheck) {
-            PodsHealthcheckInfo podsInfo = podsInfo(deployment, files);
+            HealthcheckerFromFiles podsInfo = podsInfo(deployment, files);
             addPods(podsInfo.getPods(), podsInfo.getPodsHealth());
             return podsInfo.isHealthy() && info.status() == RUNNING;
         }

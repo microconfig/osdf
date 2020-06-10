@@ -11,8 +11,9 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import static io.microconfig.osdf.printers.StatusPrinter.statusPrinter;
-import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
-import static io.microconfig.osdf.service.job.pack.loader.DefaultServiceJobPackLoader.defaultServiceJobPackLoader;
+import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
+import static io.microconfig.osdf.service.job.pack.loader.DefaultServiceJobPackLoader.jobLoader;
+import static io.microconfig.osdf.service.loaders.filters.RequiredComponentsFilter.requiredComponentsFilter;
 
 @RequiredArgsConstructor
 public class StatusCommand {
@@ -28,8 +29,8 @@ public class StatusCommand {
     }
 
     private boolean checkStatusAndPrint(List<String> serviceNames) {
-        List<ServiceJobPack> jobPacks = defaultServiceJobPackLoader(paths, serviceNames, cli).loadPacks();
-        List<ServiceDeployPack> deployPacks = defaultServiceDeployPacksLoader(paths, serviceNames, cli).loadPacks();
+        List<ServiceJobPack> jobPacks = jobLoader(paths, serviceNames, cli).loadPacks();
+        List<ServiceDeployPack> deployPacks = serviceLoader(paths, requiredComponentsFilter(serviceNames), cli).loadPacks();
         return statusPrinter(printer, withHealthCheck).checkStatusAndPrint(deployPacks, jobPacks);
     }
 }

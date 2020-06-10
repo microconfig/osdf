@@ -14,34 +14,39 @@ import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
-public class ActiveComponents {
-    private final List<String> components;
+public class MicroConfigComponents {
+    private final OSDFPaths paths;
+    private final String env;
+    private final String group;
 
-    public static ActiveComponents activeComponents(OSDFPaths paths) {
+    public static MicroConfigComponents microConfigComponents(OSDFPaths paths) {
         ConfigsSettings settings = settingsFile(ConfigsSettings.class, paths.settings().configs()).getSettings();
         String group = settings.getGroup();
         String env = settings.getEnv();
+        return new MicroConfigComponents(paths, env, group);
+    }
 
+    public List<String> active() {
+        return forGroup(group);
+    }
+
+    public List<String> forGroup(String group) {
         try {
             Environment environment = searchConfigsIn(paths.configsPath().toFile()).inEnvironment(env);
             if (group == null || group.equals("ALL")) {
-                return new ActiveComponents(toComponentNames(environment.getAllComponents()));
+                return toComponentNames(environment.getAllComponents());
             }
-            return new ActiveComponents(toComponentNames(environment.getGroupWithName(group).getComponents()));
+            return toComponentNames(environment.getGroupWithName(group).getComponents());
         } catch (RuntimeException e) {
             throw new MicroConfigException(e);
         }
     }
 
-    private static List<String> toComponentNames(Components components) {
+    private List<String> toComponentNames(Components components) {
         return components
                 .asList()
                 .stream()
                 .map(Component::getName)
                 .collect(toUnmodifiableList());
-    }
-
-    public List<String> get() {
-        return components;
     }
 }

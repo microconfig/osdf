@@ -1,37 +1,23 @@
 package io.microconfig.osdf.service.deployment.checkers.healthcheck;
 
 import io.microconfig.osdf.cluster.pod.Pod;
-import io.microconfig.osdf.exceptions.OSDFException;
-import io.microconfig.osdf.service.files.ServiceFiles;
-import io.microconfig.osdf.utils.PropertiesUtils;
 import lombok.RequiredArgsConstructor;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Map;
-import java.util.Properties;
 
 import static io.microconfig.osdf.utils.ThreadUtils.sleepSec;
-import static io.microconfig.osdf.utils.YamlUtils.getInt;
-import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
 import static io.microconfig.utils.Logger.warn;
 import static java.lang.Runtime.getRuntime;
 import static java.lang.System.currentTimeMillis;
-import static java.util.Optional.ofNullable;
 
 @RequiredArgsConstructor
 public class LogHealthChecker implements HealthChecker {
     private final String marker;
     private final int timeoutInSec;
 
-    public static LogHealthChecker logHealthChecker(ServiceFiles files) {
-        Map<String, Object> deployProperties = loadFromPath(files.getPath("deploy.yaml"));
-        Integer timeoutInSec = getInt(deployProperties, "osdf", "start", "waitSec");
-
-        Properties processProperties = PropertiesUtils.loadFromPath(files.getPath("process.properties"));
-        String marker = processProperties.getProperty("healthcheck.marker.success");
-        if (marker == null) throw new OSDFException("Marker not found for log healthchecker");
-        return new LogHealthChecker(marker, ofNullable(timeoutInSec).orElse(30));
+    public static LogHealthChecker logHealthChecker(String marker, int timeoutInSec) {
+        return new LogHealthChecker(marker, timeoutInSec);
     }
 
     public boolean check(Pod pod) {

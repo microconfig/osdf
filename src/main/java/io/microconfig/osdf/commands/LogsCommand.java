@@ -6,7 +6,7 @@ import io.microconfig.osdf.cluster.pod.Pod;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
-import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
+import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
 import static io.microconfig.osdf.cluster.pod.Pod.fromPods;
 import static io.microconfig.utils.Logger.error;
 
@@ -17,7 +17,7 @@ public class LogsCommand {
 
 
     public void show(String serviceName, String podName) {
-        ServiceDeployment deployment = defaultServiceDeployPacksLoader(paths, cli)
+        ServiceDeployment deployment = serviceLoader(paths, cli)
                 .loadByName(serviceName)
                 .deployment();
 

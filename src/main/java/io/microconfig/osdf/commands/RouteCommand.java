@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.defaultServiceDeployPacksLoader;
+import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
 
 @RequiredArgsConstructor
 public class RouteCommand {
@@ -20,7 +20,7 @@ public class RouteCommand {
     private final List<RoutingRuleSetter> ruleSetters;
 
     public void set(String serviceName, String rule) {
-        ServiceDeployPack serviceDeployPack = defaultServiceDeployPacksLoader(paths, cli).loadByName(serviceName);
+        ServiceDeployPack serviceDeployPack = serviceLoader(paths, cli).loadByName(serviceName);
         if (!(serviceDeployPack.service() instanceof IstioService)) throw new OSDFException(serviceName + " is not istio service");
         if (!(serviceDeployPack.deployment() instanceof IstioServiceDeployment)) throw new OSDFException(serviceName + " is not istio service");
 
