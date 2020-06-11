@@ -3,9 +3,12 @@ package io.microconfig.osdf.utils;
 import io.microconfig.osdf.exceptions.PossibleBugException;
 import org.apache.commons.io.IOUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -81,6 +84,28 @@ public class FileUtils {
                 createFile(file);
             } catch (IOException e) {
                 throw new PossibleBugException("Can't create directory " + file, e);
+            }
+        }
+    }
+
+    public static String getContentFromResource(Path resourcePath) {
+        try {
+            try (InputStream inputStream = FileUtils.class.getResourceAsStream(resourcePath.toString())) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                return reader.lines()
+                        .collect(Collectors.joining(System.lineSeparator()));
+            }
+        } catch (IOException e) {
+            throw new PossibleBugException("Can't get content from " + resourcePath, e);
+        }
+    }
+
+    public static void createDirectoriesIfNotExists(Path dirs) {
+        if (!exists(dirs)) {
+            try {
+                createDirectories(dirs);
+            } catch (IOException e) {
+                throw new PossibleBugException("Can't create directories " + dirs, e);
             }
         }
     }
