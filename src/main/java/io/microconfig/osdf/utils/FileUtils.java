@@ -8,13 +8,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.lang.System.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.*;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
+import static java.util.stream.Collectors.joining;
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
 public class FileUtils {
@@ -89,12 +90,10 @@ public class FileUtils {
     }
 
     public static String getContentFromResource(Path resourcePath) {
-        try {
-            try (InputStream inputStream = FileUtils.class.getResourceAsStream(resourcePath.toString())) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                return reader.lines()
-                        .collect(Collectors.joining(System.lineSeparator()));
-            }
+        try (InputStream inputStream = FileUtils.class.getResourceAsStream(resourcePath.toString())) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            return reader.lines()
+                    .collect(joining(lineSeparator()));
         } catch (IOException e) {
             throw new PossibleBugException("Can't get content from " + resourcePath, e);
         }
