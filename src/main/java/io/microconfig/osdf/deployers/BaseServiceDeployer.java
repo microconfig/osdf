@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.cluster.resource.tools.ResourceCleaner.resourceCleaner;
 import static io.microconfig.osdf.deployers.hooks.EmptyHook.emptyHook;
-import static io.microconfig.osdf.service.deployment.checkers.image.ImageVersionChecker.imageVersionChecker;
-import static io.microconfig.osdf.service.deployment.tools.DeploymentRestarter.deploymentRestarter;
 import static io.microconfig.utils.Logger.info;
 
 @RequiredArgsConstructor
@@ -33,30 +31,13 @@ public class BaseServiceDeployer implements ServiceDeployer {
         info("Deploying " + service.name());
 
         resourceCleaner(cli).cleanOld(files.resources(), service.resources());
-        boolean configMapUpdated = deployment.createConfigMap(files.configs());
-        if (!uploadResourcesAndCheckHashIsSame(service, deployment, files)) return;
-
-        restartIfNecessary(deployment, files, configMapUpdated);
+        deployment.createConfigMap(files.configs());
+        uploadResourcesAndCheckHashIsSame(service, deployment, files);
     }
 
-    private void restartIfNecessary(ServiceDeployment deployment, ServiceFiles files, boolean configMapUpdated) {
-        boolean latestImage = imageVersionChecker(deployment, files, paths).isLatest();
-        if (configMapUpdated) info("Application configs were updated");
-        if (!latestImage) info("Component doesn't have latest image");
-        if (configMapUpdated || !latestImage) {
-            info("Restarting");
-            deploymentRestarter().restart(deployment, files);
-        } else {
-            info("Up-to-date");
-        }
-    }
-
-    private boolean uploadResourcesAndCheckHashIsSame(ClusterService service, ServiceDeployment deployment, ServiceFiles files) {
-        String currentHash = deployment.info().hash();
+    private void uploadResourcesAndCheckHashIsSame(ClusterService service, ServiceDeployment deployment, ServiceFiles files) {
         cli.execute("apply -f " + files.getPath("resources"))
                 .throwExceptionIfError();
         deployHook.call(service, deployment, files);
-        String deployedHash = deployment.info().hash();
-        return deployedHash.equals(currentHash);
     }
 }

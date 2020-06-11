@@ -29,9 +29,10 @@ public class DeleteBuggedDCDecorator {
                 .stream()
                 .map(pack -> pack.service().name())
                 .collect(toUnmodifiableList());
-        if (!wait) return;
-        if (failed.isEmpty()) return;
-        info("Failed services: " + failed);
+        if (wait && failed.isEmpty()) return;
+        if (!failed.isEmpty()) {
+            info("Failed services: " + failed);
+        }
         secondDeploy(failed, mode);
     }
 
