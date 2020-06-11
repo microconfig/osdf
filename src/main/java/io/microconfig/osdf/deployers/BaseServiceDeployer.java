@@ -53,7 +53,8 @@ public class BaseServiceDeployer implements ServiceDeployer {
 
     private boolean uploadResourcesAndCheckHashIsSame(ClusterService service, ServiceDeployment deployment, ServiceFiles files) {
         String currentHash = deployment.info().hash();
-        service.upload(files.resources());
+        cli.execute("apply -f " + files.getPath("resources"))
+                .throwExceptionIfError();
         deployHook.call(service, deployment, files);
         String deployedHash = deployment.info().hash();
         return deployedHash.equals(currentHash);

@@ -29,8 +29,7 @@ public class LocalClusterResourceImpl implements LocalClusterResource {
 
     @Override
     public void upload(ClusterCLI cli) {
-        if (getRemoteHash(cli).equals(getLocalHash())) return;
-        cli.execute("oc apply -f " + path).throwExceptionIfError(new OSDFException("Error uploading " + name() + ""));
+        cli.execute("oc apply -f " + path).throwExceptionIfError();
     }
 
     @Override
@@ -41,6 +40,11 @@ public class LocalClusterResourceImpl implements LocalClusterResource {
     @Override
     public String name() {
         return clusterResource.name();
+    }
+
+    @Override
+    public String label(ClusterCLI cli, String key) {
+        return clusterResource.label(cli, key);
     }
 
     @Override

@@ -3,7 +3,6 @@ package io.microconfig.osdf.commands;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.deployers.ServiceDeployer;
 import io.microconfig.osdf.exceptions.OSDFException;
-import io.microconfig.osdf.exceptions.StatusCodeException;
 import io.microconfig.osdf.jobrunners.DefaultJobRunner;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
@@ -15,6 +14,7 @@ import java.util.List;
 import static io.microconfig.osdf.deployers.BaseServiceDeployer.baseServiceDeployer;
 import static io.microconfig.osdf.deployers.RestrictedDeployer.restrictedDeployer;
 import static io.microconfig.osdf.jobrunners.DefaultJobRunner.defaultJobRunner;
+import static io.microconfig.osdf.resources.DeploymentHashInserter.deploymentHashInserter;
 import static io.microconfig.osdf.service.deployment.checkers.DeployStatusChecker.deployStatusChecker;
 import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
 import static io.microconfig.osdf.service.deployment.tools.DeployRequiredFilter.deployRequiredFilter;
@@ -22,6 +22,7 @@ import static io.microconfig.osdf.service.job.pack.loader.DefaultServiceJobPackL
 import static io.microconfig.osdf.service.loaders.filters.RequiredComponentsFilter.requiredComponentsFilter;
 import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.error;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.IntStream.range;
 
@@ -34,7 +35,7 @@ public class DeployCommand {
         return new DeployCommand(paths, cli);
     }
 
-    public void deploy(List<String> serviceNames, String mode, boolean wait) {
+    public List<ServiceDeployPack> deploy(List<String> serviceNames, String mode, boolean wait) {
         ServiceDeployer deployer = getDeployer(mode);
         announce("Starting deployment");
 
@@ -42,19 +43,22 @@ public class DeployCommand {
         callRunner(jobPacks);
 
         List<ServiceDeployPack> deployPacks = getDeployPacks(serviceNames, mode);
-        if (deployPacks.isEmpty()) return;
+        if (deployPacks.isEmpty()) return emptyList();
 
         callDeployer(deployPacks, deployer);
-        if (wait) {
+        if (wait && !mode.equals("restricted")) {
             announce("Waiting for services to deploy");
-            printDeploymentStatus(deployPacks);
+            return findFailedDeployments(deployPacks);
         }
+        return emptyList();
     }
 
     private List<ServiceDeployPack> getDeployPacks(List<String> serviceNames, String mode) {
         List<ServiceDeployPack> allPacks = serviceLoader(paths, requiredComponentsFilter(serviceNames), cli).loadPacks();
         List<ServiceDeployPack> deployPacks = "restricted".equals(mode) ? allPacks : deployRequiredFilter(paths, cli).filter(allPacks);
-
+        if ("restricted".equals(mode)) {
+            allPacks.forEach(pack -> deploymentHashInserter().insert(pack.files()));
+        }
         if (deployPacks.isEmpty())  {
             announce("No services to deploy");
         } else {
@@ -66,13 +70,14 @@ public class DeployCommand {
         return deployPacks;
     }
 
-    private void printDeploymentStatus(List<ServiceDeployPack> deployPacks) {
-        if (deployStatusChecker().check(deployPacks)) {
+    private List<ServiceDeployPack> findFailedDeployments(List<ServiceDeployPack> deployPacks) {
+        List<ServiceDeployPack> failedDeployments = deployStatusChecker().findFailed(deployPacks);
+        if (failedDeployments.isEmpty()) {
             announce("OK");
         } else {
             error("Some components didn't start in time or had failures");
-            throw new StatusCodeException(1);
         }
+        return failedDeployments;
     }
 
     private void callDeployer(List<ServiceDeployPack> deployPacks, ServiceDeployer deployer) {

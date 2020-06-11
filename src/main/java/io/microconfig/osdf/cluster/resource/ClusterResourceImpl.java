@@ -45,6 +45,15 @@ public class ClusterResourceImpl implements ClusterResource {
     }
 
     @Override
+    public String label(ClusterCLI cli, String key) {
+        return cli.execute("get " + kind + " " + name + " -o custom-columns=\"label:.metadata.labels." + key + "\"")
+                .throwExceptionIfError()
+                .getOutputLines()
+                .get(1)
+                .strip();
+    }
+
+    @Override
     public void delete(ClusterCLI cli) {
         cli.execute("delete " + kind + " " + name);
     }

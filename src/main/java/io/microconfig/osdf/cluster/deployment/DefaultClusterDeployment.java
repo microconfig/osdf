@@ -2,6 +2,8 @@ package io.microconfig.osdf.cluster.deployment;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.cluster.pod.Pod;
+import io.microconfig.osdf.cluster.resource.ClusterResource;
+import io.microconfig.osdf.cluster.resource.ClusterResourceImpl;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -42,6 +44,11 @@ public class DefaultClusterDeployment implements ClusterDeployment {
     public void scale(int replicas) {
         cli.execute("scale " + resourceKind + " " + name + " --replicas=" + replicas)
                 .throwExceptionIfError();
+    }
+
+    @Override
+    public ClusterResource toResource() {
+        return new ClusterResourceImpl(resourceKind, name);
     }
 
     private String label() {
