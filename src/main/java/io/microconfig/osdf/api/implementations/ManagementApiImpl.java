@@ -28,7 +28,6 @@ public class ManagementApiImpl implements ManagementApi {
     @Override
     public void deploy(List<String> components, String mode, Boolean wait) {
         cli.login();
-//        deployCommand(paths, cli).deploy(components, mode, wait);
         deleteFailed(cli, deployCommand(paths, cli)).deploy(components, mode, wait);
     }
 

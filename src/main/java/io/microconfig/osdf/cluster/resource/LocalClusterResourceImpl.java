@@ -1,7 +1,6 @@
 package io.microconfig.osdf.cluster.resource;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
@@ -50,17 +49,6 @@ public class LocalClusterResourceImpl implements LocalClusterResource {
     @Override
     public void delete(ClusterCLI cli) {
         clusterResource.delete(cli);
-    }
-
-    private String getRemoteHash(ClusterCLI cli) {
-        List<String> output = cli.execute("oc get " + clusterResource.kind() + " " + clusterResource.name() + " -o custom-columns=\"hash:.metadata.labels.configHash\"")
-                .getOutputLines();
-        if (output.get(0).toLowerCase().contains("not found")) return "noHashFound";
-        return output.get(1).strip();
-    }
-
-    private String getLocalHash() {
-        return getString(loadFromPath(path), "metadata", "labels", "configHash");
     }
 
     @Override
