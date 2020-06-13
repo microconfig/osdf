@@ -1,6 +1,19 @@
 duration: 10M30S   #Duration in hHmMsS
 stages: 5
 
+# Monitoring config example
+
+#monitoring:
+#  metricsURI: "http://address:port"        #URI to metrics resource
+#  metrics:
+#    success_percantage:                    # internal name of metric
+#      tag: "SUCCESS_PERCENTAGE_WINDOWED"   # tag to query metric
+#      min: 95.0                            # boundary values of metric; min, max or both
+#    99_percentile:
+#      tag: "GENERAL_TIMER_seconds{quantile=\"0.95\",}"
+#      max: #{6.0 / 1000}
+
+
 rules:
   helloworld-istio-network:
     type: network
@@ -18,7 +31,7 @@ rules:
 
     # Modes:
     #   * fixed: affect specified number of pods
-    #   * percent: affect % of pods, number to kill is calculated as follows: floor(num_pods * severity / 100)
+    #   * percent: affect % of pods, number to affect is calculated as follows: floor(num_pods * severity / 100)
     mode: fixed
     components:
       - helloworld-springboot
