@@ -6,7 +6,7 @@ stages: 5
 #monitoring:
 #  metricsURI: "http://address:port"        #URI to metrics resource
 #  metrics:
-#    success_percantage:                    # internal name of metric
+#    success_percentage:                    # internal name of metric
 #      tag: "SUCCESS_PERCENTAGE_WINDOWED"   # tag to query metric
 #      min: 95.0                            # boundary values of metric; min, max or both
 #    99_percentile:
