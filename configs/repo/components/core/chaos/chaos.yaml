@@ -4,15 +4,17 @@ stages: 5
 # Monitoring config example
 
 #monitoring:
-#  metricsURI: "http://address:port"        #URI to metrics resource
+#  metricsURL: "http://address:port"                      #URL to metrics resource
 #  metrics:
-#    success_percentage:                    # internal name of metric
-#      tag: "SUCCESS_PERCENTAGE_WINDOWED"   # tag to query metric
-#      min: 95.0                            # boundary values of metric; min, max or both
-#    99_percentile:
-#      tag: "GENERAL_TIMER_seconds{quantile=\"0.95\",}"
-#      max: #{6.0 / 1000}
-
+#    95_percentile:                                       # internal name of metric
+#      tag: "GENERAL_TIMER_seconds{quantile=\"0.95\",}"   # tag to query metric
+#      max: #{6.0 / 1000}                                 # [optional] max boundary value
+#      min: #{3.0 / 1000}                                 # [optional] min boundary value
+#      baseline: #{5.0 / 1000}                            # [optional] baseline value; if missing, current metric value
+#                                                         #            will be taken
+#      deviation: 30%                                     # [optional] abs or relative (with '%' sign) deviation;
+#                                                         #            boundary values will be calculated as
+#                                                         #            baseline ± deviation
 
 rules:
   helloworld-istio-network:
