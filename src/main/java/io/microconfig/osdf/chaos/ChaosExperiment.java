@@ -32,7 +32,7 @@ import static java.util.stream.Collectors.toUnmodifiableSet;
 
 @RequiredArgsConstructor
 public class ChaosExperiment {
-    private final Integer timeout = 2;
+    private static final Integer TIMEOUT = 2;
     private final Set<List<Chaos>> chaosSet;
     private final DurationParams durationParams;
     private final Set<Metric> metricsSet;
@@ -70,7 +70,7 @@ public class ChaosExperiment {
             Set<Chaos> currentStageChaosSet = chaosSet.stream().map(list -> list.get(stage)).collect(toUnmodifiableSet());
             currentStageChaosSet.forEach(Chaos::run);
             try {
-                metricsChecker(durationParams.getStageDurationInSec(), timeout, puller, metricsSet).run();
+                metricsChecker(durationParams.getStageDurationInSec(), TIMEOUT, puller, metricsSet).run();
             } catch (Exception e) {
                 error(e.getMessage());
                 currentStageChaosSet.forEach(Chaos::forceStop);

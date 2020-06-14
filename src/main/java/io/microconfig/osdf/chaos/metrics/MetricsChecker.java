@@ -39,7 +39,7 @@ public class MetricsChecker {
         }
     }
 
-    private void checkMetrics() throws OSDFException {
+    private void checkMetrics() {
         if (!metricsSet.isEmpty()) {
             Map<String, Double> metrics = puller.pull();
             metricsSet.forEach(metric -> metric.checkMetric(metrics));

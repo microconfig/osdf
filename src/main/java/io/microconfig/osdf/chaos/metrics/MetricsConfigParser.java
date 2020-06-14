@@ -18,6 +18,9 @@ import static java.util.stream.Collectors.toUnmodifiableSet;
 @RequiredArgsConstructor
 public class MetricsConfigParser {
 
+    public static final String BASELINE = "baseline";
+    public static final String DEVIATION = "deviation";
+
     public static MetricsConfigParser metricsConfigParser() {
         return new MetricsConfigParser();
     }
@@ -38,27 +41,25 @@ public class MetricsConfigParser {
         Map<String, Object> metricMap = (Map<String, Object>) entry.getValue();
         String tag = getString(metricMap, "tag");
         if (!refValues.containsKey(tag)) throw new OSDFException("No such metric found [" + tag + "]");
-        Double referenceValue = refValues.get(tag);
+        double referenceValue = metricMap.containsKey(BASELINE) ? parseDouble(getString(metricMap, BASELINE)) : refValues.get(tag);
         Double upperBound = calcUpperBound(metricMap, referenceValue);
         Double lowerBound = calcLowerBound(metricMap, referenceValue);
         return metric(entry.getKey(), tag, upperBound, lowerBound);
     }
 
-    private Double calcLowerBound(Map<String, Object> metricMap, Double referenceValue) {
-        double baseline = metricMap.containsKey("baseline") ? parseDouble(getString(metricMap, "baseline")) : referenceValue;
+    private Double calcLowerBound(Map<String, Object> metricMap, Double baseline) {
         double lowerBound = getDouble(metricMap, "min") != null ? getDouble(metricMap, "min") : -MAX_VALUE;
-        if (metricMap.containsKey("deviation")) {
-            double absDeviation = calcAbsDeviation(getString(metricMap, "deviation"), baseline);
+        if (metricMap.containsKey(DEVIATION)) {
+            double absDeviation = calcAbsDeviation(getString(metricMap, DEVIATION), baseline);
             lowerBound = max(lowerBound, baseline - absDeviation);
         }
         return lowerBound;
     }
 
-    private Double calcUpperBound(Map<String, Object> metricMap, Double referenceValue) {
-        double baseline = metricMap.containsKey("baseline") ? parseDouble(getString(metricMap, "baseline")) : referenceValue;
+    private Double calcUpperBound(Map<String, Object> metricMap, Double baseline) {
         double upperBound = getDouble(metricMap, "max") != null ? getDouble(metricMap, "max") : MAX_VALUE;
-        if (metricMap.containsKey("deviation")) {
-            double absDeviation = calcAbsDeviation(getString(metricMap, "deviation"), baseline);
+        if (metricMap.containsKey(DEVIATION)) {
+            double absDeviation = calcAbsDeviation(getString(metricMap, DEVIATION), baseline);
             upperBound = min(upperBound, baseline + absDeviation);
         }
         return upperBound;
