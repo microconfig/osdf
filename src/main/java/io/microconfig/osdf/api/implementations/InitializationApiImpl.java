@@ -46,8 +46,8 @@ public class InitializationApiImpl implements InitializationApi {
     }
 
     @Override
-    public void localConfigs(Path path) {
-        updateLocalConfigsSettings(path);
+    public void localConfigs(Path path, String version) {
+        updateLocalConfigsSettings(path, version);
         configsUpdater(paths).setConfigsSource(LOCAL);
     }
 
@@ -95,9 +95,10 @@ public class InitializationApiImpl implements InitializationApi {
         settingsFile.save();
     }
 
-    private void updateLocalConfigsSettings(Path path) {
+    private void updateLocalConfigsSettings(Path path, String version) {
         SettingsFile<LocalFetcherSettings> settingsFile = settingsFile(LocalFetcherSettings.class, paths.settings().localFetcher());
         settingsFile.setIfNotNull(LocalFetcherSettings::setPath, path == null ? null : path.toString());
+        settingsFile.setIfNotNull(LocalFetcherSettings::setVersion, version);
         settingsFile.save();
     }
 

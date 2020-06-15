@@ -46,7 +46,7 @@ public class DeployCommand {
         if (deployPacks.isEmpty()) return emptyList();
 
         callDeployer(deployPacks, deployer);
-        if (wait && !mode.equals("restricted")) {
+        if (wait && !"restricted".equals(mode)) {
             announce("Waiting for services to deploy");
             return findFailedDeployments(deployPacks);
         }

@@ -21,7 +21,8 @@ public interface InitializationApi {
                       @ConsoleParam(NexusCredentialsParameter.class) Credentials credentials);
 
     @ApiCommand(description = "Initialize local configs", order = 3)
-    void localConfigs(@ConsoleParam(LocalConfigsParameter.class) Path path);
+    void localConfigs(@ConsoleParam(LocalConfigsParameter.class) Path path,
+                      @ConsoleParam(ConfigVersionParameter.class) String version);
 
     @ApiCommand(description = "Set OpenShift credentials", order = 4)
     void openshift(@ConsoleParam(ClusterCredentialsParameter.class) Credentials credentials,

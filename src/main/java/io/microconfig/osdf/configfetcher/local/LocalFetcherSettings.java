@@ -9,6 +9,7 @@ import static io.microconfig.utils.Logger.error;
 @Setter
 public class LocalFetcherSettings {
     private String path;
+    private String version;
 
     public boolean verifyAndLogErrors() {
         if (path == null) {
@@ -22,6 +23,8 @@ public class LocalFetcherSettings {
     public String toString() {
         return "" +
                 (path == null ? "" :
-                        "Path: " + path + "\n");
+                        "Path: " + path + "\n") +
+                (version == null ? "local" :
+                        "Version: " + version + "\n");
     }
 }
