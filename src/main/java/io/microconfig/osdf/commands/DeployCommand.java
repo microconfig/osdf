@@ -42,7 +42,7 @@ public class DeployCommand {
         List<ServiceDeployPack> allPacks = serviceLoader(paths, requiredComponentsFilter(serviceNames), cli).loadPacks();
 
         ResourceHash resourceHash = deploymentHash(paths);
-        allPacks.forEach(pack -> resourceHash.insert(pack.files(), !smart));
+        allPacks.forEach(pack -> resourceHash.insert(pack.files()));
 
         List<ServiceDeployPack> deployPacks = smart ? upToDateDeploymentFilter(cli).filter(allPacks, resourceHash) : allPacks;
         if (deployPacks.isEmpty())  {

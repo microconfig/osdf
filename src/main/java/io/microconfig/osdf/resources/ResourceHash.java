@@ -25,11 +25,11 @@ public class ResourceHash {
         return new ResourceHash(paths, "resources/job.yaml");
     }
 
-    public String insert(ServiceFiles files, boolean fake) {
+    public void insert(ServiceFiles files) {
         String currentHash = currentHash(files);
-        if (currentHash != null) return currentHash;
+        if (currentHash != null) return;
 
-        return computeHash(files, fake);
+        computeHash(files);
     }
 
     public String currentHash(ServiceFiles files) {
@@ -37,8 +37,8 @@ public class ResourceHash {
         return hash.equals("<CONFIG_HASH>") ? null : hash;
     }
 
-    private String computeHash(ServiceFiles files, boolean fake) {
-        String hash = fake ? "fake" : totalHashComputer(paths, files).compute();
+    private String computeHash(ServiceFiles files) {
+        String hash = totalHashComputer(paths, files).compute();
         Path deploymentPath = deploymentPath(files);
         String content = readAll(deploymentPath)
                 .replace("<CONFIG_HASH>", hash);

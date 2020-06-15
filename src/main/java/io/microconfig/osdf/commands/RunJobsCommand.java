@@ -37,7 +37,7 @@ public class RunJobsCommand {
         List<ServiceJobPack> allPacks = jobLoader(paths, serviceNames, cli).loadPacks();
 
         ResourceHash resourceHash = jobHash(paths);
-        allPacks.forEach(pack -> resourceHash.insert(pack.files(), !smart));
+        allPacks.forEach(pack -> resourceHash.insert(pack.files()));
 
         List<ServiceJobPack> jobPacks = smart ? upToDateJobFilter(cli).filter(allPacks, resourceHash) : allPacks;
         if (jobPacks.isEmpty())  {
