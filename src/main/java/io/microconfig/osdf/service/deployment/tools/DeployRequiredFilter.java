@@ -1,17 +1,14 @@
 package io.microconfig.osdf.service.deployment.tools;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.cluster.resource.totalhash.TotalHashesStorage;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.service.deployment.ServiceDeployment;
 import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
-import io.microconfig.osdf.service.files.ServiceFiles;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.osdf.cluster.resource.totalhash.TotalHashComputer.totalHashComputer;
-import static io.microconfig.osdf.cluster.resource.totalhash.TotalHashesStorage.totalHashesStorage;
+import static io.microconfig.osdf.resources.DeploymentHashInserter.deploymentHashInserter;
 import static io.microconfig.osdf.service.deployment.checkers.image.ImageVersionChecker.imageVersionChecker;
 import static io.microconfig.osdf.service.deployment.info.DeploymentStatus.NOT_FOUND;
 import static io.microconfig.osdf.service.deployment.tools.DeploymentRestarter.deploymentRestarter;
@@ -28,16 +25,14 @@ public class DeployRequiredFilter {
     }
 
     public List<ServiceDeployPack> filter(List<ServiceDeployPack> services) {
-        TotalHashesStorage totalHashesStorage = totalHashesStorage(cli);
-        List<ServiceDeployPack> requiredPacks = services.parallelStream()
-                .filter(service -> !isUpToDate(service, totalHashesStorage))
+        return services.parallelStream()
+                .filter(service -> !isUpToDate(service))
                 .collect(toUnmodifiableList());
-        totalHashesStorage.save();
-        return requiredPacks;
     }
 
-    public boolean isUpToDate(ServiceDeployPack deployPack, TotalHashesStorage totalHashesStorage) {
-        if (!totalHashIsRecent(totalHashesStorage, deployPack.deployment(), deployPack.files())) return false;
+    public boolean isUpToDate(ServiceDeployPack deployPack) {
+        String hash = deploymentHashInserter().insert(deployPack.files());
+        if (!totalHashIsRecent(hash, deployPack.deployment())) return false;
 
         if (!imageVersionChecker(deployPack.deployment(), deployPack.files(), paths).isLatest()) {
             info("Restarting " + deployPack.service().name() + " to pull new image");
@@ -46,13 +41,9 @@ public class DeployRequiredFilter {
         return true;
     }
 
-    private boolean totalHashIsRecent(TotalHashesStorage totalHashesStorage, ServiceDeployment deployment, ServiceFiles files) {
+    private boolean totalHashIsRecent(String hash, ServiceDeployment deployment) {
         if (deployment.info().status() == NOT_FOUND) return false;
-
-        String totalHash = totalHashComputer(files).compute();
-        if (totalHashesStorage.contains(deployment.name(), totalHash)) return true;
-
-        totalHashesStorage.setHash(deployment.name(), totalHash);
-        return false;
+        String configHash = deployment.toResource().label(cli, "configHash");
+        return configHash.equals(hash);
     }
 }

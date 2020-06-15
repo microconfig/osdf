@@ -2,6 +2,8 @@ package io.microconfig.osdf.cluster.deployment;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.cluster.pod.Pod;
+import io.microconfig.osdf.cluster.resource.ClusterResource;
+import io.microconfig.osdf.cluster.resource.ClusterResourceImpl;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -44,8 +46,14 @@ public class DefaultClusterDeployment implements ClusterDeployment {
                 .throwExceptionIfError();
     }
 
+    @Override
+    public ClusterResource toResource() {
+        return new ClusterResourceImpl(resourceKind, name);
+    }
+
     private String label() {
-        String rawLabelString = cli.execute("get " + resourceKind + " " + name + " -o custom-columns=\"label:.spec.selector\"")
+        String selectorKey = resourceKind.equals("deployment") ? ".spec.selector.matchLabels" : ".spec.selector" ;
+        String rawLabelString = cli.execute("get " + resourceKind + " " + name + " -o custom-columns=\"label:" + selectorKey + "\"")
                 .throwExceptionIfError()
                 .getOutputLines()
                 .get(1);

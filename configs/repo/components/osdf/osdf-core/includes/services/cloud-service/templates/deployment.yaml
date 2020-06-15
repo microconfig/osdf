@@ -1,5 +1,5 @@
 kind: Deployment
-apiVersion: v1
+apiVersion: apps/v1
 metadata:
   name: ${this@name}${this@version-suffix}
   labels:
@@ -9,9 +9,8 @@ metadata:
     configHash: <CONFIG_HASH>
 spec:
   selector:
-    application: ${this@name}
-    projectVersion: ${this@version}
-    configVersion: ${this@config.version}
+    matchLabels:
+      application: ${this@name}
   template:
     metadata:
       labels:
@@ -25,6 +24,8 @@ spec:
           env:
             - name: JAVA_TOOL_OPTIONS
               value: ${this@java.opts}
+            - name: TZ
+              value: ${this@timezone}
           imagePullPolicy: Always
           name: ${this@name}
           ports:
@@ -42,7 +43,6 @@ spec:
             limits:
               cpu: ${this@limits.cpu}
               memory: ${this@limits.memory}
-        ${this@additional.container:}
       volumes:
         - name: resources
           configMap:

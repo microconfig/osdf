@@ -44,4 +44,10 @@ public class DefaultIstioService implements IstioService {
     public void upload(List<LocalClusterResource> resources) {
         service.upload(resources);
     }
+
+    @Override
+    public void delete() {
+        service.delete();
+        virtualService().delete();
+    }
 }

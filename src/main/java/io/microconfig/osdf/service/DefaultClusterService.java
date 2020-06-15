@@ -33,7 +33,7 @@ public class DefaultClusterService implements ClusterService {
 
     @Override
     public List<ClusterResource> resources() {
-        return cli.execute("oc get all,configmap " + label() + " -o name")
+        return cli.execute("get all,configmap " + label() + " -o name")
                 .throwExceptionIfError()
                 .getOutputLines()
                 .stream()
@@ -45,6 +45,11 @@ public class DefaultClusterService implements ClusterService {
     @Override
     public void upload(List<LocalClusterResource> resources) {
         resources.forEach(resource -> resource.upload(cli));
+    }
+
+    @Override
+    public void delete() {
+        cli.execute("delete all,configmap -l \"application in (" + name + ")\"");
     }
 
     private String label() {

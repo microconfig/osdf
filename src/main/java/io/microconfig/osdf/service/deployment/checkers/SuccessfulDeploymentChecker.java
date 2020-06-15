@@ -1,6 +1,7 @@
 package io.microconfig.osdf.service.deployment.checkers;
 
 import io.microconfig.osdf.service.deployment.ServiceDeployment;
+import io.microconfig.osdf.service.deployment.info.DeploymentStatus;
 import io.microconfig.osdf.service.files.ServiceFiles;
 import lombok.RequiredArgsConstructor;
 
@@ -32,8 +33,9 @@ public class SuccessfulDeploymentChecker {
             if (currentTime > podStartTime) return false;
             sleepSec(1);
         }
-        int timeLeft = max(1, timeout - calcSecFrom(startTime));
-        return deployment.info().status() == RUNNING && podsInfo(deployment, files, timeLeft).isHealthy();
+        int timeLeft = max(1, podStartTime - calcSecFrom(startTime));
+        DeploymentStatus status = deployment.info().status();
+        return status == RUNNING && podsInfo(deployment, files, timeLeft).isHealthy();
     }
 
     private Integer podStartTime(ServiceFiles files) {

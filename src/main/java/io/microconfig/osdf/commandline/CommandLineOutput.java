@@ -1,5 +1,6 @@
 package io.microconfig.osdf.commandline;
 
+import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 
@@ -49,7 +50,7 @@ public class CommandLineOutput {
     }
 
     public CommandLineOutput throwExceptionIfError() {
-        throwExceptionIfError(new RuntimeException("Error executing command:\n" + errorOutput));
+        throwExceptionIfError(new OSDFException("Error executing command:\n" + errorOutput));
         return this;
     }
 

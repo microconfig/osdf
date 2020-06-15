@@ -28,4 +28,8 @@ public interface ManagementApi {
     @Hidden
     @ApiCommand(description = "Delete deployment configs for given version", order = 5)
     void clearDeployments(@ConsoleParam(value = ConfigVersionParameter.class, type = REQUIRED) String version);
+
+    @Hidden
+    @ApiCommand(description = "Delete service from cluster", order = 10)
+    void delete(@ConsoleParam(ComponentsParameter.class) List<String> components);
 }

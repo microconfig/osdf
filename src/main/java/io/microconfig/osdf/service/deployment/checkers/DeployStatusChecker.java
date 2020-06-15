@@ -10,6 +10,7 @@ import static io.microconfig.utils.ConsoleColor.green;
 import static io.microconfig.utils.ConsoleColor.red;
 import static io.microconfig.utils.Logger.info;
 import static java.util.stream.Collectors.toUnmodifiableList;
+import static java.util.stream.IntStream.range;
 
 @RequiredArgsConstructor
 public class DeployStatusChecker {
@@ -23,13 +24,16 @@ public class DeployStatusChecker {
         return new DeployStatusChecker(0);
     }
 
-    public boolean check(List<ServiceDeployPack> deployPacks) {
+    public List<ServiceDeployPack> findFailed(List<ServiceDeployPack> deployPacks) {
         SuccessfulDeploymentChecker checker = successfulDeploymentChecker(timeout);
         List<Boolean> results = deployPacks
                 .parallelStream()
                 .map(deployPack -> checkDeployment(checker, deployPack))
                 .collect(toUnmodifiableList());
-        return results.stream().allMatch(t -> t);
+        return range(0, deployPacks.size())
+                .filter(i -> !results.get(i))
+                .mapToObj(deployPacks::get)
+                .collect(toUnmodifiableList());
     }
 
     private boolean checkDeployment(SuccessfulDeploymentChecker checker, ServiceDeployPack deployPack) {

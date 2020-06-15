@@ -1,16 +1,12 @@
 package io.microconfig.osdf.cluster.resource;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
-import java.util.List;
 
 import static io.microconfig.osdf.cluster.resource.ClusterResourceImpl.fromPath;
-import static io.microconfig.osdf.utils.YamlUtils.getString;
-import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(of = {"path"})
@@ -29,8 +25,7 @@ public class LocalClusterResourceImpl implements LocalClusterResource {
 
     @Override
     public void upload(ClusterCLI cli) {
-        if (getRemoteHash(cli).equals(getLocalHash())) return;
-        cli.execute("oc apply -f " + path).throwExceptionIfError(new OSDFException("Error uploading " + name() + ""));
+        cli.execute("oc apply -f " + path).throwExceptionIfError();
     }
 
     @Override
@@ -44,19 +39,13 @@ public class LocalClusterResourceImpl implements LocalClusterResource {
     }
 
     @Override
+    public String label(ClusterCLI cli, String key) {
+        return clusterResource.label(cli, key);
+    }
+
+    @Override
     public void delete(ClusterCLI cli) {
         clusterResource.delete(cli);
-    }
-
-    private String getRemoteHash(ClusterCLI cli) {
-        List<String> output = cli.execute("oc get " + clusterResource.kind() + " " + clusterResource.name() + " -o custom-columns=\"hash:.metadata.labels.configHash\"")
-                .getOutputLines();
-        if (output.get(0).toLowerCase().contains("not found")) return "noHashFound";
-        return output.get(1).strip();
-    }
-
-    private String getLocalHash() {
-        return getString(loadFromPath(path), "metadata", "labels", "configHash");
     }
 
     @Override
