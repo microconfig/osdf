@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 
 import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
 import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
+import static io.microconfig.osdf.utils.StringUtils.withQuotes;
 import static io.microconfig.osdf.utils.YamlUtils.getString;
 import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
 import static io.microconfig.utils.Logger.info;
@@ -45,7 +46,7 @@ public class LatestImageVersionGetter {
     }
 
     private String token() {
-        String output = execute("curl -k -u " + credentials.getCredentialsString() + " https://" + host + "/v2/token");
+        String output = execute("curl -k -u " + withQuotes(credentials.getCredentialsString()) + " https://" + host + "/v2/token");
         Matcher matcher = compile(".*\"(DockerToken.*)\".*").matcher(output);
         if (!matcher.matches()) throw new OSDFException("Unknown registry token format");
         return matcher.group(1);
