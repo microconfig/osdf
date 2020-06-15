@@ -4,7 +4,6 @@ import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.jobrunners.DefaultJobRunner;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.resources.ResourceHash;
-import io.microconfig.osdf.service.job.info.ServiceJobInfo;
 import io.microconfig.osdf.service.job.pack.ServiceJobPack;
 import lombok.RequiredArgsConstructor;
 
@@ -12,7 +11,6 @@ import java.util.List;
 
 import static io.microconfig.osdf.jobrunners.DefaultJobRunner.defaultJobRunner;
 import static io.microconfig.osdf.resources.ResourceHash.jobHash;
-import static io.microconfig.osdf.service.job.info.JobStatus.SUCCEEDED;
 import static io.microconfig.osdf.service.job.pack.loader.DefaultServiceJobPackLoader.jobLoader;
 import static io.microconfig.osdf.service.job.tools.UpToDateJobFilter.upToDateJobFilter;
 import static io.microconfig.utils.Logger.announce;
@@ -33,7 +31,7 @@ public class RunJobsCommand {
         callRunner(jobPacks);
     }
 
-    private List<ServiceJobPack> getJobPacks(List<String> serviceNames, Boolean smart) {
+    private List<ServiceJobPack> getJobPacks(List<String> serviceNames, boolean smart) {
         List<ServiceJobPack> allPacks = jobLoader(paths, serviceNames, cli).loadPacks();
 
         ResourceHash resourceHash = jobHash(paths);
@@ -49,12 +47,6 @@ public class RunJobsCommand {
                             .collect(joining(" ")));
         }
         return jobPacks;
-    }
-
-    private boolean jobNeedsUpdate(ServiceJobPack jobPack) {
-        if (!jobPack.job().exists()) return true;
-        ServiceJobInfo info = jobPack.job().info();
-        return info.status() != SUCCEEDED || !info.version().equals(jobPack.service().version());
     }
 
     private void callRunner(List<ServiceJobPack> jobPacks) {

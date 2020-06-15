@@ -38,7 +38,7 @@ public class DeployCommand {
         callDeployer(deployPacks, deployer);
     }
 
-    private List<ServiceDeployPack> getDeployPacks(List<String> serviceNames, Boolean smart) {
+    private List<ServiceDeployPack> getDeployPacks(List<String> serviceNames, boolean smart) {
         List<ServiceDeployPack> allPacks = serviceLoader(paths, requiredComponentsFilter(serviceNames), cli).loadPacks();
 
         ResourceHash resourceHash = deploymentHash(paths);
