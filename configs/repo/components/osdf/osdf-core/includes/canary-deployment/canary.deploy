@@ -5,5 +5,9 @@ canary:
     validation:
         url: ${this@name}.apps.${this@cluster.url.base}/actuator/prometheus
         metrics:
-            - key: logback_events_total{level="error",}
+            errors:
+              key: logback_events_total{level="error",}
               deviation: "0"
+            warnings:
+              key: logback_events_total{level="warning",}
+              deviation: "2"
