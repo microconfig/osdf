@@ -79,10 +79,6 @@ public class YamlUtils {
         return (float) getObjectOrNull(yaml, properties);
     }
 
-    public static Double getDouble(Map<String, Object> yaml, String... properties) {
-        return (Double) getObjectOrNull(yaml, properties);
-    }
-
     @SuppressWarnings("unchecked")
     public static List<Object> getList(Map<String, Object> yaml, String... properties) {
         return (List<Object>) getObjectOrNull(yaml, properties);

@@ -1,11 +1,11 @@
 package io.microconfig.osdf.chaos;
 
 import io.microconfig.osdf.chaos.components.ChaosComponent;
-import io.microconfig.osdf.chaos.metrics.Metric;
 import io.microconfig.osdf.chaos.types.Chaos;
 import io.microconfig.osdf.chaos.validators.BasicValidator;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.OSDFException;
+import io.microconfig.osdf.metrics.Metric;
 import io.microconfig.osdf.metrics.MetricsPuller;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +17,11 @@ import java.util.stream.IntStream;
 
 import static io.microconfig.osdf.chaos.ChaosListLoader.chaosListLoader;
 import static io.microconfig.osdf.chaos.DurationParams.fromYaml;
-import static io.microconfig.osdf.chaos.metrics.MetricsChecker.metricsChecker;
-import static io.microconfig.osdf.chaos.metrics.MetricsConfigParser.metricsConfigParser;
+import static io.microconfig.osdf.chaos.MetricsChecker.metricsChecker;
 import static io.microconfig.osdf.chaos.types.Chaos.getAllChaosImpls;
 import static io.microconfig.osdf.chaos.validators.BasicValidator.basicValidator;
 import static io.microconfig.osdf.chaos.validators.PodAndIOChaosIntersectionValidator.podAndIOChaosIntersectionValidator;
+import static io.microconfig.osdf.metrics.MetricsConfigParser.metricsConfigParser;
 import static io.microconfig.osdf.utils.YamlUtils.getMap;
 import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
 import static io.microconfig.utils.Logger.announce;
@@ -39,11 +39,13 @@ public class ChaosExperiment {
     private final MetricsPuller puller;
 
     public static ChaosExperiment chaosExperiment(OSDFPaths paths, ClusterCLI cli, ChaosComponent component) {
-        DurationParams durationParams = fromYaml(loadFromPath(component.getPathToPlan()));
-        Map<String, Object> rules = getMap(loadFromPath(component.getPathToPlan()), "rules");
+        Map<String, Object> componentMap = loadFromPath(component.getPathToPlan());
 
-        MetricsPuller puller = metricsConfigParser().buildPuller(loadFromPath(component.getPathToPlan()));
-        Set<Metric> metricsSet = metricsConfigParser().fromYaml(loadFromPath(component.getPathToPlan()));
+        DurationParams durationParams = fromYaml(componentMap);
+        Map<String, Object> rules = getMap(componentMap, "rules");
+
+        MetricsPuller puller = metricsConfigParser().buildPuller(getMap(componentMap,"monitoring"));
+        Set<Metric> metricsSet = metricsConfigParser().fromYaml(getMap(componentMap,"monitoring"));
 
         ChaosListLoader loader = chaosListLoader(paths, cli, durationParams);
         Set<List<Chaos>> chaosSet = rules.entrySet().stream().map(loader::loadChaosList).collect(toSet());
@@ -70,12 +72,12 @@ public class ChaosExperiment {
             Set<Chaos> currentStageChaosSet = chaosSet.stream().map(list -> list.get(stage)).collect(toUnmodifiableSet());
             currentStageChaosSet.forEach(Chaos::run);
             try {
-                metricsChecker(durationParams.getStageDurationInSec(), TIMEOUT, puller, metricsSet).run();
+                metricsChecker(durationParams.getStageDurationInSec(), TIMEOUT, puller, metricsSet).runCheck();
             } catch (Exception e) {
                 error(e.getMessage());
                 currentStageChaosSet.forEach(Chaos::forceStop);
                 currentThread().interrupt();
-                throw new OSDFException("Chaos experiment was interrupted on stage " + stage, e);
+                throw new OSDFException("Chaos experiment was interrupted on stage " + (stage + 1), e);
             }
             currentStageChaosSet.forEach(Chaos::stop);
             announce("Chaos stage " + (stage + 1) + " stopped");

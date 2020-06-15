@@ -1,6 +1,7 @@
-package io.microconfig.osdf.chaos.metrics;
+package io.microconfig.osdf.chaos;
 
 import io.microconfig.osdf.exceptions.OSDFException;
+import io.microconfig.osdf.metrics.Metric;
 import io.microconfig.osdf.metrics.MetricsPuller;
 import lombok.RequiredArgsConstructor;
 
@@ -9,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static io.microconfig.osdf.utils.ThreadUtils.sleepSec;
-import static io.microconfig.utils.Logger.error;
 import static java.lang.Math.min;
 import static java.time.Duration.between;
 import static java.time.LocalTime.now;
@@ -26,23 +26,23 @@ public class MetricsChecker {
         return new MetricsChecker(duration, timeout, puller, metricSet);
     }
 
-    public void run() {
+    public void runCheck() {
         LocalTime end = now().plusSeconds(duration);
         while (now().isBefore(end)) {
             sleepSec(min(timeout, between(now(), end).toSeconds()));
-            try {
-                checkMetrics();
-            } catch (Exception e) {
-                error(e.getMessage());
-                throw new OSDFException("Metrics check failed", e);
-            }
+            check();
         }
     }
 
-    private void checkMetrics() {
+    private void check() {
         if (!metricsSet.isEmpty()) {
             Map<String, Double> metrics = puller.pull();
-            metricsSet.forEach(metric -> metric.checkMetric(metrics));
+            long failedMetricsCount = metricsSet.stream()
+                    .filter(metric -> !metric.checkMetric(metrics))
+                    .count();
+            if (failedMetricsCount > 0) {
+                throw new OSDFException("Metrics check failed");
+            }
         }
     }
 }

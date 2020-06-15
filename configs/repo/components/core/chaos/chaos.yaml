@@ -4,7 +4,7 @@ stages: 5
 # Monitoring config example
 
 #monitoring:
-#  metricsURL: "http://address:port"                      #URL to metrics resource
+#  url: "http://address:port"                             #URL to metrics resource
 #  metrics:
 #    95_percentile:                                       # internal name of metric
 #      tag: "GENERAL_TIMER_seconds{quantile=\"0.95\",}"   # tag to query metric
