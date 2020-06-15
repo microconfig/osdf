@@ -47,8 +47,8 @@ public class DefaultServiceDeploymentInfo implements ServiceDeploymentInfo {
         String version = fields[4];
         String configVersion = fields[5];
         String hash = fields[6];
-        if (replicas == null || current == null || available == null || unavailable == null) return of(FAILED);
-        return new DefaultServiceDeploymentInfo(replicas, available, unavailable, version, configVersion, hash);
+        if (replicas == null || current == null || available == null) return of(FAILED);
+        return new DefaultServiceDeploymentInfo(replicas, available, unavailable == null ? 0 : unavailable, version, configVersion, hash);
     }
 
     private static DefaultServiceDeploymentInfo of(DeploymentStatus status) {

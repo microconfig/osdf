@@ -7,5 +7,7 @@ public interface ClusterResource {
 
     String name();
 
+    String label(ClusterCLI cli, String key);
+
     void delete(ClusterCLI cli);
 }

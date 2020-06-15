@@ -17,7 +17,10 @@ public class ResourcesHashComputer {
     private final Path resourcesPath;
 
     public static ResourcesHashComputer resourcesHashComputer(Path configDir) {
-        return new ResourcesHashComputer(of(configDir + "/openshift"));
+        if (exists(of(configDir + "/openshift"))) {
+            return new ResourcesHashComputer(of(configDir + "/openshift"));
+        }
+        return new ResourcesHashComputer(of(configDir + "/resources"));
     }
 
     public void computeAll() {

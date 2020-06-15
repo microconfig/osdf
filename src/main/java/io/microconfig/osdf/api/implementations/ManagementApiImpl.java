@@ -10,6 +10,7 @@ import java.util.List;
 
 import static io.microconfig.osdf.cluster.pod.PodDeleter.podDeleter;
 import static io.microconfig.osdf.commands.DeployCommand.deployCommand;
+import static io.microconfig.osdf.commands.decorators.DeleteBuggedDCDecorator.deleteFailed;
 import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
 import static io.microconfig.osdf.service.deployment.tools.DeploymentRestarter.deploymentRestarter;
 import static io.microconfig.osdf.service.loaders.filters.RequiredComponentsFilter.requiredComponentsFilter;
@@ -27,7 +28,7 @@ public class ManagementApiImpl implements ManagementApi {
     @Override
     public void deploy(List<String> components, String mode, Boolean wait) {
         cli.login();
-        deployCommand(paths, cli).deploy(components, mode, wait);
+        deleteFailed(cli, deployCommand(paths, cli)).deploy(components, mode, wait);
     }
 
     @Override
@@ -58,5 +59,15 @@ public class ManagementApiImpl implements ManagementApi {
             String output = cli.execute("delete dc " + pack.service().name() + "." + version).getOutput();
             info(output);
         });
+    }
+
+    @Override
+    public void delete(List<String> components) {
+        serviceLoader(paths, requiredComponentsFilter(components), cli)
+                .loadPacks()
+                .forEach(pack -> {
+                    pack.service().delete();
+                    info("Deleted " + pack.service().name());
+                });
     }
 }

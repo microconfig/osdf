@@ -1,10 +1,9 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: ${this@name}-service
+  name: ${this@cluster.service.name}
   labels:
     application: ${this@name}
-    configHash: <CONFIG_HASH>
 spec:
   selector:
     application: ${this@name}

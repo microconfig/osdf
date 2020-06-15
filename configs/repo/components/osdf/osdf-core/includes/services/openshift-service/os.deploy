@@ -9,10 +9,12 @@
 #var microconfig.template.service.fromFile: ${openshift-service@configDir}/templates/service.yaml
 #var microconfig.template.service.toFile: openshift/service.yaml
 
-server.port: ${app::this@server.port}
+server.port: ${app::this@server.port:8080}
 image.name: ${this@name}
 istioInject: false
 image.url: ${this@registry.project.url}/${this@image.name}:${this@image.version}
+cluster.service.name: ${this@name}-service
+cluster.service.url: ${this@cluster.service.name}.${this@project}.svc.cluster.local
 
 deployment.resource: deploymentconfig
 service.type: old

@@ -2,6 +2,7 @@ package io.microconfig.osdf.service.deployment.istio;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.cluster.pod.Pod;
+import io.microconfig.osdf.cluster.resource.ClusterResource;
 import io.microconfig.osdf.service.deployment.DefaultServiceDeployment;
 import io.microconfig.osdf.service.deployment.info.ServiceDeploymentInfo;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,11 @@ public class DefaultIstioServiceDeployment implements IstioServiceDeployment {
     @Override
     public void scale(int replicas) {
         deployment.scale(replicas);
+    }
+
+    @Override
+    public ClusterResource toResource() {
+        return deployment.toResource();
     }
 
     @Override

@@ -4,7 +4,6 @@ metadata:
   name: ${this@name}-service
   labels:
     application: ${this@name}
-    configHash: <CONFIG_HASH>
 spec:
   selector:
     application: ${this@name}

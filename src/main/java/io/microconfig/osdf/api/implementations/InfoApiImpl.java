@@ -40,10 +40,11 @@ public class InfoApiImpl implements InfoApi {
 
     @Override
     public void healthcheck(String group, Integer timeout) {
+        cli.login();
         List<ServiceDeployPack> deployPacks = serviceLoader(paths, groupComponentsFilter(paths, group), cli)
                 .loadPacks();
-        boolean status = deployStatusChecker(timeout == null ? 60 : timeout).check(deployPacks);
-        if (!status) throw new StatusCodeException(1);
+        List<ServiceDeployPack> failedDeployments = deployStatusChecker(timeout == null ? 60 : timeout).findFailed(deployPacks);
+        if (!failedDeployments.isEmpty()) throw new StatusCodeException(1);
     }
 
     @Override
