@@ -15,14 +15,11 @@ import static io.microconfig.osdf.deployers.BaseServiceDeployer.baseServiceDeplo
 import static io.microconfig.osdf.deployers.RestrictedDeployer.restrictedDeployer;
 import static io.microconfig.osdf.jobrunners.DefaultJobRunner.defaultJobRunner;
 import static io.microconfig.osdf.resources.DeploymentHashInserter.deploymentHashInserter;
-import static io.microconfig.osdf.service.deployment.checkers.DeployStatusChecker.deployStatusChecker;
 import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
 import static io.microconfig.osdf.service.deployment.tools.DeployRequiredFilter.deployRequiredFilter;
 import static io.microconfig.osdf.service.job.pack.loader.DefaultServiceJobPackLoader.jobLoader;
 import static io.microconfig.osdf.service.loaders.filters.RequiredComponentsFilter.requiredComponentsFilter;
 import static io.microconfig.utils.Logger.announce;
-import static io.microconfig.utils.Logger.error;
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.IntStream.range;
 
@@ -35,7 +32,7 @@ public class DeployCommand {
         return new DeployCommand(paths, cli);
     }
 
-    public List<ServiceDeployPack> deploy(List<String> serviceNames, String mode, boolean wait) {
+    public void deploy(List<String> serviceNames, String mode) {
         ServiceDeployer deployer = getDeployer(mode);
         announce("Starting deployment");
 
@@ -43,14 +40,9 @@ public class DeployCommand {
         callRunner(jobPacks);
 
         List<ServiceDeployPack> deployPacks = getDeployPacks(serviceNames, mode);
-        if (deployPacks.isEmpty()) return emptyList();
+        if (deployPacks.isEmpty()) return;
 
         callDeployer(deployPacks, deployer);
-        if (wait && !"restricted".equals(mode)) {
-            announce("Waiting for services to deploy");
-            return findFailedDeployments(deployPacks);
-        }
-        return emptyList();
     }
 
     private List<ServiceDeployPack> getDeployPacks(List<String> serviceNames, String mode) {
@@ -70,21 +62,20 @@ public class DeployCommand {
         return deployPacks;
     }
 
-    private List<ServiceDeployPack> findFailedDeployments(List<ServiceDeployPack> deployPacks) {
-        List<ServiceDeployPack> failedDeployments = deployStatusChecker().findFailed(deployPacks);
-        if (failedDeployments.isEmpty()) {
-            announce("OK");
-        } else {
-            error("Some components didn't start in time or had failures");
-        }
-        return failedDeployments;
-    }
-
     private void callDeployer(List<ServiceDeployPack> deployPacks, ServiceDeployer deployer) {
         range(0, deployPacks.size()).forEach(i -> deployer.deploy(
                         deployPacks.get(i).service(),
                         deployPacks.get(i).deployment(),
                         deployPacks.get(i).files())
+        );
+    }
+
+    private void callRunner(List<ServiceJobPack> jobPacks) {
+        DefaultJobRunner runner = defaultJobRunner();
+        range(0, jobPacks.size()).forEach(i -> runner.run(
+                jobPacks.get(i).service(),
+                jobPacks.get(i).job(),
+                jobPacks.get(i).files())
         );
     }
 
@@ -96,14 +87,5 @@ public class DeployCommand {
             return restrictedDeployer();
         }
         throw new OSDFException("Unknown deploy mode");
-    }
-
-    private void callRunner(List<ServiceJobPack> jobPacks) {
-        DefaultJobRunner runner = defaultJobRunner();
-        range(0, jobPacks.size()).forEach(i -> runner.run(
-                jobPacks.get(i).service(),
-                jobPacks.get(i).job(),
-                jobPacks.get(i).files())
-        );
     }
 }

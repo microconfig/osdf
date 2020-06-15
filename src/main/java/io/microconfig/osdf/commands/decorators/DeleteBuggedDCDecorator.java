@@ -2,8 +2,6 @@ package io.microconfig.osdf.commands.decorators;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.commands.DeployCommand;
-import io.microconfig.osdf.exceptions.StatusCodeException;
-import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -24,29 +22,27 @@ public class DeleteBuggedDCDecorator {
         return new DeleteBuggedDCDecorator(cli, command);
     }
 
-    public void deploy(List<String> serviceNames, String mode, boolean wait) {
-        List<String> failed = firstDeploy(serviceNames, mode, wait)
+    public void deploy(List<String> serviceNames, String mode) {
+        List<String> failed = firstDeploy(serviceNames, mode)
                 .stream()
-                .map(pack -> pack.service().name())
                 .collect(toUnmodifiableList());
-        if (wait && failed.isEmpty()) return;
         if (!failed.isEmpty()) {
             info("Failed services: " + failed);
         }
         secondDeploy(failed, mode);
     }
 
-    private List<ServiceDeployPack> firstDeploy(List<String> serviceNames, String mode, boolean wait) {
-        deleteBuggedDCs();
-        return command.deploy(serviceNames, mode, wait);
+    private List<String> firstDeploy(List<String> serviceNames, String mode) {
+        List<String> bugged = deleteBuggedDCs();
+        command.deploy(serviceNames, mode);
+        return bugged;
     }
 
     private void secondDeploy(List<String> failed, String mode) {
         List<String> redeployServices = getRedeployServices(failed);
         if (redeployServices.isEmpty()) return;
 
-        List<ServiceDeployPack> finalFailedDeployments = command.deploy(redeployServices, mode, true);
-        if (!finalFailedDeployments.isEmpty()) throw new StatusCodeException(1);
+        command.deploy(redeployServices, mode);
     }
 
     private List<String> getRedeployServices(List<String> failed) {
