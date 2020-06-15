@@ -28,7 +28,7 @@ public class GitFetcher implements ConfigsFetcherStrategy {
 
     @Override
     public void fetch(Path destination) {
-        info("Cloning " + urlWithoutPassword(settings.getUrl()) + " [" + settings.getBranchOrTag() + "] to " + destination);
+        info("Cloning " + settings.urlWithoutPassword() + " [" + settings.getBranchOrTag() + "] to " + destination);
         int status = startAndWait(
                 new ProcessBuilder("git", "clone", "-b", settings.getBranchOrTag(),
                         "--single-branch", "--depth", "1", settings.getUrl(), destination.toString())
@@ -48,10 +48,6 @@ public class GitFetcher implements ConfigsFetcherStrategy {
     @Override
     public String getConfigVersion() {
         return settings.getBranchOrTag();
-    }
-
-    private String urlWithoutPassword(String gitUrl) {
-        return gitUrl == null ? null : gitUrl.substring(gitUrl.indexOf('@') + 1);
     }
 
     @Override

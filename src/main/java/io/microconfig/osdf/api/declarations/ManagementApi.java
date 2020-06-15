@@ -13,7 +13,7 @@ public interface ManagementApi {
     @ApiCommand(description = "Deploy services to OpenShift", order = 1)
     void deploy(@ConsoleParam(ComponentsParameter.class) List<String> components,
                 @ConsoleParam(ModeParameter.class) String mode,
-                @ConsoleParam(WaitParameter.class) Boolean wait);
+                @ConsoleParam(SmartDeployParameter.class) Boolean smart);
 
     @ApiCommand(description = "Restart components in OpenShift", order = 2)
     void restart(@ConsoleParam(ComponentsParameter.class) List<String> components);

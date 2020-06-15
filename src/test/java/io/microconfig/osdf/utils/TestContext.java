@@ -52,7 +52,7 @@ public class TestContext {
         install();
         prepareConfigs();
         initializationApi(paths).openshift(of("user:pass"), null, false);
-        initializationApi(paths).localConfigs(CONFIGS_PATH);
+        initializationApi(paths).localConfigs(CONFIGS_PATH, null);
         initializationApi(paths).configs("dev", null);
     }
 }

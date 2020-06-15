@@ -23,11 +23,15 @@ public class GitFetcherSettings {
         return true;
     }
 
+    public String urlWithoutPassword() {
+        return url == null ? null : url.substring(url.indexOf('@') + 1);
+    }
+
     @Override
     public String toString() {
         return "" +
                 (url == null ? "" :
-                        "Url: " + url + "\n") +
+                        "Url: " + urlWithoutPassword() + "\n") +
                 (branchOrTag == null ? "" :
                         "Branch or tag: " + branchOrTag + "\n");
     }

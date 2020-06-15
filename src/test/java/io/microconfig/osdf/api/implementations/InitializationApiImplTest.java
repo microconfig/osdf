@@ -32,18 +32,18 @@ class InitializationApiImplTest {
 
     @Test
     void initLocalConfigs() {
-        initializationApi(context.getPaths()).localConfigs(CONFIGS_PATH);
+        initializationApi(context.getPaths()).localConfigs(CONFIGS_PATH, null);
         assertTrue(exists(context.getPaths().configsPath()));
     }
 
     @Test
     void exceptionIfPathIsNotProvided() {
-        assertThrows(OSDFException.class, () -> initializationApi(context.getPaths()).localConfigs(null));
+        assertThrows(OSDFException.class, () -> initializationApi(context.getPaths()).localConfigs(null, null));
     }
 
     @Test
     void buildIfEnvIsSet() throws IOException {
-        initializationApi(context.getPaths()).localConfigs(CONFIGS_PATH);
+        initializationApi(context.getPaths()).localConfigs(CONFIGS_PATH, null);
         initializationApi(context.getPaths()).configs("dev", null);
         try (Stream<Path> files = list(context.getPaths().componentsPath())) {
             List<String> builtComponents = files.map(Path::getFileName)
@@ -56,7 +56,7 @@ class InitializationApiImplTest {
 
     @Test
     void exceptionIfEnvIsNotProvided() {
-        initializationApi(context.getPaths()).localConfigs(CONFIGS_PATH);
+        initializationApi(context.getPaths()).localConfigs(CONFIGS_PATH, null);
         assertThrows(OSDFException.class, () -> initializationApi(context.getPaths()).configs(null, null));
     }
 

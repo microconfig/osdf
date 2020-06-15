@@ -1,21 +1,23 @@
 package io.microconfig.osdf.configfetcher.local;
 
 import io.microconfig.osdf.configfetcher.ConfigsFetcherStrategy;
-import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
 
 import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
 import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
+import static io.microconfig.osdf.utils.YamlUtils.dump;
+import static java.util.Objects.requireNonNullElse;
 
 @RequiredArgsConstructor
 public class LocalFetcher implements ConfigsFetcherStrategy {
     private final LocalFetcherSettings settings;
+    private final Path settingsPath;
 
     public static LocalFetcher localFetcher(Path settingsPath) {
         LocalFetcherSettings settings = settingsFile(LocalFetcherSettings.class, settingsPath).getSettings();
-        return new LocalFetcher(settings);
+        return new LocalFetcher(settings, settingsPath);
     }
 
     @Override
@@ -31,12 +33,13 @@ public class LocalFetcher implements ConfigsFetcherStrategy {
 
     @Override
     public void setConfigVersion(String configVersion) {
-        throw new OSDFException("Setting configs version for local configs is not supported");
+        settings.setVersion(configVersion);
+        dump(settings, settingsPath);
     }
 
     @Override
     public String getConfigVersion() {
-        return "local";
+        return requireNonNullElse(settings.getVersion(), "local");
     }
 
     @Override

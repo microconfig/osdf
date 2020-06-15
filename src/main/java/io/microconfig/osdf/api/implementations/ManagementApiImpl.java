@@ -2,6 +2,7 @@ package io.microconfig.osdf.api.implementations;
 
 import io.microconfig.osdf.api.declarations.ManagementApi;
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,7 @@ import java.util.List;
 
 import static io.microconfig.osdf.cluster.pod.PodDeleter.podDeleter;
 import static io.microconfig.osdf.commands.DeployCommand.deployCommand;
-import static io.microconfig.osdf.commands.decorators.DeleteBuggedDCDecorator.deleteFailed;
+import static io.microconfig.osdf.commands.RunJobsCommand.runJobsCommand;
 import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
 import static io.microconfig.osdf.service.deployment.tools.DeploymentRestarter.deploymentRestarter;
 import static io.microconfig.osdf.service.loaders.filters.RequiredComponentsFilter.requiredComponentsFilter;
@@ -26,9 +27,11 @@ public class ManagementApiImpl implements ManagementApi {
     }
 
     @Override
-    public void deploy(List<String> components, String mode, Boolean wait) {
+    public void deploy(List<String> serviceNames, String mode, Boolean smart) {
         cli.login();
-        deleteFailed(cli, deployCommand(paths, cli)).deploy(components, mode, wait);
+        if ("restricted".equals(mode) && smart) throw new OSDFException("Smart deploy is not possible for restricted deploy mode");
+        runJobsCommand(paths, cli).run(serviceNames, smart);
+        deployCommand(paths, cli).deploy(serviceNames, mode, smart);
     }
 
     @Override

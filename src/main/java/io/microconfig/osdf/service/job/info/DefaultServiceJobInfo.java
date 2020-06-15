@@ -30,9 +30,8 @@ public class DefaultServiceJobInfo implements ServiceJobInfo {
         if (lines.get(0).toLowerCase().contains("not found")) return notExecuted();
         String[] fields = lines.get(1).split("\\s+");
 
-
-        String configVersion = fields[3];
-        String version = fields[4];
+        String version = fields[3];
+        String configVersion = fields[4];
         JobStatus status = UNKNOWN;
         if (valueGreaterThanZero(fields[2])) status = ACTIVE;
         else if (valueGreaterThanZero(fields[1])) status = SUCCEEDED;
