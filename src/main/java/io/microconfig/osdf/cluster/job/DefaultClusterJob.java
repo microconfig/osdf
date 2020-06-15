@@ -1,6 +1,8 @@
 package io.microconfig.osdf.cluster.job;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.microconfig.osdf.cluster.resource.ClusterResource;
+import io.microconfig.osdf.cluster.resource.ClusterResourceImpl;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
