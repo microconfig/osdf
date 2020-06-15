@@ -5,11 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
-import java.util.List;
 
 import static io.microconfig.osdf.cluster.resource.ClusterResourceImpl.fromPath;
-import static io.microconfig.osdf.utils.YamlUtils.getString;
-import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(of = {"path"})

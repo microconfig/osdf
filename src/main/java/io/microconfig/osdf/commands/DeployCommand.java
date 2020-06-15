@@ -90,7 +90,7 @@ public class DeployCommand {
 
     private ServiceDeployer getDeployer(String mode) {
         if (mode == null) {
-            return baseServiceDeployer(cli, paths);
+            return baseServiceDeployer(cli);
         }
         if (mode.equals("restricted")) {
             return restrictedDeployer();

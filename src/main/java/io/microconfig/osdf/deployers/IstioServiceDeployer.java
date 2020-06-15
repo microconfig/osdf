@@ -21,6 +21,6 @@ public class IstioServiceDeployer implements ServiceDeployer {
 
     @Override
     public void deploy(ClusterService service, ServiceDeployment deployment, ServiceFiles files) {
-        baseServiceDeployer(cli, paths, uploadVirtualServiceHook()).deploy(service, deployment, files);
+        baseServiceDeployer(cli, uploadVirtualServiceHook()).deploy(service, deployment, files);
     }
 }
