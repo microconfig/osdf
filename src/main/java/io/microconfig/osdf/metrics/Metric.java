@@ -1,5 +1,6 @@
 package io.microconfig.osdf.metrics;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
@@ -8,6 +9,7 @@ import static io.microconfig.utils.Logger.warn;
 
 @RequiredArgsConstructor
 public class Metric {
+    @Getter
     private final String name;
     private final String tag;
 
