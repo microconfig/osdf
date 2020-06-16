@@ -13,22 +13,21 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.IntStream;
 
 import static io.microconfig.osdf.chaos.ChaosListLoader.chaosListLoader;
 import static io.microconfig.osdf.chaos.DurationParams.fromYaml;
-import static io.microconfig.osdf.chaos.MetricsChecker.metricsChecker;
 import static io.microconfig.osdf.chaos.types.Chaos.getAllChaosImpls;
 import static io.microconfig.osdf.chaos.validators.BasicValidator.basicValidator;
 import static io.microconfig.osdf.chaos.validators.PodAndIOChaosIntersectionValidator.podAndIOChaosIntersectionValidator;
+import static io.microconfig.osdf.metrics.MetricsChecker.metricsChecker;
 import static io.microconfig.osdf.metrics.MetricsConfigParser.metricsConfigParser;
 import static io.microconfig.osdf.utils.YamlUtils.getMap;
 import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
 import static io.microconfig.utils.Logger.announce;
-import static io.microconfig.utils.Logger.error;
 import static java.lang.Thread.currentThread;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Collectors.toUnmodifiableSet;
+import static java.util.stream.IntStream.range;
 
 @RequiredArgsConstructor
 public class ChaosExperiment {
@@ -44,8 +43,8 @@ public class ChaosExperiment {
         DurationParams durationParams = fromYaml(componentMap);
         Map<String, Object> rules = getMap(componentMap, "rules");
 
-        MetricsPuller puller = metricsConfigParser().buildPuller(getMap(componentMap,"monitoring"));
-        Set<Metric> metricsSet = metricsConfigParser().fromYaml(getMap(componentMap,"monitoring"));
+        MetricsPuller puller = metricsConfigParser().buildPuller(getMap(componentMap, "monitoring"));
+        Set<Metric> metricsSet = metricsConfigParser().fromYaml(getMap(componentMap, "monitoring"));
 
         ChaosListLoader loader = chaosListLoader(paths, cli, durationParams);
         Set<List<Chaos>> chaosSet = rules.entrySet().stream().map(loader::loadChaosList).collect(toSet());
@@ -66,22 +65,28 @@ public class ChaosExperiment {
 
     public void run() {
         announce("Launch of chaos");
-
-        IntStream.range(0, durationParams.getStagesNum()).forEach(stage -> {
-            announce("Launch of chaos stage " + (stage + 1));
-            Set<Chaos> currentStageChaosSet = chaosSet.stream().map(list -> list.get(stage)).collect(toUnmodifiableSet());
-            currentStageChaosSet.forEach(Chaos::run);
-            try {
-                metricsChecker(durationParams.getStageDurationInSec(), TIMEOUT, puller, metricsSet).runCheck();
-            } catch (Exception e) {
-                error(e.getMessage());
-                currentStageChaosSet.forEach(Chaos::forceStop);
-                currentThread().interrupt();
-                throw new OSDFException("Chaos experiment was interrupted on stage " + (stage + 1), e);
-            }
-            currentStageChaosSet.forEach(Chaos::stop);
-            announce("Chaos stage " + (stage + 1) + " stopped");
-        });
+        range(0, durationParams.getStagesNum()).forEach(this::runStage);
         announce("Chaos stopped");
+    }
+
+    private void runStage(int stage) {
+        announce("Launch of chaos stage " + (stage + 1));
+        Set<Chaos> currentStageChaosSet = chaosSet.stream().map(list -> list.get(stage)).collect(toUnmodifiableSet());
+        currentStageChaosSet.forEach(Chaos::run);
+        checkMetrics(stage, currentStageChaosSet);
+        currentStageChaosSet.forEach(Chaos::stop);
+        announce("Chaos stage " + (stage + 1) + " stopped");
+    }
+
+    private void checkMetrics(int stage, Set<Chaos> currentStageChaosSet) {
+        try {
+            if (!metricsChecker(durationParams.getStageDurationInSec(), TIMEOUT, puller, metricsSet).runCheck()) {
+                throw new OSDFException("Metrics check failed");
+            }
+        } catch (Exception e) {
+            currentStageChaosSet.forEach(Chaos::forceStop);
+            currentThread().interrupt();
+            throw new OSDFException("Chaos experiment was interrupted on stage " + (stage + 1), e);
+        }
     }
 }
