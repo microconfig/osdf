@@ -1,6 +1,21 @@
 duration: 10M30S   #Duration in hHmMsS
 stages: 5
 
+# Monitoring config example
+
+#monitoring:
+#  url: "http://address:port"                             #URL to metrics resource
+#  metrics:
+#    95_percentile:                                       # internal name of metric
+#      tag: "GENERAL_TIMER_seconds{quantile=\"0.95\",}"   # tag to query metric
+#      max: #{6.0 / 1000}                                 # [optional] max boundary value
+#      min: #{3.0 / 1000}                                 # [optional] min boundary value
+#      baseline: #{5.0 / 1000}                            # [optional] baseline value; if missing, current metric value
+#                                                         #            will be taken
+#      deviation: 30%                                     # [optional] abs or relative (with '%' sign) deviation;
+#                                                         #            boundary values will be calculated as
+#                                                         #            baseline ± deviation
+
 rules:
   helloworld-istio-network:
     type: network
@@ -18,7 +33,7 @@ rules:
 
     # Modes:
     #   * fixed: affect specified number of pods
-    #   * percent: affect % of pods, number to kill is calculated as follows: floor(num_pods * severity / 100)
+    #   * percent: affect % of pods, number to affect is calculated as follows: floor(num_pods * severity / 100)
     mode: fixed
     components:
       - helloworld-springboot

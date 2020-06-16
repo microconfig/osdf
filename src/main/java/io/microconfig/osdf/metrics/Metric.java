@@ -1,22 +1,35 @@
 package io.microconfig.osdf.metrics;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import static io.microconfig.osdf.metrics.MetricType.ABSOLUTE;
-import static io.microconfig.osdf.metrics.MetricType.RELATIVE;
-import static java.lang.Double.parseDouble;
+import java.util.Map;
 
-@AllArgsConstructor
-@Getter
+import static io.microconfig.utils.Logger.warn;
+
+@RequiredArgsConstructor
 public class Metric {
-    private final String key;
-    private final MetricType type;
-    private final double deviation;
+    @Getter
+    private final String name;
+    private final String tag;
 
-    public static Metric metric(String key, String deviationStr) {
-        MetricType type = deviationStr.contains("%") ? RELATIVE : ABSOLUTE;
-        double deviation = parseDouble(deviationStr.contains("%") ? deviationStr.substring(0, deviationStr.length() - 1) : deviationStr);
-        return new Metric(key, type, deviation);
+    private final Double upperBound;
+    private final Double lowerBound;
+
+    public static Metric metric(String name, String tag, Double upperBound, Double lowerBound) {
+        return new Metric(name, tag, upperBound, lowerBound);
+    }
+
+    public boolean checkMetric(Map<String, Double> metricsMap) {
+        Double currentValue = metricsMap.get(tag);
+        if (currentValue > upperBound) {
+            warn("Metric " + name + " [" + tag + "] value [" + currentValue + "] exceeded the specified max value " + upperBound);
+            return false;
+        }
+        if (currentValue < lowerBound) {
+            warn("Metric " + name + " [" + tag + "] value [" + currentValue + "] dropped below the specified min value " + lowerBound);
+            return false;
+        }
+        return true;
     }
 }

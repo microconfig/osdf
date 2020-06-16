@@ -71,6 +71,10 @@ public class YamlUtils {
         return (Integer) getObjectOrNull(yaml, properties);
     }
 
+    public static Double getDouble(Map<String, Object> yaml, String... properties) {
+        return (Double) getObjectOrNull(yaml, properties);
+    }
+
     public static float getFloat(Map<String, Object> yaml, String... properties) {
         return (float) getObjectOrNull(yaml, properties);
     }
