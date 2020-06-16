@@ -17,7 +17,6 @@ import static java.util.stream.Collectors.toUnmodifiableSet;
 
 @RequiredArgsConstructor
 public class MetricsConfigParser {
-
     public static final String BASELINE = "baseline";
     public static final String DEVIATION = "deviation";
 
