@@ -1,0 +1,9 @@
+monitoring:
+  url: "http://helloworld-ci00361131-edevgen-limitmanager-dev.apps.dev-gen.sigma.sbrf.ru/actuator/prometheus"
+  metrics:
+    - cpu_usage:                                           # internal name of metric
+        tag: "system_cpu_usage"                            # tag to query metric
+        max: 0.9                                           # [optional] max boundary value
+    - jvm_memory_used_bytes:                               # internal name of metric
+        contains_tag: "jvm_memory_used_bytes"              # get sum value of metrics, that contains this tag
+        max: 256_000_000.0                                 # [optional] max boundary value

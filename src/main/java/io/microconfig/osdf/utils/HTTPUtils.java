@@ -1,6 +1,7 @@
 package io.microconfig.osdf.utils;
 
 import io.microconfig.osdf.exceptions.PossibleBugException;
+import io.microconfig.osdf.exceptions.ServerNotAvailableException;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -14,6 +15,9 @@ public class HTTPUtils {
         try {
             HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
             con.setRequestMethod("GET");
+            if (con.getResponseCode() == 503 || con.getResponseCode() == 502) {
+                throw new ServerNotAvailableException("Server not available on " + url);
+            }
             if (con.getResponseCode() != 200) {
                 throw new PossibleBugException(url + " returned " + con.getResponseCode() + " status code");
             }

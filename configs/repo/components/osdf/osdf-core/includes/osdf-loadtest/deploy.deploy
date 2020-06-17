@@ -19,10 +19,12 @@
 
 image-master.url: ${this@registry.project.url}/jmeter-master:latest
 image-slave.url: ${this@registry.project.url}/jmeter-slave:latest
+pull-secret-name: pull-secret-name
 
 master.port: 60000
 slave.port: 50000
 slave.second-port: 1099
 
+limits.memory: 1024M
 istioInject: false
 replicas.count: 1

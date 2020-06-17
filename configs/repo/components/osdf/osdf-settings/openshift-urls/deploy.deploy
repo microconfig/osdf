@@ -1,4 +1,4 @@
-cluster.url.base: unknown
-cluster.url.api: unknown
-project: unknown
-registry.project.url: unknown
+cluster.url.base: api.dev-gen.sigma.sbrf.ru
+cluster.url.api: https://api.dev-gen.sigma.sbrf.ru:6443
+project: ci00361131-edevgen-limitmanager-dev
+registry.project.url: registry.sigma.sbrf.ru/dev/ci00361131/ci02445808_lm_dev
