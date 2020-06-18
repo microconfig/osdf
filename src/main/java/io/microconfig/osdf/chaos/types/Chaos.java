@@ -1,7 +1,7 @@
 package io.microconfig.osdf.chaos.types;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.cluster.old.cluster.cli.ClusterCLI;
+import io.osdf.settings.paths.OSDFPaths;
 
 import java.util.List;
 

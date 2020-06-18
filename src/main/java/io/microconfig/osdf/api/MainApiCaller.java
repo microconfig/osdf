@@ -1,8 +1,8 @@
 package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.api.declarations.*;
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.cluster.old.cluster.cli.ClusterCLI;
+import io.osdf.settings.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

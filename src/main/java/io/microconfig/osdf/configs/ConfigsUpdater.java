@@ -2,7 +2,7 @@ package io.microconfig.osdf.configs;
 
 import io.microconfig.osdf.configfetcher.ConfigsFetcher;
 import io.microconfig.osdf.exceptions.OSDFException;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import io.microconfig.osdf.settings.SettingsFile;
 import lombok.RequiredArgsConstructor;
 

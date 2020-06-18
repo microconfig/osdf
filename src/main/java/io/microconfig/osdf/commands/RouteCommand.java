@@ -1,9 +1,9 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.istio.rulesetters.RoutingRuleSetter;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import io.microconfig.osdf.service.deployment.istio.IstioServiceDeployment;
 import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
 import io.microconfig.osdf.service.istio.IstioService;

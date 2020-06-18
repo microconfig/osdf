@@ -1,8 +1,8 @@
 package io.microconfig.osdf.utils;
 
-import io.microconfig.osdf.cluster.openshift.OpenShiftCLI;
+import io.cluster.old.cluster.openshift.OpenShiftCLI;
 
-import static io.microconfig.osdf.commandline.CommandLineOutput.output;
+import static io.cluster.old.cluster.commandline.CommandLineOutput.output;
 import static org.mockito.Mockito.*;
 
 public class MockObjects {

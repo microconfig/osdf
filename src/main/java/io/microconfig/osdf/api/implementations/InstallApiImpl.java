@@ -4,12 +4,12 @@ import io.microconfig.osdf.api.declarations.InstallApi;
 import io.microconfig.osdf.commands.InstallCommand;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.install.jarinstaller.JarInstaller;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.install.jarinstaller.FakeJarInstaller.fakeJarInstaller;
 import static io.microconfig.osdf.install.jarinstaller.LocalJarInstaller.jarInstaller;
-import static io.microconfig.osdf.paths.OSDFPaths.paths;
+import static io.osdf.settings.paths.OSDFPaths.paths;
 import static io.microconfig.osdf.state.OSDFVersion.fromString;
 import static io.microconfig.osdf.utils.JarUtils.isJar;
 

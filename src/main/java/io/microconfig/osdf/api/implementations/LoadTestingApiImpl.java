@@ -1,9 +1,9 @@
 package io.microconfig.osdf.api.implementations;
 
 import io.microconfig.osdf.api.declarations.LoadTestingApi;
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.loadtesting.jmeter.configs.JmeterConfigProcessor;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;

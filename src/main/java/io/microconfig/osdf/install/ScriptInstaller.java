@@ -1,6 +1,6 @@
 package io.microconfig.osdf.install;
 
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;

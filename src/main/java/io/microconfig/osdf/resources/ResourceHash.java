@@ -1,12 +1,12 @@
 package io.microconfig.osdf.resources;
 
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import io.microconfig.osdf.service.files.ServiceFiles;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
 
-import static io.microconfig.osdf.cluster.resource.totalhash.TotalHashComputer.totalHashComputer;
+import static io.cluster.old.cluster.resource.totalhash.TotalHashComputer.totalHashComputer;
 import static io.microconfig.osdf.utils.FileUtils.readAll;
 import static io.microconfig.osdf.utils.FileUtils.writeStringToFile;
 import static io.microconfig.osdf.utils.YamlUtils.getString;

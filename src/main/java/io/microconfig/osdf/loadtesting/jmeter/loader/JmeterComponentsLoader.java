@@ -1,6 +1,6 @@
 package io.microconfig.osdf.loadtesting.jmeter.loader;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.PossibleBugException;
 import io.microconfig.osdf.loadtesting.jmeter.JmeterComponent;
 import io.microconfig.osdf.loadtesting.jmeter.configs.JmeterConfigProcessor;

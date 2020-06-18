@@ -1,8 +1,8 @@
 package io.microconfig.osdf.service.deployment.pack.loader;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.component.ComponentDir;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import io.microconfig.osdf.service.ClusterService;
 import io.microconfig.osdf.service.deployment.ServiceDeployment;
 import io.microconfig.osdf.service.deployment.matchers.ServiceDeploymentMatcher;

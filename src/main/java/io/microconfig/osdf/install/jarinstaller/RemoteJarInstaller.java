@@ -4,7 +4,7 @@ import io.microconfig.osdf.common.Credentials;
 import io.microconfig.osdf.install.UpdateSettings;
 import io.microconfig.osdf.microconfig.properties.OSDFDownloadProperties;
 import io.microconfig.osdf.nexus.NexusArtifact;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import io.microconfig.osdf.state.OSDFVersion;
 import lombok.RequiredArgsConstructor;
 

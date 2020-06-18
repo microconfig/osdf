@@ -1,7 +1,7 @@
 package io.microconfig.osdf.service.loaders;
 
 import io.microconfig.osdf.component.ComponentDir;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import io.microconfig.osdf.service.files.DefaultServiceFiles;
 import io.microconfig.osdf.service.files.ServiceFiles;
 import lombok.RequiredArgsConstructor;

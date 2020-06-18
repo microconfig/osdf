@@ -1,17 +1,17 @@
 package io.microconfig.osdf.commands;
 
 
-import io.microconfig.osdf.cluster.context.ClusterContextSettings;
-import io.microconfig.osdf.cluster.context.ClusterType;
-import io.microconfig.osdf.cluster.kubernetes.KubernetesSettings;
+import io.cluster.old.cluster.context.ClusterContextSettings;
+import io.cluster.old.cluster.context.ClusterType;
+import io.cluster.old.cluster.kubernetes.KubernetesSettings;
 import io.microconfig.osdf.configs.ConfigsSettings;
 import io.microconfig.osdf.configs.ConfigsSource;
-import io.microconfig.osdf.cluster.openshift.OpenShiftCredentials;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.cluster.old.cluster.openshift.OpenShiftCredentials;
+import io.osdf.settings.paths.OSDFPaths;
 import io.microconfig.osdf.state.OSDFVersionFile;
 import lombok.RequiredArgsConstructor;
 
-import static io.microconfig.osdf.cluster.context.ClusterType.OPENSHIFT;
+import static io.cluster.old.cluster.context.ClusterType.OPENSHIFT;
 import static io.microconfig.osdf.configfetcher.ConfigsFetcher.fetcher;
 import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
 import static io.microconfig.utils.Logger.announce;

@@ -1,17 +1,17 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.deployers.ServiceDeployer;
+import io.cluster.old.cluster.cli.ClusterCLI;
+import io.osdf.management.deploy.deployers.ServiceDeployer;
 import io.microconfig.osdf.exceptions.OSDFException;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import io.microconfig.osdf.resources.ResourceHash;
 import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.osdf.deployers.BaseServiceDeployer.baseServiceDeployer;
-import static io.microconfig.osdf.deployers.RestrictedDeployer.restrictedDeployer;
+import static io.osdf.management.deploy.deployers.BaseServiceDeployer.baseServiceDeployer;
+import static io.osdf.management.deploy.deployers.RestrictedDeployer.restrictedDeployer;
 import static io.microconfig.osdf.resources.ResourceHash.deploymentHash;
 import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
 import static io.microconfig.osdf.service.deployment.tools.UpToDateDeploymentFilter.upToDateDeploymentFilter;

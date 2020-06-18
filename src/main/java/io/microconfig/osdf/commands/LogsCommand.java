@@ -1,13 +1,13 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.service.deployment.ServiceDeployment;
-import io.microconfig.osdf.cluster.pod.Pod;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.cluster.old.cluster.pod.Pod;
+import io.osdf.settings.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.service.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
-import static io.microconfig.osdf.cluster.pod.Pod.fromPods;
+import static io.cluster.old.cluster.pod.Pod.fromPods;
 import static io.microconfig.utils.Logger.error;
 
 @RequiredArgsConstructor

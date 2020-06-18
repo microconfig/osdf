@@ -2,7 +2,7 @@ package io.microconfig.osdf.service.deployment.checkers.image;
 
 import io.microconfig.osdf.common.Credentials;
 import io.microconfig.osdf.exceptions.OSDFException;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import io.microconfig.osdf.service.files.ServiceFiles;
 import lombok.RequiredArgsConstructor;
 

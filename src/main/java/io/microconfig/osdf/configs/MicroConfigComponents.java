@@ -4,7 +4,7 @@ import io.microconfig.core.environments.Component;
 import io.microconfig.core.environments.Components;
 import io.microconfig.core.environments.Environment;
 import io.microconfig.osdf.exceptions.MicroConfigException;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

@@ -2,9 +2,9 @@ package io.microconfig.osdf.chaos;
 
 import io.microconfig.osdf.chaos.types.Chaos;
 import io.microconfig.osdf.chaos.types.ChaosType;
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.OSDFException;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

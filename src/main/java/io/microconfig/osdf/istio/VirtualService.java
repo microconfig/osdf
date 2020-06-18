@@ -1,6 +1,6 @@
 package io.microconfig.osdf.istio;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.istio.rules.HeaderRule;
 import io.microconfig.osdf.istio.rules.MainRule;

@@ -1,6 +1,6 @@
 package io.microconfig.osdf.utils;
 
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

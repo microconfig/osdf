@@ -1,7 +1,7 @@
 package io.microconfig.osdf.service.job.pack.loader;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.cluster.old.cluster.cli.ClusterCLI;
+import io.osdf.settings.paths.OSDFPaths;
 import io.microconfig.osdf.service.ClusterService;
 import io.microconfig.osdf.service.files.ServiceFiles;
 import io.microconfig.osdf.service.job.ServiceJob;

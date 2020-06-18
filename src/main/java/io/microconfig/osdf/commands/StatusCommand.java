@@ -1,8 +1,8 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.StatusCodeException;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import io.microconfig.osdf.printers.ColumnPrinter;
 import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
 import io.microconfig.osdf.service.job.pack.ServiceJobPack;

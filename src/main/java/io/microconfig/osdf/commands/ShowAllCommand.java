@@ -1,6 +1,6 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.printers.ColumnPrinter;
 import lombok.RequiredArgsConstructor;
 

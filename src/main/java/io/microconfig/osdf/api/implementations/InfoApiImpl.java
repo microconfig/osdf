@@ -1,12 +1,12 @@
 package io.microconfig.osdf.api.implementations;
 
 import io.microconfig.osdf.api.declarations.InfoApi;
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.commands.LogsCommand;
 import io.microconfig.osdf.commands.ShowAllCommand;
 import io.microconfig.osdf.commands.StatusCommand;
 import io.microconfig.osdf.exceptions.StatusCodeException;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
 import lombok.RequiredArgsConstructor;
 

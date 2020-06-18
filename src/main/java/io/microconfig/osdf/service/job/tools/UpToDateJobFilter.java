@@ -1,7 +1,7 @@
 package io.microconfig.osdf.service.job.tools;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.cluster.resource.ClusterResourceImpl;
+import io.cluster.old.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.resource.ClusterResourceImpl;
 import io.microconfig.osdf.resources.ResourceHash;
 import io.microconfig.osdf.service.job.ServiceJob;
 import io.microconfig.osdf.service.job.pack.ServiceJobPack;

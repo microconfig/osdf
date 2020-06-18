@@ -3,7 +3,7 @@ package io.microconfig.osdf.api.implementations;
 import io.microconfig.osdf.api.declarations.FrequentlyUsedApi;
 import io.microconfig.osdf.configs.ConfigsSettings;
 import io.microconfig.osdf.configs.ConfigsSource;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import io.microconfig.osdf.settings.SettingsFile;
 import lombok.RequiredArgsConstructor;
 

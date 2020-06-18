@@ -1,7 +1,7 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.cluster.pod.Pod;
+import io.cluster.old.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.pod.Pod;
 import io.microconfig.osdf.loadtesting.jmeter.JmeterComponent;
 import io.microconfig.osdf.loadtesting.jmeter.JmeterLogResult;
 import io.microconfig.osdf.loadtesting.jmeter.JmeterResourcesCleaner;

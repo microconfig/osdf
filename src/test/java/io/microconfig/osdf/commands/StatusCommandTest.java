@@ -1,6 +1,6 @@
 package io.microconfig.osdf.commands;
 
-import io.microconfig.osdf.cluster.openshift.OpenShiftCLI;
+import io.cluster.old.cluster.openshift.OpenShiftCLI;
 import io.microconfig.osdf.printers.ColumnPrinter;
 import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 
-import static io.microconfig.osdf.commandline.CommandLineOutput.output;
+import static io.cluster.old.cluster.commandline.CommandLineOutput.output;
 import static io.microconfig.osdf.printers.ColumnPrinter.printer;
 import static io.microconfig.osdf.utils.MockObjects.loggedInOc;
 import static io.microconfig.osdf.utils.OCCommands.deploymentInfoCustomColumns;

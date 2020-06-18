@@ -2,10 +2,10 @@ package io.microconfig.osdf.chaos.types;
 
 import io.microconfig.osdf.chaos.DurationParams;
 import io.microconfig.osdf.chaos.ParamsExtractor;
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.cluster.pod.Pod;
+import io.cluster.old.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.pod.Pod;
 import io.microconfig.osdf.exceptions.OSDFException;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package io.microconfig.osdf.loadtesting.jmeter.loader;
 
 import io.microconfig.osdf.component.ComponentDir;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;

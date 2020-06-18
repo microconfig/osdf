@@ -3,7 +3,7 @@ package io.microconfig.osdf.api.implementations;
 import io.microconfig.osdf.api.declarations.ComponentsApi;
 import io.microconfig.osdf.commands.PropertiesDiffCommand;
 import io.microconfig.osdf.configs.ConfigsSettings;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package io.microconfig.osdf;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.cluster.old.cluster.cli.ClusterCLI;
+import io.osdf.settings.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.api.MainApiCaller.mainApi;

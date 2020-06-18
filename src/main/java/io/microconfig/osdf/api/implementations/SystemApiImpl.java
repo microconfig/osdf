@@ -8,7 +8,7 @@ import io.microconfig.osdf.commands.CurrentStateCommand;
 import io.microconfig.osdf.common.Credentials;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.install.UpdateSettings;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import io.microconfig.osdf.settings.SettingsFile;
 import io.microconfig.osdf.state.OSDFVersion;
 import lombok.RequiredArgsConstructor;

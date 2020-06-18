@@ -1,9 +1,9 @@
 package io.microconfig.osdf.loadtesting.jmeter;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.cluster.pod.Pod;
-import io.microconfig.osdf.cluster.resource.ClusterResource;
-import io.microconfig.osdf.cluster.resource.LocalClusterResource;
+import io.cluster.old.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.pod.Pod;
+import io.cluster.old.cluster.resource.ClusterResource;
+import io.cluster.old.cluster.resource.LocalClusterResource;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.service.deployment.ServiceDeployment;
 import io.microconfig.osdf.service.deployment.matchers.ServiceDeploymentMatcher;

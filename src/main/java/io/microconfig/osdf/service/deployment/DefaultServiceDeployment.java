@@ -1,18 +1,18 @@
 package io.microconfig.osdf.service.deployment;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.cluster.deployment.ClusterDeployment;
-import io.microconfig.osdf.cluster.resource.ClusterResource;
+import io.cluster.old.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.deployment.ClusterDeployment;
+import io.cluster.old.cluster.resource.ClusterResource;
 import io.microconfig.osdf.service.deployment.info.ServiceDeploymentInfo;
-import io.microconfig.osdf.cluster.pod.Pod;
+import io.cluster.old.cluster.pod.Pod;
 import io.microconfig.osdf.service.deployment.info.DefaultServiceDeploymentInfo;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
 import java.util.List;
 
-import static io.microconfig.osdf.cluster.deployment.DefaultClusterDeployment.defaultClusterDeployment;
-import static io.microconfig.osdf.cluster.configmap.DefaultConfigMapUploader.configMapUploader;
+import static io.cluster.old.cluster.deployment.DefaultClusterDeployment.defaultClusterDeployment;
+import static io.cluster.old.cluster.configmap.DefaultConfigMapUploader.configMapUploader;
 
 @RequiredArgsConstructor
 public class DefaultServiceDeployment implements ServiceDeployment {

@@ -1,6 +1,6 @@
 package io.microconfig.osdf.service.matchers;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.service.ClusterService;
 import io.microconfig.osdf.service.deployment.ServiceDeployment;
 import io.microconfig.osdf.service.deployment.istio.IstioServiceDeployment;

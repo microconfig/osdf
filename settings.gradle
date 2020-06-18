@@ -1,10 +1,8 @@
-pluginManagement {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-}
+rootProject.name = 'osdf-root'
 
-rootProject.name = 'osdf'
+include ':osdf:api',
+        ':osdf:core',
+        ':plugins:chaos'
+        ':plugins:load'
 
+include ':utils'

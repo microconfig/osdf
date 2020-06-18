@@ -1,6 +1,6 @@
 package io.microconfig.osdf.service.job.info;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.cli.ClusterCLI;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

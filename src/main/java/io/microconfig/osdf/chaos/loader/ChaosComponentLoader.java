@@ -2,7 +2,7 @@ package io.microconfig.osdf.chaos.loader;
 
 import io.microconfig.osdf.chaos.components.ChaosComponent;
 import io.microconfig.osdf.chaos.components.DefaultChaosComponent;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.component.finder.MicroConfigComponentsFinder.componentsFinder;

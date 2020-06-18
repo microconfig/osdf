@@ -1,26 +1,26 @@
 package io.microconfig.osdf.api.implementations;
 
 import io.microconfig.osdf.api.declarations.InitializationApi;
-import io.microconfig.osdf.cluster.context.ClusterContextSettings;
-import io.microconfig.osdf.cluster.context.ClusterType;
-import io.microconfig.osdf.cluster.kubernetes.KubernetesSettings;
-import io.microconfig.osdf.cluster.openshift.OpenShiftCredentials;
+import io.cluster.old.cluster.context.ClusterContextSettings;
+import io.cluster.old.cluster.context.ClusterType;
+import io.cluster.old.cluster.kubernetes.KubernetesSettings;
+import io.cluster.old.cluster.openshift.OpenShiftCredentials;
 import io.microconfig.osdf.common.Credentials;
 import io.microconfig.osdf.configfetcher.git.GitFetcherSettings;
 import io.microconfig.osdf.configfetcher.local.LocalFetcherSettings;
 import io.microconfig.osdf.configfetcher.nexus.NexusFetcherSettings;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.nexus.NexusArtifact;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import io.microconfig.osdf.service.deployment.checkers.image.RegistryCredentials;
 import io.microconfig.osdf.settings.SettingsFile;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
 
-import static io.microconfig.osdf.cluster.context.ClusterType.KUBERNETES;
-import static io.microconfig.osdf.cluster.context.ClusterType.OPENSHIFT;
-import static io.microconfig.osdf.cluster.openshift.OpenShiftCLI.oc;
+import static io.cluster.old.cluster.context.ClusterType.KUBERNETES;
+import static io.cluster.old.cluster.context.ClusterType.OPENSHIFT;
+import static io.cluster.old.cluster.openshift.OpenShiftCLI.oc;
 import static io.microconfig.osdf.configs.ConfigsSource.*;
 import static io.microconfig.osdf.configs.ConfigsUpdater.configsUpdater;
 import static io.microconfig.osdf.settings.SettingsFile.settingsFile;

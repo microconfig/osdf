@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: ${application-name}
+  label:
+    application: ${application-name}
+spec:
+  hosts:
+    - ${application-name}-service.${project}.svc.cluster.local
+  http:
+    - name: main
+      route:
+        - destination:
+            host: ${application-name}-service.${project}.svc.cluster.local
+            subset: ${application-version}
+          weight: 100
+          name: main

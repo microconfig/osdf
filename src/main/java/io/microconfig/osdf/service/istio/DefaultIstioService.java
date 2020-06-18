@@ -1,8 +1,8 @@
 package io.microconfig.osdf.service.istio;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.cluster.resource.ClusterResource;
-import io.microconfig.osdf.cluster.resource.LocalClusterResource;
+import io.cluster.old.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.resource.ClusterResource;
+import io.cluster.old.cluster.resource.LocalClusterResource;
 import io.microconfig.osdf.istio.VirtualService;
 import io.microconfig.osdf.service.DefaultClusterService;
 import lombok.RequiredArgsConstructor;

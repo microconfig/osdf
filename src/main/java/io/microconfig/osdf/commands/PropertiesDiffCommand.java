@@ -1,7 +1,7 @@
 package io.microconfig.osdf.commands;
 
 import io.microconfig.osdf.exceptions.OSDFException;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import io.microconfig.osdf.service.deployment.pack.ServiceDeployPack;
 import io.microconfig.osdf.service.files.ServiceFiles;
 import lombok.RequiredArgsConstructor;

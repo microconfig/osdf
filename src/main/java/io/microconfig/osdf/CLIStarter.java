@@ -1,15 +1,15 @@
 package io.microconfig.osdf;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.exceptions.PossibleBugException;
 import io.microconfig.osdf.exceptions.StatusCodeException;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
-import static io.microconfig.osdf.cluster.context.MainClusterContext.mainClusterContext;
+import static io.cluster.old.cluster.context.MainClusterContext.mainClusterContext;
 import static io.microconfig.osdf.exceptions.BugTracker.bugTracker;
-import static io.microconfig.osdf.paths.OSDFPaths.paths;
+import static io.osdf.settings.paths.OSDFPaths.paths;
 import static io.microconfig.utils.Logger.error;
 import static java.lang.System.exit;
 

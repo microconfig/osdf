@@ -1,12 +1,12 @@
 package io.microconfig.osdf.utils.mock;
 
-import io.microconfig.osdf.commandline.CommandLineOutput;
-import io.microconfig.osdf.cluster.openshift.OpenShiftCLI;
+import io.cluster.old.cluster.commandline.CommandLineOutput;
+import io.cluster.old.cluster.openshift.OpenShiftCLI;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.osdf.commandline.CommandLineOutput.output;
+import static io.cluster.old.cluster.commandline.CommandLineOutput.output;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

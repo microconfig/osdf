@@ -2,8 +2,8 @@ package io.microconfig.osdf.api.implementations;
 
 import io.microconfig.osdf.api.declarations.ChaosApi;
 import io.microconfig.osdf.chaos.ChaosExperiment;
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.cluster.old.cluster.cli.ClusterCLI;
+import io.osdf.settings.paths.OSDFPaths;
 import lombok.AllArgsConstructor;
 
 import static io.microconfig.osdf.chaos.ChaosExperiment.chaosExperiment;

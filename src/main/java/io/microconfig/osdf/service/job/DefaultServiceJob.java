@@ -1,8 +1,8 @@
 package io.microconfig.osdf.service.job;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.cluster.old.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.service.job.info.JobStatus;
-import io.microconfig.osdf.cluster.job.ClusterJob;
+import io.cluster.old.cluster.job.ClusterJob;
 import io.microconfig.osdf.service.job.info.DefaultServiceJobInfo;
 import io.microconfig.osdf.service.job.info.ServiceJobInfo;
 import io.microconfig.utils.Logger;
@@ -13,8 +13,8 @@ import java.util.List;
 
 import static io.microconfig.osdf.service.job.info.JobStatus.FAILED;
 import static io.microconfig.osdf.service.job.info.JobStatus.SUCCEEDED;
-import static io.microconfig.osdf.cluster.configmap.DefaultConfigMapUploader.configMapUploader;
-import static io.microconfig.osdf.cluster.job.DefaultClusterJob.defaultClusterJob;
+import static io.cluster.old.cluster.configmap.DefaultConfigMapUploader.configMapUploader;
+import static io.cluster.old.cluster.job.DefaultClusterJob.defaultClusterJob;
 import static io.microconfig.osdf.utils.ThreadUtils.sleepSec;
 
 @RequiredArgsConstructor

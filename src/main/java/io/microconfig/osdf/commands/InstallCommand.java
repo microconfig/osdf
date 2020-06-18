@@ -2,7 +2,7 @@ package io.microconfig.osdf.commands;
 
 
 import io.microconfig.osdf.install.jarinstaller.JarInstaller;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.install.OSDFInstaller.osdfInstaller;

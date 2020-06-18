@@ -7,7 +7,7 @@ import io.microconfig.core.properties.Property;
 import io.microconfig.core.properties.Resolver;
 import io.microconfig.osdf.configs.ConfigsSettings;
 import io.microconfig.osdf.exceptions.MicroConfigException;
-import io.microconfig.osdf.paths.OSDFPaths;
+import io.osdf.settings.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.core.Microconfig.searchConfigsIn;
