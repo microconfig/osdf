@@ -10,6 +10,8 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import static io.microconfig.osdf.service.deployment.checkers.image.LatestImageVersionGetter.latestImageVersionGetter;
+import static io.microconfig.utils.Logger.info;
+import static java.lang.System.getenv;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
@@ -26,7 +28,14 @@ public class TotalHashComputer {
         String configsHash = computeHashOfFiles(configs());
         String resourcesHash = computeHashOfFiles(resources());
         String imageHash = latestImageVersionGetter(files, paths).get();
-        return md5Hex(configsHash + resourcesHash + imageHash);
+        String totalHash = md5Hex(configsHash + resourcesHash + imageHash);
+        if ("true".equals(getenv("OSDF_LOG_DEPLOY_HASHES"))) {
+            info(files.name() + " hashes: total[" + totalHash + "] = " +
+                    "configs[" + configsHash + "] + " +
+                    "resources[" + resourcesHash + "] + " +
+                    "image[" + imageHash + "]");
+        }
+        return totalHash;
     }
 
     private Stream<Path> configs() {
