@@ -1,5 +1,5 @@
 monitoring:
-  url: "http://helloworld-ci00361131-edevgen-limitmanager-dev.apps.dev-gen.sigma.sbrf.ru/actuator/prometheus"
+  url: "http://your_url"
   metrics:
     - cpu_usage:                                           # internal name of metric
         tag: "system_cpu_usage"                            # tag to query metric

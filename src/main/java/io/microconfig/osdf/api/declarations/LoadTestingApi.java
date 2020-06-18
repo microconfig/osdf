@@ -17,7 +17,7 @@ public interface LoadTestingApi {
                   @ConsoleParam(value = JmeterComponentNameParameter.class, type = REQUIRED) String componentName,
                   @ConsoleParam(value = JmeterSlavesNumberParameter.class, type = OPTIONAL) Integer numberOfSlaves);
 
-    @ApiCommand(description = "Find peak load", order = 1)
+    @ApiCommand(description = "Find peak load", order = 2)
     void findPeakLoad(@ConsoleParam(value = JmeterComponentNameParameter.class, type = REQUIRED) String componentName,
                       @ConsoleParam(value = JmeterSlavesNumberParameter.class, type = OPTIONAL) Integer numberOfSlaves);
 }

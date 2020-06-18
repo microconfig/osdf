@@ -1,4 +1,4 @@
-cluster.url.base: api.dev-gen.sigma.sbrf.ru
-cluster.url.api: https://api.dev-gen.sigma.sbrf.ru:6443
-project: ci00361131-edevgen-limitmanager-dev
-registry.project.url: registry.sigma.sbrf.ru/dev/ci00361131/ci02445808_lm_dev
+cluster.url.base:
+cluster.url.api:
+project:
+registry.project.url:

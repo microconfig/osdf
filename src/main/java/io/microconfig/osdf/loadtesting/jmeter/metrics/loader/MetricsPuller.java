@@ -31,8 +31,7 @@ public class MetricsPuller implements Runnable {
             }
         } catch (ServerNotAvailableException e) {
             announce("Server not available while getting metrics.");
-        }
-        finally {
+        } finally {
             settings.getCountDownLatch().countDown();
         }
     }

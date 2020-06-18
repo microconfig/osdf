@@ -1,9 +1,9 @@
 #include loadtest-simple-example-requests
 #include metrics
 
-numberOfThreads: 10             #users on one slave node
+numberOfThreads: 250             #users on one slave node
 rampUpPeriod: 1
-duration: 10
+duration: 500
 
 peak-load-test:
   step: 25                      #users on one slave node
