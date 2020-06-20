@@ -6,7 +6,14 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +21,8 @@ import java.util.Objects;
 
 import static io.microconfig.osdf.utils.FileUtils.readAll;
 import static io.microconfig.osdf.utils.FileUtils.writeStringToFile;
-import static io.microconfig.osdf.utils.YamlUtils.getInt;
-import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
+import static io.microconfig.osdf.utils.YamlUtils.*;
+import static java.lang.Integer.parseInt;
 import static java.nio.file.Paths.get;
 import static java.util.stream.IntStream.range;
 
@@ -26,7 +33,7 @@ public class JmeterMasterConfig {
     private JmeterComponentConfig jmeterConfig;
 
     private static final String HEALTH_CHECK_MARKER = "Remote engines have been started";
-    private static final int WAIT_SEC = 25;
+    private static final int WAIT_SEC = 100;
 
     public static JmeterMasterConfig jmeterMasterConfig(Path jmeterComponentsPath, Path jmeterPlanPath) {
         return new JmeterMasterConfig("jmeter-master", jmeterComponentsPath, jmeterPlanPath);
@@ -52,46 +59,60 @@ public class JmeterMasterConfig {
     public void init() {
         jmeterConfig.initGeneralConfigs(Path.of(jmeterComponentsPath + "/templates/master"));
         jmeterConfig.setHealthCheckMarker(HEALTH_CHECK_MARKER, WAIT_SEC);
+        setJmeterPlanInMasterTemplateConfig();
+    }
+
+    public void setJmeterPlanInMasterTemplateConfig() {
         Path configMapPath = get(jmeterComponentsPath.toString(), masterName + "/resources/configmap.yaml");
-        setJmeterPlanInMasterTemplateConfig(jmeterPlanPath, configMapPath);
+        Map<String, Object> configMap = loadFromPath(configMapPath);
+        getMap(configMap, "data").put("testplan.jmx", readAll(jmeterPlanPath));
+        dump(configMap, configMapPath);
     }
 
-    private static void setJmeterPlanInMasterTemplateConfig(Path jmeterPlanPath, Path configMapPath) {
-        String testPlanContent = readAll(jmeterPlanPath);
-        String newContent = readAll(configMapPath).replace("<TEST_PLAN>", testPlanContent);
-        writeStringToFile(configMapPath, newContent);
+    public int getDuration() {
+        return parseInt(findItemBy(getJmeterTestPlanXml(),"ThreadGroup","ThreadGroup.duration")
+                .getTextContent());
     }
 
-    public int getDuration(boolean isJmxConfig) {
-        if (!isJmxConfig) {
-            Path userTestConfigPath = Path.of(jmeterComponentsPath + "/application.yaml");
-            Map<String, Object> userConfig = loadFromPath(userTestConfigPath);
-            return getInt(userConfig, "duration");
-        } else {
-            return getDurationFromXmlTestPlan();
+    public void setThreadGroupAttribute(String attributeName, int attributeValue) {
+        Document doc = getJmeterTestPlanXml();
+        findItemBy(doc, "ThreadGroup", attributeName).setTextContent(String.valueOf(attributeValue));
+        try {
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, ""); 
+            Transformer xformer = transformerFactory.newTransformer();
+            xformer.transform(new DOMSource(doc), new StreamResult(new File(jmeterPlanPath.toString())));
+        } catch (TransformerException e) {
+            throw new OSDFException("Failed by setting master configs to " + jmeterPlanPath);
         }
     }
 
-    private int getDurationFromXmlTestPlan() {
+    private Document getJmeterTestPlanXml() {
         try {
-            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(jmeterPlanPath.toFile());
-            NodeList childNodes = doc.getElementsByTagName("ThreadGroup").item(0).getChildNodes();
-            return range(0, childNodes.getLength())
-                    .filter(i -> childNodes.item(i).hasAttributes())
-                    .mapToObj(i -> {
-                        Node item = childNodes.item(i);
-                        NamedNodeMap attributes = item.getAttributes();
-                        Node namedItem = attributes.getNamedItem("name");
-                        if (namedItem != null && namedItem.getNodeValue().equals("ThreadGroup.duration"))
-                            return item.getTextContent();
-                        return null;
-                    })
-                    .filter(Objects::nonNull)
-                    .map(Integer::valueOf)
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException(jmeterPlanPath + "not contains 'ThreadGroup.duration' tag"));
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            builderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            builderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+            return builderFactory.newDocumentBuilder().parse(jmeterPlanPath.toFile());
         } catch (Exception e) {
             throw new OSDFException("Failed to parse " + jmeterPlanPath);
         }
+    }
+
+    private Node findItemBy(Document doc, String tag, String attributeName) {
+        NodeList childNodes = doc.getElementsByTagName(tag).item(0).getChildNodes();
+        return range(0, childNodes.getLength())
+                .filter(i -> childNodes.item(i).hasAttributes())
+                .mapToObj(i -> {
+                    Node item = childNodes.item(i);
+                    NamedNodeMap attributes = item.getAttributes();
+                    Node namedItem = attributes.getNamedItem("name");
+                    if (namedItem != null && namedItem.getNodeValue().equals(attributeName))
+                        return item;
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException(jmeterPlanPath + "not contains '" + attributeName + "' tag"));
     }
 }

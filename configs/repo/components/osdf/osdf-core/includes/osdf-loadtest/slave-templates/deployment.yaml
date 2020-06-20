@@ -14,6 +14,8 @@ spec:
       annotations:
         sidecar.istio.io/inject: '${this@istioInject}'
     spec:
+      imagePullSecrets:
+        - name: ${this@pull-secret-name}
       containers:
         - image: ${this@image-slave.url}
           imagePullPolicy: Always

@@ -1,4 +1,4 @@
-cluster.url.base: unknown
-cluster.url.api: unknown
-project: unknown
-registry.project.url: unknown
+cluster.url.base:
+cluster.url.api:
+project:
+registry.project.url:

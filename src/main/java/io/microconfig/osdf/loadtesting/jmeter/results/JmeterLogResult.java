@@ -1,4 +1,4 @@
-package io.microconfig.osdf.loadtesting.jmeter;
+package io.microconfig.osdf.loadtesting.jmeter.results;
 
 import io.microconfig.osdf.cluster.pod.Pod;
 import io.microconfig.osdf.exceptions.OSDFException;

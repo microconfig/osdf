@@ -1,6 +1,6 @@
 plan.put.requests:
   - put-request:
-      component: helloworld-springboot
+      component: helloworld
       method: PUT
       path: /put-hello
       headers:
@@ -12,7 +12,7 @@ plan.put.requests:
                 "nextData": "nextData"
               }'
   - delete-request:
-      component: helloworld-springboot
+      component: helloworld
       method: DELETE
       path: /delete-hello
       protocol: http
