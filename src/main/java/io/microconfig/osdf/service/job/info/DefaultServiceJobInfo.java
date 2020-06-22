@@ -1,6 +1,7 @@
 package io.microconfig.osdf.service.job.info;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -26,8 +27,9 @@ public class DefaultServiceJobInfo implements ServiceJobInfo {
                 "projectVersion:.metadata.labels.projectVersion," +
                 "configVersion:.metadata.labels.configVersion")
                 .getOutputLines();
-
         if (lines.get(0).toLowerCase().contains("not found")) return notExecuted();
+        if (lines.size() < 2) throw new OSDFException("Error querying job info: " + lines);
+
         String[] fields = lines.get(1).split("\\s+");
 
         String version = fields[3];
