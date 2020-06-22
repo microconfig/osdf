@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static java.nio.file.Files.exists;
 import static java.nio.file.Files.list;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
@@ -68,6 +69,11 @@ public class DefaultServiceFiles implements ServiceFiles {
     public Path getPath(String identifier) {
         if (identifier.startsWith("resources")) {
             return componentDir.getPath(identifier.replaceFirst("resources", RESOURCES_DIR_NAME));
+        }
+        if (identifier.equals("mainResource")) {
+            if (exists(getPath("resources/deployment.yaml"))) return getPath("resources/deployment.yaml");
+            if (exists(getPath("resources/job.yaml"))) return getPath("resources/job.yaml");
+            throw new OSDFException("Main resource is not found");
         }
         return componentDir.getPath(identifier);
     }

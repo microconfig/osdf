@@ -90,7 +90,7 @@ public class DeploymentStatusRows implements RowColumnsWithStatus {
     }
 
     private void addPodRow(Pod pod, boolean health) {
-        printer.addRow(" - " + pod.getName(), "", health ? green("OK") : red("BAD"), "");
+        printer.addRow(" - " + pod.getName(), "", "", health ? green("OK") : red("BAD"), "");
     }
 
     private String replicas(ServiceDeploymentInfo info) {

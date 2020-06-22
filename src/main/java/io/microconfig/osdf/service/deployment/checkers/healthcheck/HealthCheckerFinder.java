@@ -2,11 +2,10 @@ package io.microconfig.osdf.service.deployment.checkers.healthcheck;
 
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.service.files.ServiceFiles;
-import io.microconfig.osdf.utils.PropertiesUtils;
+import io.microconfig.osdf.utils.YamlUtils;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
-import java.util.Properties;
 
 import static io.microconfig.osdf.utils.YamlUtils.getInt;
 import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
@@ -26,14 +25,13 @@ public class HealthCheckerFinder {
     }
 
     private HealthChecker logHealthChecker() {
-        Properties processProperties = PropertiesUtils.loadFromPath(files.getPath("process.properties"));
-        String marker = processProperties.getProperty("healthcheck.marker.success");
+        String marker = YamlUtils.get(loadFromPath(files.getPath("deploy.yaml")), "healthcheck.marker.success");
         if (marker == null) throw new OSDFException("Marker not found for log healthchecker");
         return LogHealthChecker.logHealthChecker(marker, timeout());
     }
 
     private int timeout() {
-        if (timeout >= 0) return timeout;
+        if (timeout > 0) return timeout;
         Map<String, Object> deployProperties = loadFromPath(files.getPath("deploy.yaml"));
         Integer timeoutInSec = getInt(deployProperties, "osdf", "start", "waitSec");
         return ofNullable(timeoutInSec).orElse(30);

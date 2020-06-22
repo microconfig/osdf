@@ -4,15 +4,17 @@ import io.microconfig.osdf.common.Credentials;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.service.files.ServiceFiles;
+import io.microconfig.osdf.utils.YamlUtils;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
 import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
 import static io.microconfig.osdf.utils.StringUtils.withQuotes;
-import static io.microconfig.osdf.utils.YamlUtils.getString;
-import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
+import static io.microconfig.osdf.utils.YamlUtils.*;
 import static io.microconfig.utils.Logger.info;
 import static io.microconfig.utils.Logger.warn;
 import static java.util.Arrays.stream;
@@ -26,7 +28,7 @@ public class LatestImageVersionGetter {
     private final boolean configured;
 
     public static LatestImageVersionGetter latestImageVersionGetter(ServiceFiles files, OSDFPaths paths) {
-        String[] hostAndPath = getString(loadFromPath(files.getPath("deploy.yaml")), "image", "url")
+        String[] hostAndPath = imageUrl(files)
                 .replaceFirst("http://", "")
                 .replaceFirst("https://", "")
                 .replaceFirst("/", "---")
@@ -39,6 +41,12 @@ public class LatestImageVersionGetter {
             return new LatestImageVersionGetter(null, null, null, false);
         }
         return new LatestImageVersionGetter(credentials, hostAndPath[0], hostAndPath[1], true);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static String imageUrl(ServiceFiles files) {
+        List<Object> containers = YamlUtils.get(loadFromPath(files.getPath("mainResource")), "spec.template.spec.containers");
+        return getString((Map<String, Object>) containers.get(0), "image");
     }
 
     public String get() {

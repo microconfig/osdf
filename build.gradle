@@ -103,7 +103,7 @@ dependencies {
     implementation 'commons-io:commons-io:2.5'
     implementation 'commons-cli:commons-cli:1.4'
     implementation 'commons-codec:commons-codec:1.14'
-    implementation 'io.microconfig:microconfig-cli:4.1.2:all'
+    implementation 'io.microconfig:microconfig-cli:4.1.4:all'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.0.1'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'

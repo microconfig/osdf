@@ -52,7 +52,7 @@ public class LogHealthChecker implements HealthChecker {
                         return false;
                     }
                     if (calcSecFrom(startTime) > timeoutInSec) {
-                        info("Healthcheck timeout exceeded for " + pod.getName());
+                        info("Healthcheck timeout " + timeoutInSec + " exceeded for " + pod.getName());
                         return false;
                     }
                     sleepSec(1);
