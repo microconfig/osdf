@@ -13,6 +13,7 @@ import static io.microconfig.osdf.install.ScriptInstaller.scriptInstaller;
 import static io.microconfig.osdf.install.WorkfolderInstaller.workfolderInstaller;
 import static io.microconfig.osdf.install.YamlFileReplacer.yamlFileReplacer;
 import static io.microconfig.osdf.state.OSDFVersionFile.osdfVersionFile;
+import static io.microconfig.osdf.utils.JarUtils.pathToJava;
 import static io.microconfig.osdf.utils.ProcessUtil.startAndWait;
 import static io.microconfig.utils.Logger.announce;
 import static java.util.List.of;
@@ -42,7 +43,7 @@ public class OSDFInstaller {
     }
 
     private void migrate() {
-        List<String> processArgs = of("osdf", "migrate");
+        List<String> processArgs = of(pathToJava(),  "-jar", paths.root() + "/osdf.jar", "migrate");
         int exitCode = startAndWait(new ProcessBuilder(processArgs).inheritIO());
         if (exitCode != 0) throw new OSDFException("Migration failed. Please reinstall osdf completely using -c flag");
     }

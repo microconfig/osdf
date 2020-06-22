@@ -33,11 +33,12 @@ public class RemoteJarInstaller implements JarInstaller {
     @Override
     public void prepare() {
         downloadJar(version);
+//        execute("cp /tmp/osdf.jar " + paths.tmp() + "/osdf.jar");
     }
 
     @Override
     public void replace() {
-        execute("cp " + paths.tmp() + "/osdf.jar " + paths.root() + "/osdf.jar");
+        execute("mv " + paths.tmp() + "/osdf.jar " + paths.root() + "/osdf.jar");
     }
 
     private void downloadJar(OSDFVersion version) {

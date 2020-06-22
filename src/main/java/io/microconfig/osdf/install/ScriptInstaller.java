@@ -7,9 +7,8 @@ import java.nio.file.Path;
 
 import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
 import static io.microconfig.osdf.utils.FileUtils.writeStringToFile;
-import static java.lang.System.getProperty;
+import static io.microconfig.osdf.utils.JarUtils.pathToJava;
 import static java.nio.file.Path.of;
-import static java.nio.file.Paths.get;
 
 @RequiredArgsConstructor
 public class ScriptInstaller implements FileReplacer {
@@ -33,11 +32,10 @@ public class ScriptInstaller implements FileReplacer {
     }
 
     private String content() {
-        Path pathToJava = get(getProperty("java.home").replace(" ", "\\ "), "bin", "java");
         return "if [ $# -gt 0  ] && [ $1 == \"logs\" ]\n" +
                 "then\n" +
                 "        trap '' SIGINT\n" +
                 "fi\n" +
-                pathToJava + " -XX:TieredStopAtLevel=1 -jar " + paths.root() + "/osdf.jar ${@:1}";
+                pathToJava() + " -XX:TieredStopAtLevel=1 -jar " + paths.root() + "/osdf.jar ${@:1}";
     }
 }
