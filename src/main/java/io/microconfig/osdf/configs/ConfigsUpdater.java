@@ -50,7 +50,6 @@ public class ConfigsUpdater {
         } else {
             buildConfigs();
         }
-        cli.logout();
     }
 
     private void buildConfigs() {
@@ -59,5 +58,7 @@ public class ConfigsUpdater {
 
         propertySetter().setIfNecessary(paths.projectVersionPath(), "project.version", settings.getProjectVersion());
         microConfig(settings.getEnv(), paths).generateConfigs(emptyList());
+
+        cli.logout();
     }
 }

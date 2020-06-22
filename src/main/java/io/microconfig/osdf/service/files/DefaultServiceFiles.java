@@ -11,29 +11,22 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static java.nio.file.Files.exists;
 import static java.nio.file.Files.list;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 public class DefaultServiceFiles implements ServiceFiles {
+    private static final String RESOURCES_DIR_NAME = "resources";
+
     private final ComponentDir componentDir;
     private final Path resourcesDir;
-    private final String resourcesDirName;
 
-    private DefaultServiceFiles(ComponentDir componentDir, String type) {
+    private DefaultServiceFiles(ComponentDir componentDir) {
         this.componentDir = componentDir;
-        this.resourcesDir = componentDir.getPath(type);
-        this.resourcesDirName = type;
+        this.resourcesDir = componentDir.getPath(RESOURCES_DIR_NAME);
     }
 
     public static DefaultServiceFiles serviceFiles(ComponentDir componentDir) {
-        if (exists(componentDir.getPath("resources"))) {
-            return new DefaultServiceFiles(componentDir, "resources");
-        }
-        if (exists(componentDir.getPath("openshift"))) {
-            return new DefaultServiceFiles(componentDir, "openshift");
-        }
-        throw new OSDFException("Unknown component dir format for service");
+        return new DefaultServiceFiles(componentDir);
     }
 
     @Override
@@ -74,7 +67,7 @@ public class DefaultServiceFiles implements ServiceFiles {
     @Override
     public Path getPath(String identifier) {
         if (identifier.startsWith("resources")) {
-            return componentDir.getPath(identifier.replaceFirst("resources", resourcesDirName));
+            return componentDir.getPath(identifier.replaceFirst("resources", RESOURCES_DIR_NAME));
         }
         return componentDir.getPath(identifier);
     }
