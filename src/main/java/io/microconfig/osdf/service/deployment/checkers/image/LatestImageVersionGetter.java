@@ -14,6 +14,7 @@ import static io.microconfig.osdf.utils.StringUtils.withQuotes;
 import static io.microconfig.osdf.utils.YamlUtils.getString;
 import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
 import static io.microconfig.utils.Logger.info;
+import static io.microconfig.utils.Logger.warn;
 import static java.util.Arrays.stream;
 import static java.util.regex.Pattern.compile;
 
@@ -42,7 +43,12 @@ public class LatestImageVersionGetter {
 
     public String get() {
         if (!configured) return "fake";
-        return imageId();
+        try {
+            return imageId();
+        } catch (RuntimeException e) {
+            warn("Error querying " + host + ". Smart deploy might not work.");
+            return "fake";
+        }
     }
 
     private String token() {
