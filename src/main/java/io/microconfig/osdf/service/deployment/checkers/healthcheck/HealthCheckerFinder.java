@@ -34,6 +34,6 @@ public class HealthCheckerFinder {
         if (timeout > 0) return timeout;
         Map<String, Object> deployProperties = loadFromPath(files.getPath("deploy.yaml"));
         Integer timeoutInSec = getInt(deployProperties, "osdf", "start", "waitSec");
-        return ofNullable(timeoutInSec).orElse(30);
+        return ofNullable(timeoutInSec).orElse(60);
     }
 }
