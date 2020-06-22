@@ -1,5 +1,6 @@
 package io.microconfig.osdf.configs;
 
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.configfetcher.ConfigsFetcher;
 import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.paths.OSDFPaths;
@@ -16,11 +17,12 @@ import static java.util.Collections.emptyList;
 @RequiredArgsConstructor
 public class ConfigsUpdater {
     private final OSDFPaths paths;
+    private final ClusterCLI cli;
     private final SettingsFile<ConfigsSettings> settingsFile;
 
-    public static ConfigsUpdater configsUpdater(OSDFPaths paths) {
+    public static ConfigsUpdater configsUpdater(OSDFPaths paths, ClusterCLI cli) {
         SettingsFile<ConfigsSettings> settingsFile = settingsFile(ConfigsSettings.class, paths.settings().configs());
-        return new ConfigsUpdater(paths, settingsFile);
+        return new ConfigsUpdater(paths, cli, settingsFile);
     }
 
     public void setConfigsSource(ConfigsSource configsSource) {
@@ -48,6 +50,7 @@ public class ConfigsUpdater {
         } else {
             buildConfigs();
         }
+        cli.logout();
     }
 
     private void buildConfigs() {

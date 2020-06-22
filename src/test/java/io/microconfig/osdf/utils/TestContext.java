@@ -1,5 +1,6 @@
 package io.microconfig.osdf.utils;
 
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
 import static io.microconfig.osdf.utils.ConfigUnzipper.configUnzipper;
 import static io.microconfig.osdf.utils.DefaultConfigsCreator.defaultConfigsCreator;
 import static java.nio.file.Files.exists;
+import static org.mockito.Mockito.mock;
 
 @RequiredArgsConstructor
 public class TestContext {
@@ -51,8 +53,8 @@ public class TestContext {
     public void initDev() throws IOException {
         install();
         prepareConfigs();
-        initializationApi(paths).openshift(of("user:pass"), null, false);
-        initializationApi(paths).localConfigs(CONFIGS_PATH, null);
-        initializationApi(paths).configs("dev", null);
+        initializationApi(paths, mock(ClusterCLI.class)).openshift(of("user:pass"), null, false);
+        initializationApi(paths, mock(ClusterCLI.class)).localConfigs(CONFIGS_PATH, null);
+        initializationApi(paths, mock(ClusterCLI.class)).configs("dev", null);
     }
 }

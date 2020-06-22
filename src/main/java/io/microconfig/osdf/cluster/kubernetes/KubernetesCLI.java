@@ -26,6 +26,11 @@ public class KubernetesCLI implements ClusterCLI {
         throw new OSDFException("Kubernetes is not yet supported");
     }
 
+    @Override
+    public void logout() {
+        throw new OSDFException("Kubernetes is not yet supported");
+    }
+
     private String addKubectlPrefix(String command) {
         if (command.startsWith("oc ")) throw new OSDFException("Not supported for kubernetes");
         return command.startsWith("kubectl ") ? command : "kubectl " + command;
