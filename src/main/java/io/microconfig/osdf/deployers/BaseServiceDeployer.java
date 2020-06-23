@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.cluster.resource.tools.ResourceCleaner.resourceCleaner;
 import static io.microconfig.osdf.deployers.hooks.EmptyHook.emptyHook;
-import static io.microconfig.utils.Logger.info;
+import static io.microconfig.utils.Logger.announce;
 
 @RequiredArgsConstructor
 public class BaseServiceDeployer implements ServiceDeployer {
@@ -26,7 +26,7 @@ public class BaseServiceDeployer implements ServiceDeployer {
 
     @Override
     public void deploy(ClusterService service, ServiceDeployment deployment, ServiceFiles files) {
-        info("Deploying " + service.name());
+        announce("Deploying " + service.name());
 
         resourceCleaner(cli).cleanOld(files.resources(), service.resources());
         deployment.createConfigMap(files.configs());

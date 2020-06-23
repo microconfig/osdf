@@ -6,12 +6,13 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static io.microconfig.utils.Logger.info;
 import static java.util.List.of;
 import static java.util.function.Predicate.not;
 
 @RequiredArgsConstructor
 public class ResourceCleaner {
-    private static final List<String> SYSTEM_RESOURCES = of("pod", "replicationcontroller");
+    private static final List<String> SYSTEM_RESOURCES = of("pod", "replicationcontroller", "configmap");
 
     private final ClusterCLI cli;
 
@@ -23,6 +24,7 @@ public class ResourceCleaner {
         remoteResources.stream()
                 .filter(not(localResources::contains))
                 .filter(resource -> !SYSTEM_RESOURCES.contains(resource.kind().toLowerCase()))
+                .peek(resource -> info("Deleting " + resource.kind() + " " + resource.name()))
                 .forEach(resource -> resource.delete(cli));
     }
 }
