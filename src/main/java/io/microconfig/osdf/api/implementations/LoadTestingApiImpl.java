@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import java.nio.file.Path;
 
 import static io.microconfig.osdf.commands.LoadTestCommand.loadTestCommand;
+import static io.microconfig.osdf.commands.FindPeakLoadCommand.findPeakLoadCommand;
 import static io.microconfig.osdf.loadtesting.jmeter.JmeterPlanPathGenerator.jmeterPlanPathGenerator;
 import static io.microconfig.osdf.loadtesting.jmeter.configs.JmeterConfigProcessor.configProcessor;
 import static io.microconfig.osdf.loadtesting.jmeter.loader.JmeterPathLoader.pathLoader;
@@ -27,8 +28,18 @@ public class LoadTestingApiImpl implements LoadTestingApi {
         int number = numberOfSlaves != null ? numberOfSlaves : 3;
         Path path = pathLoader(paths, componentName).jmeterComponentsPathLoad();
         JmeterConfigProcessor configProcessor = jmeterPlanPath != null ?
-                configProcessor(path, number, jmeterPlanPath, true) :
-                configProcessor(path, number, jmeterPlanPathGenerator(paths, cli, componentName).generate(), false);
+                configProcessor(path, number, jmeterPlanPath) :
+                configProcessor(path, number, jmeterPlanPathGenerator(paths, cli, componentName).generate());
+        configProcessor.init();
         loadTestCommand(cli, configProcessor).run();
+    }
+
+    @Override
+    public void findPeakLoad(String componentName, Integer numberOfSlaves) {
+        int number = numberOfSlaves != null ? numberOfSlaves : 3;
+        Path path = pathLoader(paths, componentName).jmeterComponentsPathLoad();
+        JmeterConfigProcessor configProcessor =
+                configProcessor(path, number, jmeterPlanPathGenerator(paths, cli, componentName).generate());
+        findPeakLoadCommand(cli, configProcessor).run();
     }
 }

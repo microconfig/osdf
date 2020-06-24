@@ -14,7 +14,10 @@ import static io.microconfig.osdf.parameters.ParamType.REQUIRED;
 public interface LoadTestingApi {
     @ApiCommand(description = "Run load testing", order = 1)
     void loadTest(@ConsoleParam(value = JmeterPlanPathParameter.class, type = OPTIONAL) Path jmeterPlanPath,
-                  @ConsoleParam(value = JmeterComponentNameParameter.class, type = REQUIRED) String configName,
+                  @ConsoleParam(value = JmeterComponentNameParameter.class, type = REQUIRED) String componentName,
                   @ConsoleParam(value = JmeterSlavesNumberParameter.class, type = OPTIONAL) Integer numberOfSlaves);
 
+    @ApiCommand(description = "Find peak load", order = 2)
+    void findPeakLoad(@ConsoleParam(value = JmeterComponentNameParameter.class, type = REQUIRED) String componentName,
+                      @ConsoleParam(value = JmeterSlavesNumberParameter.class, type = OPTIONAL) Integer numberOfSlaves);
 }

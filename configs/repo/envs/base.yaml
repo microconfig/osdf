@@ -1,7 +1,7 @@
 helloworld:
   components:
     - helloworld-springboot
-    - fakejo
+    - fakejob
 
 #helloworld-istio:
 #  components:
@@ -14,3 +14,6 @@ helloworld:
 #jmeter:
 #  components:
 #    - loadtest-simple-example
+#metrics:
+#  components:
+#    - metrics

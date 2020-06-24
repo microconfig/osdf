@@ -4,10 +4,12 @@ import io.microconfig.osdf.exceptions.OSDFException;
 import io.microconfig.osdf.metrics.formats.PrometheusParser;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static io.microconfig.osdf.metrics.Metric.metric;
+import static io.microconfig.osdf.metrics.Metric.*;
+import static io.microconfig.osdf.metrics.MetricUtils.getMetricValueByContainsTag;
 import static io.microconfig.osdf.metrics.MetricsPuller.metricsPuller;
 import static io.microconfig.osdf.utils.YamlUtils.*;
 import static io.microconfig.utils.Logger.warn;
@@ -26,39 +28,60 @@ public class MetricsConfigParser {
 
     @SuppressWarnings("unchecked")
     public Set<Metric> fromYaml(Object o) {
-        Map<String, Object> metricsMap = getMap((Map<String, Object>) o, "metrics");
-        if (metricsMap == null || metricsMap.isEmpty()) {
+        List<Map<String, Object>> metricsList = getListOfMaps((Map<String, Object>) o, "metrics");
+        if (metricsList == null || metricsList.isEmpty()) {
             warn("No metrics for monitoring specified");
             return emptySet();
         }
         Map<String, Double> refValues = buildPuller(o).pull();
-        return metricsMap.entrySet().stream().map(entry -> fromEntry(entry, refValues)).collect(toUnmodifiableSet());
+        return metricsList.stream().map(map -> fromEntry(map, refValues)).collect(toUnmodifiableSet());
     }
 
-    @SuppressWarnings("unchecked")
-    private Metric fromEntry(Map.Entry<String, Object> entry, Map<String, Double> refValues) {
-        Map<String, Object> metricMap = (Map<String, Object>) entry.getValue();
-        String tag = getString(metricMap, "tag");
+    private Metric fromEntry(Map<String, Object> metricMap, Map<String, Double> refValues) {
+        String metricName = metricMap.keySet()
+                .stream()
+                .findFirst()
+                .orElseThrow();
+        Map<String, Object> metricParams = getMap(metricMap, metricName);
+        String tag = getString(metricParams, "tag");
+        if (!tag.equals("null")) return getMetricByTag(metricName, refValues, metricParams, tag);
+        String containsTag = getString(metricParams, "contains_tag");
+        if (!containsTag.equals("null")) return getMetricByContainsTag(metricName, refValues, metricParams, containsTag);
+        throw new OSDFException("Please define 'tag' or 'contains_tag' in monitoring config");
+
+    }
+
+    private Metric getMetricByTag(String metricName, Map<String, Double> refValues, Map<String, Object> metricParams, String tag) {
         if (!refValues.containsKey(tag)) throw new OSDFException("No such metric found [" + tag + "]");
-        double referenceValue = metricMap.containsKey(BASELINE) ? parseDouble(getString(metricMap, BASELINE)) : refValues.get(tag);
-        Double upperBound = calcUpperBound(metricMap, referenceValue);
-        Double lowerBound = calcLowerBound(metricMap, referenceValue);
-        return metric(entry.getKey(), tag, upperBound, lowerBound);
+        double referenceValue = metricParams.containsKey(BASELINE) ? parseDouble(getString(metricParams, BASELINE)) : refValues.get(tag);
+        Double upperBound = calcUpperBound(metricParams, referenceValue);
+        Double lowerBound = calcLowerBound(metricParams, referenceValue);
+        return metricByTag(metricName, tag, upperBound, lowerBound);
     }
 
-    private Double calcLowerBound(Map<String, Object> metricMap, Double baseline) {
-        double lowerBound = getDouble(metricMap, "min") != null ? getDouble(metricMap, "min") : -MAX_VALUE;
-        if (metricMap.containsKey(DEVIATION)) {
-            double absDeviation = calcAbsDeviation(getString(metricMap, DEVIATION), baseline);
+    private Metric getMetricByContainsTag(String metricName, Map<String, Double> refValues,
+                                          Map<String, Object> metricParams, String containsTag) {
+        double referenceValue = metricParams.containsKey(BASELINE) ?
+                parseDouble(getString(metricParams, BASELINE)) :
+                getMetricValueByContainsTag(refValues, containsTag);
+        Double upperBound = calcUpperBound(metricParams, referenceValue);
+        Double lowerBound = calcLowerBound(metricParams, referenceValue);
+        return metricContainsTag(metricName, containsTag, upperBound, lowerBound);
+    }
+
+    private Double calcLowerBound(Map<String, Object> metricParams, Double baseline) {
+        double lowerBound = getDouble(metricParams, "min") != null ? getDouble(metricParams, "min") : -MAX_VALUE;
+        if (metricParams.containsKey(DEVIATION)) {
+            double absDeviation = calcAbsDeviation(getString(metricParams, DEVIATION), baseline);
             lowerBound = max(lowerBound, baseline - absDeviation);
         }
         return lowerBound;
     }
 
-    private Double calcUpperBound(Map<String, Object> metricMap, Double baseline) {
-        double upperBound = getDouble(metricMap, "max") != null ? getDouble(metricMap, "max") : MAX_VALUE;
-        if (metricMap.containsKey(DEVIATION)) {
-            double absDeviation = calcAbsDeviation(getString(metricMap, DEVIATION), baseline);
+    private Double calcUpperBound(Map<String, Object> metricParams, Double baseline) {
+        double upperBound = getDouble(metricParams, "max") != null ? getDouble(metricParams, "max") : MAX_VALUE;
+        if (metricParams.containsKey(DEVIATION)) {
+            double absDeviation = calcAbsDeviation(getString(metricParams, DEVIATION), baseline);
             upperBound = min(upperBound, baseline + absDeviation);
         }
         return upperBound;
