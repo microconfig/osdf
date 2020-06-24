@@ -63,6 +63,11 @@ public class YamlUtils {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> T get(Object yaml, String key) {
+        return (T) getObjectOrNull((Map<String, Object>) yaml, key.split("\\."));
+    }
+
     public static String getString(Map<String, Object> yaml, String... properties) {
         return valueOf(getObjectOrNull(yaml, properties));
     }

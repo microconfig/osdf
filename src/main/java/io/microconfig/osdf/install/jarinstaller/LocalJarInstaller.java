@@ -31,6 +31,6 @@ public class LocalJarInstaller implements JarInstaller {
 
     @Override
     public void replace() {
-        execute("cp " + paths.tmp() + "/osdf.jar " + paths.root() + "/osdf.jar");
+        execute("mv " + paths.tmp() + "/osdf.jar " + paths.root() + "/osdf.jar");
     }
 }

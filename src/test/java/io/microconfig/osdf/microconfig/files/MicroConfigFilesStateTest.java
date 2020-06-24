@@ -1,5 +1,6 @@
 package io.microconfig.osdf.microconfig.files;
 
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import static java.nio.file.Files.writeString;
 import static java.nio.file.Path.of;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class MicroConfigFilesStateTest {
     private final TestContext context = defaultContext();
@@ -27,7 +29,7 @@ class MicroConfigFilesStateTest {
     void testOldFilesAndFoldersGetDeleted() throws IOException {
         Path pathToDeployConfig = of(context.getPaths().configsPath() + "/components/core/openshift/helloworld-springboot/os.deploy");
         writeString(pathToDeployConfig, "some: value");
-        initializationApi(context.getPaths()).configs(null, null);
+        initializationApi(context.getPaths(), mock(ClusterCLI.class)).configs(null, null);
 
         assertTrue(exists(of(context.getPaths().componentsPath() + "/helloworld-springboot/application.yaml")));
         assertFalse(exists(of(context.getPaths().componentsPath() + "/helloworld-springboot/openshift")));

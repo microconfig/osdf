@@ -7,7 +7,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
+import static java.lang.System.getProperty;
 import static java.nio.file.Path.of;
+import static java.nio.file.Paths.get;
 
 public class JarUtils {
     public static Path jarPath() {
@@ -26,5 +28,9 @@ public class JarUtils {
         } catch (URISyntaxException e) {
             throw new PossibleBugException("Couldn't get jar path", e);
         }
+    }
+
+    public static String pathToJava() {
+        return get(getProperty("java.home").replace(" ", "\\ "), "bin", "java").toString();
     }
 }

@@ -1,3 +1,0 @@
-#include openshift-service
-
-replicas.count: 2

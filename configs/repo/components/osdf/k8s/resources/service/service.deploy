@@ -1,0 +1,3 @@
+microconfig.template.service:
+  fromFile: ${service@configDir}/service.yaml
+  toFile: resources/service.yaml

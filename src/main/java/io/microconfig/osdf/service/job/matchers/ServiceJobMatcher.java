@@ -21,7 +21,7 @@ public class ServiceJobMatcher {
 
     public ServiceJob match(ServiceFiles files) {
         Map<String, Object> deploy = loadFromPath(files.getPath("deploy.yaml"));
-        String version = getString(deploy, "version");
+        String version = getString(deploy, "app", "version");
         return defaultServiceJob(files.name(), version, files.name(), cli);
     }
 }

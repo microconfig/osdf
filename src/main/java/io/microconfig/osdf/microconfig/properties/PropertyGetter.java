@@ -36,7 +36,7 @@ public class PropertyGetter {
     }
 
     public String get(ConfigType type, String component, String property) {
-        return environment.getOrCreateComponentWithName(component)
+        return environment.findComponentWithName(component)
                 .getPropertiesFor(configType(type))
                 .resolveBy(resolver)
                 .getPropertyWithKey(property)

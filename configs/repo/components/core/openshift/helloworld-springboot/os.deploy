@@ -1,0 +1,3 @@
+#include internal-service
+
+replicas.count: 2

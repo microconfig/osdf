@@ -53,6 +53,6 @@ public class DefaultClusterService implements ClusterService {
     }
 
     private String label() {
-        return "-l \"application in (" + name + "), projectVersion in (" + version +  ")\"";
+        return "-l \"application in (" + name + ")\"";
     }
 }

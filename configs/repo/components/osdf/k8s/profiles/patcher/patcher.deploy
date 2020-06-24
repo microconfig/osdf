@@ -1,0 +1,7 @@
+#include job
+#include java-service-settings
+
+requests:
+  cpu: 1
+  memory: 256M
+nativeMb: 100

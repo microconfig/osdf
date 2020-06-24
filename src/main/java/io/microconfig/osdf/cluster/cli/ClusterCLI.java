@@ -6,4 +6,6 @@ public interface ClusterCLI {
     CommandLineOutput execute(String command);
 
     void login();
+
+    void logout();
 }

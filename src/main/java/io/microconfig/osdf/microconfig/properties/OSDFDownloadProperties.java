@@ -2,10 +2,12 @@ package io.microconfig.osdf.microconfig.properties;
 
 import lombok.RequiredArgsConstructor;
 
-import static io.microconfig.core.configtypes.StandardConfigType.PROCESS;
+import static io.microconfig.core.configtypes.StandardConfigType.APPLICATION;
 
 @RequiredArgsConstructor
 public class OSDFDownloadProperties {
+    private static final String COMPONENT_NAME = "osdf-artifact";
+
     private final PropertyGetter propertyGetter;
 
     public static OSDFDownloadProperties properties(PropertyGetter propertyGetter) {
@@ -13,18 +15,18 @@ public class OSDFDownloadProperties {
     }
 
     public String version() {
-        return propertyGetter.get(PROCESS, "osdf-version", "osdf.version");
+        return propertyGetter.get(APPLICATION, COMPONENT_NAME, "osdf.version");
     }
 
     public String url() {
-        return propertyGetter.get(PROCESS, "osdf-version", "osdf.url");
+        return propertyGetter.get(APPLICATION, COMPONENT_NAME, "osdf.url");
     }
 
     public String group() {
-        return propertyGetter.get(PROCESS, "osdf-version", "osdf.group");
+        return propertyGetter.get(APPLICATION, COMPONENT_NAME, "osdf.group");
     }
 
     public String artifact() {
-        return propertyGetter.get(PROCESS, "osdf-version", "osdf.artifact");
+        return propertyGetter.get(APPLICATION, COMPONENT_NAME, "osdf.artifact");
     }
 }

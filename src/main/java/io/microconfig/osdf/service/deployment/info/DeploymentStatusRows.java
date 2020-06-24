@@ -53,7 +53,11 @@ public class DeploymentStatusRows implements RowColumnsWithStatus {
 
     private boolean fetch() {
         ServiceDeploymentInfo info = deployment.info();
-        printer.addRow(green(deployment.serviceName()), green(versionDescription(deployment, info)), green(info.configVersion()), coloredStatus(info.status()), green(replicas(info)));
+        printer.addRow(green(deployment.serviceName()),
+                green(formatVersions(info.version(), deployment.version())),
+                green(info.configVersion()),
+                coloredStatus(info.status()),
+                green(replicas(info)));
         if (withHealthCheck) {
             HealthcheckerFromFiles podsInfo = podsInfo(deployment, files);
             addPods(podsInfo.getPods(), podsInfo.getPodsHealth());
@@ -62,9 +66,9 @@ public class DeploymentStatusRows implements RowColumnsWithStatus {
         return info.status() == RUNNING;
     }
 
-    private String versionDescription(ServiceDeployment deployment, ServiceDeploymentInfo info) {
-        if (deployment.version().equalsIgnoreCase(info.version())) return info.version();
-        return info.version() + " [" + deployment.version() + "]";
+    private String formatVersions(String remote, String local) {
+        if (remote.equalsIgnoreCase(local)) return remote;
+        return remote + " [" + local + "]";
     }
 
     private String coloredStatus(DeploymentStatus status) {
@@ -86,7 +90,7 @@ public class DeploymentStatusRows implements RowColumnsWithStatus {
     }
 
     private void addPodRow(Pod pod, boolean health) {
-        printer.addRow(" - " + pod.getName(), "", health ? green("OK") : red("BAD"), "");
+        printer.addRow(" - " + pod.getName(), "", "", health ? green("OK") : red("BAD"), "");
     }
 
     private String replicas(ServiceDeploymentInfo info) {

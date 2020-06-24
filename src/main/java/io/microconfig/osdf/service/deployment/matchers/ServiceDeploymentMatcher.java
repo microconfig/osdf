@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
-import static io.microconfig.osdf.resources.ResourceVersionInserter.resourceVersionInserter;
 import static io.microconfig.osdf.service.deployment.DefaultServiceDeployment.defaultServiceDeployment;
 import static io.microconfig.osdf.service.deployment.istio.DefaultIstioServiceDeployment.istioServiceDeployment;
 import static io.microconfig.osdf.utils.YamlUtils.getString;
@@ -23,12 +22,10 @@ public class ServiceDeploymentMatcher {
 
     public ServiceDeployment match(ServiceFiles files) {
         Map<String, Object> deploy = loadFromPath(files.getPath("deploy.yaml"));
-        String version = getString(deploy, "version");
+        String version = getString(deploy, "app", "version");
         String serviceType = getString(deploy, "service", "type");
         String deploymentResource = deploymentResource(getString(deploy, "deployment" , "resource"));
         String deploymentName = deploymentName(files.name(), version, serviceType);
-
-        preprocessIfOldType(files, version, serviceType);
 
         if (serviceType.contains("istio")) {
             return istioServiceDeployment(deploymentName, version, files.name(), deploymentResource, cli);
@@ -38,13 +35,6 @@ public class ServiceDeploymentMatcher {
 
     private String deploymentResource(String deploymentResource) {
         return deploymentResource.equals("null") ? "dc" : deploymentResource;
-    }
-
-    private void preprocessIfOldType(ServiceFiles files, String version, String serviceType) {
-        if (serviceType.contains("old") || serviceType.equals("null")) {
-            resourceVersionInserter(files.root(), serviceType.contains("istio") ? version : null)
-                    .insert();
-        }
     }
 
     private String deploymentName(String name, String version, String serviceType) {
