@@ -1,5 +1,5 @@
-osdf.url: https://sbrf-nexus.ca.sbrf.ru/nexus/service/local/repositories/RiskPlatform_release/content
+osdf.url: unknown
 
-osdf.group: ru.sber.lm
-osdf.artifact: osdf
-osdf.version: 1.3.14
+osdf.group: unknown
+osdf.artifact: unknown
+osdf.version: unknown

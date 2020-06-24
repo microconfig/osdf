@@ -1,7 +1,7 @@
 helloworld:
   components:
     - helloworld-springboot
-    - fakejob
+    - fakejo
 
 #helloworld-istio:
 #  components:
