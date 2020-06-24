@@ -1,4 +1,0 @@
-#include openshift-urls
-
-#var microconfig.template.ingress-route.fromFile: ${openshift-route@configDir}/templates/ingress-route.yaml
-#var microconfig.template.ingress-route.toFile: resources/ingress-route.yaml

@@ -1,21 +1,16 @@
 helloworld:
   components:
     - helloworld-springboot
+    - fakejob
 
-kubernetes:
-  components:
-    - cloud-service-example
-
-helloworld-istio:
-  components:
-    - helloworld-springboot-istio
-
-demo:
-  components:
-    - demo-backend
-    - demo-frontend
-    - chaos
-
-jmeter:
-  components:
-    - loadtest-simple-example
+#helloworld-istio:
+#  components:
+#    - helloworld-springboot-istio
+#
+#demo:
+#  components:
+#    - chaos
+#
+#jmeter:
+#  components:
+#    - loadtest-simple-example

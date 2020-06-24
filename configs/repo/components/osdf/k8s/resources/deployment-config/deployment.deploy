@@ -1,0 +1,6 @@
+microconfig.template.deploymentConfig:
+  fromFile: ${deployment-config@configDir}/deployment.yaml
+  toFile: resources/deployment.yaml
+
+deployment.resource: dc
+service.type: random

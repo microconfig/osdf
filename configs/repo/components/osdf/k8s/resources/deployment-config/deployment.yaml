@@ -1,0 +1,61 @@
+kind: DeploymentConfig
+apiVersion: apps.openshift.io/v1
+metadata:
+  name: ${this@name}
+  labels:
+    application: ${this@name}
+    projectVersion: ${this@app.version}
+    configVersion: ${this@config.version}
+    configHash: <CONFIG_HASH>
+spec:
+  selector:
+    application: ${this@name}
+  template:
+    metadata:
+      labels:
+        application: ${this@name}
+        projectVersion: ${this@app.version}
+        configVersion: ${this@config.version}
+        configHash: <CONFIG_HASH>
+      annotations:
+        sidecar.istio.io/inject: '${istioInject}'
+    spec:
+      containers:
+        - image: ${image-registry@image.url}
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: >-
+                ${this@java.opts}
+            - name: TZ
+              value: Europe/Moscow
+          imagePullPolicy: Always
+          name: ${this@name}
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /app/resources/application.yaml
+              name: resources
+              subPath: application.yaml
+            - mountPath: /app/resources/logback.xml
+              name: resources
+              subPath: logback.xml
+            ${this@additional.mounts:}
+          resources:
+            requests:
+              cpu: ${this@requests.cpu}
+              memory: ${this@requests.memory}
+            limits:
+              cpu: ${this@limits.cpu}
+              memory: ${this@limits.memory}
+      volumes:
+        - name: resources
+          configMap:
+            name: ${this@name}
+        ${this@additional.volumes:}
+      restartPolicy: Always
+  triggers:
+    - type: ConfigChange
+  replicas: ${this@replicas.count:1}
+  strategy:
+    type: ${this@deploy.strategy:Recreate}
