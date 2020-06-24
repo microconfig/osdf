@@ -67,12 +67,11 @@ public class DefaultServiceFiles implements ServiceFiles {
 
     @Override
     public Path getPath(String identifier) {
-        if (identifier.startsWith("resources")) {
-            return componentDir.getPath(identifier.replaceFirst("resources", RESOURCES_DIR_NAME));
-        }
         if (identifier.equals("mainResource")) {
-            if (exists(getPath("resources/deployment.yaml"))) return getPath("resources/deployment.yaml");
-            if (exists(getPath("resources/job.yaml"))) return getPath("resources/job.yaml");
+            if (exists(getPath(RESOURCES_DIR_NAME + "/deployment.yaml")))
+                return getPath(RESOURCES_DIR_NAME + "/deployment.yaml");
+            if (exists(getPath(RESOURCES_DIR_NAME + "/job.yaml")))
+                return getPath(RESOURCES_DIR_NAME + "/job.yaml");
             throw new OSDFException("Main resource is not found");
         }
         return componentDir.getPath(identifier);

@@ -6,7 +6,7 @@ import static io.microconfig.core.configtypes.StandardConfigType.APPLICATION;
 
 @RequiredArgsConstructor
 public class OSDFDownloadProperties {
-    private final static String COMPONENT_NAME = "osdf-artifact";
+    private static final String COMPONENT_NAME = "osdf-artifact";
 
     private final PropertyGetter propertyGetter;
 

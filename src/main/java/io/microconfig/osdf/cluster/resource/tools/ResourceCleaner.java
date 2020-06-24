@@ -24,7 +24,6 @@ public class ResourceCleaner {
         remoteResources.stream()
                 .filter(not(localResources::contains))
                 .filter(resource -> !SYSTEM_RESOURCES.contains(resource.kind().toLowerCase()))
-                .peek(resource -> info("Deleting " + resource.kind() + " " + resource.name()))
                 .forEach(resource -> resource.delete(cli));
     }
 }

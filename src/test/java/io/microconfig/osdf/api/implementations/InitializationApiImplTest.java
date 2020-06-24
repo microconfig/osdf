@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class InitializationApiImplTest {
-    private final static TestContext context = defaultContext();
+    private static final TestContext context = defaultContext();
     private final ClusterCLI cli = mock(ClusterCLI.class);
 
     @BeforeEach

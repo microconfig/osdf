@@ -7,7 +7,7 @@ import static io.microconfig.core.configtypes.StandardConfigType.DEPLOY;
 
 @RequiredArgsConstructor
 public class ClusterProperties {
-    private final String COMPONENT_NAME = "k8s-cluster";
+    private static final String COMPONENT_NAME = "k8s-cluster";
 
     private final PropertyGetter propertyGetter;
 

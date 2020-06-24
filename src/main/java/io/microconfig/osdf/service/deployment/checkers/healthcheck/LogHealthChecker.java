@@ -14,8 +14,8 @@ import static java.lang.System.currentTimeMillis;
 
 @RequiredArgsConstructor
 public class LogHealthChecker implements HealthChecker {
-    private final static int LOG_WAIT_LIMIT = 10;
-    private final static int LOG_LINE_LIMIT = 500;
+    private static final int LOG_WAIT_LIMIT = 10;
+    private static final int LOG_LINE_LIMIT = 500;
 
     private final String marker;
     private final int timeoutInSec;
