@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 import static io.microconfig.osdf.cluster.resource.ClusterResourceImpl.fromPath;
+import static io.microconfig.utils.Logger.info;
 import static java.util.Objects.hash;
 
 @RequiredArgsConstructor
@@ -25,7 +26,12 @@ public class LocalClusterResourceImpl implements LocalClusterResource {
 
     @Override
     public void upload(ClusterCLI cli) {
-        cli.execute("oc apply -f " + path).throwExceptionIfError();
+        String output = cli.execute("apply -f " + path).getOutput();
+        if (output.contains("field is immutable")) {
+            info("Immutable field changed in " + clusterResource.kind() + " " + clusterResource.name());
+            cli.execute("delete " + clusterResource.kind() + " " + clusterResource.name());
+            cli.execute("apply -f " + path).throwExceptionIfError();
+        }
     }
 
     @Override

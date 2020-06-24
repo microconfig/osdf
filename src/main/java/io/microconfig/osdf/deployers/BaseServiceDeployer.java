@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import static io.microconfig.osdf.cluster.resource.tools.ResourceCleaner.resourceCleaner;
 import static io.microconfig.osdf.deployers.hooks.EmptyHook.emptyHook;
 import static io.microconfig.utils.Logger.announce;
+import static io.microconfig.utils.Logger.info;
 
 @RequiredArgsConstructor
 public class BaseServiceDeployer implements ServiceDeployer {
@@ -34,8 +35,11 @@ public class BaseServiceDeployer implements ServiceDeployer {
     }
 
     private void uploadResources(ClusterService service, ServiceDeployment deployment, ServiceFiles files) {
-        cli.execute("apply -f " + files.getPath("resources"))
-                .throwExceptionIfError();
+        String output = cli.execute("apply -f " + files.getPath("resources")).getOutput();
+        if (output.contains("field is immutable")) {
+            info("One of resources changed immutable field");
+            service.upload(files.resources());
+        }
         deployHook.call(service, deployment, files);
     }
 }
