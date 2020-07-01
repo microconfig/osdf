@@ -1,7 +1,8 @@
 package io.microconfig.osdf.api;
 
-import io.microconfig.osdf.api.annotation.ConsoleParam;
-import io.microconfig.osdf.parameters.ArgParameter;
+import io.osdf.api.lib.annotations.ConsoleParam;
+import io.osdf.api.lib.parameter.ArgParameter;
+import io.osdf.api.lib.ApiArgsGetter;
 import org.apache.commons.cli.ParseException;
 import org.junit.jupiter.api.Test;
 
@@ -9,9 +10,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import static io.microconfig.osdf.api.ApiArgsGetter.argsGetter;
-import static io.microconfig.osdf.parameters.ParamType.REQUIRED;
-import static io.microconfig.osdf.parameters.ParameterUtils.toList;
+import static io.osdf.api.lib.ApiArgsGetter.argsGetter;
+import static io.osdf.api.lib.parameter.ParamType.REQUIRED;
+import static io.osdf.api.lib.parameter.ParameterUtils.toList;
 import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

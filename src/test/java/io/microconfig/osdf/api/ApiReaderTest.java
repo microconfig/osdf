@@ -1,13 +1,14 @@
 package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.api.example.ExampleApiClass;
-import io.microconfig.osdf.exceptions.OSDFException;
+import io.osdf.common.exceptions.OSDFException;
+import io.osdf.api.lib.ApiReader;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.util.List;
 
-import static io.microconfig.osdf.api.ApiReader.reader;
+import static io.osdf.api.lib.ApiReader.reader;
 import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

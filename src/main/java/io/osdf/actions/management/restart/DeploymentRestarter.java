@@ -1,0 +1,31 @@
+package io.osdf.actions.management.restart;
+
+import io.osdf.core.service.core.deployment.ServiceDeployment;
+import io.osdf.core.service.local.ServiceFiles;
+import io.osdf.common.utils.YamlUtils;
+
+import java.util.Map;
+
+import static io.osdf.common.utils.YamlUtils.loadFromPath;
+
+public class DeploymentRestarter {
+    public static DeploymentRestarter deploymentRestarter() {
+        return new DeploymentRestarter();
+    }
+
+    public void restart(ServiceDeployment deployment, ServiceFiles files) {
+        int replicas = deployment.info().replicas();
+        if (replicas > 0) {
+            deployment.scale(0);
+            deployment.scale(replicas);
+        } else {
+            scaleFromConfigs(deployment, files);
+        }
+    }
+
+    private void scaleFromConfigs(ServiceDeployment deployment, ServiceFiles files) {
+        Map<String, Object> deploy = loadFromPath(files.getPath("mainResource"));
+        Integer replicas = YamlUtils.get(deploy, "spec.replicas");
+        deployment.scale(replicas);
+    }
+}

@@ -3,10 +3,11 @@ package io.microconfig.osdf.api;
 import io.microconfig.osdf.api.example.ExampleApiClass;
 import io.microconfig.osdf.api.example.ExampleApiClassImpl;
 import io.microconfig.osdf.api.example.ExampleMainApiClass;
-import io.microconfig.osdf.exceptions.OSDFException;
+import io.osdf.common.exceptions.OSDFException;
+import io.osdf.api.lib.ApiCallerImpl;
 import org.junit.jupiter.api.Test;
 
-import static io.microconfig.osdf.api.ApiCallFinder.finder;
+import static io.osdf.api.lib.ApiCallFinder.finder;
 import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

@@ -1,11 +1,12 @@
 package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.api.example.ExampleMainApiClass;
+import io.osdf.api.lib.ImportPrefix;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 
-import static io.microconfig.osdf.api.ImportPrefix.importPrefix;
+import static io.osdf.api.lib.ImportPrefix.importPrefix;
 import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
