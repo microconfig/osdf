@@ -50,9 +50,9 @@ public class DefaultServiceDeploymentInfo implements ServiceDeploymentInfo {
         Integer available = castToInteger(fields[2]);
         Integer unavailable = castToInteger(fields[3]);
         Integer ready = castToInteger(fields[4]);
-        String version = fields[4];
-        String configVersion = fields[5];
-        String hash = fields[6];
+        String version = fields[5];
+        String configVersion = fields[6];
+        String hash = fields[7];
         if (replicas == null || current == null || available == null) return of(FAILED);
         return new DefaultServiceDeploymentInfo(replicas, available, unavailable == null ? 0 : unavailable, ready == null ? 0 : ready,
                 version, configVersion, hash);

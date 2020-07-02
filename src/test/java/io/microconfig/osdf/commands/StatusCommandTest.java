@@ -44,8 +44,8 @@ class StatusCommandTest {
     private OpenShiftCli mockOc() {
         OpenShiftCli oc = loggedInOc();
         when(oc.execute("get dc " + COMPONENT_NAME + " " + deploymentInfoCustomColumns())).thenReturn(output(
-                "replicas   current   available   unavailable   projectVersion   configVersion  configHash" + "\n" +
-                "1          1         1           0             " + COMPONENT_VERSION + "           local   hash"
+                "replicas   current   available   unavailable   ready   projectVersion   configVersion  configHash" + "\n" +
+                "1          1         1           1             1       " + COMPONENT_VERSION + " local hash"
         ));
         when(oc.execute("get virtualservice " + COMPONENT_NAME + " -o yaml"))
                 .thenReturn(output("not found"));
@@ -60,7 +60,7 @@ class StatusCommandTest {
 
         ColumnPrinter printer = printer();
         printer.addColumns("COMPONENT", "VERSION", "CONFIGS", "STATUS", "REPLICAS");
-        printer.addRow(green(COMPONENT_NAME), green(COMPONENT_VERSION), green("local"), green("RUNNING"), green("1/1"));
+        printer.addRow(green(COMPONENT_NAME), green(COMPONENT_VERSION), green("local"), green("READY"), green("1/1"));
         printer.print();
         return expectedOut.toString();
     }
