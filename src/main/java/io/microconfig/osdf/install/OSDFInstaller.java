@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.microconfig.osdf.install.AutoCompleteInstaller.autoCompleteInstaller;
 import static io.microconfig.osdf.install.BashrcInstaller.bashrcInstaller;
 import static io.microconfig.osdf.install.ScriptInstaller.scriptInstaller;
 import static io.microconfig.osdf.install.WorkfolderInstaller.workfolderInstaller;
@@ -52,6 +53,7 @@ public class OSDFInstaller {
         newFiles.add(jarInstaller);
         newFiles.add(versionFile());
         newFiles.add(scriptInstaller(paths));
+        newFiles.add(autoCompleteInstaller(paths, false));
         if (!noBashRc) {
             newFiles.add(bashrcInstaller(paths));
         }
