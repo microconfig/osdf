@@ -1,4 +1,4 @@
-package io.osdf.actions.init.api;
+package io.osdf.actions.init;
 
 import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.core.connection.context.ClusterContextSettings;

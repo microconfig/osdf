@@ -45,12 +45,8 @@ public class CliOutput {
         consumer.accept(getOutput());
     }
 
-    public void throwExceptionIfError(RuntimeException e) {
-        if (statusCode != 0) throw e;
-    }
-
     public CliOutput throwExceptionIfError() {
-        throwExceptionIfError(new OSDFException("Error executing command:\n" + errorOutput));
+        if (statusCode != 0) throw new OSDFException("Error executing command:\n" + errorOutput);
         return this;
     }
 
@@ -60,5 +56,9 @@ public class CliOutput {
 
     public String getOutput() {
         return statusCode == 0 ? standardOutput : errorOutput;
+    }
+
+    public boolean ok() {
+        return statusCode == 0;
     }
 }

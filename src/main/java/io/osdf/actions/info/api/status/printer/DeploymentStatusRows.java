@@ -1,19 +1,19 @@
 package io.osdf.actions.info.api.status.printer;
 
-import io.osdf.actions.info.healthcheck.finder.HealthCheckerFromFiles;
+import io.osdf.actions.info.healthcheck.PodsInfo;
 import io.osdf.actions.info.info.deployment.DeploymentStatus;
 import io.osdf.actions.info.info.deployment.ServiceDeploymentInfo;
+import io.osdf.actions.info.printer.ColumnPrinter;
+import io.osdf.core.cluster.pod.Pod;
 import io.osdf.core.service.core.deployment.ServiceDeployment;
 import io.osdf.core.service.local.ServiceFiles;
-import io.osdf.core.cluster.pod.Pod;
-import io.osdf.actions.info.printer.ColumnPrinter;
 
 import java.util.List;
 
-import static io.osdf.actions.info.info.deployment.DeploymentStatus.RUNNING;
-import static io.osdf.actions.info.healthcheck.finder.HealthCheckerFromFiles.podsInfo;
 import static io.microconfig.utils.ConsoleColor.green;
 import static io.microconfig.utils.ConsoleColor.red;
+import static io.osdf.actions.info.healthcheck.PodsInfo.podsInfo;
+import static io.osdf.actions.info.info.deployment.DeploymentStatus.READY;
 import static java.util.stream.IntStream.range;
 
 
@@ -54,17 +54,22 @@ public class DeploymentStatusRows implements RowColumnsWithStatus {
 
     private boolean fetch() {
         ServiceDeploymentInfo info = deployment.info();
+        if (withHealthCheck) {
+            PodsInfo podsInfo = podsInfo(deployment, files);
+            addMainRow(info);
+            addPods(podsInfo.getPods(), podsInfo.getPodsHealth());
+            return podsInfo.isHealthy() && info.status() == READY;
+        }
+        addMainRow(info);
+        return info.status() == READY;
+    }
+
+    private void addMainRow(ServiceDeploymentInfo info) {
         printer.addRow(green(deployment.serviceName()),
                 green(formatVersions(info.version(), deployment.version())),
                 green(info.configVersion()),
                 coloredStatus(info.status()),
                 green(replicas(info)));
-        if (withHealthCheck) {
-            HealthCheckerFromFiles podsInfo = podsInfo(deployment, files);
-            addPods(podsInfo.getPods(), podsInfo.getPodsHealth());
-            return podsInfo.isHealthy() && info.status() == RUNNING;
-        }
-        return info.status() == RUNNING;
     }
 
     private String formatVersions(String remote, String local) {
@@ -75,12 +80,13 @@ public class DeploymentStatusRows implements RowColumnsWithStatus {
     private String coloredStatus(DeploymentStatus status) {
         String statusString = status.toString().replace("_", " ");
         switch (status) {
-            case RUNNING:
+            case READY:
                 return green(statusString);
             case FAILED:
             case NOT_READY:
             case BAD_HEALTHCHECK:
                 return red(statusString);
+            case RUNNING:
             default:
                 return statusString;
         }

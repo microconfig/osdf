@@ -28,7 +28,7 @@ public class CliStarter {
             saveException(args, paths, e);
             exit(1);
         } catch (OSDFException e) {
-            error(e.getMessage());
+            error(e.getMessage() != null ? e.getMessage() : e.getCause().getMessage());
             exit(1);
         } catch (Exception e) {
             error("Bug!");

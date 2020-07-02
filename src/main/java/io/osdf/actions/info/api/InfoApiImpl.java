@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import static io.osdf.actions.info.printer.ColumnPrinter.printer;
-import static io.osdf.actions.info.healthcheck.DeployStatusChecker.deployStatusChecker;
+import static io.osdf.actions.info.api.healthcheck.DeployStatusChecker.deployStatusChecker;
 import static io.osdf.core.service.core.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
 import static io.osdf.core.service.local.loaders.filters.GroupComponentsFilter.groupComponentsFilter;
 

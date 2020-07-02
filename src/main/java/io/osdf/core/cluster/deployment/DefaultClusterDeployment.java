@@ -1,14 +1,16 @@
 package io.osdf.core.cluster.deployment;
 
-import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.core.cluster.pod.Pod;
 import io.osdf.core.cluster.resource.ClusterResource;
 import io.osdf.core.cluster.resource.ClusterResourceImpl;
+import io.osdf.core.connection.cli.CliOutput;
+import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 import static io.osdf.core.cluster.pod.Pod.fromOpenShiftNotation;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static java.util.stream.Stream.of;
@@ -30,7 +32,9 @@ public class DefaultClusterDeployment implements ClusterDeployment {
 
     @Override
     public List<Pod> pods() {
-        return cli.execute("get pods " + label() + " -o name")
+        String label = label();
+        if (label == null) return emptyList();
+        return cli.execute("get pods " + label + " -o name")
                 .throwExceptionIfError()
                 .getOutputLines()
                 .stream()
@@ -53,8 +57,9 @@ public class DefaultClusterDeployment implements ClusterDeployment {
 
     private String label() {
         String selectorKey = resourceKind.equals("deployment") ? ".spec.selector.matchLabels" : ".spec.selector" ;
-        String rawLabelString = cli.execute("get " + resourceKind + " " + name + " -o custom-columns=\"label:" + selectorKey + "\"")
-                .throwExceptionIfError()
+        CliOutput output = cli.execute("get " + resourceKind + " " + name + " -o custom-columns=\"label:" + selectorKey + "\"");
+        if (!output.ok()) return null;
+        String rawLabelString = output
                 .getOutputLines()
                 .get(1);
         String labels = of(rawLabelString.strip()

@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static io.osdf.actions.init.api.InitializationApiImpl.initializationApi;
+import static io.osdf.actions.init.InitializationApiImpl.initializationApi;
 import static io.osdf.common.utils.TestContext.CONFIGS_PATH;
 import static io.osdf.common.utils.TestContext.defaultContext;
 import static java.nio.file.Files.exists;

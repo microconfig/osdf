@@ -1,4 +1,4 @@
-package io.osdf.actions.init.api;
+package io.osdf.actions.init;
 
 import io.osdf.api.lib.annotations.ApiCommand;
 import io.osdf.api.lib.annotations.ConsoleParam;

@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import static io.osdf.actions.init.api.InitializationApiImpl.initializationApi;
+import static io.osdf.actions.init.InitializationApiImpl.initializationApi;
 import static io.osdf.common.Credentials.of;
 import static io.osdf.actions.system.install.OSDFInstaller.osdfInstaller;
 import static io.osdf.actions.system.install.jarinstaller.FakeJarInstaller.fakeJarInstaller;

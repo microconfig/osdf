@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import static io.osdf.actions.init.api.InitializationApiImpl.initializationApi;
+import static io.osdf.actions.init.InitializationApiImpl.initializationApi;
 import static io.osdf.common.utils.TestContext.defaultContext;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Files.writeString;

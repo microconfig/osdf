@@ -79,6 +79,14 @@ public class Pod implements Comparable<Pod> {
         return outputLines.get(1).split("@")[1];
     }
 
+    public boolean isReady() {
+        List<String> outputLines = cli.execute("get pods " + name + " -o custom-columns=\".readiness:.status.conditions[?(@.type == \\\"Ready\\\")].status\"")
+                .throwExceptionIfError()
+                .getOutputLines();
+        if (outputLines.size() < 2) return false;
+        return outputLines.get(1).trim().equalsIgnoreCase("true");
+    }
+
     public boolean checkStressContainer() {
         return cli.execute("get pod " + name + " -o jsonpath=\"{.spec.containers[*].name}\"")
                 .throwExceptionIfError()

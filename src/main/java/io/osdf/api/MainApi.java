@@ -2,7 +2,7 @@ package io.osdf.api;
 
 import io.osdf.actions.configs.ConfigsApi;
 import io.osdf.actions.info.api.InfoApi;
-import io.osdf.actions.init.api.InitializationApi;
+import io.osdf.actions.init.InitializationApi;
 import io.osdf.actions.management.ManagementApi;
 import io.osdf.actions.system.SystemApi;
 import io.osdf.api.lib.annotations.Import;

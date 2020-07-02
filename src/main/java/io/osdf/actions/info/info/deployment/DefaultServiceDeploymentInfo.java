@@ -13,19 +13,21 @@ import static io.osdf.common.utils.StringUtils.castToInteger;
 public class DefaultServiceDeploymentInfo implements ServiceDeploymentInfo {
     private final int replicas;
     private final int availableReplicas;
+    private final int readyReplicas;
     private final String configVersion;
     private final String version;
     private final String hash;
     private final DeploymentStatus status;
 
-    private DefaultServiceDeploymentInfo(int replicas, int available, int unavailable, String version,
+    private DefaultServiceDeploymentInfo(int replicas, int available, int unavailable, int ready, String version,
                                          String configVersion, String hash) {
         this.replicas = replicas;
         this.availableReplicas = available;
+        this.readyReplicas = ready;
         this.configVersion = configVersion;
         this.version = version;
         this.hash = hash;
-        this.status = statusFromReplicas(replicas, available, unavailable);
+        this.status = statusFromReplicas(replicas, available, unavailable, ready);
     }
 
     public static DefaultServiceDeploymentInfo deploymentInfo(String name, String resourceKind, ClusterCli cli) {
@@ -34,6 +36,7 @@ public class DefaultServiceDeploymentInfo implements ServiceDeploymentInfo {
                 "current:.status.replicas," +
                 "available:.status.availableReplicas," +
                 "unavailable:.status.unavailableReplicas," +
+                "ready:.status.readyReplicas," +
                 "projectVersion:.metadata.labels.projectVersion," +
                 "configVersion:.metadata.labels.configVersion," +
                 "configHash:.metadata.labels.configHash")
@@ -46,22 +49,26 @@ public class DefaultServiceDeploymentInfo implements ServiceDeploymentInfo {
         Integer current = castToInteger(fields[1]);
         Integer available = castToInteger(fields[2]);
         Integer unavailable = castToInteger(fields[3]);
+        Integer ready = castToInteger(fields[4]);
         String version = fields[4];
         String configVersion = fields[5];
         String hash = fields[6];
         if (replicas == null || current == null || available == null) return of(FAILED);
-        return new DefaultServiceDeploymentInfo(replicas, available, unavailable == null ? 0 : unavailable, version, configVersion, hash);
+        return new DefaultServiceDeploymentInfo(replicas, available, unavailable == null ? 0 : unavailable, ready == null ? 0 : ready,
+                version, configVersion, hash);
     }
 
     private static DefaultServiceDeploymentInfo of(DeploymentStatus status) {
-        return new DefaultServiceDeploymentInfo(0, 0,"?", "?", "?", status);
+        return new DefaultServiceDeploymentInfo(0, 0, 0, "?", "?", "?", status);
     }
 
 
-    private DeploymentStatus statusFromReplicas(int replicas, int available, int unavailable) {
+    private DeploymentStatus statusFromReplicas(int replicas, int available, int unavailable, int ready) {
         DeploymentStatus status = FAILED;
         if (replicas == 0) {
             status = TURNED_OFF;
+        } else if (replicas == ready) {
+            status = READY;
         } else if (replicas == available) {
             status = RUNNING;
         } else if (unavailable > 0) {

@@ -1,10 +1,11 @@
 package unstable.io.osdf.loadtesting;
 
-import io.osdf.core.connection.cli.ClusterCli;
+import io.osdf.actions.info.healthcheck.DeploymentHealthChecker;
+import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.cluster.pod.Pod;
 import io.osdf.core.cluster.resource.ClusterResource;
 import io.osdf.core.cluster.resource.LocalClusterResource;
-import io.osdf.common.exceptions.OSDFException;
+import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.core.service.core.deployment.ServiceDeployment;
 import io.osdf.core.service.core.deployment.ServiceDeploymentMatcher;
 import io.osdf.core.service.local.DefaultServiceFiles;
@@ -14,11 +15,10 @@ import lombok.RequiredArgsConstructor;
 import java.nio.file.Path;
 import java.util.List;
 
+import static io.microconfig.utils.Logger.announce;
 import static io.osdf.core.local.component.finder.MicroConfigComponentsFinder.componentsFinder;
 import static io.osdf.core.service.cluster.types.DefaultClusterService.defaultClusterService;
-import static io.osdf.actions.info.healthcheck.SuccessfulDeploymentChecker.successfulDeploymentChecker;
 import static io.osdf.core.service.local.DefaultServiceFiles.serviceFiles;
-import static io.microconfig.utils.Logger.announce;
 
 @Getter
 @RequiredArgsConstructor
@@ -56,7 +56,7 @@ public class JmeterComponent {
     }
 
     public boolean checkDeploy() {
-        return successfulDeploymentChecker().check(deploymentsFromServiceFiles(), getJmeterServiceFiles());
+        return DeploymentHealthChecker.deploymentHealthChecker().check(deploymentsFromServiceFiles(), getJmeterServiceFiles());
     }
 
     public List<Pod> pods() {

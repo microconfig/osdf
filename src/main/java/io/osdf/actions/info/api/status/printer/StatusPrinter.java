@@ -10,6 +10,7 @@ import java.util.List;
 
 import static io.osdf.actions.info.api.status.printer.DeploymentStatusRows.deploymentStatusRows;
 import static io.osdf.actions.info.api.status.printer.JobStatusRow.jobStatusRow;
+import static io.osdf.common.utils.ThreadUtils.runInParallel;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
@@ -32,10 +33,10 @@ public class StatusPrinter {
     }
 
     private List<RowColumnsWithStatus> fetchStatuses(List<Object> services) {
-        return services.stream()
-                .parallel()
-                .map(this::toRowColumnsWithStatus)
-                .collect(toUnmodifiableList());
+        return runInParallel(services.size(),
+                () -> services.parallelStream()
+                        .map(this::toRowColumnsWithStatus)
+                        .collect(toUnmodifiableList()));
     }
 
     private RowColumnsWithStatus toRowColumnsWithStatus(Object service) {
