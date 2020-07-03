@@ -53,7 +53,7 @@ public class OSDFInstaller {
         newFiles.add(jarInstaller);
         newFiles.add(versionFile());
         newFiles.add(scriptInstaller(paths));
-        newFiles.add(autoCompleteInstaller(paths, false));
+        newFiles.add(autoCompleteInstaller(paths, true));
         if (!noBashRc) {
             newFiles.add(bashrcInstaller(paths));
         }

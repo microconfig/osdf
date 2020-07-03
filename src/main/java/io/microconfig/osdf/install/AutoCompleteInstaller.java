@@ -13,10 +13,8 @@ import java.util.stream.Collectors;
 import static io.microconfig.osdf.api.ImportPrefix.importPrefix;
 import static io.microconfig.osdf.configs.MicroConfigComponents.microConfigComponents;
 import static io.microconfig.osdf.utils.CommandLineExecutor.execute;
-import static io.microconfig.osdf.utils.FileUtils.readAll;
 import static io.microconfig.osdf.utils.FileUtils.writeStringToFile;
 import static java.lang.String.join;
-import static java.nio.file.Files.exists;
 import static java.nio.file.Path.of;
 import static java.util.Arrays.stream;
 import static org.apache.commons.io.FileUtils.getUserDirectoryPath;
@@ -29,11 +27,11 @@ public class AutoCompleteInstaller implements FileReplacer {
     private final Path dest;
 
     public static AutoCompleteInstaller autoCompleteInstaller(OSDFPaths paths, boolean withComponents) {
-        return new AutoCompleteInstaller(paths, withComponents, of(paths.tmp() + "/autoComplete"), of(getUserDirectoryPath() + "/.bash_completion"));
+        return new AutoCompleteInstaller(paths, withComponents, of(paths.tmp() + "/osdf_completion"), of(getUserDirectoryPath() + "/.osdf_completion"));
     }
 
     private String script() {
-        return "__osdf_completions() {\n" +
+        return "_osdf_completions() {\n" +
                 "  local cur prev commands components\n" +
                 "  local IFS=$'\\n'\n" +
                 "  COMPREPLY=()\n" +
@@ -50,23 +48,12 @@ public class AutoCompleteInstaller implements FileReplacer {
                 "  fi \n" +
                 "\n" +
                 "\n" +
+                "  local IFS=$' \\t\\n'\n" +
                 "  COMPREPLY=( $(compgen -W \"${components}\" -- ${cur}) )\n" +
                 "  return 0;\n" +
                 "\n" +
                 "}\n" +
                 "complete -F _osdf_completions osdf";
-    }
-
-    private String content() {
-        String newEntry = script();
-        if (!exists(dest)) {
-            return newEntry;
-        }
-        String completionFileContent = readAll(dest);
-        if (completionFileContent.contains(newEntry)) {
-            return completionFileContent;
-        }
-        return completionFileContent + "\n" + newEntry + "\n";
     }
 
     private String commands() {
@@ -96,7 +83,7 @@ public class AutoCompleteInstaller implements FileReplacer {
 
     @Override
     public void prepare() {
-        writeStringToFile(tmpPath, content());
+        writeStringToFile(tmpPath, script());
     }
 
     @Override

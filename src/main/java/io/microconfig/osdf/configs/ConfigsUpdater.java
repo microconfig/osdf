@@ -2,11 +2,13 @@ package io.microconfig.osdf.configs;
 
 import io.microconfig.osdf.configfetcher.ConfigsFetcher;
 import io.microconfig.osdf.exceptions.OSDFException;
+import io.microconfig.osdf.install.FileReplacer;
 import io.microconfig.osdf.paths.OSDFPaths;
 import io.microconfig.osdf.settings.SettingsFile;
 import lombok.RequiredArgsConstructor;
 
 import static io.microconfig.osdf.configfetcher.ConfigsFetcher.fetcher;
+import static io.microconfig.osdf.install.AutoCompleteInstaller.autoCompleteInstaller;
 import static io.microconfig.osdf.microconfig.MicroConfig.microConfig;
 import static io.microconfig.osdf.microconfig.properties.PropertySetter.propertySetter;
 import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
@@ -56,5 +58,12 @@ public class ConfigsUpdater {
 
         propertySetter().setIfNecessary(paths.projectVersionPath(), "project.version", settings.getProjectVersion());
         microConfig(settings.getEnv(), paths).generateConfigs(emptyList());
+        updateAutocomplete();
+    }
+
+    private void updateAutocomplete() {
+        FileReplacer autocompleteInstaller = autoCompleteInstaller(paths, true);
+        autocompleteInstaller.prepare();
+        autocompleteInstaller.replace();
     }
 }
