@@ -1,0 +1,3 @@
+microconfig.mustache.route:
+  fromFile: ${route@configDir}/route.yaml
+  toFile: resources/route.yaml

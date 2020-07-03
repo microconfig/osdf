@@ -1,6 +1,6 @@
 plan.post.requests:
   - post-request:
-      component: helloworld-springboot
+      component: helloworld
       method: POST
       path: /post-hello
       protocol: http
@@ -12,7 +12,7 @@ plan.post.requests:
               "nextData": "nextData"
              }'
   - post-request-header:
-      component: helloworld-springboot
+      component: helloworld
       method: POST
       path: /post-hello-header
       protocol: http

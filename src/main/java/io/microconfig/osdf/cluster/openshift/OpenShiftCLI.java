@@ -34,6 +34,11 @@ public class OpenShiftCLI implements ClusterCLI {
         openShiftAuthentication(paths, this).connect();
     }
 
+    @Override
+    public void logout() {
+        cli.execute("oc logout");
+    }
+
     private String stripCLIName(String command) {
         return command
                 .replace("oc ", "")

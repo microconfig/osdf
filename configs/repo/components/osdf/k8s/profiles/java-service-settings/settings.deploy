@@ -1,0 +1,22 @@
+#include versions
+
+requests:
+  cpu: 2
+  memory: 1024M
+
+limits:
+  cpu: ${this@requests.cpu}
+  memory: ${this@requests.memory}
+
+java.opts:
+  -Dapp.version=${this@app.version}
+  -Dconfig.version=${this@app.version}
+  -Dfile.encoding=UTF-8
+  -XX:+CrashOnOutOfMemoryError
+  -XX:MaxRAMPercentage=${this@maxRamPercentage}
+
+healthcheck.marker.success: Started
+
+#var maxRamPercentage: #{(${this@limitsMb} - ${this@nativeMb}) * 100 / ${this@limitsMb}}
+#var limitsMb: #{'${this@limits.memory}'.replace('M', '')}
+#var nativeMb: 300

@@ -41,8 +41,17 @@ public class JobStatusRow implements RowColumnsWithStatus {
 
     private boolean fetch() {
         ServiceJobInfo info = job.info();
-        printer.addRow(green(job.serviceName()), green(job.version()), green(info.configVersion()), coloredStatus(info.status()), green("-"));
+        printer.addRow(green(job.serviceName()),
+                green(formatVersions(info.version(), job.version())),
+                green(info.configVersion()),
+                coloredStatus(info.status()),
+                green("-"));
         return info.status() == SUCCEEDED;
+    }
+
+    private String formatVersions(String remote, String local) {
+        if (remote.equalsIgnoreCase(local)) return remote;
+        return remote + " [" + local + "]";
     }
 
     private String coloredStatus(JobStatus status) {

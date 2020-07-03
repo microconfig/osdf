@@ -1,0 +1,3 @@
+microconfig.template.job:
+  fromFile: ${job@configDir}/job.yaml
+  toFile: resources/job.yaml

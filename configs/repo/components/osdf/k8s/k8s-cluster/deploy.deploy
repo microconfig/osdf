@@ -1,0 +1,3 @@
+cluster.url.base: unknown
+cluster.url.api: https://api.${this@cluster.url.base}:6443
+#var internalUrl : .${k8s-cluster@project}.svc.cluster.local

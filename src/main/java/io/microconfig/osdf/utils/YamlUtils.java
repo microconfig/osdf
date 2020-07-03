@@ -63,12 +63,21 @@ public class YamlUtils {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> T get(Object yaml, String key) {
+        return (T) getObjectOrNull((Map<String, Object>) yaml, key.split("\\."));
+    }
+
     public static String getString(Map<String, Object> yaml, String... properties) {
         return valueOf(getObjectOrNull(yaml, properties));
     }
 
     public static Integer getInt(Map<String, Object> yaml, String... properties) {
         return (Integer) getObjectOrNull(yaml, properties);
+    }
+
+    public static Double getDouble(Map<String, Object> yaml, String... properties) {
+        return (Double) getObjectOrNull(yaml, properties);
     }
 
     public static float getFloat(Map<String, Object> yaml, String... properties) {

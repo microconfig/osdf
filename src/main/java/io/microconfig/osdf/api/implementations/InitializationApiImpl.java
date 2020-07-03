@@ -1,6 +1,7 @@
 package io.microconfig.osdf.api.implementations;
 
 import io.microconfig.osdf.api.declarations.InitializationApi;
+import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.cluster.context.ClusterContextSettings;
 import io.microconfig.osdf.cluster.context.ClusterType;
 import io.microconfig.osdf.cluster.kubernetes.KubernetesSettings;
@@ -28,27 +29,28 @@ import static io.microconfig.osdf.settings.SettingsFile.settingsFile;
 @RequiredArgsConstructor
 public class InitializationApiImpl implements InitializationApi {
     private final OSDFPaths paths;
+    private final ClusterCLI cli;
 
-    public static InitializationApi initializationApi(OSDFPaths paths) {
-        return new InitializationApiImpl(paths);
+    public static InitializationApi initializationApi(OSDFPaths paths, ClusterCLI cli) {
+        return new InitializationApiImpl(paths, cli);
     }
 
     @Override
     public void gitConfigs(String url, String branchOrTag) {
         updateGitConfigsSettings(url, branchOrTag);
-        configsUpdater(paths).setConfigsSource(GIT);
+        configsUpdater(paths, cli).setConfigsSource(GIT);
     }
 
     @Override
     public void nexusConfigs(String url, NexusArtifact artifact, Credentials credentials) {
         updateNexusConfigsSettings(url, artifact, credentials);
-        configsUpdater(paths).setConfigsSource(NEXUS);
+        configsUpdater(paths, cli).setConfigsSource(NEXUS);
     }
 
     @Override
     public void localConfigs(Path path, String version) {
         updateLocalConfigsSettings(path, version);
-        configsUpdater(paths).setConfigsSource(LOCAL);
+        configsUpdater(paths, cli).setConfigsSource(LOCAL);
     }
 
     @Override
@@ -70,7 +72,7 @@ public class InitializationApiImpl implements InitializationApi {
 
     @Override
     public void configs(String env, String projVersion) {
-        configsUpdater(paths).setConfigsParameters(env, projVersion);
+        configsUpdater(paths, cli).setConfigsParameters(env, projVersion);
     }
 
     @Override

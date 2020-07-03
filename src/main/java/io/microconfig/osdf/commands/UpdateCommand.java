@@ -37,7 +37,7 @@ public class UpdateCommand {
             if (!currentVersion.olderThan(configsVersion)) return;
             update(configsVersion);
         } catch (Exception e) {
-            warn("Can't auto-update. Try manual update or install new version");
+            warn("Can't auto-update: " + e.getClass().getSimpleName() + " " + e.getMessage() +" Try manual update or install new version");
             return;
         }
         restart(args);

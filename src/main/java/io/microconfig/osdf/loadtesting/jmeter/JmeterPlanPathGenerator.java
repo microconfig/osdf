@@ -32,16 +32,16 @@ public class JmeterPlanPathGenerator {
     }
 
 
-    private Map<String, String> getCurrentRoutesMap(ClusterCLI cli, OSDFPaths paths) {
+    public static Map<String, String> getCurrentRoutesMap(ClusterCLI cli, OSDFPaths paths) {
         return serviceLoader(paths, cli).loadPacks()
                 .stream()
                 .filter(deployPack -> deployPack.deployment().info().availableReplicas() > 0)
                 .filter(deployPack -> deployPack.deployment().info().status().equals(RUNNING))
                 .map(deployPack -> deployPack.deployment().name())
-                .collect(Collectors.toMap(name -> name, this::getUserServiceRoutes));
+                .collect(Collectors.toMap(name -> name, name -> getUserServiceRoutes(cli, name)));
     }
 
-    private String getUserServiceRoutes(String name) {
+    public static String getUserServiceRoutes(ClusterCLI cli, String name) {
         String command = "oc get route " + name + " -o custom-columns=HOST:.spec.host";
         List<String> output = cli.execute(command).getOutputLines();
         if (output.get(0).toLowerCase().contains("not found"))

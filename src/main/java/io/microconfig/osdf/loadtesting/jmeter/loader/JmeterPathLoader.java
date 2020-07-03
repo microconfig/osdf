@@ -19,8 +19,7 @@ public class JmeterPathLoader {
     }
 
     public Path jmeterComponentsPathLoad() {
-        return componentsLoader()
-                .loadOne(componentName, componentsFinder(paths.componentsPath()), this::mapper);
+        return componentsLoader().loadOne(componentName, componentsFinder(paths.componentsPath()), this::mapper);
     }
 
     private Path mapper(ComponentDir componentDir) {

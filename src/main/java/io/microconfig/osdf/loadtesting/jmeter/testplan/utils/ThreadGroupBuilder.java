@@ -8,6 +8,7 @@ import org.apache.jmeter.threads.gui.ThreadGroupGui;
 import java.util.Map;
 
 import static io.microconfig.osdf.loadtesting.jmeter.testplan.utils.ParamUtils.checkForNullAndReturn;
+import static java.lang.Integer.parseInt;
 import static org.apache.jmeter.testelement.TestElement.GUI_CLASS;
 import static org.apache.jmeter.testelement.TestElement.TEST_CLASS;
 import static org.apache.jmeter.threads.AbstractThreadGroup.ON_SAMPLE_ERROR;
@@ -18,10 +19,10 @@ public class ThreadGroupBuilder {
     public static ThreadGroup prepareThreadGroup(Map<String, Object> userConfig, LoopController loopController) {
         ThreadGroup threadGroup = new ThreadGroup();
         threadGroup.setName("Jmeter Test Group");
-        threadGroup.setNumThreads(Integer.parseInt(checkForNullAndReturn(userConfig, "numberOfThreads")));
-        threadGroup.setRampUp(Integer.parseInt(checkForNullAndReturn(userConfig, "rampUpPeriod")));
+        threadGroup.setNumThreads(parseInt(checkForNullAndReturn(userConfig, "numberOfThreads")));
+        threadGroup.setRampUp(parseInt(checkForNullAndReturn(userConfig, "rampUpPeriod")));
         threadGroup.setScheduler(true);
-        threadGroup.setDuration(Integer.parseInt(checkForNullAndReturn(userConfig, "duration")));
+        threadGroup.setDuration(parseInt(checkForNullAndReturn(userConfig, "duration")));
         threadGroup.setSamplerController(loopController);
         threadGroup.setProperty(new StringProperty(ON_SAMPLE_ERROR, "continue"));
         threadGroup.setProperty(TEST_CLASS, ThreadGroup.class.getName());

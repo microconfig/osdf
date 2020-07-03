@@ -36,9 +36,9 @@ public class MainApiCaller implements ApiCaller {
         }
         ApiCallerImpl.builder()
                 .finder(finder(MainApi.class))
-                .addImpl(FrequentlyUsedApi.class, frequentlyUsedApi(paths))
+                .addImpl(FrequentlyUsedApi.class, frequentlyUsedApi(paths, cli))
                 .addImpl(InstallApi.class, installApi(paths))
-                .addImpl(InitializationApi.class, initializationApi(paths))
+                .addImpl(InitializationApi.class, initializationApi(paths, cli))
                 .addImpl(ComponentsApi.class, componentsApi(paths))
                 .addImpl(ManagementApi.class, managementApi(paths, cli))
                 .addImpl(InfoApi.class, infoApi(paths, cli))

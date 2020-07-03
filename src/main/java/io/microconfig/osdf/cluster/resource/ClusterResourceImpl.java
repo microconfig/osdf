@@ -2,17 +2,17 @@ package io.microconfig.osdf.cluster.resource;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
 import io.microconfig.osdf.exceptions.OSDFException;
-import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Objects;
 
 import static io.microconfig.osdf.utils.YamlUtils.getString;
 import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
+import static java.util.Objects.hash;
 
 @RequiredArgsConstructor
-@EqualsAndHashCode
 public class ClusterResourceImpl implements ClusterResource {
     private final String kind;
     private final String name;
@@ -56,5 +56,23 @@ public class ClusterResourceImpl implements ClusterResource {
     @Override
     public void delete(ClusterCLI cli) {
         cli.execute("delete " + kind + " " + name);
+    }
+
+    @Override
+    public String toString() {
+        return kind + "/" + name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ClusterResource)) return false;
+        ClusterResource that = (ClusterResource) o;
+        return Objects.equals(kind, that.kind()) && Objects.equals(name, that.name());
+    }
+
+    @Override
+    public int hashCode() {
+        return hash(kind, name);
     }
 }

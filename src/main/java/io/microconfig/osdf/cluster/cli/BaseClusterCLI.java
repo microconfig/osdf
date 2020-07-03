@@ -30,6 +30,11 @@ public class BaseClusterCLI implements ClusterCLI {
         throw new OSDFException("Specify cluster context");
     }
 
+    @Override
+    public void logout() {
+        //no login => no logout
+    }
+
     private void throwIfClusterError(String output) {
         if (output.toLowerCase().contains("unable to connect")) throw new OSDFException("Unable to connect to cluster: " + output);
     }

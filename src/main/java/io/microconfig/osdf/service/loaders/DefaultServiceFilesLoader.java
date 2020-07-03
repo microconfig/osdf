@@ -58,6 +58,6 @@ public class DefaultServiceFilesLoader implements ServiceFilesLoader {
     }
 
     private boolean isService(ComponentDir componentDir) {
-        return exists(componentDir.getPath("resources")) || exists(componentDir.getPath("openshift"));
+        return exists(componentDir.getPath("resources"));
     }
 }

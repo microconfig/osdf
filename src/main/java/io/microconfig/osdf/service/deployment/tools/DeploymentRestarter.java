@@ -2,10 +2,10 @@ package io.microconfig.osdf.service.deployment.tools;
 
 import io.microconfig.osdf.service.deployment.ServiceDeployment;
 import io.microconfig.osdf.service.files.ServiceFiles;
+import io.microconfig.osdf.utils.YamlUtils;
 
 import java.util.Map;
 
-import static io.microconfig.osdf.utils.YamlUtils.getInt;
 import static io.microconfig.osdf.utils.YamlUtils.loadFromPath;
 
 public class DeploymentRestarter {
@@ -24,8 +24,8 @@ public class DeploymentRestarter {
     }
 
     private void scaleFromConfigs(ServiceDeployment deployment, ServiceFiles files) {
-        Map<String, Object> deploy = loadFromPath(files.getPath("deploy.yaml"));
-        Integer replicas = getInt(deploy, "replicas", "count");
+        Map<String, Object> deploy = loadFromPath(files.getPath("mainResource"));
+        Integer replicas = YamlUtils.get(deploy, "spec.replicas");
         deployment.scale(replicas);
     }
 }

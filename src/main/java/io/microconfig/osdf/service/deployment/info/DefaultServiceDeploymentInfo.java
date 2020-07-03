@@ -1,6 +1,7 @@
 package io.microconfig.osdf.service.deployment.info;
 
 import io.microconfig.osdf.cluster.cli.ClusterCLI;
+import io.microconfig.osdf.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -38,6 +39,7 @@ public class DefaultServiceDeploymentInfo implements ServiceDeploymentInfo {
                 "configHash:.metadata.labels.configHash")
                 .getOutputLines();
         if (lines.get(0).toLowerCase().contains("not found")) return of(NOT_FOUND);
+        if (lines.size() < 2) throw new OSDFException("Error querying deployment info: " + lines);
 
         String[] fields = lines.get(1).split("\\s+");
         Integer replicas = castToInteger(fields[0]);

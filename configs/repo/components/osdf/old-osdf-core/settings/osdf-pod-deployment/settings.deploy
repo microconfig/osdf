@@ -1,0 +1,13 @@
+#var unfiltered.java.opts: ${process::this@java.opts:}
+java.opts: #{'${this@unfiltered.java.opts}'.replace('${process::this@java.opts.mem:}', '')}
+
+timezone: ${this@timezone:UTC}
+
+replicas:
+  count: 1
+requests:
+  cpu: 1
+  memory: #{#findGroupOrDefault('-Xms(\d+\w+)', '${process::this@java.opts.mem:}', '512M')}
+limits:
+  cpu: 1
+  memory: #{#findGroupOrDefault('-Xmx(\d+\w+)', '${process::this@java.opts.mem:}', '512M')}
