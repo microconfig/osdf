@@ -38,19 +38,20 @@ public class BashrcInstaller implements FileReplacer {
 
     private String content() {
         String newEntry = "PATH=$PATH:" + paths.bin() + "/" + "\n";
-        String additionalEntry = "\n" + "source .osdf_completion" + "\n";
+        String additionalEntry = "source .osdf_completion\n";
+        String extraEntry = "";
         if (dest.getFileName().toString().contains("zsh")) {
-            additionalEntry = "autoload compinit && compinit -u"
-                    + "\n" + "autoload bashcompinit && bashcompinit" + additionalEntry;
+            extraEntry = "autoload compinit && compinit -u"
+                    + "\n" + "autoload bashcompinit && bashcompinit\n";
         }
         if (!exists(dest)) {
-            return newEntry + additionalEntry;
+            return newEntry + extraEntry + additionalEntry;
         }
         String shellrcContent = readAll(dest);
-        if (shellrcContent.contains(newEntry + additionalEntry)) {
+        if (shellrcContent.contains(newEntry + extraEntry + additionalEntry)) {
             return shellrcContent;
         }
-        return shellrcContent + "\n" + newEntry + "\n" + additionalEntry;
+        return shellrcContent + "\n" + newEntry + additionalEntry;
     }
 
     @Override

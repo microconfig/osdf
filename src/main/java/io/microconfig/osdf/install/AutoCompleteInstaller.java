@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.Method;
 import java.nio.file.Path;
-import java.util.stream.Collectors;
 
 import static io.microconfig.osdf.api.ImportPrefix.importPrefix;
 import static io.microconfig.osdf.configs.MicroConfigComponents.microConfigComponents;
@@ -17,6 +16,7 @@ import static io.microconfig.osdf.utils.FileUtils.writeStringToFile;
 import static java.lang.String.join;
 import static java.nio.file.Path.of;
 import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
 import static org.apache.commons.io.FileUtils.getUserDirectoryPath;
 
 @RequiredArgsConstructor
@@ -60,25 +60,22 @@ public class AutoCompleteInstaller implements FileReplacer {
         return stream(MainApi.class.getMethods())
                 .filter(m -> m.getAnnotation(Hidden.class) == null)
                 .map(this::findCommandPrefixedName)
-                .collect(Collectors.joining(" "));
+                .collect(joining(" "));
     }
 
     private String findCommandPrefixedName(Method method) {
         String prefix = importPrefix(method).toString();
-        String delimiter = "\" \"";
-        String groupPrefix = "\"";
         if (!prefix.isEmpty()) {
-            delimiter = "\" \"" + prefix + " ";
-            groupPrefix += prefix + " ";
+            return "\"" + prefix + "\"";
         }
         return stream(method.getAnnotation(Import.class).api().getMethods())
                 .map(Method::getName)
                 .map(String::trim)
-                .collect(Collectors.joining(delimiter, groupPrefix, "\""));
+                .collect(joining("\" \"", "\"", "\""));
     }
 
     private String components() {
-        return join(" ", microConfigComponents(paths).active());
+        return join(" ", microConfigComponents(paths).forGroup("ALL"));
     }
 
     @Override
