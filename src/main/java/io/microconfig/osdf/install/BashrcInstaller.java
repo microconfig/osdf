@@ -51,7 +51,7 @@ public class BashrcInstaller implements FileReplacer {
         if (shellrcContent.contains(newEntry + extraEntry + additionalEntry)) {
             return shellrcContent;
         }
-        return shellrcContent + "\n" + newEntry + additionalEntry;
+        return shellrcContent + "\n" + newEntry + extraEntry + additionalEntry;
     }
 
     @Override
