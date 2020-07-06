@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.microconfig.osdf.install.AutoCompleteInstaller.autoCompleteInstaller;
 import static io.microconfig.osdf.install.BashrcInstaller.bashrcInstaller;
 import static io.microconfig.osdf.install.ScriptInstaller.scriptInstaller;
 import static io.microconfig.osdf.install.WorkfolderInstaller.workfolderInstaller;
@@ -33,7 +34,7 @@ public class OSDFInstaller {
     public void install() {
         boolean cleanInstallation = workfolderInstaller(paths).install(clearState);
 
-        List<FileReplacer> newFiles = newFiles();
+        List<FileReplacer> newFiles = newFiles(cleanInstallation);
         newFiles.forEach(FileReplacer::prepare);
         newFiles.forEach(FileReplacer::replace);
         if (withMigrations && !cleanInstallation) {
@@ -48,11 +49,12 @@ public class OSDFInstaller {
         if (exitCode != 0) throw new OSDFException("Migration failed. Please reinstall osdf completely using -c flag");
     }
 
-    private List<FileReplacer> newFiles() {
+    private List<FileReplacer> newFiles(boolean cleanInstallation) {
         List<FileReplacer> newFiles = new ArrayList<>();
         newFiles.add(jarInstaller);
         newFiles.add(versionFile());
         newFiles.add(scriptInstaller(paths));
+        newFiles.add(autoCompleteInstaller(paths, !cleanInstallation));
         if (!noBashRc) {
             newFiles.add(bashrcInstaller(paths));
         }
