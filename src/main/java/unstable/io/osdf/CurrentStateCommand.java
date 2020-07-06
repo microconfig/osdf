@@ -12,7 +12,7 @@ import io.osdf.settings.version.OsdfVersionFile;
 import lombok.RequiredArgsConstructor;
 
 import static io.osdf.core.connection.context.ClusterType.OPENSHIFT;
-import static io.osdf.core.local.configs.update.fetch.ConfigsFetcher.fetcher;
+import static io.osdf.actions.init.configs.fetch.ConfigsFetcher.fetcher;
 import static io.osdf.common.SettingsFile.settingsFile;
 import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.info;

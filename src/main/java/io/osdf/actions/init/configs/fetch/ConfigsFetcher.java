@@ -1,13 +1,13 @@
-package io.osdf.core.local.configs.update.fetch;
+package io.osdf.actions.init.configs.fetch;
 
 import io.osdf.core.local.configs.ConfigsSource;
 import io.osdf.common.exceptions.OSDFException;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
-import static io.osdf.core.local.configs.update.fetch.git.GitFetcher.gitFetcher;
-import static io.osdf.core.local.configs.update.fetch.local.LocalFetcher.localFetcher;
-import static io.osdf.core.local.configs.update.fetch.nexus.NexusFetcher.nexusFetcher;
+import static io.osdf.actions.init.configs.fetch.git.GitFetcher.gitFetcher;
+import static io.osdf.actions.init.configs.fetch.local.LocalFetcher.localFetcher;
+import static io.osdf.actions.init.configs.fetch.nexus.NexusFetcher.nexusFetcher;
 import static io.osdf.common.utils.CommandLineExecutor.execute;
 
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package io.osdf.core.local.configs.update.fetch.git;
+package io.osdf.actions.init.configs.fetch.git;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,6 +1,6 @@
-package io.osdf.core.local.configs.update.fetch.local;
+package io.osdf.actions.init.configs.fetch.local;
 
-import io.osdf.core.local.configs.update.fetch.ConfigsFetcherStrategy;
+import io.osdf.actions.init.configs.fetch.ConfigsFetcherStrategy;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;

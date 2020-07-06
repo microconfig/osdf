@@ -6,9 +6,9 @@ import io.osdf.core.connection.context.ClusterType;
 import io.osdf.core.connection.cli.kubernetes.KubernetesSettings;
 import io.osdf.core.connection.cli.openshift.OpenShiftCredentials;
 import io.osdf.common.Credentials;
-import io.osdf.core.local.configs.update.fetch.git.GitFetcherSettings;
-import io.osdf.core.local.configs.update.fetch.local.LocalFetcherSettings;
-import io.osdf.core.local.configs.update.fetch.nexus.NexusFetcherSettings;
+import io.osdf.actions.init.configs.fetch.git.GitFetcherSettings;
+import io.osdf.actions.init.configs.fetch.local.LocalFetcherSettings;
+import io.osdf.actions.init.configs.fetch.nexus.NexusFetcherSettings;
 import io.osdf.common.exceptions.OSDFException;
 import io.osdf.common.nexus.NexusArtifact;
 import io.osdf.settings.paths.OsdfPaths;
@@ -22,7 +22,7 @@ import static io.osdf.core.connection.context.ClusterType.KUBERNETES;
 import static io.osdf.core.connection.context.ClusterType.OPENSHIFT;
 import static io.osdf.core.connection.cli.openshift.OpenShiftCli.oc;
 import static io.osdf.core.local.configs.ConfigsSource.*;
-import static io.osdf.core.local.configs.update.ConfigsUpdater.configsUpdater;
+import static io.osdf.actions.init.configs.ConfigsUpdater.configsUpdater;
 import static io.osdf.common.SettingsFile.settingsFile;
 
 @RequiredArgsConstructor

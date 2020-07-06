@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import static io.osdf.common.SettingsFile.settingsFile;
-import static io.osdf.core.local.configs.update.ConfigsUpdater.configsUpdater;
-import static io.osdf.core.local.configs.update.fetch.ConfigsFetcher.fetcher;
+import static io.osdf.actions.init.configs.ConfigsUpdater.configsUpdater;
+import static io.osdf.actions.init.configs.fetch.ConfigsFetcher.fetcher;
 import static io.osdf.core.local.microconfig.MicroConfig.microConfig;
 import static io.osdf.core.local.microconfig.property.PropertySetter.propertySetter;
 

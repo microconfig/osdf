@@ -1,4 +1,4 @@
-package io.osdf.core.local.configs.update.fetch;
+package io.osdf.actions.init.configs.fetch;
 
 import java.nio.file.Path;
 

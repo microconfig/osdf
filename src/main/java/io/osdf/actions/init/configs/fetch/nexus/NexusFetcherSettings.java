@@ -1,4 +1,4 @@
-package io.osdf.core.local.configs.update.fetch.nexus;
+package io.osdf.actions.init.configs.fetch.nexus;
 
 import io.osdf.common.nexus.NexusArtifact;
 import io.osdf.common.Credentials;

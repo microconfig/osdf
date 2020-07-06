@@ -1,4 +1,4 @@
-package io.osdf.core.local.configs.update.fetch.local;
+package io.osdf.actions.init.configs.fetch.local;
 
 import lombok.Getter;
 import lombok.Setter;

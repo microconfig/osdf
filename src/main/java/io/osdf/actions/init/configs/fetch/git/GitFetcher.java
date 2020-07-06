@@ -1,6 +1,6 @@
-package io.osdf.core.local.configs.update.fetch.git;
+package io.osdf.actions.init.configs.fetch.git;
 
-import io.osdf.core.local.configs.update.fetch.ConfigsFetcherStrategy;
+import io.osdf.actions.init.configs.fetch.ConfigsFetcherStrategy;
 import io.osdf.common.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 

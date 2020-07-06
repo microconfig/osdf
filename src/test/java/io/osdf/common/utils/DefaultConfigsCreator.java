@@ -1,8 +1,8 @@
 package io.osdf.common.utils;
 
-import io.osdf.core.local.configs.update.fetch.git.GitFetcherSettings;
-import io.osdf.core.local.configs.update.fetch.local.LocalFetcherSettings;
-import io.osdf.core.local.configs.update.fetch.nexus.NexusFetcherSettings;
+import io.osdf.actions.init.configs.fetch.git.GitFetcherSettings;
+import io.osdf.actions.init.configs.fetch.local.LocalFetcherSettings;
+import io.osdf.actions.init.configs.fetch.nexus.NexusFetcherSettings;
 import io.osdf.core.local.configs.ConfigsSettings;
 import io.osdf.actions.system.update.UpdateSettings;
 import io.osdf.core.connection.cli.openshift.OpenShiftCredentials;

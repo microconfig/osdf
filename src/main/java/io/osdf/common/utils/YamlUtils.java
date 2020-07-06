@@ -80,10 +80,6 @@ public class YamlUtils {
         return (Double) getObjectOrNull(yaml, properties);
     }
 
-    public static float getFloat(Map<String, Object> yaml, String... properties) {
-        return (float) getObjectOrNull(yaml, properties);
-    }
-
     @SuppressWarnings("unchecked")
     public static List<Object> getList(Map<String, Object> yaml, String... properties) {
         return (List<Object>) getObjectOrNull(yaml, properties);

@@ -1,19 +1,24 @@
-package io.osdf.core.local.configs.update;
+package io.osdf.actions.init.configs;
 
-import io.osdf.core.connection.cli.ClusterCli;
+import io.osdf.actions.init.configs.fetch.ConfigsFetcher;
+import io.osdf.actions.init.configs.postprocess.ComponentPostProcessor;
 import io.osdf.common.SettingsFile;
 import io.osdf.common.exceptions.OSDFException;
+import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.core.local.configs.ConfigsSettings;
 import io.osdf.core.local.configs.ConfigsSource;
-import io.osdf.core.local.configs.update.fetch.ConfigsFetcher;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
+import static io.microconfig.utils.Logger.warn;
+import static io.osdf.actions.init.configs.fetch.ConfigsFetcher.fetcher;
+import static io.osdf.actions.init.configs.postprocess.ComponentPostProcessor.componentPostProcessor;
+import static io.osdf.common.SettingsFile.settingsFile;
+import static io.osdf.core.local.component.finder.MicroConfigComponentsFinder.componentsFinder;
+import static io.osdf.core.local.component.loader.ComponentsLoaderImpl.componentsLoader;
 import static io.osdf.core.local.microconfig.MicroConfig.microConfig;
 import static io.osdf.core.local.microconfig.property.PropertySetter.propertySetter;
-import static io.microconfig.utils.Logger.warn;
-import static io.osdf.common.SettingsFile.settingsFile;
-import static io.osdf.core.local.configs.update.fetch.ConfigsFetcher.fetcher;
+import static java.nio.file.Files.exists;
 import static java.util.Collections.emptyList;
 
 @RequiredArgsConstructor
@@ -61,6 +66,13 @@ public class ConfigsUpdater {
         propertySetter().setIfNecessary(paths.projectVersionPath(), "project.version", settings.getProjectVersion());
         microConfig(settings.getEnv(), paths).generateConfigs(emptyList());
 
+        ComponentPostProcessor componentPostProcessor = componentPostProcessor();
+        componentsLoader()
+                .load(componentsFinder(
+                        paths.componentsPath()),
+                        component -> exists(component.getPath("resources")),
+                        component -> component)
+                .forEach(componentPostProcessor::process);
         cli.logout();
     }
 }
