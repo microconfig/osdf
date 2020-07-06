@@ -3,6 +3,7 @@ package io.microconfig.osdf.install;
 import io.microconfig.osdf.api.MainApi;
 import io.microconfig.osdf.api.annotation.Hidden;
 import io.microconfig.osdf.api.annotation.Import;
+import io.microconfig.osdf.exceptions.MicroConfigException;
 import io.microconfig.osdf.paths.OSDFPaths;
 import lombok.RequiredArgsConstructor;
 
@@ -75,7 +76,12 @@ public class AutoCompleteInstaller implements FileReplacer {
     }
 
     private String components() {
-        return join(" ", microConfigComponents(paths).forGroup("ALL"));
+        try {
+            return join(" ", microConfigComponents(paths).forGroup("ALL"));
+        } catch (MicroConfigException e) {
+            //no configs for generating autocomplete
+            return "";
+        }
     }
 
     @Override
