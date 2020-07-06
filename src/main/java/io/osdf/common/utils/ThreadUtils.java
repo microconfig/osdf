@@ -31,6 +31,7 @@ public class ThreadUtils {
             forkJoinPool = new ForkJoinPool(parallelism);
             return forkJoinPool.submit(supplier::get).get();
         } catch (InterruptedException | ExecutionException e) {
+            currentThread().interrupt();
             throw new OSDFException("Error during parallel execution", e);
         } finally {
             if (forkJoinPool != null) {
