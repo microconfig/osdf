@@ -4,7 +4,6 @@ import io.osdf.actions.info.printer.ColumnPrinter;
 import io.osdf.actions.info.status.job.JobStatus;
 import io.osdf.common.yaml.YamlObject;
 import io.osdf.core.application.job.JobApplication;
-import io.osdf.core.cluster.job.ClusterJob;
 import io.osdf.core.connection.cli.ClusterCli;
 
 import java.util.List;
@@ -53,15 +52,14 @@ public class JobStatusRow implements RowColumnsWithStatus {
             return false;
         }
 
-        ClusterJob job = jobApp.job();
-        JobStatus status = jobStatusGetter(cli).statusOf(jobApp);
+        JobStatus jobStatus = jobStatusGetter(cli).statusOf(jobApp);
         YamlObject yaml = yaml(jobApp.files().getPath("deploy.yaml"));
         printer.addRow(green(jobApp.files().name()),
                 green(formatVersions(jobApp.coreDescription().getAppVersion(), yaml.get("app.version"))),
                 green(formatVersions(jobApp.coreDescription().getConfigVersion(), yaml.get("config.version"))),
-                coloredStatus(status),
+                coloredStatus(jobStatus),
                 green("-"));
-        return status == SUCCEEDED;
+        return jobStatus == SUCCEEDED;
     }
 
     private void addNotFoundRow() {

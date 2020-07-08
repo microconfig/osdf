@@ -25,7 +25,8 @@ public class ImageTagReplacer {
 
     public void replaceFor(ApplicationFiles files) {
         YamlObject deploy = yaml(files.getPath("deploy.yaml"));
-        if (!deploy.<Boolean>get("replaceTag.enable")) return;
+        Boolean replaceTagEnable = deploy.<Boolean>get("replaceTag.enable");
+        if (replaceTagEnable == null || !replaceTagEnable) return;
         boolean continueOnError = deploy.get("replaceTag.continueOnError");
 
         getDigestAndReplace(files.metadata().getMainResource(), continueOnError);

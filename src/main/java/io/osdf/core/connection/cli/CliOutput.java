@@ -37,7 +37,7 @@ public class CliOutput {
             return output(IOUtils.toString(process.getInputStream(), UTF_8.name()));
         } catch (IOException | InterruptedException e) {
             currentThread().interrupt();
-            throw new RuntimeException("Couldn't execute command: " + command, e);
+            throw new OSDFException("Couldn't execute command: " + command, e);
         }
     }
 

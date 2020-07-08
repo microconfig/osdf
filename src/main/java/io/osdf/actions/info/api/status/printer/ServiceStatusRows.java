@@ -25,7 +25,7 @@ import static java.util.Map.of;
 import static java.util.stream.IntStream.range;
 
 
-public class DeploymentStatusRows implements RowColumnsWithStatus {
+public class ServiceStatusRows implements RowColumnsWithStatus {
     private final ClusterCli cli;
     private final ServiceApplication service;
 
@@ -33,8 +33,8 @@ public class DeploymentStatusRows implements RowColumnsWithStatus {
     private final boolean withHealthCheck;
     private final boolean status;
 
-    public DeploymentStatusRows(ClusterCli cli, ServiceApplication service,
-                                ColumnPrinter printer, boolean withHealthCheck) {
+    public ServiceStatusRows(ClusterCli cli, ServiceApplication service,
+                             ColumnPrinter printer, boolean withHealthCheck) {
         this.cli = cli;
         this.service = service;
         this.printer = printer;
@@ -42,9 +42,9 @@ public class DeploymentStatusRows implements RowColumnsWithStatus {
         this.status = fetch();
     }
 
-    public static DeploymentStatusRows deploymentStatusRows(ClusterCli cli, ServiceApplication service,
-                                                            ColumnPrinter printer, boolean withHealthCheck) {
-        return new DeploymentStatusRows(cli, service, printer, withHealthCheck);
+    public static ServiceStatusRows deploymentStatusRows(ClusterCli cli, ServiceApplication service,
+                                                         ColumnPrinter printer, boolean withHealthCheck) {
+        return new ServiceStatusRows(cli, service, printer, withHealthCheck);
     }
 
     @Override
@@ -69,15 +69,15 @@ public class DeploymentStatusRows implements RowColumnsWithStatus {
         }
 
         ClusterDeployment deployment = service.deployment();
-        ServiceStatus status = serviceStatusGetter(cli).statusOf(service);
+        ServiceStatus serviceStatus = serviceStatusGetter(cli).statusOf(service);
         if (withHealthCheck) {
             PodsInfo podsInfo = podsInfo(deployment, service.files());
-            addMainRow(deployment, status);
+            addMainRow(deployment, serviceStatus);
             addPods(podsInfo.getPods(), podsInfo.getPodsHealth());
-            return podsInfo.isHealthy() && status == READY;
+            return podsInfo.isHealthy() && serviceStatus == READY;
         }
-        addMainRow(deployment, status);
-        return status == READY;
+        addMainRow(deployment, serviceStatus);
+        return serviceStatus == READY;
     }
 
     private void addMainRow(ClusterDeployment deployment, ServiceStatus status) {

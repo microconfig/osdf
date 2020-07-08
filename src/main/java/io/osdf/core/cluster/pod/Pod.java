@@ -67,7 +67,7 @@ public class Pod implements Comparable<Pod> {
             logs.destroy();
         } catch (InterruptedException | IOException e) {
             currentThread().interrupt();
-            throw new RuntimeException("Error processing logs", e);
+            throw new OSDFException("Error processing logs", e);
         }
     }
 

@@ -24,7 +24,7 @@ public class ResourceProperties {
 
         CliOutput output = cli.execute("get " + resource.kind() + " " + resource.name() + " -o custom-columns=" + query);
         List<String> outputLines = output.getOutputLines();
-        if (!output.ok() || outputLines.size() != 2) throw new OSDFException("Couldn't get properties for resource " + resource.name());;
+        if (!output.ok() || outputLines.size() != 2) throw new OSDFException("Couldn't get properties for resource " + resource.name());
 
         String[] keys = outputLines.get(0).split("\\s+");
         String[] properties = outputLines.get(1).split("\\s+");

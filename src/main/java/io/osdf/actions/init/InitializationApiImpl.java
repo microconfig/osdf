@@ -58,7 +58,7 @@ public class InitializationApiImpl implements InitializationApi {
         if (credentials != null && token != null) throw new OSDFException("Choose only one authentication type");
         updateOpenShiftSettings(credentials, token);
         updateClusterContextSettings(OPENSHIFT);
-        if (loginImmediately) {
+        if (loginImmediately != null && loginImmediately) {
             oc(paths).login();
         }
     }

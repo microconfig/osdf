@@ -1,5 +1,6 @@
 package io.osdf.api.lib;
 
+import io.osdf.common.exceptions.OSDFException;
 import lombok.Builder;
 import lombok.Singular;
 
@@ -17,7 +18,7 @@ public class ApiCallerImpl implements ApiCaller {
         ApiCall apiCall = finder.find(args);
         Class<?> apiClass = apiCall.getApiClass();
         Object implementation = implementations.get(apiClass);
-        if (implementation == null) throw new RuntimeException("No implementation for api class " + apiClass.getSimpleName());
+        if (implementation == null) throw new OSDFException("No implementation for api class " + apiClass.getSimpleName());
         apiCall.invoke(implementation);
     }
 }

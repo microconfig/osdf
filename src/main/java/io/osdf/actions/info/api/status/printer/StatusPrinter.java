@@ -1,6 +1,7 @@
 package io.osdf.actions.info.api.status.printer;
 
 import io.osdf.actions.info.printer.ColumnPrinter;
+import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.application.job.JobApplication;
 import io.osdf.core.application.service.ServiceApplication;
 import io.osdf.core.connection.cli.ClusterCli;
@@ -9,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.osdf.actions.info.api.status.printer.DeploymentStatusRows.deploymentStatusRows;
+import static io.osdf.actions.info.api.status.printer.ServiceStatusRows.deploymentStatusRows;
 import static io.osdf.actions.info.api.status.printer.JobStatusRow.jobStatusRow;
 import static io.osdf.common.utils.ThreadUtils.runInParallel;
 import static java.util.stream.Collectors.toUnmodifiableList;
@@ -48,7 +49,7 @@ public class StatusPrinter {
         if (app instanceof JobApplication) {
             return jobStatusRow(cli, (JobApplication) app, printer.newPrinter());
         }
-        throw new RuntimeException("Unknown component type");
+        throw new OSDFException("Unknown component type");
     }
 
     private List<Object> concatenate(List<ServiceApplication> services, List<JobApplication> jobs) {

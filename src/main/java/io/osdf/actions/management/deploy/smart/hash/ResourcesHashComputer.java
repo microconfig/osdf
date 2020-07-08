@@ -15,7 +15,7 @@ import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
 @RequiredArgsConstructor
 public class ResourcesHashComputer {
-    private final String HASH_PLACEHOLDER = "<CONFIG_HASH>";
+    private static final String HASH_PLACEHOLDER = "<CONFIG_HASH>";
 
     public static ResourcesHashComputer resourcesHashComputer() {
         return new ResourcesHashComputer();

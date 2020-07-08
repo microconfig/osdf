@@ -41,7 +41,7 @@ public class ConfigsFetcher {
             case LOCAL: return localFetcher(paths.settings().localFetcher());
             case NEXUS: return nexusFetcher(paths.settings().nexusFetcher());
         }
-        throw new RuntimeException("No fetch strategy found");
+        throw new OSDFException("No fetch strategy found");
     }
 
     @Override
