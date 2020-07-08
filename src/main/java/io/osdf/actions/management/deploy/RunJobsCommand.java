@@ -1,21 +1,22 @@
 package io.osdf.actions.management.deploy;
 
+import io.osdf.actions.management.deploy.jobrunner.JobRunnerImpl;
+import io.osdf.actions.management.deploy.smart.hash.ResourcesHashComputer;
+import io.osdf.core.application.job.JobApplication;
 import io.osdf.core.connection.cli.ClusterCli;
-import io.osdf.actions.management.deploy.jobrunners.DefaultJobRunner;
 import io.osdf.settings.paths.OsdfPaths;
-import io.osdf.actions.management.deploy.smart.hash.ResourceHash;
-import io.osdf.core.service.core.job.pack.ServiceJobPack;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.osdf.actions.management.deploy.jobrunners.DefaultJobRunner.defaultJobRunner;
-import static io.osdf.actions.management.deploy.smart.hash.ResourceHash.jobHash;
-import static io.osdf.core.service.core.job.pack.loader.DefaultServiceJobPackLoader.jobLoader;
-import static io.osdf.actions.management.deploy.smart.UpToDateJobFilter.upToDateJobFilter;
 import static io.microconfig.utils.Logger.announce;
+import static io.osdf.actions.management.deploy.jobrunner.JobRunnerImpl.jobRunner;
+import static io.osdf.actions.management.deploy.smart.UpToDateJobFilter.upToDateJobFilter;
+import static io.osdf.actions.management.deploy.smart.hash.ResourcesHashComputer.resourcesHashComputer;
+import static io.osdf.actions.management.deploy.smart.image.ImageTagReplacer.imageTagReplacer;
+import static io.osdf.core.application.job.JobFilter.job;
+import static io.osdf.core.application.local.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.IntStream.range;
 
 @RequiredArgsConstructor
 public class RunJobsCommand {
@@ -27,34 +28,43 @@ public class RunJobsCommand {
     }
 
     public void run(List<String> serviceNames, Boolean smart) {
-        List<ServiceJobPack> jobPacks = getJobPacks(serviceNames, smart);
-        callRunner(jobPacks);
+        List<JobApplication> allJobs = activeRequiredAppsLoader(paths, serviceNames).load(job(cli));
+        if (allJobs.isEmpty()) return;
+
+        preprocessJobs(allJobs);
+        List<JobApplication> jobsToRun = getJobsToRun(smart, allJobs);
+
+        JobRunnerImpl jobRunner = jobRunner(cli);
+        jobsToRun.forEach(job -> {
+                announce("Running " + job.name());
+                jobRunner.runJob(job);
+        });
     }
 
-    private List<ServiceJobPack> getJobPacks(List<String> serviceNames, boolean smart) {
-        List<ServiceJobPack> allPacks = jobLoader(paths, serviceNames, cli).loadPacks();
-
-        ResourceHash resourceHash = jobHash(paths);
-        allPacks.forEach(pack -> resourceHash.insert(pack.files()));
-
-        List<ServiceJobPack> jobPacks = smart ? upToDateJobFilter(cli).filter(allPacks, resourceHash) : allPacks;
-        if (jobPacks.isEmpty())  {
-            announce("All executed jobs are up-to-date");
+    private List<JobApplication> getJobsToRun(Boolean smart, List<JobApplication> allJobs) {
+        List<JobApplication> jobsToRun = smart ? upToDateJobFilter(cli).filter(allJobs) : allJobs;
+        if (jobsToRun.isEmpty()) {
+            announce("All jobs are up-to-date");
         } else {
-            announce("Running: " +
-                    jobPacks.stream()
-                            .map(jobPack -> jobPack.service().name())
+            announce("Deploying: " +
+                    jobsToRun.stream()
+                            .map(service -> service.files().name())
                             .collect(joining(" ")));
         }
-        return jobPacks;
+        return jobsToRun;
     }
 
-    private void callRunner(List<ServiceJobPack> jobPacks) {
-        DefaultJobRunner runner = defaultJobRunner();
-        range(0, jobPacks.size()).forEach(i -> runner.run(
-                jobPacks.get(i).service(),
-                jobPacks.get(i).job(),
-                jobPacks.get(i).files())
-        );
+    private void preprocessJobs(List<JobApplication> jobs) {
+        replaceTag(jobs);
+        insertHashes(jobs);
+    }
+
+    private void replaceTag(List<JobApplication> jobs) {
+        jobs.forEach(job -> imageTagReplacer(paths).replaceFor(job.files()));
+    }
+
+    private void insertHashes(List<JobApplication> jobs) {
+        ResourcesHashComputer resourcesHashComputer = resourcesHashComputer();
+        jobs.forEach(job -> resourcesHashComputer.insertIn(job.files()));
     }
 }

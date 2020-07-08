@@ -1,8 +1,8 @@
 package io.osdf.actions.info.healthcheck;
 
 import io.osdf.actions.info.healthcheck.healthchecker.HealthChecker;
-import io.osdf.core.service.core.deployment.ServiceDeployment;
-import io.osdf.core.service.local.ServiceFiles;
+import io.osdf.core.application.local.ApplicationFiles;
+import io.osdf.core.cluster.deployment.ClusterDeployment;
 import io.osdf.core.cluster.pod.Pod;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +19,11 @@ public class PodsInfo {
     private final List<Boolean> podsHealth;
     private final boolean healthy;
 
-    public static PodsInfo podsInfo(ServiceDeployment deployment, ServiceFiles files) {
+    public static PodsInfo podsInfo(ClusterDeployment deployment, ApplicationFiles files) {
         return podsInfo(deployment, files, 0);
     }
 
-    public static PodsInfo podsInfo(ServiceDeployment deployment, ServiceFiles files, int timeout) {
+    public static PodsInfo podsInfo(ClusterDeployment deployment, ApplicationFiles files, int timeout) {
         HealthChecker healthChecker = healthCheckerFinder(files, timeout).find();
 
         List<Pod> pods = deployment.pods();

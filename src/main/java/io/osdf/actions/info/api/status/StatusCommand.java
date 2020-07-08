@@ -1,19 +1,19 @@
 package io.osdf.actions.info.api.status;
 
-import io.osdf.core.connection.cli.ClusterCli;
-import io.osdf.common.exceptions.StatusCodeException;
-import io.osdf.settings.paths.OsdfPaths;
 import io.osdf.actions.info.printer.ColumnPrinter;
-import io.osdf.core.service.core.deployment.pack.ServiceDeployPack;
-import io.osdf.core.service.core.job.pack.ServiceJobPack;
+import io.osdf.common.exceptions.StatusCodeException;
+import io.osdf.core.application.job.JobApplication;
+import io.osdf.core.application.service.ServiceApplication;
+import io.osdf.core.connection.cli.ClusterCli;
+import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 import static io.osdf.actions.info.api.status.printer.StatusPrinter.statusPrinter;
-import static io.osdf.core.service.core.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
-import static io.osdf.core.service.core.job.pack.loader.DefaultServiceJobPackLoader.jobLoader;
-import static io.osdf.core.service.local.loaders.filters.RequiredComponentsFilter.requiredComponentsFilter;
+import static io.osdf.core.application.job.JobFilter.job;
+import static io.osdf.core.application.local.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
+import static io.osdf.core.application.service.ServiceApplicationMapper.service;
 
 @RequiredArgsConstructor
 public class StatusCommand {
@@ -29,8 +29,8 @@ public class StatusCommand {
     }
 
     private boolean checkStatusAndPrint(List<String> serviceNames) {
-        List<ServiceJobPack> jobPacks = jobLoader(paths, serviceNames, cli).loadPacks();
-        List<ServiceDeployPack> deployPacks = serviceLoader(paths, requiredComponentsFilter(serviceNames), cli).loadPacks();
-        return statusPrinter(printer, withHealthCheck).checkStatusAndPrint(deployPacks, jobPacks);
+        List<ServiceApplication> services = activeRequiredAppsLoader(paths, serviceNames).load(service(cli));
+        List<JobApplication> jobs = activeRequiredAppsLoader(paths, serviceNames).load(job(cli));
+        return statusPrinter(cli, printer, withHealthCheck).checkStatusAndPrint(services, jobs);
     }
 }

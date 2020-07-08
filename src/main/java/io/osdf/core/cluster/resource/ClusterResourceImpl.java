@@ -1,7 +1,7 @@
 package io.osdf.core.cluster.resource;
 
-import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.common.exceptions.OSDFException;
+import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
@@ -16,6 +16,10 @@ import static java.util.Objects.hash;
 public class ClusterResourceImpl implements ClusterResource {
     private final String kind;
     private final String name;
+
+    public static ClusterResourceImpl clusterResource(String kind, String name) {
+        return new ClusterResourceImpl(kind, name);
+    }
 
     public static ClusterResourceImpl fromOpenShiftNotation(String notation) {
         String[] split = notation.split("/");
@@ -45,7 +49,12 @@ public class ClusterResourceImpl implements ClusterResource {
     }
 
     @Override
-    public String label(ClusterCli cli, String key) {
+    public boolean exists(ClusterCli cli) {
+        return cli.execute("get " + kind + " " + name).ok();
+    }
+
+    @Override
+    public String label(String key, ClusterCli cli) {
         return cli.execute("get " + kind + " " + name + " -o custom-columns=\"label:.metadata.labels." + key + "\"")
                 .throwExceptionIfError()
                 .getOutputLines()

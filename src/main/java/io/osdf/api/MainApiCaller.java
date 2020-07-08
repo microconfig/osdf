@@ -10,8 +10,6 @@ import io.osdf.api.lib.ApiCallerImpl;
 import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
-import unstable.io.osdf.ChaosApi;
-import unstable.io.osdf.LoadTestingApi;
 
 import java.util.List;
 
@@ -22,8 +20,6 @@ import static io.osdf.actions.management.ManagementApiImpl.managementApi;
 import static io.osdf.actions.system.SystemApiImpl.systemApi;
 import static io.osdf.api.lib.ApiCallFinder.finder;
 import static io.osdf.api.lib.MainApiReader.apiInfo;
-import static unstable.io.osdf.ChaosApiImpl.chaosApi;
-import static unstable.io.osdf.LoadTestingApiImpl.loadTestingApi;
 
 @RequiredArgsConstructor
 public class MainApiCaller implements ApiCaller {
@@ -47,8 +43,6 @@ public class MainApiCaller implements ApiCaller {
                 .addImpl(ManagementApi.class, managementApi(paths, cli))
                 .addImpl(InfoApi.class, infoApi(paths, cli))
                 .addImpl(SystemApi.class, systemApi(paths))
-                .addImpl(ChaosApi.class, chaosApi(paths, cli))
-                .addImpl(LoadTestingApi.class, loadTestingApi(paths, cli))
                 .build()
                 .call(args);
     }

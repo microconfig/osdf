@@ -1,7 +1,8 @@
 package io.osdf.actions.system;
 
-import io.osdf.actions.system.update.UpdateSettings;
 import io.osdf.actions.system.install.jarinstaller.JarInstaller;
+import io.osdf.actions.system.state.CurrentStateCommand;
+import io.osdf.actions.system.update.UpdateSettings;
 import io.osdf.api.MainApi;
 import io.osdf.api.lib.ApiCall;
 import io.osdf.api.lib.ApiCallFinder;
@@ -11,7 +12,6 @@ import io.osdf.common.exceptions.OSDFException;
 import io.osdf.settings.paths.OsdfPaths;
 import io.osdf.settings.version.OsdfVersion;
 import lombok.RequiredArgsConstructor;
-import unstable.io.osdf.CurrentStateCommand;
 
 import java.util.List;
 

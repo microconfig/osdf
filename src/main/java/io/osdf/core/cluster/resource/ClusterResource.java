@@ -7,7 +7,9 @@ public interface ClusterResource {
 
     String name();
 
-    String label(ClusterCli cli, String key);
+    boolean exists(ClusterCli cli);
+
+    String label(String key, ClusterCli cli);
 
     void delete(ClusterCli cli);
 }

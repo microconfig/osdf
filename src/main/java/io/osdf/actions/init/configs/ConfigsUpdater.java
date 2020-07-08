@@ -70,8 +70,7 @@ public class ConfigsUpdater {
         componentsLoader()
                 .load(componentsFinder(
                         paths.componentsPath()),
-                        component -> exists(component.getPath("resources")),
-                        component -> component)
+                        component -> exists(component.getPath("resources")))
                 .forEach(componentPostProcessor::process);
         cli.logout();
     }

@@ -1,37 +1,37 @@
 package io.osdf.actions.management.deploy.smart;
 
+import io.osdf.actions.management.deploy.smart.hash.ResourcesHashComputer;
+import io.osdf.core.application.service.ServiceApplication;
+import io.osdf.core.cluster.resource.ClusterResource;
 import io.osdf.core.connection.cli.ClusterCli;
-import io.osdf.actions.management.deploy.smart.hash.ResourceHash;
-import io.osdf.core.service.core.deployment.ServiceDeployment;
-import io.osdf.core.service.core.deployment.pack.ServiceDeployPack;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.osdf.actions.info.info.deployment.DeploymentStatus.NOT_FOUND;
+import static io.osdf.actions.management.deploy.smart.hash.ResourcesHashComputer.resourcesHashComputer;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
 public class UpToDateDeploymentFilter {
     private final ClusterCli cli;
+    private final ResourcesHashComputer resourcesHashComputer = resourcesHashComputer();
 
     public static UpToDateDeploymentFilter upToDateDeploymentFilter(ClusterCli cli) {
         return new UpToDateDeploymentFilter(cli);
     }
 
-    public List<ServiceDeployPack> filter(List<ServiceDeployPack> services, ResourceHash resourceHash) {
+    public List<ServiceApplication> filter(List<ServiceApplication> services) {
         return services.parallelStream()
-                .filter(service -> !isUpToDate(service, resourceHash))
+                .filter(service -> !isUpToDate(service))
                 .collect(toUnmodifiableList());
     }
 
-    public boolean isUpToDate(ServiceDeployPack deployPack, ResourceHash resourceHash) {
-        return totalHashIsRecent(resourceHash.currentHash(deployPack.files()), deployPack.deployment());
+    private boolean isUpToDate(ServiceApplication service) {
+        if (!service.exists()) return false;
+        ClusterResource deploymentResource = service.deployment().toResource();
+        if (!deploymentResource.exists(cli)) return false;
+        String configHash = deploymentResource.label("configHash", cli);
+        return configHash.equals(resourcesHashComputer.currentHash(service.files()));
     }
 
-    private boolean totalHashIsRecent(String hash, ServiceDeployment deployment) {
-        if (deployment.info().status() == NOT_FOUND) return false;
-        String configHash = deployment.toResource().label(cli, "configHash");
-        return configHash.equals(hash);
-    }
 }

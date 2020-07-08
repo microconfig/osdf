@@ -1,9 +1,9 @@
 package io.osdf.actions.management;
 
-import io.osdf.core.connection.cli.ClusterCli;
+import io.osdf.actions.management.restart.DeploymentRestarter;
 import io.osdf.common.exceptions.OSDFException;
+import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.settings.paths.OsdfPaths;
-import io.osdf.core.service.core.deployment.pack.ServiceDeployPack;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -11,10 +11,11 @@ import java.util.List;
 import static io.osdf.actions.management.deletepod.PodDeleter.podDeleter;
 import static io.osdf.actions.management.deploy.DeployCommand.deployCommand;
 import static io.osdf.actions.management.deploy.RunJobsCommand.runJobsCommand;
-import static io.osdf.core.service.core.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
 import static io.osdf.actions.management.restart.DeploymentRestarter.deploymentRestarter;
-import static io.osdf.core.service.local.loaders.filters.RequiredComponentsFilter.requiredComponentsFilter;
-import static io.microconfig.utils.Logger.info;
+import static io.osdf.core.application.ApplicationManager.applicationManager;
+import static io.osdf.core.application.local.loaders.AllApplications.all;
+import static io.osdf.core.application.local.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
+import static io.osdf.core.application.service.ServiceApplicationMapper.service;
 
 @RequiredArgsConstructor
 public class ManagementApiImpl implements ManagementApi {
@@ -30,21 +31,24 @@ public class ManagementApiImpl implements ManagementApi {
         cli.login();
         if ("restricted".equals(mode) && smart) throw new OSDFException("Smart deploy is not possible for restricted deploy mode");
         runJobsCommand(paths, cli).run(serviceNames, smart);
-        deployCommand(paths, cli).deploy(serviceNames, mode, smart);
+        deployCommand(paths, cli).deploy(serviceNames, smart);
     }
 
     @Override
     public void restart(List<String> components) {
         cli.login();
-        List<ServiceDeployPack> deployPacks = serviceLoader(paths, requiredComponentsFilter(components), cli).loadPacks();
-        deployPacks.forEach(pack -> deploymentRestarter().restart(pack.deployment(), pack.files()));
+        DeploymentRestarter restarter = deploymentRestarter(cli);
+        activeRequiredAppsLoader(paths, components)
+                .load(service(cli))
+                .forEach(restarter::restart);
     }
 
     @Override
     public void stop(List<String> components) {
         cli.login();
-        List<ServiceDeployPack> deployPacks = serviceLoader(paths, requiredComponentsFilter(components), cli).loadPacks();
-        deployPacks.forEach(pack -> pack.deployment().scale(0));
+        activeRequiredAppsLoader(paths, components)
+                .load(service(cli))
+                .forEach(service -> service.deployment().scale(0));
     }
 
     @Override
@@ -54,12 +58,9 @@ public class ManagementApiImpl implements ManagementApi {
     }
 
     @Override
-    public void delete(List<String> components) {
-        serviceLoader(paths, requiredComponentsFilter(components), cli)
-                .loadPacks()
-                .forEach(pack -> {
-                    pack.service().delete();
-                    info("Deleted " + pack.service().name());
-                });
+    public void clearAll(List<String> components) {
+        activeRequiredAppsLoader(paths, components)
+                .load(all())
+                .forEach(app -> applicationManager(app.name(), cli).delete());
     }
 }

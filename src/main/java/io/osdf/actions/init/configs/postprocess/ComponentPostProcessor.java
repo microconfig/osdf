@@ -1,7 +1,7 @@
 package io.osdf.actions.init.configs.postprocess;
 
 import io.osdf.actions.init.configs.postprocess.metadata.MetadataCreator;
-import io.osdf.actions.init.configs.postprocess.types.ComponentType;
+import io.osdf.actions.init.configs.postprocess.types.MetadataType;
 import io.osdf.core.local.component.ComponentDir;
 
 import static io.osdf.actions.init.configs.postprocess.ConfigMapCreator.configMapCreator;
@@ -20,6 +20,6 @@ public class ComponentPostProcessor {
     public void process(ComponentDir componentDir) {
         if (!exists(componentDir.getPath("resources"))) return;
         configMapCreator.createConfigMaps(componentDir);
-        stream(ComponentType.values()).forEach(type -> metadataCreator.create(type, componentDir));
+        stream(MetadataType.values()).forEach(type -> metadataCreator.create(type, componentDir));
     }
 }

@@ -1,24 +1,22 @@
 package io.osdf.actions.management.deploy;
 
+import io.osdf.actions.management.deploy.deployer.ServiceDeployerImpl;
+import io.osdf.actions.management.deploy.smart.hash.ResourcesHashComputer;
+import io.osdf.core.application.service.ServiceApplication;
 import io.osdf.core.connection.cli.ClusterCli;
-import io.osdf.actions.management.deploy.deployers.ServiceDeployer;
-import io.osdf.common.exceptions.OSDFException;
 import io.osdf.settings.paths.OsdfPaths;
-import io.osdf.actions.management.deploy.smart.hash.ResourceHash;
-import io.osdf.core.service.core.deployment.pack.ServiceDeployPack;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.osdf.actions.management.deploy.deployers.BaseServiceDeployer.baseServiceDeployer;
-import static io.osdf.actions.management.deploy.deployers.RestrictedDeployer.restrictedDeployer;
-import static io.osdf.actions.management.deploy.smart.hash.ResourceHash.deploymentHash;
-import static io.osdf.core.service.core.deployment.pack.loader.DefaultServiceDeployPacksLoader.serviceLoader;
-import static io.osdf.actions.management.deploy.smart.UpToDateDeploymentFilter.upToDateDeploymentFilter;
-import static io.osdf.core.service.local.loaders.filters.RequiredComponentsFilter.requiredComponentsFilter;
 import static io.microconfig.utils.Logger.announce;
+import static io.osdf.actions.management.deploy.deployer.ServiceDeployerImpl.serviceDeployer;
+import static io.osdf.actions.management.deploy.smart.UpToDateDeploymentFilter.upToDateDeploymentFilter;
+import static io.osdf.actions.management.deploy.smart.hash.ResourcesHashComputer.resourcesHashComputer;
+import static io.osdf.actions.management.deploy.smart.image.ImageTagReplacer.imageTagReplacer;
+import static io.osdf.core.application.local.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
+import static io.osdf.core.application.service.ServiceApplicationMapper.service;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.IntStream.range;
 
 @RequiredArgsConstructor
 public class DeployCommand {
@@ -29,48 +27,46 @@ public class DeployCommand {
         return new DeployCommand(paths, cli);
     }
 
-    public void deploy(List<String> serviceNames, String mode, Boolean smart) {
-        ServiceDeployer deployer = getDeployer(mode);
+    public void deploy(List<String> requiredServiceNames, boolean smart) {
+        List<ServiceApplication> allServices = activeRequiredAppsLoader(paths, requiredServiceNames).load(service(cli));
+        if (allServices.isEmpty()) return;
 
-        List<ServiceDeployPack> deployPacks = getDeployPacks(serviceNames, smart);
-        if (deployPacks.isEmpty()) return;
+        preprocessServices(allServices);
+        List<ServiceApplication> servicesToDeploy = getServicesToDeploy(smart, allServices);
+        if (servicesToDeploy.isEmpty()) return;
 
-        callDeployer(deployPacks, deployer);
+        ServiceDeployerImpl deployer = serviceDeployer(cli);
+        servicesToDeploy.forEach(application -> {
+            announce("Deploying " + application.name());
+            deployer.deploy(application);
+        });
     }
 
-    private List<ServiceDeployPack> getDeployPacks(List<String> serviceNames, boolean smart) {
-        List<ServiceDeployPack> allPacks = serviceLoader(paths, requiredComponentsFilter(serviceNames), cli).loadPacks();
-
-        ResourceHash resourceHash = deploymentHash(paths);
-        allPacks.forEach(pack -> resourceHash.insert(pack.files()));
-
-        List<ServiceDeployPack> deployPacks = smart ? upToDateDeploymentFilter(cli).filter(allPacks, resourceHash) : allPacks;
-        if (deployPacks.isEmpty())  {
+    private List<ServiceApplication> getServicesToDeploy(boolean smart, List<ServiceApplication> allServices) {
+        List<ServiceApplication> servicesToDeploy = smart ? upToDateDeploymentFilter(cli).filter(allServices) : allServices;
+        if (servicesToDeploy.isEmpty()) {
             announce("All services are up-to-date");
         } else {
             announce("Deploying: " +
-                    deployPacks.stream()
-                            .map(deployPack -> deployPack.service().name())
+                    servicesToDeploy.stream()
+                            .map(service -> service.files().name())
                             .collect(joining(" ")));
         }
-        return deployPacks;
+        return servicesToDeploy;
     }
 
-    private void callDeployer(List<ServiceDeployPack> deployPacks, ServiceDeployer deployer) {
-        range(0, deployPacks.size()).forEach(i -> deployer.deploy(
-                deployPacks.get(i).service(),
-                deployPacks.get(i).deployment(),
-                deployPacks.get(i).files())
-        );
+    private void preprocessServices(List<ServiceApplication> services) {
+        replaceTags(services);
+        insertHashes(services);
     }
 
-    private ServiceDeployer getDeployer(String mode) {
-        if (mode == null) {
-            return baseServiceDeployer(cli);
-        }
-        if (mode.equals("restricted")) {
-            return restrictedDeployer();
-        }
-        throw new OSDFException("Unknown deploy mode");
+    private void replaceTags(List<ServiceApplication> services) {
+        services.forEach(service -> imageTagReplacer(paths).replaceFor(service.files()));
     }
+
+    private void insertHashes(List<ServiceApplication> services) {
+        ResourcesHashComputer resourcesHashComputer = resourcesHashComputer();
+        services.forEach(service -> resourcesHashComputer.insertIn(service.files()));
+    }
+
 }

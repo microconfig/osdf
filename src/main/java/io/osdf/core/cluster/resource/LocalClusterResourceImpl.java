@@ -45,8 +45,13 @@ public class LocalClusterResourceImpl implements LocalClusterResource {
     }
 
     @Override
-    public String label(ClusterCli cli, String key) {
-        return clusterResource.label(cli, key);
+    public boolean exists(ClusterCli cli) {
+        return clusterResource.exists(cli);
+    }
+
+    @Override
+    public String label(String key, ClusterCli cli) {
+        return clusterResource.label(key, cli);
     }
 
     @Override

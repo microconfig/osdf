@@ -1,8 +1,10 @@
 package io.osdf.actions.info.healthcheck.healthchecker;
 
+import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.cluster.pod.Pod;
 import lombok.RequiredArgsConstructor;
 
+import static io.osdf.common.utils.ThreadUtils.calcSecFrom;
 import static io.osdf.common.utils.ThreadUtils.sleepSec;
 import static java.lang.System.currentTimeMillis;
 
@@ -18,13 +20,13 @@ public class ReadinessHealthChecker implements HealthChecker {
     public boolean check(Pod pod) {
         long startTime = currentTimeMillis();
         while (true) {
-            if (pod.isReady()) return true;
+            try {
+                if (pod.isReady()) return true;
+            } catch (OSDFException e) {
+                return false;
+            }
             if (calcSecFrom(startTime) > timeoutInSec) return false;
             sleepSec(1);
         }
-    }
-
-    private long calcSecFrom(long startTime) {
-        return (currentTimeMillis() - startTime) / 1000;
     }
 }

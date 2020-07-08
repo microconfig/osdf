@@ -17,13 +17,14 @@ public class OsdfVersion {
     private final int major;
     private final int minor;
     private final int patch;
+    private final String suffix;
 
     public static OsdfVersion fromJarPath(Path path) {
         String filename = path.getFileName().toString();
         filename = filename.substring(0, filename.length() - 4);
         String[] dashSplit = filename.split("-");
-        if (dashSplit.length < 2) throw new OSDFException("Bad jar file name. Should be <name>-<version>.jar");
-        return fromString(dashSplit[dashSplit.length - 1]);
+        if (dashSplit.length != 2) throw new OSDFException("Bad jar file name. Should be <name>-<version>.jar");
+        return fromString(dashSplit[1]);
     }
 
     public static OsdfVersion fromSettings(Path path) {
@@ -39,17 +40,17 @@ public class OsdfVersion {
         if (s == null) throw exception("<null>");
 
         String[] split = s.split("\\.");
-        if (split.length != 3) throw exception(s);
+        if (split.length != 3 && split.length != 4) throw exception(s);
 
         Integer major = castToInteger(split[0]);
         Integer minor = castToInteger(split[1]);
         Integer patch = castToInteger(split[2]);
         if (major == null || minor == null || patch == null) throw exception(s);
-        return new OsdfVersion(major, minor, patch);
+        return new OsdfVersion(major, minor, patch, split.length == 4 ? split[3] : null);
     }
 
-    private static RuntimeException exception(String s) {
-        return new RuntimeException("Bad version format " + s);
+    private static OSDFException exception(String s) {
+        return new OSDFException("Bad version format " + s);
     }
 
     public boolean olderThan(OsdfVersion other) {
@@ -67,6 +68,6 @@ public class OsdfVersion {
 
     @Override
     public String toString() {
-        return major + "." + minor + "." + patch;
+        return major + "." + minor + "." + patch + (suffix != null ? "." + suffix : "");
     }
 }

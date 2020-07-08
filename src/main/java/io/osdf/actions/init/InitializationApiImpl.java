@@ -12,7 +12,7 @@ import io.osdf.actions.init.configs.fetch.nexus.NexusFetcherSettings;
 import io.osdf.common.exceptions.OSDFException;
 import io.osdf.common.nexus.NexusArtifact;
 import io.osdf.settings.paths.OsdfPaths;
-import io.osdf.actions.management.deploy.smart.hash.image.RegistryCredentials;
+import io.osdf.actions.management.deploy.smart.image.RegistryCredentials;
 import io.osdf.common.SettingsFile;
 import lombok.RequiredArgsConstructor;
 
