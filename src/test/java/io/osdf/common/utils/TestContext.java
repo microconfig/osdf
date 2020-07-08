@@ -10,7 +10,7 @@ import java.nio.file.Path;
 
 import static io.osdf.actions.init.InitializationApiImpl.initializationApi;
 import static io.osdf.common.Credentials.of;
-import static io.osdf.actions.system.install.OSDFInstaller.osdfInstaller;
+import static io.osdf.actions.system.install.OsdfInstaller.osdfInstaller;
 import static io.osdf.actions.system.install.jarinstaller.FakeJarInstaller.fakeJarInstaller;
 import static io.osdf.settings.version.OsdfVersion.fromString;
 import static io.osdf.common.utils.CommandLineExecutor.execute;

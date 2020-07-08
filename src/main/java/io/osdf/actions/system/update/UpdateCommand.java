@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.osdf.actions.system.install.OSDFInstaller.osdfInstaller;
+import static io.osdf.actions.system.install.OsdfInstaller.osdfInstaller;
 import static io.osdf.actions.system.install.jarinstaller.RemoteJarInstaller.jarInstaller;
 import static io.osdf.core.local.microconfig.property.PropertyGetter.propertyGetter;
 import static io.osdf.settings.version.OsdfVersion.fromConfigs;

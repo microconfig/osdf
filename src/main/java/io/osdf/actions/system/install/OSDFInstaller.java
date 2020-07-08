@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.osdf.actions.system.install.AutoCompleteInstaller.autoCompleteInstaller;
 import static io.osdf.actions.system.install.BashrcInstaller.bashrcInstaller;
 import static io.osdf.actions.system.install.ScriptInstaller.scriptInstaller;
 import static io.osdf.actions.system.install.WorkfolderInstaller.workfolderInstaller;
@@ -19,21 +20,21 @@ import static io.microconfig.utils.Logger.announce;
 import static java.util.List.of;
 
 @RequiredArgsConstructor
-public class OSDFInstaller {
+public class OsdfInstaller {
     private final OsdfPaths paths;
     private final JarInstaller jarInstaller;
     private final boolean clearState;
     private final boolean noBashRc;
     private final boolean withMigrations;
 
-    public static OSDFInstaller osdfInstaller(OsdfPaths paths, JarInstaller jarInstaller, boolean clearState, boolean noBashRc) {
-        return new OSDFInstaller(paths, jarInstaller, clearState, noBashRc, true);
+    public static OsdfInstaller osdfInstaller(OsdfPaths paths, JarInstaller jarInstaller, boolean clearState, boolean noBashRc) {
+        return new OsdfInstaller(paths, jarInstaller, clearState, noBashRc, true);
     }
 
     public void install() {
         boolean cleanInstallation = workfolderInstaller(paths).install(clearState);
 
-        List<FileReplacer> newFiles = newFiles();
+        List<FileReplacer> newFiles = newFiles(cleanInstallation);
         newFiles.forEach(FileReplacer::prepare);
         newFiles.forEach(FileReplacer::replace);
         if (withMigrations && !cleanInstallation) {
@@ -48,11 +49,12 @@ public class OSDFInstaller {
         if (exitCode != 0) throw new OSDFException("Migration failed. Please reinstall osdf completely using -c flag");
     }
 
-    private List<FileReplacer> newFiles() {
+    private List<FileReplacer> newFiles(boolean cleanInstallation) {
         List<FileReplacer> newFiles = new ArrayList<>();
         newFiles.add(jarInstaller);
         newFiles.add(versionFile());
         newFiles.add(scriptInstaller(paths));
+        newFiles.add(autoCompleteInstaller(paths, !cleanInstallation));
         if (!noBashRc) {
             newFiles.add(bashrcInstaller(paths));
         }

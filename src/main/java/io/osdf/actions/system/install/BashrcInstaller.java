@@ -23,7 +23,7 @@ public class BashrcInstaller implements FileReplacer {
     public static BashrcInstaller bashrcInstaller(OsdfPaths paths) {
         String shellPath = executeAndReadLines("echo $SHELL").get(0);
         String shellrc = shellPath.substring(shellPath.lastIndexOf("/") + 1) + "rc";
-        if (shellrc.contains("bash") && getProperty("os.name").contains("Mac")){
+        if (shellrc.contains("bash") && getProperty("os.name").contains("Mac")) {
             return new BashrcInstaller(paths, of(paths.tmp() + "/bash_profile"),
                     of(getUserDirectoryPath() + "/.bash_profile"));
         }
@@ -37,7 +37,7 @@ public class BashrcInstaller implements FileReplacer {
     }
 
     private String content() {
-        String newEntry = "PATH=$PATH:" + paths.bin() + "/";
+        String newEntry = newEntry();
         if (!exists(dest)) {
             return newEntry;
         }
@@ -45,8 +45,25 @@ public class BashrcInstaller implements FileReplacer {
         if (shellrcContent.contains(newEntry)) {
             return shellrcContent;
         }
-        return shellrcContent + "\n" + newEntry + "\n";
+        return shellrcContent + "\n" + newEntry;
     }
+
+    private String newEntry() {
+        String path = "PATH=$PATH:" + paths.bin() + "/";
+        String autocomplete = autocomplete();
+        return path + "\n" + autocomplete;
+    }
+
+    private String autocomplete() {
+        String source = "source .osdf_completion";
+        if (dest.getFileName().toString().contains("zsh")) {
+            return "autoload compinit && compinit -u\n" +
+                    "autoload bashcompinit && bashcompinit\n" +
+                    source;
+        }
+        return source;
+    }
+
 
     @Override
     public void replace() {

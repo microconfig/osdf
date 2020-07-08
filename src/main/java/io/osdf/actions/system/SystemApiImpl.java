@@ -17,7 +17,7 @@ import java.util.List;
 
 import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.warn;
-import static io.osdf.actions.system.install.OSDFInstaller.osdfInstaller;
+import static io.osdf.actions.system.install.OsdfInstaller.osdfInstaller;
 import static io.osdf.actions.system.install.jarinstaller.FakeJarInstaller.fakeJarInstaller;
 import static io.osdf.actions.system.install.jarinstaller.LocalJarInstaller.jarInstaller;
 import static io.osdf.actions.system.install.migrations.AllMigrations.allMigrations;
