@@ -22,6 +22,11 @@ public class KubernetesCli implements ClusterCli {
     }
 
     @Override
+    public CliOutput execute(String command, int timeoutInSec) {
+        return cli.execute(addKubectlPrefix(command), timeoutInSec);
+    }
+
+    @Override
     public void login() {
         throw new OSDFException("Kubernetes is not yet supported");
     }

@@ -30,6 +30,11 @@ public class OpenShiftCli implements ClusterCli {
     }
 
     @Override
+    public CliOutput execute(String command, int timeoutInSec) {
+        return cli.execute("oc " + stripCLIName(command), timeoutInSec);
+    }
+
+    @Override
     public void login() {
         openShiftAuthentication(paths, this).connect();
     }

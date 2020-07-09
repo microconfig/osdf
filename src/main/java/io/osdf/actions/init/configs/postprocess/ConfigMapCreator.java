@@ -5,14 +5,13 @@ import io.osdf.core.local.component.ComponentDir;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.osdf.common.utils.FileUtils.readAll;
 import static io.osdf.common.utils.YamlUtils.dump;
 import static io.osdf.common.yaml.YamlObject.yaml;
 import static java.nio.file.Path.of;
+import static java.util.Map.of;
 
 @RequiredArgsConstructor
 public class ConfigMapCreator {
@@ -31,7 +30,7 @@ public class ConfigMapCreator {
         String name = description.get("name");
         List<String> files = description.get("files");
 
-        Map<String, String> filesMap = new HashMap<>();
+        Map<String, String> filesMap = new LinkedHashMap<>();
         files.forEach(file -> {
             Path path = of(componentDir.root() + "/" + file);
             String content = readAll(path);
@@ -39,14 +38,14 @@ public class ConfigMapCreator {
             filesMap.put(fileName, content);
         });
 
-        Map<String, Object> configMap = Map.of(
+        Map<String, Object> configMap = new TreeMap<>(of(
                 "apiVersion", "v1",
                 "kind", "ConfigMap",
-                "metadata", Map.of(
+                "metadata", of(
                         "name", name
                 ),
                 "data", filesMap
-        );
+        ));
         dump(configMap, of(componentDir.getPath("resources") + "/configmap-" + name + ".yaml"));
     }
 }

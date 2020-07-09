@@ -3,8 +3,8 @@ package io.osdf.core.connection.cli;
 import io.osdf.common.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 
-import static io.osdf.core.connection.cli.CliOutput.outputOf;
 import static io.microconfig.utils.Logger.info;
+import static io.osdf.core.connection.cli.CliOutput.outputOf;
 import static java.lang.System.getenv;
 
 @RequiredArgsConstructor
@@ -17,8 +17,13 @@ public class BaseClusterCli implements ClusterCli {
 
     @Override
     public CliOutput execute(String command) {
+        return execute(command, 0);
+    }
+
+    @Override
+    public CliOutput execute(String command, int timeoutInSec) {
         log(command);
-        CliOutput output = outputOf(command);
+        CliOutput output = outputOf(command, timeoutInSec);
         log(output.getOutput());
         throwIfClusterError(output.getOutput());
         return output;
