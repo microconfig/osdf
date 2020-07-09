@@ -33,11 +33,16 @@ public class ThreadUtils {
     public static <T> T runInParallel(int parallelism, Supplier<? extends T> supplier) {
         ForkJoinPool forkJoinPool = null;
         try {
-            forkJoinPool = new ForkJoinPool(parallelism);
+            forkJoinPool = new ForkJoinPool(parallelism == 0 ? 1 : parallelism);
             return forkJoinPool.submit(supplier::get).get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException | RuntimeException e) {
             currentThread().interrupt();
-            throw new OSDFException("Error during parallel execution", e);
+
+            Throwable cause = e;
+            while(cause.getCause() != null && cause.getCause() != cause) {
+                cause = cause.getCause();
+            }
+            throw new OSDFException("Error during parallel execution: " + cause.getClass().getSimpleName() + " " + cause.getMessage());
         } finally {
             if (forkJoinPool != null) {
                 forkJoinPool.shutdown();
