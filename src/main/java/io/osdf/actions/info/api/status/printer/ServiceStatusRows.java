@@ -42,8 +42,8 @@ public class ServiceStatusRows implements RowColumnsWithStatus {
         this.status = fetch();
     }
 
-    public static ServiceStatusRows deploymentStatusRows(ClusterCli cli, ServiceApplication service,
-                                                         ColumnPrinter printer, boolean withHealthCheck) {
+    public static ServiceStatusRows serviceStatusRows(ClusterCli cli, ServiceApplication service,
+                                                      ColumnPrinter printer, boolean withHealthCheck) {
         return new ServiceStatusRows(cli, service, printer, withHealthCheck);
     }
 

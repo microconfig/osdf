@@ -10,6 +10,7 @@ import static io.osdf.actions.info.status.service.ServiceStatus.*;
 import static io.osdf.common.utils.StringUtils.castToInteger;
 import static io.osdf.core.cluster.resource.properties.ResourceProperties.resourceProperties;
 import static java.util.Map.of;
+import static java.util.Objects.requireNonNullElse;
 
 @RequiredArgsConstructor
 public class ServiceStatusGetter {
@@ -35,9 +36,10 @@ public class ServiceStatusGetter {
         Integer available = castToInteger(properties.get("available"));
         Integer unavailable = castToInteger(properties.get("unavailable"));
         Integer ready = castToInteger(properties.get("ready"));
-        if (replicas == null || unavailable == null || current == null) return FAILED;
+        if (replicas == null || current == null) return FAILED;
 
-        return chooseStatus(replicas, current, available == null ? 0 : available, unavailable, ready == null ? 0 : ready);
+        return chooseStatus(replicas, current, requireNonNullElse(available, 0),
+                requireNonNullElse(unavailable, 0), requireNonNullElse(ready, 0));
     }
 
     private ServiceStatus chooseStatus(int replicas, int current, int available, int unavailable, int ready) {

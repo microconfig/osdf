@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.osdf.actions.info.api.status.printer.ServiceStatusRows.deploymentStatusRows;
+import static io.osdf.actions.info.api.status.printer.ServiceStatusRows.serviceStatusRows;
 import static io.osdf.actions.info.api.status.printer.JobStatusRow.jobStatusRow;
 import static io.osdf.common.utils.ThreadUtils.runInParallel;
 import static java.util.stream.Collectors.toUnmodifiableList;
@@ -44,7 +44,7 @@ public class StatusPrinter {
 
     private RowColumnsWithStatus toRowColumnsWithStatus(Object app) {
         if (app instanceof ServiceApplication) {
-            return deploymentStatusRows(cli, (ServiceApplication) app, printer.newPrinter(), withHealthCheck);
+            return serviceStatusRows(cli, (ServiceApplication) app, printer.newPrinter(), withHealthCheck);
         }
         if (app instanceof JobApplication) {
             return jobStatusRow(cli, (JobApplication) app, printer.newPrinter());

@@ -14,7 +14,6 @@ import static io.osdf.actions.management.deploy.deployer.ServiceDeployerImpl.ser
 import static io.osdf.actions.management.deploy.smart.UpToDateDeploymentFilter.upToDateDeploymentFilter;
 import static io.osdf.actions.management.deploy.smart.hash.ResourcesHashComputer.resourcesHashComputer;
 import static io.osdf.actions.management.deploy.smart.image.ImageTagReplacer.imageTagReplacer;
-import static io.osdf.common.utils.ThreadUtils.runInParallel;
 import static io.osdf.core.application.local.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
 import static io.osdf.core.application.service.ServiceApplicationMapper.service;
 import static java.util.stream.Collectors.joining;
@@ -38,10 +37,9 @@ public class DeployCommand {
         if (servicesToDeploy.isEmpty()) return true;
 
         ServiceDeployerImpl deployer = serviceDeployer(cli);
-        List<Boolean> result = runInParallel(servicesToDeploy.size(), () ->
-                servicesToDeploy.parallelStream()
-                        .map(deployer::deploy)
-                        .collect(toUnmodifiableList()));
+        List<Boolean> result = servicesToDeploy.parallelStream()
+                .map(deployer::deploy)
+                .collect(toUnmodifiableList());
         return result.stream().allMatch(t -> t);
     }
 
