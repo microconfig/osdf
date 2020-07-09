@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.utils.Logger.info;
+import static io.microconfig.utils.Logger.*;
 import static io.osdf.actions.management.deploy.cleaner.ResourceDeleter.resourceDeleter;
 import static io.osdf.common.utils.StringUtils.castToInteger;
 import static io.osdf.core.cluster.resource.properties.ResourceProperties.resourceProperties;
@@ -24,11 +24,16 @@ public class ServiceDeployerImpl implements ServiceDeployer {
     }
 
     @Override
-    public void deploy(ServiceApplication service) {
-        cleanResources(service);
-
-        service.uploadDescription();
-        uploadResources(service.files());
+    public boolean deploy(ServiceApplication service) {
+        try {
+            cleanResources(service);
+            service.uploadDescription();
+            uploadResources(service.files());
+        } catch (OSDFException e) {
+            error(e.getMessage());
+            return false;
+        }
+        return true;
     }
 
     private void cleanResources(ServiceApplication application) {

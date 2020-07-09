@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static io.microconfig.utils.Logger.announce;
+import static io.microconfig.utils.Logger.error;
 import static io.osdf.actions.management.deletepod.PodDeleter.podDeleter;
 import static io.osdf.actions.management.deploy.DeployCommand.deployCommand;
 import static io.osdf.actions.management.deploy.RunJobsCommand.runJobsCommand;
@@ -30,8 +32,17 @@ public class ManagementApiImpl implements ManagementApi {
     public void deploy(List<String> serviceNames, String mode, Boolean smart) {
         cli.login();
         if ("restricted".equals(mode) && smart) throw new OSDFException("Smart deploy is not possible for restricted deploy mode");
-        runJobsCommand(paths, cli).run(serviceNames, smart);
-        deployCommand(paths, cli).deploy(serviceNames, smart);
+        boolean jobsOk = runJobsCommand(paths, cli).run(serviceNames, smart);
+        if (!jobsOk) {
+            error("Some jobs have failed");
+            return;
+        }
+        boolean servicesOk = deployCommand(paths, cli).deploy(serviceNames, smart);
+        if (!servicesOk) {
+            error("Some services have failed");
+            return;
+        }
+        announce("OK");
     }
 
     @Override

@@ -1,11 +1,10 @@
 package io.osdf.actions.management.deploy.jobrunner;
 
-import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.application.job.JobApplication;
 import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
 
-import static io.microconfig.utils.Logger.info;
+import static io.microconfig.utils.Logger.*;
 import static io.osdf.actions.management.deploy.cleaner.ResourceDeleter.resourceDeleter;
 import static io.osdf.common.yaml.YamlObject.yaml;
 import static java.nio.file.Path.of;
@@ -20,13 +19,15 @@ public class JobRunnerImpl implements JobRunner {
     }
 
     @Override
-    public void runJob(JobApplication jobApp) {
+    public boolean runJob(JobApplication jobApp) {
         cleanResources(jobApp);
         jobApp.uploadDescription();
         uploadResources(jobApp);
         if (!waitUntilCompleted(jobApp)) {
-            throw new OSDFException("Job " + jobApp.files().name() + " failed");
+            error("Job " + jobApp.name() + " failed");
+            return false;
         }
+        return true;
     }
 
     private void uploadResources(JobApplication jobApp) {

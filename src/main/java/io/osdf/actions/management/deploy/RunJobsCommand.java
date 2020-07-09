@@ -14,9 +14,11 @@ import static io.osdf.actions.management.deploy.jobrunner.JobRunnerImpl.jobRunne
 import static io.osdf.actions.management.deploy.smart.UpToDateJobFilter.upToDateJobFilter;
 import static io.osdf.actions.management.deploy.smart.hash.ResourcesHashComputer.resourcesHashComputer;
 import static io.osdf.actions.management.deploy.smart.image.ImageTagReplacer.imageTagReplacer;
+import static io.osdf.common.utils.ThreadUtils.runInParallel;
 import static io.osdf.core.application.job.JobFilter.job;
 import static io.osdf.core.application.local.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
 public class RunJobsCommand {
@@ -27,18 +29,21 @@ public class RunJobsCommand {
         return new RunJobsCommand(paths, cli);
     }
 
-    public void run(List<String> serviceNames, Boolean smart) {
+    public boolean run(List<String> serviceNames, Boolean smart) {
         List<JobApplication> allJobs = activeRequiredAppsLoader(paths, serviceNames).load(job(cli));
-        if (allJobs.isEmpty()) return;
+        if (allJobs.isEmpty()) return true;
 
         preprocessJobs(allJobs);
         List<JobApplication> jobsToRun = getJobsToRun(smart, allJobs);
+        if (jobsToRun.isEmpty()) return true;
 
         JobRunnerImpl jobRunner = jobRunner(cli);
-        jobsToRun.forEach(job -> {
-                announce("Running " + job.name());
-                jobRunner.runJob(job);
-        });
+        List<Boolean> result = runInParallel(jobsToRun.size(),
+                () -> jobsToRun.parallelStream()
+                        .map(jobRunner::runJob)
+                        .collect(toUnmodifiableList())
+        );
+        return result.stream().allMatch(t -> t);
     }
 
     private List<JobApplication> getJobsToRun(Boolean smart, List<JobApplication> allJobs) {

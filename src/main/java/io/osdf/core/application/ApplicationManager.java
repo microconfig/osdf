@@ -28,6 +28,7 @@ public class ApplicationManager {
     }
 
     public void delete() {
+        if (!applicationExists()) return;
         createFromString(CoreDescription.class, applicationConfig("core"))
                 .getResources().stream()
                 .map(ClusterResourceImpl::fromOpenShiftNotation)

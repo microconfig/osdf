@@ -14,9 +14,11 @@ import static io.osdf.actions.management.deploy.deployer.ServiceDeployerImpl.ser
 import static io.osdf.actions.management.deploy.smart.UpToDateDeploymentFilter.upToDateDeploymentFilter;
 import static io.osdf.actions.management.deploy.smart.hash.ResourcesHashComputer.resourcesHashComputer;
 import static io.osdf.actions.management.deploy.smart.image.ImageTagReplacer.imageTagReplacer;
+import static io.osdf.common.utils.ThreadUtils.runInParallel;
 import static io.osdf.core.application.local.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
 import static io.osdf.core.application.service.ServiceApplicationMapper.service;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
 public class DeployCommand {
@@ -27,19 +29,20 @@ public class DeployCommand {
         return new DeployCommand(paths, cli);
     }
 
-    public void deploy(List<String> requiredServiceNames, boolean smart) {
+    public boolean deploy(List<String> requiredServiceNames, boolean smart) {
         List<ServiceApplication> allServices = activeRequiredAppsLoader(paths, requiredServiceNames).load(service(cli));
-        if (allServices.isEmpty()) return;
+        if (allServices.isEmpty()) return true;
 
         preprocessServices(allServices);
         List<ServiceApplication> servicesToDeploy = getServicesToDeploy(smart, allServices);
-        if (servicesToDeploy.isEmpty()) return;
+        if (servicesToDeploy.isEmpty()) return true;
 
         ServiceDeployerImpl deployer = serviceDeployer(cli);
-        servicesToDeploy.forEach(application -> {
-            announce("Deploying " + application.name());
-            deployer.deploy(application);
-        });
+        List<Boolean> result = runInParallel(servicesToDeploy.size(), () ->
+                servicesToDeploy.parallelStream()
+                        .map(deployer::deploy)
+                        .collect(toUnmodifiableList()));
+        return result.stream().allMatch(t -> t);
     }
 
     private List<ServiceApplication> getServicesToDeploy(boolean smart, List<ServiceApplication> allServices) {
