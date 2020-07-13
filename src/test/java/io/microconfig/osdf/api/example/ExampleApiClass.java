@@ -1,8 +1,8 @@
 package io.microconfig.osdf.api.example;
 
-import io.microconfig.osdf.api.annotation.ApiCommand;
-import io.microconfig.osdf.api.annotation.ConsoleParam;
-import io.microconfig.osdf.parameters.ArgParameter;
+import io.osdf.api.lib.annotations.ApiCommand;
+import io.osdf.api.lib.annotations.ConsoleParam;
+import io.osdf.api.lib.parameter.ArgParameter;
 
 public interface ExampleApiClass {
     class StringArg extends ArgParameter<String> {

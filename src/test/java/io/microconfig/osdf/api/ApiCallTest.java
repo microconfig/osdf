@@ -2,10 +2,10 @@ package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.api.example.ExampleApiClass;
 import io.microconfig.osdf.api.example.ExampleApiClassImpl;
-import io.microconfig.osdf.exceptions.OSDFException;
+import io.osdf.common.exceptions.OSDFException;
 import org.junit.jupiter.api.Test;
 
-import static io.microconfig.osdf.api.ApiCall.apiCall;
+import static io.osdf.api.lib.ApiCall.apiCall;
 import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

@@ -1,7 +1,7 @@
 package io.microconfig.osdf.api.example;
 
-import io.microconfig.osdf.api.annotation.Import;
-import io.microconfig.osdf.api.annotation.Named;
+import io.osdf.api.lib.annotations.Import;
+import io.osdf.api.lib.annotations.Named;
 
 public interface ExampleMainApiClass {
     @Import(api = ExampleApiClass.class, order = 1)

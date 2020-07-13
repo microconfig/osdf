@@ -1,22 +1,23 @@
 package io.microconfig.osdf.api;
 
-import io.microconfig.osdf.exceptions.OSDFException;
+import io.osdf.common.exceptions.OSDFException;
+import io.osdf.api.lib.MethodInvoker;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 
-import static io.microconfig.osdf.api.MethodInvoker.methodInvoker;
+import static io.osdf.api.lib.MethodInvoker.methodInvoker;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class MethodInvokerTest {
-    void noExceptions() {
+public class MethodInvokerTest {
+    public void noExceptions() {
     }
 
-    void throwNonOsdfException() {
+    public void throwNonOsdfException() {
         throw new RuntimeException();
     }
 
-    void throwOsdfException() {
+    public void throwOsdfException() {
         throw new OSDFException();
     }
 

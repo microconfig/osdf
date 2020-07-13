@@ -1,11 +1,12 @@
 package io.microconfig.osdf.api;
 
 import io.microconfig.osdf.api.example.ExampleApiClass;
+import io.osdf.api.lib.ApiMethodReader;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 
-import static io.microconfig.osdf.api.ApiMethodReader.apiMethodReader;
+import static io.osdf.api.lib.ApiMethodReader.apiMethodReader;
 
 class ApiMethodReaderTest {
 

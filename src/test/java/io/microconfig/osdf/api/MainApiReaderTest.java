@@ -3,7 +3,7 @@ package io.microconfig.osdf.api;
 import io.microconfig.osdf.api.example.ExampleMainApiClass;
 import org.junit.jupiter.api.Test;
 
-import static io.microconfig.osdf.api.MainApiReader.apiInfo;
+import static io.osdf.api.lib.MainApiReader.apiInfo;
 
 class MainApiReaderTest {
     @Test

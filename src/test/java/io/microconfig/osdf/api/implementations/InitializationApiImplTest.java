@@ -1,10 +1,10 @@
 package io.microconfig.osdf.api.implementations;
 
-import io.microconfig.osdf.cluster.cli.ClusterCLI;
-import io.microconfig.osdf.cluster.openshift.OpenShiftCLI;
-import io.microconfig.osdf.common.Credentials;
-import io.microconfig.osdf.exceptions.OSDFException;
-import io.microconfig.osdf.utils.TestContext;
+import io.osdf.core.connection.cli.ClusterCli;
+import io.osdf.core.connection.cli.openshift.OpenShiftCli;
+import io.osdf.common.Credentials;
+import io.osdf.common.exceptions.OSDFException;
+import io.osdf.common.utils.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,9 +13,9 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static io.microconfig.osdf.api.implementations.InitializationApiImpl.initializationApi;
-import static io.microconfig.osdf.utils.TestContext.CONFIGS_PATH;
-import static io.microconfig.osdf.utils.TestContext.defaultContext;
+import static io.osdf.actions.init.InitializationApiImpl.initializationApi;
+import static io.osdf.common.utils.TestContext.CONFIGS_PATH;
+import static io.osdf.common.utils.TestContext.defaultContext;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Files.list;
 import static java.util.Comparator.naturalOrder;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.mock;
 
 class InitializationApiImplTest {
     private static final TestContext context = defaultContext();
-    private final ClusterCLI cli = mock(ClusterCLI.class);
+    private final ClusterCli cli = mock(ClusterCli.class);
 
     @BeforeEach
     void prepareEnv() throws IOException {
@@ -42,7 +42,7 @@ class InitializationApiImplTest {
 
     @Test
     void exceptionIfPathIsNotProvided() {
-        assertThrows(OSDFException.class, () -> initializationApi(context.getPaths(), mock(OpenShiftCLI.class)).localConfigs(null, null));
+        assertThrows(OSDFException.class, () -> initializationApi(context.getPaths(), mock(OpenShiftCli.class)).localConfigs(null, null));
     }
 
     @Test
