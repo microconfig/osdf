@@ -1,7 +1,7 @@
 package io.osdf.core.application.service;
 
-import io.osdf.core.application.local.ApplicationFiles;
-import io.osdf.core.application.local.loaders.ApplicationMapper;
+import io.osdf.core.application.core.files.ApplicationFiles;
+import io.osdf.core.application.core.files.loaders.ApplicationMapper;
 import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
 

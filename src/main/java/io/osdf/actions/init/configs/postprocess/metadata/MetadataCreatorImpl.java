@@ -2,14 +2,14 @@ package io.osdf.actions.init.configs.postprocess.metadata;
 
 import io.osdf.actions.init.configs.postprocess.types.MetadataType;
 import io.osdf.core.local.component.ComponentDir;
-import io.osdf.core.application.local.metadata.LocalResourceMetadata;
+import io.osdf.core.application.core.files.metadata.LocalResourceMetadata;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 import static io.osdf.actions.init.configs.postprocess.metadata.resources.ResourceMetadataCollector.resourceMetadataCollector;
 import static io.osdf.common.utils.YamlUtils.dump;
-import static io.osdf.core.application.local.metadata.ApplicationMetadata.serviceMetadata;
+import static io.osdf.core.application.core.files.metadata.ApplicationMetadata.serviceMetadata;
 import static java.nio.file.Path.of;
 
 @RequiredArgsConstructor

@@ -1,7 +1,7 @@
 package io.osdf.actions.info.healthcheck;
 
-import io.osdf.actions.info.healthcheck.healthchecker.HealthChecker;
-import io.osdf.core.application.local.ApplicationFiles;
+import io.osdf.actions.info.healthcheck.pod.PodHealthChecker;
+import io.osdf.core.application.core.files.ApplicationFiles;
 import io.osdf.core.cluster.deployment.ClusterDeployment;
 import io.osdf.core.cluster.pod.Pod;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.osdf.actions.info.healthcheck.finder.HealthCheckerFinder.healthCheckerFinder;
+import static io.osdf.actions.info.healthcheck.HealthCheckerFinder.healthCheckerFinder;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @Getter
@@ -24,7 +24,7 @@ public class PodsInfo {
     }
 
     public static PodsInfo podsInfo(ClusterDeployment deployment, ApplicationFiles files, int timeout) {
-        HealthChecker healthChecker = healthCheckerFinder(files, timeout).find();
+        PodHealthChecker healthChecker = healthCheckerFinder(files, timeout).find();
 
         List<Pod> pods = deployment.pods();
         List<Boolean> podsHealth = pods.parallelStream()

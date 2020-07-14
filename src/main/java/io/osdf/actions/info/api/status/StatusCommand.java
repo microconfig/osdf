@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import static io.osdf.actions.info.api.status.printer.StatusPrinter.statusPrinter;
-import static io.osdf.core.application.job.JobFilter.job;
-import static io.osdf.core.application.local.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
+import static io.osdf.core.application.job.JobApplicationMapper.job;
+import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
 import static io.osdf.core.application.service.ServiceApplicationMapper.service;
 
 @RequiredArgsConstructor

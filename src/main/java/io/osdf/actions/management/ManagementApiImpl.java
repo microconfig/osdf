@@ -2,6 +2,7 @@ package io.osdf.actions.management;
 
 import io.osdf.actions.management.restart.DeploymentRestarter;
 import io.osdf.common.exceptions.OSDFException;
+import io.osdf.core.application.core.Application;
 import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
@@ -9,14 +10,11 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import static io.microconfig.utils.Logger.announce;
-import static io.microconfig.utils.Logger.error;
 import static io.osdf.actions.management.deletepod.PodDeleter.podDeleter;
-import static io.osdf.actions.management.deploy.DeployCommand.deployCommand;
-import static io.osdf.actions.management.deploy.RunJobsCommand.runJobsCommand;
+import static io.osdf.actions.management.deploy.AppsDeployCommand.deployCommand;
 import static io.osdf.actions.management.restart.DeploymentRestarter.deploymentRestarter;
-import static io.osdf.core.application.ApplicationManager.applicationManager;
-import static io.osdf.core.application.local.loaders.AllApplications.all;
-import static io.osdf.core.application.local.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
+import static io.osdf.core.application.core.AllApplications.all;
+import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
 import static io.osdf.core.application.service.ServiceApplicationMapper.service;
 
 @RequiredArgsConstructor
@@ -32,17 +30,8 @@ public class ManagementApiImpl implements ManagementApi {
     public void deploy(List<String> serviceNames, String mode, Boolean smart) {
         cli.login();
         if ("restricted".equals(mode) && smart) throw new OSDFException("Smart deploy is not possible for restricted deploy mode");
-        boolean jobsOk = runJobsCommand(paths, cli).run(serviceNames, smart);
-        if (!jobsOk) {
-            error("Some jobs have failed");
-            return;
-        }
-        boolean servicesOk = deployCommand(paths, cli).deploy(serviceNames, smart);
-        if (!servicesOk) {
-            error("Some services have failed");
-            return;
-        }
-        announce("OK");
+        boolean ok = deployCommand(paths, cli).deploy(serviceNames, smart);
+        announce(ok ? "OK" : "Some apps have failed");
     }
 
     @Override
@@ -71,7 +60,7 @@ public class ManagementApiImpl implements ManagementApi {
     @Override
     public void clearAll(List<String> components) {
         activeRequiredAppsLoader(paths, components)
-                .load(all())
-                .forEach(app -> applicationManager(app.name(), cli).delete());
+                .load(all(cli))
+                .forEach(Application::delete);
     }
 }
