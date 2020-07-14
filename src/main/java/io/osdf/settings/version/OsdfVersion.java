@@ -1,15 +1,15 @@
 package io.osdf.settings.version;
 
 import io.osdf.common.exceptions.OSDFException;
-import io.osdf.core.local.microconfig.property.PropertyGetter;
+import io.osdf.settings.paths.OsdfPaths;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
 
-import static io.osdf.settings.version.OsdfArtifactFromConfigs.osdfArtifact;
 import static io.osdf.common.SettingsFile.settingsFile;
 import static io.osdf.common.utils.StringUtils.castToInteger;
+import static io.osdf.settings.OsdfConfig.osdfConfig;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode
@@ -32,8 +32,8 @@ public class OsdfVersion {
         return fromString(version);
     }
 
-    public static OsdfVersion fromConfigs(PropertyGetter propertyGetter) {
-        return fromString(osdfArtifact(propertyGetter).version());
+    public static OsdfVersion fromConfigs(OsdfPaths paths) {
+        return fromString(osdfConfig(paths).version());
     }
 
     public static OsdfVersion fromString(String s) {

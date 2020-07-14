@@ -21,6 +21,7 @@ import static io.osdf.actions.management.deploy.smart.image.ImageTagReplacer.ima
 import static io.osdf.common.utils.ThreadUtils.runInParallel;
 import static io.osdf.core.application.core.AllApplications.all;
 import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
+import static io.osdf.settings.OsdfConfig.osdfConfig;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toUnmodifiableList;
@@ -43,13 +44,14 @@ public class AppsDeployCommand {
         List<Application> appsToDeploy = filterApps(smart, allApps);
         if (appsToDeploy.isEmpty()) return true;
 
+        Integer maxParallel = osdfConfig(paths).maxParallel();
         List<List<Application>> groups = startGroupSplitter().split(appsToDeploy);
-        return groups.stream().allMatch(this::deployGroup);
+        return groups.stream().allMatch(apps -> deployGroup(apps, maxParallel));
     }
 
-    private boolean deployGroup(List<Application> apps) {
-        announce("Deploying group - " + apps.stream().map(Application::name).collect(toUnmodifiableList()));
-        return runInParallel(3, () ->
+    private boolean deployGroup(List<Application> apps, Integer maxParallel) {
+        announce("\nDeploying group - " + apps.stream().map(Application::name).collect(toUnmodifiableList()));
+        return runInParallel(maxParallel == null ? apps.size() : maxParallel, () ->
                 apps.parallelStream()
                         .map(app -> of(app, cli))
                         .allMatch(app -> {

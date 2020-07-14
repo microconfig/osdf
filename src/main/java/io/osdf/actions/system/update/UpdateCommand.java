@@ -7,14 +7,13 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.osdf.actions.system.install.OsdfInstaller.osdfInstaller;
-import static io.osdf.actions.system.install.jarinstaller.RemoteJarInstaller.jarInstaller;
-import static io.osdf.core.local.microconfig.property.PropertyGetter.propertyGetter;
-import static io.osdf.settings.version.OsdfVersion.fromConfigs;
-import static io.osdf.settings.version.OsdfVersion.fromSettings;
-import static io.osdf.common.utils.ProcessUtil.startAndWait;
 import static io.microconfig.utils.Logger.info;
 import static io.microconfig.utils.Logger.warn;
+import static io.osdf.actions.system.install.OsdfInstaller.osdfInstaller;
+import static io.osdf.actions.system.install.jarinstaller.RemoteJarInstaller.jarInstaller;
+import static io.osdf.common.utils.ProcessUtil.startAndWait;
+import static io.osdf.settings.version.OsdfVersion.fromConfigs;
+import static io.osdf.settings.version.OsdfVersion.fromSettings;
 import static java.lang.System.exit;
 import static java.util.List.of;
 
@@ -32,7 +31,7 @@ public class UpdateCommand {
 
     public void tryAutoUpdateAndRestart(String[] args) {
         try {
-            OsdfVersion configsVersion = fromConfigs(propertyGetter(paths));
+            OsdfVersion configsVersion = fromConfigs(paths);
             OsdfVersion currentVersion = fromSettings(paths.settings().osdf());
             if (!currentVersion.olderThan(configsVersion)) return;
             update(configsVersion);
