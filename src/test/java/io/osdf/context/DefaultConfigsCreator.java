@@ -1,4 +1,4 @@
-package io.osdf.common.utils;
+package io.osdf.context;
 
 import io.osdf.actions.init.configs.fetch.git.GitFetcherSettings;
 import io.osdf.actions.init.configs.fetch.local.LocalFetcherSettings;

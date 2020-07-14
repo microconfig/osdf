@@ -1,11 +1,11 @@
 package io.microconfig.osdf.api;
 
-import io.osdf.common.utils.TestContext;
+import io.osdf.context.TestContext;
 import org.junit.jupiter.api.Test;
 
 import static io.osdf.api.MainApiCaller.mainApi;
 import static io.osdf.core.connection.cli.openshift.OpenShiftCli.oc;
-import static io.osdf.common.utils.TestContext.defaultContext;
+import static io.osdf.context.TestContext.defaultContext;
 import static java.util.List.of;
 
 class MainApiCallerTest {

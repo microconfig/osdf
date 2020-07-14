@@ -1,5 +1,6 @@
-package io.osdf.common.utils;
+package io.osdf.context;
 
+import io.osdf.common.utils.CommandLineExecutor;
 import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.Getter;
@@ -11,8 +12,6 @@ import static io.osdf.actions.init.InitializationApiImpl.initializationApi;
 import static io.osdf.actions.system.install.OsdfInstaller.osdfInstaller;
 import static io.osdf.actions.system.install.jarinstaller.FakeJarInstaller.fakeJarInstaller;
 import static io.osdf.common.Credentials.of;
-import static io.osdf.common.utils.CommandLineExecutor.execute;
-import static io.osdf.common.utils.DefaultConfigsCreator.defaultConfigsCreator;
 import static io.osdf.settings.version.OsdfVersion.fromString;
 import static java.nio.file.Files.exists;
 import static java.util.Objects.requireNonNull;
@@ -32,25 +31,25 @@ public class TestContext {
 
     public void install() {
         if (!exists(Path.of("/tmp/osdf"))) {
-            execute("mkdir /tmp/osdf");
+            CommandLineExecutor.execute("mkdir /tmp/osdf");
         }
         osdfInstaller(paths, fakeJarInstaller(paths, fromString("1.0.0")), true, true).install();
     }
 
     public void createDefaultConfigs() {
-        defaultConfigsCreator(paths).create();
+        DefaultConfigsCreator.defaultConfigsCreator(paths).create();
     }
 
     public void clear() {
-        execute("rm -rf " + paths.root());
+        CommandLineExecutor.execute("rm -rf " + paths.root());
     }
 
     public void prepareConfigs() {
         if (exists(CONFIGS_PATH)) {
-            execute("rm -rf " + CONFIGS_PATH);
+            CommandLineExecutor.execute("rm -rf " + CONFIGS_PATH);
         }
-        String dir = requireNonNull(ConfigUnzipper.class.getClassLoader().getResource("configs")).getPath();
-        execute("cp -r " + dir + " " + CONFIGS_PATH);
+        String dir = requireNonNull(TestContext.class.getClassLoader().getResource("configs")).getPath();
+        CommandLineExecutor.execute("cp -r " + dir + " " + CONFIGS_PATH);
     }
 
     public void initDev() {

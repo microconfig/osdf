@@ -1,7 +1,7 @@
 package io.osdf.actions.management.deploy;
 
 import io.osdf.actions.management.deploy.smart.hash.ResourcesHashComputer;
-import io.osdf.actions.management.deploy.smart.image.ImageTagReplacer;
+import io.osdf.actions.management.deploy.smart.image.ImageVersionReplacer;
 import io.osdf.core.application.core.Application;
 import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.settings.paths.OsdfPaths;
@@ -17,7 +17,8 @@ import static io.osdf.actions.management.deploy.deployer.Deployable.of;
 import static io.osdf.actions.management.deploy.groups.StartGroupSplitter.startGroupSplitter;
 import static io.osdf.actions.management.deploy.smart.UpToDateAppFilter.upToDateAppFilter;
 import static io.osdf.actions.management.deploy.smart.hash.ResourcesHashComputer.resourcesHashComputer;
-import static io.osdf.actions.management.deploy.smart.image.ImageTagReplacer.imageTagReplacer;
+import static io.osdf.actions.management.deploy.smart.image.ImageVersionReplacer.imageVersionReplacer;
+import static io.osdf.actions.management.deploy.smart.image.digest.DigestGetterImpl.digestGetter;
 import static io.osdf.common.utils.ThreadUtils.runInParallel;
 import static io.osdf.core.application.core.AllApplications.all;
 import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
@@ -77,7 +78,7 @@ public class AppsDeployCommand {
 
     private void preprocessServices(List<Application> apps) {
         ResourcesHashComputer resourcesHashComputer = resourcesHashComputer();
-        ImageTagReplacer tagReplacer = imageTagReplacer(paths);
+        ImageVersionReplacer tagReplacer = imageVersionReplacer(digestGetter(paths));
 
         apps.forEach(service -> tagReplacer.replaceFor(service.files()));
         apps.forEach(service -> resourcesHashComputer.insertIn(service.files()));

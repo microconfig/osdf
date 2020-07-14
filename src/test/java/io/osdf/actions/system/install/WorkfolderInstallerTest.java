@@ -1,13 +1,13 @@
 package io.osdf.actions.system.install;
 
-import io.osdf.common.utils.TestContext;
+import io.osdf.context.TestContext;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
 import static io.osdf.actions.system.install.WorkfolderInstaller.workfolderInstaller;
-import static io.osdf.common.utils.TestContext.defaultContext;
+import static io.osdf.context.TestContext.defaultContext;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Files.writeString;
 import static java.nio.file.Path.of;

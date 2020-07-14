@@ -4,7 +4,7 @@ import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.core.connection.cli.openshift.OpenShiftCli;
 import io.osdf.common.Credentials;
 import io.osdf.common.exceptions.OSDFException;
-import io.osdf.common.utils.TestContext;
+import io.osdf.context.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static io.osdf.actions.init.InitializationApiImpl.initializationApi;
-import static io.osdf.common.utils.TestContext.CONFIGS_PATH;
-import static io.osdf.common.utils.TestContext.defaultContext;
+import static io.osdf.context.TestContext.CONFIGS_PATH;
+import static io.osdf.context.TestContext.defaultContext;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Files.list;
 import static java.util.Comparator.naturalOrder;

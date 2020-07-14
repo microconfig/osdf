@@ -1,7 +1,7 @@
 package io.osdf.core.local.microconfig.state;
 
 import io.osdf.core.connection.cli.ClusterCli;
-import io.osdf.common.utils.TestContext;
+import io.osdf.context.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import static io.osdf.actions.init.InitializationApiImpl.initializationApi;
-import static io.osdf.common.utils.TestContext.defaultContext;
+import static io.osdf.context.TestContext.defaultContext;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Files.writeString;
 import static java.nio.file.Path.of;

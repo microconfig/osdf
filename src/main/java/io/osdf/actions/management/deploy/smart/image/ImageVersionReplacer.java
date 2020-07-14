@@ -1,17 +1,16 @@
 package io.osdf.actions.management.deploy.smart.image;
 
+import io.osdf.actions.management.deploy.smart.image.digest.DigestGetter;
 import io.osdf.common.exceptions.OSDFException;
 import io.osdf.common.yaml.YamlObject;
 import io.osdf.core.application.core.files.ApplicationFiles;
 import io.osdf.core.application.core.files.metadata.LocalResourceMetadata;
-import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import static io.osdf.actions.management.deploy.smart.image.ImageDigestGetter.imageDigestGetter;
 import static io.osdf.common.utils.FileUtils.readAll;
 import static io.osdf.common.utils.FileUtils.writeStringToFile;
 import static io.osdf.common.yaml.YamlObject.yaml;
@@ -21,11 +20,11 @@ import static java.util.Objects.requireNonNullElse;
 import static java.util.regex.Pattern.compile;
 
 @RequiredArgsConstructor
-public class ImageTagReplacer {
-    private final OsdfPaths paths;
+public class ImageVersionReplacer {
+    private final DigestGetter digestGetter;
 
-    public static ImageTagReplacer imageTagReplacer(OsdfPaths paths) {
-        return new ImageTagReplacer(paths);
+    public static ImageVersionReplacer imageVersionReplacer(DigestGetter digestGetter) {
+        return new ImageVersionReplacer(digestGetter);
     }
 
     public void replaceFor(ApplicationFiles files) {
@@ -92,7 +91,7 @@ public class ImageTagReplacer {
 
     private String getDigest(String imageUrl, boolean continueOnError) {
         try {
-            return imageDigestGetter(imageUrl, paths).get();
+            return digestGetter.get(imageUrl);
         } catch (OSDFException e) {
             if (continueOnError) return null;
             throw new OSDFException("Couldn't get digest for " + imageUrl + ": " + e.getMessage());

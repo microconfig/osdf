@@ -1,0 +1,8 @@
+app.version: latest
+
+config.version: custom
+
+osdf.configmap.main:
+  files:
+    - application.yaml
+  name: simple-service
