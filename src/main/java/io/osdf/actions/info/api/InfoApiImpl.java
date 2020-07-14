@@ -4,18 +4,18 @@ import io.osdf.actions.info.api.logs.LogsCommand;
 import io.osdf.actions.info.api.showall.ShowAllCommand;
 import io.osdf.actions.info.api.status.StatusCommand;
 import io.osdf.common.exceptions.StatusCodeException;
-import io.osdf.core.application.service.ServiceApplication;
+import io.osdf.core.application.core.Application;
 import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.osdf.actions.info.api.healthcheck.DeployStatusChecker.deployStatusChecker;
+import static io.osdf.actions.info.api.healthcheck.AppsStatusChecker.deployStatusChecker;
 import static io.osdf.actions.info.printer.ColumnPrinter.printer;
-import static io.osdf.core.application.local.loaders.ApplicationFilesLoaderImpl.appLoader;
-import static io.osdf.core.application.local.loaders.filters.GroupComponentsFilter.groupComponentsFilter;
-import static io.osdf.core.application.service.ServiceApplicationMapper.service;
+import static io.osdf.core.application.core.AllApplications.all;
+import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.appLoader;
+import static io.osdf.core.application.core.files.loaders.filters.GroupComponentsFilter.groupComponentsFilter;
 
 @RequiredArgsConstructor
 public class InfoApiImpl implements InfoApi {
@@ -41,12 +41,12 @@ public class InfoApiImpl implements InfoApi {
     @Override
     public void healthcheck(String group, Integer timeout) {
         cli.login();
-        List<ServiceApplication> services = appLoader(paths)
+        List<Application> apps = appLoader(paths)
                 .withDirFilter(groupComponentsFilter(paths, group))
-                .load(service(cli));
-        List<ServiceApplication> failedServices = deployStatusChecker(timeout == null ? 60 : timeout, cli)
-                .findFailed(services);
-        if (!failedServices.isEmpty()) throw new StatusCodeException(1);
+                .load(all(cli));
+        List<Application> failedApps = deployStatusChecker(cli)
+                .findFailed(apps);
+        if (!failedApps.isEmpty()) throw new StatusCodeException(1);
     }
 
     @Override

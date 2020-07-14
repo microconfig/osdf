@@ -2,8 +2,8 @@ package io.osdf.actions.management.deploy.smart.image;
 
 import io.osdf.common.exceptions.OSDFException;
 import io.osdf.common.yaml.YamlObject;
-import io.osdf.core.application.local.ApplicationFiles;
-import io.osdf.core.application.local.metadata.LocalResourceMetadata;
+import io.osdf.core.application.core.files.ApplicationFiles;
+import io.osdf.core.application.core.files.metadata.LocalResourceMetadata;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 

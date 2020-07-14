@@ -1,7 +1,7 @@
 package io.osdf.actions.management.deploy.smart.hash;
 
 import io.osdf.common.utils.FileUtils;
-import io.osdf.core.application.local.ApplicationFiles;
+import io.osdf.core.application.core.files.ApplicationFiles;
 import io.osdf.core.cluster.resource.LocalClusterResource;
 import lombok.RequiredArgsConstructor;
 

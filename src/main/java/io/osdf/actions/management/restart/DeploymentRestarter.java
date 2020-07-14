@@ -1,7 +1,7 @@
 package io.osdf.actions.management.restart;
 
 import io.osdf.common.exceptions.OSDFException;
-import io.osdf.core.application.local.ApplicationFiles;
+import io.osdf.core.application.core.files.ApplicationFiles;
 import io.osdf.core.application.service.ServiceApplication;
 import io.osdf.core.cluster.deployment.ClusterDeployment;
 import io.osdf.core.cluster.resource.properties.ResourceProperties;

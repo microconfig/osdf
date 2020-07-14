@@ -1,8 +1,8 @@
 package io.osdf.core.application.job;
 
-import io.osdf.core.application.ResourceDescription;
-import io.osdf.core.application.local.ApplicationFiles;
-import io.osdf.core.application.local.metadata.ApplicationMetadata;
+import io.osdf.core.application.core.description.ResourceDescription;
+import io.osdf.core.application.core.files.ApplicationFiles;
+import io.osdf.core.application.core.files.metadata.ApplicationMetadata;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.Setter;
 
 import java.nio.file.Path;
 
-import static io.osdf.core.application.ResourceDescription.fromLocalResource;
+import static io.osdf.core.application.core.description.ResourceDescription.fromLocalResource;
 import static java.nio.file.Path.of;
 
 @Getter

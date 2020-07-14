@@ -2,7 +2,7 @@ package io.osdf.actions.init.configs.postprocess.metadata.resources;
 
 import io.osdf.common.exceptions.OSDFException;
 import io.osdf.common.yaml.YamlObject;
-import io.osdf.core.application.local.metadata.LocalResourceMetadata;
+import io.osdf.core.application.core.files.metadata.LocalResourceMetadata;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static io.osdf.common.yaml.YamlObject.yaml;
-import static io.osdf.core.application.local.metadata.LocalResourceMetadata.create;
+import static io.osdf.core.application.core.files.metadata.LocalResourceMetadata.create;
 import static java.nio.file.Files.list;
 import static java.util.stream.Collectors.toUnmodifiableList;
 

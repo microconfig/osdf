@@ -1,7 +1,8 @@
 package io.osdf.actions.configs.commands;
 
 import io.osdf.common.exceptions.OSDFException;
-import io.osdf.core.application.local.ApplicationFiles;
+import io.osdf.core.application.core.Application;
+import io.osdf.core.application.core.files.ApplicationFiles;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
@@ -12,8 +13,8 @@ import java.util.List;
 
 import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.info;
-import static io.osdf.core.application.local.loaders.AllApplications.all;
-import static io.osdf.core.application.local.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
+import static io.osdf.core.application.core.AllApplications.all;
+import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
 import static io.osdf.core.local.microconfig.state.DiffFilesCollector.collector;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.newInputStream;
@@ -24,7 +25,8 @@ public class PropertiesDiffCommand {
 
     public void show(List<String> serviceNames) {
         activeRequiredAppsLoader(paths, serviceNames)
-                .load(all())
+                .load(all(null)).stream()
+                .map(Application::files)
                 .forEach(this::showDiff);
     }
 

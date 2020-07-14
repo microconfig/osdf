@@ -1,6 +1,6 @@
 package io.osdf.actions.init.configs.postprocess.types;
 
-import io.osdf.core.application.local.metadata.LocalResourceMetadata;
+import io.osdf.core.application.core.files.metadata.LocalResourceMetadata;
 
 import java.util.function.Predicate;
 
