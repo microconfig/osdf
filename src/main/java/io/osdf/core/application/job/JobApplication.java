@@ -41,7 +41,8 @@ public class JobApplication implements Application {
     public ClusterJob job() {
         if (job != null) return job;
         ResourceDescription description = app.loadDescription(JobDescription.class, "job").getJob();
-        return job = clusterJob(description.getName(), cli);
+        job = clusterJob(description.getName(), cli);
+        return job;
     }
 
 

@@ -41,7 +41,8 @@ public class ServiceApplication implements Application {
     public ClusterDeployment deployment() {
         if (deployment != null) return deployment;
         ResourceDescription description = app.loadDescription(ServiceDescription.class, "service").getDeployment();
-        return deployment = clusterDeployment(description.getName(), description.getKind(), cli);
+        deployment = clusterDeployment(description.getName(), description.getKind(), cli);
+        return deployment;
     }
 
     @Override

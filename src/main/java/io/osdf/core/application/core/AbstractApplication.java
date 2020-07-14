@@ -48,7 +48,8 @@ public class AbstractApplication implements Application {
     @Override
     public CoreDescription coreDescription() {
         if (coreDescription != null) return coreDescription;
-        return coreDescription = loadDescription(CoreDescription.class, "core");
+        coreDescription = loadDescription(CoreDescription.class, "core");
+        return coreDescription;
     }
 
     public <T> T loadDescription(Class<T> descriptionClass, String key) {
