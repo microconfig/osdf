@@ -36,7 +36,7 @@ class InitializationApiImplTest {
 
     @Test
     void initLocalConfigs() {
-        initializationApi(context.getPaths(), cli).localConfigs(CONFIGS_PATH, null);
+        initializationApi(context.getPaths(), cli).localConfigs(CONFIGS_PATH, "master");
         assertTrue(exists(context.getPaths().configsPath()));
     }
 
@@ -54,7 +54,7 @@ class InitializationApiImplTest {
                     .map(Path::toString)
                     .sorted(naturalOrder())
                     .collect(toUnmodifiableList());
-            assertEquals(of("fakejob", "helloworld-springboot"), builtComponents);
+            assertEquals(of("simple-job", "simple-service"), builtComponents);
         }
     }
 

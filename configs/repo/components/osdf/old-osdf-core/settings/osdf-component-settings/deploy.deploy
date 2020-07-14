@@ -1,2 +1,0 @@
-osdf.start.waitSec: ${process::this@mgmt.start.waitSec:60}
-osdf.start.podWaitSec: 60

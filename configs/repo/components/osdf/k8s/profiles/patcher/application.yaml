@@ -1,6 +1,0 @@
-#include logback
-
-spring.datasource:
-  hikari:
-    minimum-idle: 1
-    maximum-pool-size: 1

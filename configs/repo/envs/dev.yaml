@@ -1,4 +1,0 @@
-include:
-  env: base
-  exclude:
-    - helloworld-istio

@@ -1,7 +1,0 @@
-server.port: 1919
-service.version: ${process::this@version}
-
-management.endpoints.web.exposure.include: metrics,prometheus
-management.endpoint.metrics.enabled: true
-management.endpoint.prometheus.enabled: true
-management.metrics.export.prometheus.enabled: true

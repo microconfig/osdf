@@ -21,17 +21,17 @@ class MicroConfigFilesStateTest {
     private final TestContext context = defaultContext();
 
     @BeforeEach
-    void init() throws IOException {
+    void init() {
         context.initDev();
     }
 
     @Test
     void testOldFilesAndFoldersGetDeleted() throws IOException {
-        Path pathToDeployConfig = of(context.getPaths().configsPath() + "/components/core/openshift/helloworld-springboot/os.deploy");
+        Path pathToDeployConfig = of(context.getPaths().configsPath() + "/components/apps/simple-service/os.deploy");
         writeString(pathToDeployConfig, "some: value");
         initializationApi(context.getPaths(), mock(ClusterCli.class)).configs(null, null);
 
-        assertTrue(exists(of(context.getPaths().componentsPath() + "/helloworld-springboot/application.yaml")));
-        assertFalse(exists(of(context.getPaths().componentsPath() + "/helloworld-springboot/openshift")));
+        assertTrue(exists(of(context.getPaths().componentsPath() + "/simple-service/application.yaml")));
+        assertFalse(exists(of(context.getPaths().componentsPath() + "/simple-service/openshift")));
     }
 }

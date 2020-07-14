@@ -1,0 +1,47 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ${this@name}
+  labels:
+    configHash: <CONFIG_HASH>
+spec:
+  activeDeadlineSeconds: 600
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        name: ${this@name}
+    spec:
+      containers:
+        - name: ${this@name}
+          image: ${image-registry@image.url}
+          imagePullPolicy: Always
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: >-
+                ${this@java.opts}
+          volumeMounts:
+            - mountPath: /app/resources/application.yaml
+              name: resources
+              subPath: application.yaml
+            - mountPath: /app/resources/secret.properties
+              name: secrets
+              subPath: secret.properties
+            - mountPath: /app/resources/logback.xml
+              name: resources
+              subPath: logback.xml
+          resources:
+            requests:
+              cpu: ${this@requests.cpu}
+              memory: ${this@requests.memory}
+            limits:
+              cpu: ${this@limits.cpu}
+              memory: ${this@limits.memory}
+      volumes:
+        - name: resources
+          configMap:
+            name: ${this@name}
+        - name: secrets
+          secret:
+            secretName: limit-manager
+      restartPolicy: OnFailure

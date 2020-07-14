@@ -1,7 +1,0 @@
-#include istio-service
-
-image.version: 1.1-SNAPSHOT
-
-canary.validation.url: http://${this@name}.apps.${this@cluster.url.base}/actuator/prometheus
-limits.cpu: 0.5
-requests.cpu: 0.5

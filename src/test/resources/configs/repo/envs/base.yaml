@@ -1,0 +1,4 @@
+helloworld:
+  components:
+    - simple-service
+    - simple-job

@@ -5,18 +5,17 @@ import io.osdf.settings.paths.OsdfPaths;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 import static io.osdf.actions.init.InitializationApiImpl.initializationApi;
-import static io.osdf.common.Credentials.of;
 import static io.osdf.actions.system.install.OsdfInstaller.osdfInstaller;
 import static io.osdf.actions.system.install.jarinstaller.FakeJarInstaller.fakeJarInstaller;
-import static io.osdf.settings.version.OsdfVersion.fromString;
+import static io.osdf.common.Credentials.of;
 import static io.osdf.common.utils.CommandLineExecutor.execute;
-import static io.osdf.common.utils.ConfigUnzipper.configUnzipper;
 import static io.osdf.common.utils.DefaultConfigsCreator.defaultConfigsCreator;
+import static io.osdf.settings.version.OsdfVersion.fromString;
 import static java.nio.file.Files.exists;
+import static java.util.Objects.requireNonNull;
 import static org.mockito.Mockito.mock;
 
 @RequiredArgsConstructor
@@ -46,11 +45,15 @@ public class TestContext {
         execute("rm -rf " + paths.root());
     }
 
-    public void prepareConfigs() throws IOException {
-        configUnzipper(CONFIGS_PATH, "configs.zip").unzip();
+    public void prepareConfigs() {
+        if (exists(CONFIGS_PATH)) {
+            execute("rm -rf " + CONFIGS_PATH);
+        }
+        String dir = requireNonNull(ConfigUnzipper.class.getClassLoader().getResource("configs")).getPath();
+        execute("cp -r " + dir + " " + CONFIGS_PATH);
     }
 
-    public void initDev() throws IOException {
+    public void initDev() {
         install();
         prepareConfigs();
         initializationApi(paths, mock(ClusterCli.class)).openshift(of("user:pass"), null, false);

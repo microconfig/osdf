@@ -1,0 +1,3 @@
+microconfig.mustache.deployment:
+  fromFile: ${deployment@configDir}/deployment.yaml
+  toFile: resources/deployment.yaml

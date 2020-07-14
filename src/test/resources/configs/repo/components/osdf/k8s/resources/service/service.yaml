@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: ${this@name}
+spec:
+  selector:
+    application: ${this@name}
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: ${app::this@server.port}
+      name: http-80

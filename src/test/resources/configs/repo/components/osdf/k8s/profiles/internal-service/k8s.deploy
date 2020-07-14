@@ -1,0 +1,7 @@
+#include deployment, service
+#include java-service-settings
+
+osdf.configmap.main:
+  name: ${this@name}
+  files:
+    - application.yaml

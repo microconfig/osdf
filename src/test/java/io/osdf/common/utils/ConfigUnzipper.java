@@ -2,14 +2,11 @@ package io.osdf.common.utils;
 
 import lombok.RequiredArgsConstructor;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 
 import static io.osdf.common.utils.CommandLineExecutor.execute;
-import static java.nio.file.Files.copy;
 import static java.nio.file.Files.exists;
-import static java.nio.file.Path.of;
+import static java.util.Objects.requireNonNull;
 
 @RequiredArgsConstructor
 public class ConfigUnzipper {
@@ -20,15 +17,11 @@ public class ConfigUnzipper {
         return new ConfigUnzipper(path, resourceName);
     }
 
-    public void unzip() throws IOException {
+    public void unzip() {
         if (exists(path)) {
             execute("rm -rf " + path);
         }
-        if (!exists(of("/tmp/configs.zip"))) {
-            InputStream resourceAsStream = ConfigUnzipper.class.getClassLoader().getResourceAsStream(resourceName);
-            if (resourceAsStream == null) throw new IOException("Couldn't read resource " + resourceName);
-            copy(resourceAsStream, of("/tmp/configs.zip"));
-        }
-        execute("unzip /tmp/configs.zip" + " -d " + path);
+        String dir = requireNonNull(ConfigUnzipper.class.getClassLoader().getResource(resourceName)).getPath();
+        execute("cp -r " + dir + " " + path + "/configs/repo");
     }
 }
