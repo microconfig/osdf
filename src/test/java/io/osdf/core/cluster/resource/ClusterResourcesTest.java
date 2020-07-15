@@ -1,5 +1,6 @@
 package io.osdf.core.cluster.resource;
 
+import io.osdf.test.cluster.ResourceApi;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -8,9 +9,9 @@ import java.nio.file.Path;
 
 import static io.osdf.core.cluster.resource.ClusterResourceImpl.*;
 import static io.osdf.core.cluster.resource.LocalClusterResourceImpl.localClusterResource;
+import static io.osdf.test.cluster.ResourceApi.resourceApi;
 import static java.nio.file.Files.writeString;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ClusterResourcesTest {
     @TempDir
@@ -49,6 +50,40 @@ class ClusterResourcesTest {
         LocalClusterResourceImpl localResource = localClusterResource(resourcePath);
 
         assertEquals(resourcePath, localResource.path());
+    }
+
+    @Test
+    void updateResource() throws IOException {
+        ResourceApi resourceApi = resourceApi("deployment", "Example");
+        int currentVersion = resourceApi.resourceVersion();
+        LocalClusterResourceImpl resource = localClusterResource(createLocalResource());
+
+        resource.upload(resourceApi);
+
+        assertNotEquals(currentVersion, resourceApi.resourceVersion());
+    }
+
+    @Test
+    void ifImmutableFieldHasChanged_ResourceIsUpdated() throws IOException {
+        ResourceApi resourceApi = resourceApi("deployment", "Example")
+                .expectImmutableChange();
+        int originalVersion = resourceApi.resourceVersion();
+        LocalClusterResourceImpl resource = localClusterResource(createLocalResource());
+
+        resource.upload(resourceApi);
+
+        assertNotEquals(originalVersion, resourceApi.resourceVersion());
+    }
+
+    @Test
+    void testExistsAndDelete() throws IOException {
+        ResourceApi resourceApi = resourceApi("deployment", "Example");
+        LocalClusterResourceImpl resource = localClusterResource(createLocalResource());
+
+        assertTrue(resource.exists(resourceApi));
+
+        resource.delete(resourceApi);
+        assertFalse(resource.exists(resourceApi));
     }
 
     private Path createLocalResource() throws IOException {
