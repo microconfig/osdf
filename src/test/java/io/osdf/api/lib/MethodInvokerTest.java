@@ -1,7 +1,6 @@
-package io.microconfig.osdf.api;
+package io.osdf.api.lib;
 
 import io.osdf.common.exceptions.OSDFException;
-import io.osdf.api.lib.MethodInvoker;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;

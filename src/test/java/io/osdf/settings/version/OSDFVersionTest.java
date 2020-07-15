@@ -1,4 +1,4 @@
-package io.microconfig.osdf.state;
+package io.osdf.settings.version;
 
 import io.osdf.settings.version.OsdfVersion;
 import org.junit.jupiter.api.Test;

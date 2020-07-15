@@ -1,4 +1,4 @@
-package io.microconfig.osdf.api.example;
+package io.osdf.api.lib.example;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

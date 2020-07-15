@@ -1,8 +1,7 @@
-package io.microconfig.osdf.api;
+package io.osdf.api.lib;
 
 import io.osdf.api.lib.annotations.ConsoleParam;
 import io.osdf.api.lib.parameter.ArgParameter;
-import io.osdf.api.lib.ApiArgsGetter;
 import org.apache.commons.cli.ParseException;
 import org.junit.jupiter.api.Test;
 

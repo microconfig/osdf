@@ -1,4 +1,4 @@
-package io.microconfig.osdf.api.example;
+package io.osdf.api.lib.example;
 
 import io.osdf.api.lib.annotations.Import;
 import io.osdf.api.lib.annotations.Named;

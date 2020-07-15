@@ -1,6 +1,6 @@
-package io.microconfig.osdf.api;
+package io.osdf.api.lib;
 
-import io.microconfig.osdf.api.example.ExampleMainApiClass;
+import io.osdf.api.lib.example.ExampleMainApiClass;
 import org.junit.jupiter.api.Test;
 
 import static io.osdf.api.lib.MainApiReader.apiInfo;

@@ -1,4 +1,4 @@
-package io.microconfig.osdf.api;
+package io.osdf.api.lib;
 
 import io.osdf.context.TestContext;
 import org.junit.jupiter.api.Test;

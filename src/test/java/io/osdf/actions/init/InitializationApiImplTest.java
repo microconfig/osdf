@@ -1,4 +1,4 @@
-package io.microconfig.osdf.api.implementations;
+package io.osdf.actions.init;
 
 import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.core.connection.cli.openshift.OpenShiftCli;
