@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 import static io.osdf.actions.init.InitializationApiImpl.initializationApi;
 import static io.osdf.common.Credentials.of;
 import static io.osdf.common.SettingsFile.settingsFile;
-import static io.osdf.context.TestContext.CONFIGS_PATH;
 import static io.osdf.context.TestContext.defaultContext;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Files.list;
@@ -38,7 +37,7 @@ class InitializationApiImplTest {
 
     @Test
     void initLocalConfigs() {
-        initializationApi(context.getPaths(), cli).localConfigs(CONFIGS_PATH, "master");
+        initializationApi(context.getPaths(), cli).localConfigs(context.configsPath(), "master");
         assertTrue(exists(context.getPaths().configsPath()));
     }
 
@@ -57,7 +56,7 @@ class InitializationApiImplTest {
 
     @Test
     void buildIfEnvIsSet() throws IOException {
-        initializationApi(context.getPaths(), cli).localConfigs(CONFIGS_PATH, null);
+        initializationApi(context.getPaths(), cli).localConfigs(context.configsPath(), null);
         initializationApi(context.getPaths(), cli).configs("dev", null);
         try (Stream<Path> files = list(context.getPaths().componentsPath())) {
             List<String> builtComponents = files.map(Path::getFileName)
@@ -70,7 +69,7 @@ class InitializationApiImplTest {
 
     @Test
     void exceptionIfEnvIsNotProvided() {
-        initializationApi(context.getPaths(), cli).localConfigs(CONFIGS_PATH, null);
+        initializationApi(context.getPaths(), cli).localConfigs(context.configsPath(), null);
         assertThrows(OSDFException.class, () -> initializationApi(context.getPaths(), cli).configs(null, null));
     }
 

@@ -12,12 +12,12 @@ class AllMigrationsTest {
 
     @BeforeEach
     void installOsdf() {
-        defaultContext().install();
+        context.install();
     }
 
     @Test
     void successfulMigrations() {
-        defaultContext().createDefaultConfigs();
+        context.createDefaultConfigs();
         allMigrations().apply(context.getPaths());
     }
 

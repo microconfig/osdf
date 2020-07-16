@@ -20,7 +20,7 @@ class FakeJarInstallerTest {
 
     @BeforeEach
     void installOsdf() {
-        defaultContext().install();
+        context.install();
     }
 
     @Test

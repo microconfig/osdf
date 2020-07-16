@@ -12,19 +12,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @RequiredArgsConstructor
 public class FileReplacerTester {
     private final FileReplacer fileReplacer;
-    private final Path path;
+    private final Path destination;
 
-    public static FileReplacerTester fileReplacerTester(FileReplacer fileReplacer, Path path) {
-        return new FileReplacerTester(fileReplacer, path);
+    public static FileReplacerTester fileReplacerTester(FileReplacer fileReplacer, Path destination) {
+        return new FileReplacerTester(fileReplacer, destination);
     }
 
     public void replaceAndCheck() throws IOException {
-        long oldJarModifiedTime = modifiedTime(path);
+        long oldJarModifiedTime = modifiedTime(destination);
         fileReplacer.prepare();
         fileReplacer.replace();
-        long newJarModifiedTime = modifiedTime(path);
+        long newJarModifiedTime = modifiedTime(destination);
         assertTrue(newJarModifiedTime > oldJarModifiedTime);
-
     }
 
     private long modifiedTime(Path path) throws IOException {

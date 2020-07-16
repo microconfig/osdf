@@ -16,7 +16,7 @@ class ScriptInstallerTest {
 
     @BeforeEach
     void installOsdf() {
-        defaultContext().install();
+        context.install();
     }
 
     @Test
