@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import static io.osdf.actions.info.status.job.JobStatus.SUCCEEDED;
 import static io.osdf.actions.info.status.job.JobStatusGetter.jobStatusGetter;
 import static io.osdf.actions.management.deploy.smart.hash.ResourcesHashComputer.resourcesHashComputer;
-import static io.osdf.core.application.job.JobApplication.jobApplication;
+import static io.osdf.core.application.job.JobApplication.jobApp;
 
 @RequiredArgsConstructor
 public class UpToDateJobChecker implements UpToDateChecker {
@@ -23,7 +23,7 @@ public class UpToDateJobChecker implements UpToDateChecker {
 
     @Override
     public boolean check(Application app) {
-        JobApplication jobApp = jobApplication(app);
+        JobApplication jobApp = jobApp(app);
 
         if (jobStatusGetter(cli).statusOf(jobApp) != SUCCEEDED) return false;
         String configHash = new ClusterResourceImpl("job", jobApp.job().name()).label("configHash", cli);

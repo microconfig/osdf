@@ -2,6 +2,8 @@ package io.osdf.test.cluster;
 
 import io.osdf.core.connection.cli.CliOutput;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,12 +18,15 @@ import static java.lang.String.join;
 import static java.util.Arrays.stream;
 import static java.util.regex.Pattern.compile;
 
+@Accessors(fluent = true)
 @RequiredArgsConstructor
 public class PropertiesApi extends TestCli {
     private final String kind;
     private final String name;
 
     private Map<String, String> properties = new HashMap<>();
+    @Setter
+    private boolean ignoreOtherGets = false;
 
     public static PropertiesApi propertiesApi(String kind, String name) {
         return new PropertiesApi(kind, name);
@@ -32,6 +37,10 @@ public class PropertiesApi extends TestCli {
         return this;
     }
 
+    public void clear() {
+        properties.clear();
+    }
+
     @Override
     public CliOutput execute(String command) {
         Matcher matcher = compile("get\\s(.*)\\s(.*)\\s-o custom-columns=(.*)").matcher(command);
@@ -39,7 +48,9 @@ public class PropertiesApi extends TestCli {
 
         String kind = matcher.group(1);
         String name = matcher.group(2);
-        if (!kind.equals(this.kind) || !name.equals(this.name)) return errorOutput("not found", 1);
+        if (!kind.equals(this.kind) || !name.equals(this.name)) {
+            return ignoreOtherGets ? unknown() : errorOutput("not found", 1);
+        }
 
         Map<String, String> queriedProperties = getPropertiesInQuery(matcher);
 

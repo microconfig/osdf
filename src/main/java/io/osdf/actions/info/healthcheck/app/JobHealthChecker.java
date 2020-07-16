@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.nio.file.Path;
 
 import static io.osdf.common.yaml.YamlObject.yaml;
-import static io.osdf.core.application.job.JobApplication.jobApplication;
+import static io.osdf.core.application.job.JobApplication.jobApp;
 import static java.util.Objects.requireNonNullElse;
 
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class JobHealthChecker implements AppHealthChecker {
 
     @Override
     public boolean check(Application app) {
-        JobApplication jobApp = jobApplication(app);
+        JobApplication jobApp = jobApp(app);
         return cli.execute("wait --for=condition=complete --timeout=" + getWaitTimeout(jobApp) + "s job/" + jobApp.job().name())
                 .ok();
     }

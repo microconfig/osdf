@@ -25,7 +25,7 @@ public class ClusterJobImpl implements ClusterJob {
         return !cli.execute("get job " + name)
                 .getOutput()
                 .toLowerCase()
-                .contains("error");
+                .contains("not found");
     }
 
     @Override

@@ -24,7 +24,6 @@ import static io.osdf.core.cluster.resource.properties.ResourceProperties.resour
 import static java.util.Map.of;
 import static java.util.stream.IntStream.range;
 
-
 public class ServiceStatusRows implements RowColumnsWithStatus {
     private final ClusterCli cli;
     private final ServiceApplication service;

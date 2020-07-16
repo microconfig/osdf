@@ -12,6 +12,7 @@ import static io.osdf.common.utils.StringUtils.castToInteger;
 import static io.osdf.core.connection.cli.CliOutput.errorOutput;
 import static io.osdf.core.connection.cli.CliOutput.output;
 import static io.osdf.test.cluster.PropertiesApi.propertiesApi;
+import static io.osdf.test.cluster.ResourceApi.resourceApi;
 import static io.osdf.test.cluster.TestCliUtils.*;
 import static java.lang.String.join;
 import static java.util.Arrays.stream;
@@ -27,6 +28,7 @@ public class DeploymentApi extends TestCli {
     private final String name;
     private final List<String> labels;
     private final PropertiesApi propertiesApi;
+    private final ResourceApi deploymentResourceApi;
 
     @Getter
     private List<String> pods = of("pod/pod1", "pod/pod2");
@@ -36,13 +38,23 @@ public class DeploymentApi extends TestCli {
 
         PropertiesApi propertiesApi = propertiesApi(kind, name);
         propertiesApi.add(kind.equals("deployment") ? "spec.selector.matchLabels" : "spec.selector", "map[" + labels.get(0) + "]");
+        propertiesApi.add("spec.replicas", "2"); //TODO is not updated must improve
+        propertiesApi.add("status.replicas", "2");
+        propertiesApi.add("status.readyReplicas", "2");
+        propertiesApi.add("status.availableReplicas", "2");
 
-        return new DeploymentApi(kind, name, labels, propertiesApi);
+        return new DeploymentApi(kind, name, labels, propertiesApi, resourceApi(kind, name));
+    }
+
+    public DeploymentApi ignoreOtherGets(boolean ignore) {
+        deploymentResourceApi.ignoreOtherGets(ignore);
+        propertiesApi.ignoreOtherGets(ignore);
+        return this;
     }
 
     @Override
     public CliOutput execute(String command) {
-        return executeUsing(command, of(propertiesApi::execute, this::pods, this::scale));
+        return executeUsing(command, of(deploymentResourceApi::execute, propertiesApi::execute, this::pods, this::scale));
     }
 
     private CliOutput pods(String command) {

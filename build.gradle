@@ -88,6 +88,11 @@ jacocoTestReport {
         html.enabled true
         xml.enabled true
     }
+    afterEvaluate {
+        classDirectories.setFrom files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: 'io/osdf/api/parameters')
+        })
+    }
 }
 
 sonarqube {

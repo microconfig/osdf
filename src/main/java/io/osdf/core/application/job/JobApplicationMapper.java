@@ -5,7 +5,7 @@ import io.osdf.core.application.core.files.loaders.ApplicationMapper;
 import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
 
-import static io.osdf.core.application.job.JobApplication.jobApplication;
+import static io.osdf.core.application.job.JobApplication.jobApp;
 
 @RequiredArgsConstructor
 public class JobApplicationMapper implements ApplicationMapper<JobApplication> {
@@ -22,6 +22,6 @@ public class JobApplicationMapper implements ApplicationMapper<JobApplication> {
 
     @Override
     public JobApplication map(ApplicationFiles files) {
-        return jobApplication(files, cli);
+        return JobApplication.jobApp(files, cli);
     }
 }

@@ -24,11 +24,14 @@ public class ResourceApi extends TestCli {
     private final String kind;
     private final String name;
 
-    private boolean immutableError = false;
     @Getter @Setter
     private boolean exists = true;
     @Getter
     private int resourceVersion = current().nextInt();
+
+    private boolean immutableError = false;
+    @Setter
+    private boolean ignoreOtherGets = false;
 
     public static ResourceApi resourceApi(String kind, String name) {
         return new ResourceApi(kind, name);
@@ -70,12 +73,14 @@ public class ResourceApi extends TestCli {
     }
 
     private CliOutput get(String command) {
-        Matcher matcher = compile("get (.*)\\s(.*)").matcher(command);
+        Matcher matcher = compile("get ([^\\s]*?) ([^\\s]*?)$").matcher(command);
         if (!matcher.matches()) return unknown();
 
         String kind = matcher.group(1);
         String name = matcher.group(2);
-        if (!kind.equals(this.kind) || !name.equals(this.name)) return errorOutput("not found", 1);
+        if (!kind.equals(this.kind) || !name.equals(this.name)) {
+            return ignoreOtherGets ? unknown() : errorOutput("not found", 1);
+        }
 
         if (!exists) return errorOutput("not found", 1);
         return output(kind + "/" + name);
