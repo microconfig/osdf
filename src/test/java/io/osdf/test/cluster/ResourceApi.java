@@ -4,6 +4,7 @@ import io.osdf.core.cluster.resource.ClusterResourceImpl;
 import io.osdf.core.connection.cli.CliOutput;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.nio.file.Path;
@@ -25,7 +26,7 @@ public class ResourceApi extends TestCli {
     private final String name;
 
     private boolean immutableError = false;
-    @Getter
+    @Getter @Setter
     private boolean exists = true;
     @Getter
     private int resourceVersion = current().nextInt();
@@ -48,6 +49,12 @@ public class ResourceApi extends TestCli {
         return unknown();
     }
 
+    public void update() {
+        resourceVersion = current().nextInt();
+        exists = true;
+        immutableError = false;
+    }
+
     private CliOutput apply(String command) {
         Matcher matcher = compile("apply -f (.*)").matcher(command);
         if (!matcher.matches()) return unknown();
@@ -60,7 +67,7 @@ public class ResourceApi extends TestCli {
             immutableError = false;
             return errorOutput("field is immutable", 1);
         }
-        resourceVersion = current().nextInt();
+        update();
         return output("ok");
     }
 

@@ -2,7 +2,7 @@ app:
   version: latest
 
 config:
-  version: custom
+  version: master
 
 osdf:
   configmap:

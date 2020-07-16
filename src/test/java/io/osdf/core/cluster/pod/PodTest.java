@@ -1,14 +1,14 @@
-package io.osdf.core.connection.cli.openshift;
+package io.osdf.core.cluster.pod;
 
-import io.osdf.core.cluster.pod.Pod;
 import io.osdf.common.exceptions.OSDFException;
+import io.osdf.core.connection.cli.openshift.OpenShiftCli;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static io.osdf.core.connection.cli.CliOutput.output;
 import static io.osdf.core.cluster.pod.Pod.fromPods;
 import static io.osdf.core.cluster.pod.Pod.pod;
+import static io.osdf.core.connection.cli.CliOutput.output;
 import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

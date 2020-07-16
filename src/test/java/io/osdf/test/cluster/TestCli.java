@@ -5,7 +5,7 @@ import io.osdf.core.connection.cli.ClusterCli;
 
 import static io.osdf.core.connection.cli.CliOutput.errorOutput;
 
-public class TestCli implements ClusterCli {
+public class TestCli implements ClusterCli, ExtendableApi {
     @Override
     public CliOutput execute(String command) {
         return errorOutput("unknown command", 1);

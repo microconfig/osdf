@@ -132,6 +132,6 @@ public class ServiceStatusRows implements RowColumnsWithStatus {
                 "available", "status.availableReplicas",
                 "replicas", "spec.replicas"
         ));
-        return properties.get("available") + "/" + properties.get("replicas");
+        return (properties.get("available").equals("<none>") ? "0" : properties.get("available")) + "/" + properties.get("replicas");
     }
 }
