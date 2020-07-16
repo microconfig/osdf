@@ -12,8 +12,7 @@ import static io.osdf.common.utils.StringUtils.castToInteger;
 import static io.osdf.core.connection.cli.CliOutput.errorOutput;
 import static io.osdf.core.connection.cli.CliOutput.output;
 import static io.osdf.test.cluster.PropertiesApi.propertiesApi;
-import static io.osdf.test.cluster.TestCliUtils.isUnknown;
-import static io.osdf.test.cluster.TestCliUtils.unknown;
+import static io.osdf.test.cluster.TestCliUtils.*;
 import static java.lang.String.join;
 import static java.util.Arrays.stream;
 import static java.util.List.of;
@@ -43,16 +42,7 @@ public class DeploymentApi extends TestCli {
 
     @Override
     public CliOutput execute(String command) {
-        CliOutput propertiesOutput = propertiesApi.execute(command);
-        if (!isUnknown(propertiesOutput)) return propertiesOutput;
-
-        CliOutput podsOutput = pods(command);
-        if (!isUnknown(podsOutput)) return podsOutput;
-
-        CliOutput scaleOutput = scale(command);
-        if (!isUnknown(scaleOutput)) return scaleOutput;
-
-        return unknown();
+        return executeUsing(command, of(propertiesApi::execute, this::pods, this::scale));
     }
 
     private CliOutput pods(String command) {

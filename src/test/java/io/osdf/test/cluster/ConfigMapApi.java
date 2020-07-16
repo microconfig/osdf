@@ -6,8 +6,8 @@ import java.util.regex.Matcher;
 
 import static io.osdf.core.connection.cli.CliOutput.errorOutput;
 import static io.osdf.core.connection.cli.CliOutput.output;
-import static io.osdf.test.cluster.TestCliUtils.isUnknown;
-import static io.osdf.test.cluster.TestCliUtils.unknown;
+import static io.osdf.test.cluster.TestCliUtils.*;
+import static java.util.List.of;
 import static java.util.regex.Pattern.compile;
 
 public class ConfigMapApi extends ResourceApi {
@@ -24,13 +24,7 @@ public class ConfigMapApi extends ResourceApi {
 
     @Override
     public CliOutput execute(String command) {
-        CliOutput resourceApiOutput = super.execute(command);
-        if (!isUnknown(resourceApiOutput)) return resourceApiOutput;
-
-        CliOutput createOutput = create(command);
-        if (!isUnknown(createOutput)) return createOutput;
-
-        return unknown();
+        return executeUsing(command, of(super::execute, this::create));
     }
 
     private CliOutput create(String command) {

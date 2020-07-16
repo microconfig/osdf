@@ -13,9 +13,8 @@ import java.util.regex.Matcher;
 import static io.osdf.core.cluster.resource.ClusterResourceImpl.fromPath;
 import static io.osdf.core.connection.cli.CliOutput.errorOutput;
 import static io.osdf.core.connection.cli.CliOutput.output;
-import static io.osdf.test.cluster.TestCliUtils.isUnknown;
-import static io.osdf.test.cluster.TestCliUtils.unknown;
-import static java.nio.file.Path.of;
+import static io.osdf.test.cluster.TestCliUtils.*;
+import static java.util.List.of;
 import static java.util.concurrent.ThreadLocalRandom.current;
 import static java.util.regex.Pattern.compile;
 
@@ -37,29 +36,14 @@ public class ResourceApi extends TestCli {
 
     @Override
     public CliOutput execute(String command) {
-        CliOutput applyOutput = apply(command);
-        if (!isUnknown(applyOutput)) return applyOutput;
-
-        CliOutput deleteOutput = delete(command);
-        if (!isUnknown(deleteOutput)) return deleteOutput;
-
-        CliOutput getOutput = get(command);
-        if (!isUnknown(getOutput)) return getOutput;
-
-        return unknown();
-    }
-
-    public void update() {
-        resourceVersion = current().nextInt();
-        exists = true;
-        immutableError = false;
+        return executeUsing(command, of(this::apply, this::delete, this::get));
     }
 
     private CliOutput apply(String command) {
         Matcher matcher = compile("apply -f (.*)").matcher(command);
         if (!matcher.matches()) return unknown();
 
-        Path resourcePath = of(matcher.group(1));
+        Path resourcePath = Path.of(matcher.group(1));
         ClusterResourceImpl resource = fromPath(resourcePath);
         if (!resource.kind().equals(kind) || !resource.name().equals(name)) return output("ok");
 
@@ -95,6 +79,12 @@ public class ResourceApi extends TestCli {
 
         if (!exists) return errorOutput("not found", 1);
         return output(kind + "/" + name);
+    }
+
+    public void update() {
+        resourceVersion = current().nextInt();
+        exists = true;
+        immutableError = false;
     }
 
     public ResourceApi expectImmutableChange() {
