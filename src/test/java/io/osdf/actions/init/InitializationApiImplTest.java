@@ -1,10 +1,10 @@
 package io.osdf.actions.init;
 
-import io.osdf.core.connection.cli.ClusterCli;
-import io.osdf.core.connection.cli.openshift.OpenShiftCli;
-import io.osdf.common.Credentials;
+import io.osdf.actions.management.deploy.smart.image.RegistryCredentials;
 import io.osdf.common.exceptions.OSDFException;
 import io.osdf.context.TestContext;
+import io.osdf.core.connection.cli.ClusterCli;
+import io.osdf.core.connection.cli.openshift.OpenShiftCli;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static io.osdf.actions.init.InitializationApiImpl.initializationApi;
+import static io.osdf.common.Credentials.of;
+import static io.osdf.common.SettingsFile.settingsFile;
 import static io.osdf.context.TestContext.CONFIGS_PATH;
 import static io.osdf.context.TestContext.defaultContext;
 import static java.nio.file.Files.exists;
@@ -29,7 +31,7 @@ class InitializationApiImplTest {
     private final ClusterCli cli = mock(ClusterCli.class);
 
     @BeforeEach
-    void prepareEnv() throws IOException {
+    void prepareEnv() {
         context.install();
         context.prepareConfigs();
     }
@@ -38,6 +40,14 @@ class InitializationApiImplTest {
     void initLocalConfigs() {
         initializationApi(context.getPaths(), cli).localConfigs(CONFIGS_PATH, "master");
         assertTrue(exists(context.getPaths().configsPath()));
+    }
+
+    @Test
+    void initRegistry() {
+        initializationApi(context.getPaths(), cli).registry("example.com", of("user:pass"));
+        RegistryCredentials settings = settingsFile(RegistryCredentials.class, context.getPaths().settings().registryCredentials())
+                .getSettings();
+        assertEquals(of("user:pass"), settings.getForUrl("example.com"));
     }
 
     @Test
@@ -76,12 +86,12 @@ class InitializationApiImplTest {
 
     @Test
     void exceptionIfBothArgsForOpenShiftInit() {
-        assertThrows(OSDFException.class, () -> initializationApi(context.getPaths(), cli).openshift(Credentials.of("user:pass"), "token", false));
+        assertThrows(OSDFException.class, () -> initializationApi(context.getPaths(), cli).openshift(of("user:pass"), "token", false));
     }
 
     @Test
     void initOpenShift() {
-        initializationApi(context.getPaths(), cli).openshift(Credentials.of("user:pass"), null, false);
+        initializationApi(context.getPaths(), cli).openshift(of("user:pass"), null, false);
         exists(context.getPaths().settings().openshift());
 
         initializationApi(context.getPaths(), cli).openshift(null, "token", false);

@@ -16,7 +16,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ServiceStatusGetterTest {
-
     @Test
     void notFoundIfServiceDoesntExist() {
         ServiceApplication service = service(false);
