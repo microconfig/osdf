@@ -4,12 +4,12 @@ import io.osdf.core.application.service.ServiceApplication;
 import io.osdf.core.cluster.deployment.ClusterDeployment;
 import io.osdf.core.cluster.resource.ClusterResource;
 import io.osdf.core.connection.cli.ClusterCli;
-import io.osdf.test.cluster.PropertiesApi;
+import io.osdf.test.cluster.api.PropertiesApi;
 import org.junit.jupiter.api.Test;
 
 import static io.osdf.actions.info.status.service.ServiceStatus.*;
 import static io.osdf.actions.info.status.service.ServiceStatusGetter.serviceStatusGetter;
-import static io.osdf.test.cluster.PropertiesApi.propertiesApi;
+import static io.osdf.test.cluster.api.PropertiesApi.propertiesApi;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;

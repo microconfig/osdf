@@ -1,31 +1,30 @@
-package io.osdf.test.cluster;
+package io.osdf.test.cluster.api;
 
 import io.osdf.core.application.core.description.CoreDescription;
 import io.osdf.core.application.core.description.ResourceDescription;
 import io.osdf.core.application.job.JobDescription;
 import io.osdf.core.connection.cli.CliOutput;
+import io.osdf.test.cluster.TestApiExecutor;
+import io.osdf.test.cluster.TestCli;
 import lombok.RequiredArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.Map;
 
-import static io.osdf.test.cluster.ConfigMapApi.configMapApi;
-import static io.osdf.test.cluster.JobApi.jobApi;
-import static io.osdf.test.cluster.TestCliUtils.executeUsing;
+import static io.osdf.test.cluster.api.ConfigMapApi.configMapApi;
+import static io.osdf.test.cluster.api.JobApi.jobApi;
 import static java.util.List.of;
 
 @RequiredArgsConstructor
 public class JobAppApi extends TestCli {
-    private final String name;
     private final ConfigMapApi configMapApi;
     private final JobApi jobApi;
 
     public static JobAppApi jobAppApi(String name) {
-        ConfigMapApi configMapApi = configMapApi(name + "-osdf").setContent(initialContent(name));
-        configMapApi.ignoreOtherGets(true);
+        ConfigMapApi configMapApi = configMapApi(name + "-osdf")
+                .setContent(initialContent(name));
 
-        JobApi jobApi = jobApi(name).ignoreOtherGets(true);
-        return new JobAppApi(name, configMapApi, jobApi);
+        return new JobAppApi(configMapApi, jobApi(name));
     }
 
     private static Map<String, String> initialContent(String name) {
@@ -44,6 +43,9 @@ public class JobAppApi extends TestCli {
 
     @Override
     public CliOutput execute(String command) {
-        return executeUsing(command, of(configMapApi::execute, jobApi::execute));
+        return TestApiExecutor.builder()
+                .executor(configMapApi::execute)
+                .executor(jobApi::execute)
+                .build().execute(command);
     }
 }

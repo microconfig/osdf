@@ -1,6 +1,6 @@
 package io.osdf.core.cluster.resource;
 
-import io.osdf.test.cluster.ResourceApi;
+import io.osdf.test.cluster.api.ResourceApi;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -9,7 +9,7 @@ import java.nio.file.Path;
 
 import static io.osdf.core.cluster.resource.ClusterResourceImpl.*;
 import static io.osdf.core.cluster.resource.LocalClusterResourceImpl.localClusterResource;
-import static io.osdf.test.cluster.ResourceApi.resourceApi;
+import static io.osdf.test.cluster.api.ResourceApi.resourceApi;
 import static java.nio.file.Files.writeString;
 import static org.junit.jupiter.api.Assertions.*;
 

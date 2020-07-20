@@ -2,11 +2,11 @@ package io.osdf.core.cluster.job;
 
 import io.osdf.core.cluster.resource.ClusterResource;
 import io.osdf.core.connection.cli.ClusterCli;
-import io.osdf.test.cluster.JobApi;
+import io.osdf.test.cluster.api.JobApi;
 import org.junit.jupiter.api.Test;
 
 import static io.osdf.core.cluster.job.ClusterJobImpl.clusterJob;
-import static io.osdf.test.cluster.JobApi.jobApi;
+import static io.osdf.test.cluster.api.JobApi.jobApi;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 

@@ -1,6 +1,6 @@
 package io.osdf.core.application.core.description;
 
-import io.osdf.test.cluster.ConfigMapApi;
+import io.osdf.test.cluster.api.ConfigMapApi;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Test;
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 import static io.osdf.core.application.core.description.DescriptionUploader.descriptionUploader;
-import static io.osdf.test.cluster.ConfigMapApi.configMapApi;
+import static io.osdf.test.cluster.api.ConfigMapApi.configMapApi;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

@@ -1,32 +1,29 @@
-package io.osdf.test.cluster;
+package io.osdf.test.cluster.api;
 
 import io.osdf.core.application.core.description.CoreDescription;
 import io.osdf.core.application.core.description.ResourceDescription;
 import io.osdf.core.application.service.ServiceDescription;
 import io.osdf.core.connection.cli.CliOutput;
+import io.osdf.test.cluster.TestApiExecutor;
+import io.osdf.test.cluster.TestCli;
 import lombok.RequiredArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.Map;
 
-import static io.osdf.test.cluster.ConfigMapApi.configMapApi;
-import static io.osdf.test.cluster.DeploymentApi.deploymentApi;
-import static io.osdf.test.cluster.TestCliUtils.executeUsing;
+import static io.osdf.test.cluster.api.ConfigMapApi.configMapApi;
+import static io.osdf.test.cluster.api.DeploymentApi.deploymentApi;
 import static java.util.List.of;
 
 @RequiredArgsConstructor
 public class ServiceApi extends TestCli {
-    private final String name;
     private final ConfigMapApi configMapApi;
     private final DeploymentApi deploymentApi;
 
     public static ServiceApi serviceApi(String name) {
-        ConfigMapApi configMapApi = configMapApi(name + "-osdf").setContent(initialContent(name));
-        configMapApi.ignoreOtherGets(true);
-
-        DeploymentApi deploymentApi = deploymentApi("deployment", name);
-        deploymentApi.ignoreOtherGets(true);
-        return new ServiceApi(name, configMapApi, deploymentApi);
+        ConfigMapApi configMapApi = configMapApi(name + "-osdf")
+                .setContent(initialContent(name));
+        return new ServiceApi(configMapApi, deploymentApi("deployment", name));
     }
 
     private static Map<String, String> initialContent(String name) {
@@ -45,6 +42,9 @@ public class ServiceApi extends TestCli {
 
     @Override
     public CliOutput execute(String command) {
-        return executeUsing(command, of(configMapApi::execute, deploymentApi::execute));
+        return TestApiExecutor.builder()
+                .executor(configMapApi::execute)
+                .executor(deploymentApi::execute)
+                .build().execute(command);
     }
 }
