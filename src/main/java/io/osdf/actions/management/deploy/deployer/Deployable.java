@@ -22,7 +22,7 @@ public interface Deployable {
 
     String name();
 
-    void deploy();
+    boolean deploy();
 
     boolean check();
 }

@@ -36,7 +36,7 @@ public class ImageVersionReplacer {
         String version = findVersion(versionEntry);
         if (version == null) throw new OSDFException("Bad image version format: " + versionEntry);
 
-        Boolean continueOnError = yaml(files.getPath("deploy.yaml"))
+        Boolean continueOnError = files.deployProperties()
                 .get("osdf.replaceVersionWithDigest.continueOnError");
 
         getDigestAndReplace(files.metadata().getMainResource(), versionEntry, version,

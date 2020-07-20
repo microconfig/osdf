@@ -23,8 +23,8 @@ public class DeployableJob implements Deployable {
     }
 
     @Override
-    public void deploy() {
-        jobRunner(cli).runJob(jobApp);
+    public boolean deploy() {
+        return jobRunner(cli).runJob(jobApp);
     }
 
     @Override

@@ -9,7 +9,6 @@ import lombok.Setter;
 
 import java.util.List;
 
-import static io.osdf.common.yaml.YamlObject.yaml;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @Getter
@@ -23,7 +22,7 @@ public class CoreDescription {
     private String type;
 
     public static CoreDescription from(ApplicationFiles files) {
-        YamlObject yaml = yaml(files.getPath("deploy.yaml"));
+        YamlObject yaml = files.deployProperties();
         String appVersion = yaml.get("app.version");
         String configVersion = yaml.get("config.version");
         List<String> resources = files.resources().stream()

@@ -33,10 +33,15 @@ public class ConfigMapApi extends ResourceApi {
     @Override
     public CliOutput execute(String command) {
         return TestApiExecutor.builder()
+                .existenceChecker(() -> checkExistence(command))
                 .executor(super::execute)
                 .executor(propertiesApi::execute)
                 .pattern("create configmap (.*?) (.*)", this::create)
                 .build().execute(command);
+    }
+
+    private boolean checkExistence(String command) {
+        return !command.startsWith("get") || exists();
     }
 
     private CliOutput create(Matcher matcher) {

@@ -16,6 +16,7 @@ import static io.osdf.actions.management.restart.DeploymentRestarter.deploymentR
 import static io.osdf.core.application.core.AllApplications.all;
 import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
 import static io.osdf.core.application.service.ServiceApplicationMapper.service;
+import static io.osdf.core.connection.cli.LoginCliProxy.loginCliProxy;
 
 @RequiredArgsConstructor
 public class ManagementApiImpl implements ManagementApi {
@@ -23,12 +24,11 @@ public class ManagementApiImpl implements ManagementApi {
     private final ClusterCli cli;
 
     public static ManagementApi managementApi(OsdfPaths paths, ClusterCli cli) {
-        return new ManagementApiImpl(paths, cli);
+        return loginCliProxy(new ManagementApiImpl(paths, cli), cli);
     }
 
     @Override
     public void deploy(List<String> serviceNames, String mode, Boolean smart) {
-        cli.login();
         if ("restricted".equals(mode) && smart) throw new OSDFException("Smart deploy is not possible for restricted deploy mode");
         boolean ok = deployCommand(paths, cli).deploy(serviceNames, smart);
         announce(ok ? "OK" : "Some apps have failed");
@@ -36,7 +36,6 @@ public class ManagementApiImpl implements ManagementApi {
 
     @Override
     public void restart(List<String> components) {
-        cli.login();
         DeploymentRestarter restarter = deploymentRestarter(cli);
         activeRequiredAppsLoader(paths, components)
                 .load(service(cli))
@@ -45,7 +44,6 @@ public class ManagementApiImpl implements ManagementApi {
 
     @Override
     public void stop(List<String> components) {
-        cli.login();
         activeRequiredAppsLoader(paths, components)
                 .load(service(cli))
                 .forEach(service -> service.deployment().scale(0));
@@ -53,13 +51,11 @@ public class ManagementApiImpl implements ManagementApi {
 
     @Override
     public void deletePod(String component, List<String> pods) {
-        cli.login();
         podDeleter(paths, cli).delete(component, pods);
     }
 
     @Override
     public void clearAll(List<String> components) {
-        cli.login();
         activeRequiredAppsLoader(paths, components)
                 .load(all(cli))
                 .forEach(Application::delete);

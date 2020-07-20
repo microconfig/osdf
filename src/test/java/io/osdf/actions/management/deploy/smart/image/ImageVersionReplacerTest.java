@@ -58,7 +58,7 @@ class ImageVersionReplacerTest {
     }
 
     private ApplicationFiles getApplicationFiles(boolean withDigest) throws IOException {
-        Path serviceDir = classpathFile("components/" + (withDigest ? "simple-service" : "without-digest"));
+        Path serviceDir = classpathFile("components/" + (withDigest ? "simple-service" : "without-smart"));
         copyDirectory(serviceDir.toFile(), tempDir.toFile());
 
         MicroConfigComponentDir componentDir = componentDir(tempDir);

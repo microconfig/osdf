@@ -1,5 +1,7 @@
 package io.osdf.settings;
 
+import io.microconfig.core.properties.repository.ComponentNotFoundException;
+import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.local.microconfig.property.PropertyGetter;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,12 @@ public class OsdfConfig {
     }
 
     private String appProperty(String key) {
-        return propertyGetter.get(APPLICATION, COMPONENT_NAME, key);
+        try {
+            return propertyGetter.get(APPLICATION, COMPONENT_NAME, key);
+        } catch (ComponentNotFoundException e) {
+            throw new OSDFException("Component " + COMPONENT_NAME + " not found");
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 }

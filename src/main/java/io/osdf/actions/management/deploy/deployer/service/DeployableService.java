@@ -24,8 +24,8 @@ public class DeployableService implements Deployable {
     }
 
     @Override
-    public void deploy() {
-        serviceDeployer(cli).deploy(service);
+    public boolean deploy() {
+        return serviceDeployer(cli).deploy(service);
     }
 
     @Override
