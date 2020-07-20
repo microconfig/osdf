@@ -1,0 +1,6 @@
+microconfig.mustache.route:
+  fromFile: ${route@configDir}/route.yaml
+  toFile: resources/route.yaml
+
+ssl.enabled: true
+route.suffix:

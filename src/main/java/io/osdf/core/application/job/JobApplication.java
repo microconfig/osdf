@@ -22,11 +22,11 @@ public class JobApplication implements Application {
 
     private ClusterJob job = null;
 
-    public static JobApplication jobApplication(ApplicationFiles files, ClusterCli cli) {
+    public static JobApplication jobApp(ApplicationFiles files, ClusterCli cli) {
         return new JobApplication(cli, application(cli, files));
     }
 
-    public static JobApplication jobApplication(Application app) {
+    public static JobApplication jobApp(Application app) {
         if (!(app instanceof JobApplication)) throw new OSDFException(app.name() + "is not a job");
         return (JobApplication) app;
     }

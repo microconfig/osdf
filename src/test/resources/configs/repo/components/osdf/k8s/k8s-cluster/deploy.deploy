@@ -1,0 +1,3 @@
+project: default
+cluster.url.api: https://api.${this@cluster.url.base}:6443
+cluster.url.base: mycluster.com

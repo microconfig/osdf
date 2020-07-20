@@ -24,7 +24,6 @@ import static io.osdf.core.cluster.resource.properties.ResourceProperties.resour
 import static java.util.Map.of;
 import static java.util.stream.IntStream.range;
 
-
 public class ServiceStatusRows implements RowColumnsWithStatus {
     private final ClusterCli cli;
     private final ServiceApplication service;
@@ -132,6 +131,6 @@ public class ServiceStatusRows implements RowColumnsWithStatus {
                 "available", "status.availableReplicas",
                 "replicas", "spec.replicas"
         ));
-        return properties.get("available") + "/" + properties.get("replicas");
+        return (properties.get("available").equals("<none>") ? "0" : properties.get("available")) + "/" + properties.get("replicas");
     }
 }

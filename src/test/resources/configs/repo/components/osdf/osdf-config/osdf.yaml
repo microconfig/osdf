@@ -1,0 +1,5 @@
+osdf.url: maven-repo.com
+
+osdf.group: io.microconfig
+osdf.artifact: osdf
+osdf.version: 1.5.0

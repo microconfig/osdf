@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: simple-job
+  labels:
+    configHash: <CONFIG_HASH>
+spec:
+  activeDeadlineSeconds: 600
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        name: simple-job
+    spec:
+      containers:
+        - name: simple-job
+          image: my-registry.com/my-repo/simple-job:<IMAGE_DIGEST:latest>
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 1
+              memory: 256M
+            limits:
+              cpu: 1
+              memory: 256M
+      restartPolicy: OnFailure

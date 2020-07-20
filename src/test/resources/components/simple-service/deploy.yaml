@@ -1,0 +1,12 @@
+app:
+  version: latest
+
+config:
+  version: master
+
+osdf:
+  configmap:
+    main:
+      files:
+        - application.yaml
+      name: simple-service

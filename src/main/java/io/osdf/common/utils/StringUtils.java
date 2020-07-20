@@ -2,8 +2,6 @@ package io.osdf.common.utils;
 
 import io.osdf.common.exceptions.PossibleBugException;
 
-import static io.osdf.common.utils.ColorSymbol.RESET;
-import static io.osdf.common.utils.ColorSymbol.values;
 import static java.lang.Integer.parseInt;
 import static java.lang.Integer.valueOf;
 import static java.lang.Math.max;
@@ -19,8 +17,8 @@ public class StringUtils {
 
     public static int coloredStringLength(String s) {
         String result = s;
-        if (s.contains(RESET.asString())) {
-            for (ColorSymbol colorSymbol : values()) {
+        if (s.contains(ColorSymbol.RESET.asString())) {
+            for (ColorSymbol colorSymbol : ColorSymbol.values()) {
                 result = result.replace(colorSymbol.asString(), "");
             }
         }

@@ -1,15 +1,13 @@
 package io.osdf.core.local.microconfig.property;
 
-import io.osdf.common.utils.TestContext;
+import io.osdf.context.TestContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-
 import static io.microconfig.core.configtypes.StandardConfigType.PROCESS;
+import static io.osdf.context.TestContext.defaultContext;
 import static io.osdf.core.local.microconfig.property.PropertyGetter.propertyGetter;
 import static io.osdf.core.local.microconfig.property.PropertySetter.propertySetter;
-import static io.osdf.common.utils.TestContext.defaultContext;
 import static java.nio.file.Path.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -17,7 +15,7 @@ class PropertyGetterSetterTest {
     private final TestContext context = defaultContext();
 
     @BeforeEach
-    void createConfigs() throws IOException {
+    void createConfigs() {
         context.initDev();
     }
 

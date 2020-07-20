@@ -18,7 +18,7 @@ public class ClusterResourceImpl implements ClusterResource {
     private final String name;
 
     public static ClusterResourceImpl clusterResource(String kind, String name) {
-        return new ClusterResourceImpl(kind, name);
+        return new ClusterResourceImpl(kind.toLowerCase(), name);
     }
 
     public static ClusterResourceImpl fromOpenShiftNotation(String notation) {

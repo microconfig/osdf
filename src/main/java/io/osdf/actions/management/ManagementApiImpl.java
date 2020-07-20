@@ -59,6 +59,7 @@ public class ManagementApiImpl implements ManagementApi {
 
     @Override
     public void clearAll(List<String> components) {
+        cli.login();
         activeRequiredAppsLoader(paths, components)
                 .load(all(cli))
                 .forEach(Application::delete);

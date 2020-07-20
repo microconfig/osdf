@@ -50,11 +50,6 @@ public class Pod implements Comparable<Pod> {
                 .throwExceptionIfError();
     }
 
-    public void forceDelete() {
-        cli.execute("delete pod " + name + " --grace-period=0 --force")
-                .throwExceptionIfError();
-    }
-
     public void logs() {
         try {
             Process logs = new ProcessBuilder("/bin/sh", "-c", "oc logs -f " + name + " -c " + componentName)
@@ -80,19 +75,11 @@ public class Pod implements Comparable<Pod> {
     }
 
     public boolean isReady() {
-        List<String> outputLines = cli.execute("get pods " + name + " -o custom-columns=\".readiness:.status.conditions[?(@.type == \\\"Ready\\\")].status\"")
+        List<String> outputLines = cli.execute("get pod " + name + " -o custom-columns=\".readiness:.status.conditions[?(@.type == \\\"Ready\\\")].status\"")
                 .throwExceptionIfError()
                 .getOutputLines();
         if (outputLines.size() < 2) return false;
         return outputLines.get(1).trim().equalsIgnoreCase("true");
-    }
-
-    public boolean checkStressContainer() {
-        return cli.execute("get pod " + name + " -o jsonpath=\"{.spec.containers[*].name}\"")
-                .throwExceptionIfError()
-                .getOutputLines()
-                .stream()
-                .anyMatch(line -> line.contains("stress-sidecar"));
     }
 
     @Override

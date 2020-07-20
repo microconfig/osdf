@@ -1,2 +1,0 @@
-registry.project.url: unknown
-#var image.url: ${this@registry.project.url}/${this@name}:${this@app.version}

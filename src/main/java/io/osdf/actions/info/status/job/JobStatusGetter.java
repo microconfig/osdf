@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 
 import static io.osdf.actions.info.status.job.JobStatus.*;
 import static io.osdf.common.utils.StringUtils.castToInteger;
-import static io.osdf.core.cluster.resource.ClusterResourceImpl.clusterResource;
 import static io.osdf.core.cluster.resource.properties.ResourceProperties.resourceProperties;
 import static java.util.Map.of;
 
@@ -23,7 +22,7 @@ public class JobStatusGetter {
     public JobStatus statusOf(JobApplication jobApp) {
         if (!jobApp.exists()) return NOT_EXECUTED;
 
-        ClusterResource clusterResource = clusterResource("job", jobApp.job().name());
+        ClusterResource clusterResource = jobApp.job().toResource();
         if (!clusterResource.exists(cli)) return NOT_EXECUTED;
 
         ResourceProperties properties = resourceProperties(cli, clusterResource,

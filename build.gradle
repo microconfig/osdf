@@ -8,7 +8,7 @@ plugins {
 }
 
 group 'io.microconfig.osdf'
-version '1.5.0'
+version '1.5.1'
 
 sourceCompatibility = 11
 
@@ -88,14 +88,18 @@ jacocoTestReport {
         html.enabled true
         xml.enabled true
     }
+    afterEvaluate {
+        classDirectories.setFrom files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: 'io/osdf/api/parameters')
+        })
+    }
 }
 
 sonarqube {
     properties {
         property "sonar.projectKey", "microconfig_osdf"
-        property "sonar.sources", "src"
+        property "sonar.sources", "src/main/java"
         property "sonar.binaries", "build/classes"
-        property "sonar.inclusions", "src/main/java/**/*.java"
         property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     }
 }

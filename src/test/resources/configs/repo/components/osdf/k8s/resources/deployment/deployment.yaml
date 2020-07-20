@@ -1,0 +1,72 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: ${this@name}
+  labels:
+    configHash: <CONFIG_HASH>
+spec:
+  selector:
+    matchLabels:
+      application: ${this@name}
+  template:
+    metadata:
+      labels:
+        configHash: <CONFIG_HASH>
+        application: ${this@name}
+    spec:
+      containers:
+        - image: ${this@image.url}
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: >-
+                ${this@java.opts}
+            - name: TZ
+              value: Europe/Moscow
+          imagePullPolicy: Always
+          name: ${this@name}
+          ports:
+            - containerPort: ${app::this@server.port}
+              protocol: TCP
+          readinessProbe:
+{{^ssl.enabled}}
+            httpGet:
+              path: /actuator/health/readiness
+              port: ${app::this@server.port}
+{{/ssl.enabled}}
+{{#ssl.enabled}}
+            tcpSocket:
+              port: ${app::this@server.port}
+{{/ssl.enabled}}
+            initialDelaySeconds: 5
+            periodSeconds: 2
+            failureThreshold: 1
+          volumeMounts:
+            - mountPath: /app/resources/application.yaml
+              name: resources
+              subPath: application.yaml
+            - mountPath: /app/resources/secret.properties
+              name: secrets
+              subPath: secret.properties
+            - mountPath: /app/resources/logback.xml
+              name: resources
+              subPath: logback.xml
+            ${this@additional.mounts:}
+          resources:
+            requests:
+              cpu: ${this@requests.cpu}
+              memory: ${this@requests.memory}
+            limits:
+              cpu: ${this@limits.cpu}
+              memory: ${this@limits.memory}
+      volumes:
+        - name: resources
+          configMap:
+            name: ${this@name}
+        - name: secrets
+          secret:
+            secretName: limit-manager
+        ${this@additional.volumes:}
+      restartPolicy: Always
+  replicas: ${this@replicas.count:1}
+  strategy:
+    type: ${this@deploy.strategy:RollingUpdate}

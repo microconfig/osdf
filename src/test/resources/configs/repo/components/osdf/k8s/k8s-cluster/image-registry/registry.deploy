@@ -1,0 +1,2 @@
+registry.project.url: my-registry.com/my-repo
+#var image.url: ${this@registry.project.url}/${this@image.name:${this@name}}:<IMAGE_DIGEST:${this@app.version}>
