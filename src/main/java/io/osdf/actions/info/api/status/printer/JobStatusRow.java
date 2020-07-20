@@ -12,7 +12,6 @@ import static io.microconfig.utils.ConsoleColor.*;
 import static io.osdf.actions.info.status.job.JobStatus.NOT_EXECUTED;
 import static io.osdf.actions.info.status.job.JobStatus.SUCCEEDED;
 import static io.osdf.actions.info.status.job.JobStatusGetter.jobStatusGetter;
-import static io.osdf.common.yaml.YamlObject.yaml;
 
 public class JobStatusRow implements RowColumnsWithStatus {
     private final ClusterCli cli;
@@ -53,7 +52,7 @@ public class JobStatusRow implements RowColumnsWithStatus {
         }
 
         JobStatus jobStatus = jobStatusGetter(cli).statusOf(jobApp);
-        YamlObject yaml = yaml(jobApp.files().getPath("deploy.yaml"));
+        YamlObject yaml = jobApp.files().deployProperties();
         printer.addRow(green(jobApp.files().name()),
                 green(formatVersions(jobApp.coreDescription().getAppVersion(), yaml.get("app.version"))),
                 green(formatVersions(jobApp.coreDescription().getConfigVersion(), yaml.get("config.version"))),
@@ -63,7 +62,7 @@ public class JobStatusRow implements RowColumnsWithStatus {
     }
 
     private void addNotFoundRow() {
-        YamlObject yaml = yaml(jobApp.files().getPath("deploy.yaml"));
+        YamlObject yaml = jobApp.files().deployProperties();
         printer.addRow(green(jobApp.files().name()),
                 green(formatVersions("-", yaml.get("app.version"))),
                 green(formatVersions("-", yaml.get("config.version"))),

@@ -1,8 +1,10 @@
 package io.osdf.core.application.core;
 
+import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.application.core.description.CoreDescription;
 import io.osdf.core.application.core.files.ApplicationFiles;
 import io.osdf.core.cluster.resource.ClusterResourceImpl;
+import io.osdf.core.connection.cli.CliOutput;
 import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
 
@@ -53,8 +55,13 @@ public class AbstractApplication implements Application {
     }
 
     public <T> T loadDescription(Class<T> descriptionClass, String key) {
-        String content = cli.execute("get configmap " + descriptionConfigMapName() + " -o custom-columns=\"config:.data." + key + "\"")
-                .throwExceptionIfError()
+        CliOutput output = cli.execute("get configmap " + descriptionConfigMapName() + " -o custom-columns=\"config:.data." + key + "\"");
+        if (!output.ok()) {
+            if (output.getOutput().contains("not found")) throw new OSDFException("Application " + name() + " doesn't exist");
+            output.throwExceptionIfError();
+        }
+
+        String content = output
                 .getOutput()
                 .replaceFirst("config\n", "");
         return createFromString(descriptionClass, content);

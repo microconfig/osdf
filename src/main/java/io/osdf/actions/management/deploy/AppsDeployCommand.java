@@ -1,5 +1,6 @@
 package io.osdf.actions.management.deploy;
 
+import io.osdf.actions.management.deploy.deployer.Deployable;
 import io.osdf.actions.management.deploy.smart.hash.ResourcesHashComputer;
 import io.osdf.actions.management.deploy.smart.image.ImageVersionReplacer;
 import io.osdf.core.application.core.Application;
@@ -56,11 +57,16 @@ public class AppsDeployCommand {
                 apps.parallelStream()
                         .map(app -> of(app, cli))
                         .allMatch(app -> {
-                            app.deploy();
-                            boolean ok = app.check();
-                            info(app.name() + " " + (ok ? green("OK") : red("FAILED")));
-                            return ok;
+                            boolean deployOk = app.deploy();
+                            if (!deployOk) return statusWithLogging(false, app);
+
+                            return statusWithLogging(app.check(), app);
                         }));
+    }
+
+    private boolean statusWithLogging(boolean status, Deployable app) {
+        info(app.name() + " " + (status ? green("OK") : red("FAILED")));
+        return status;
     }
 
     private List<Application> filterApps(boolean smart, List<Application> allApps) {

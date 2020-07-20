@@ -16,6 +16,7 @@ import static io.osdf.actions.info.printer.ColumnPrinter.printer;
 import static io.osdf.core.application.core.AllApplications.all;
 import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.appLoader;
 import static io.osdf.core.application.core.files.loaders.filters.GroupComponentsFilter.groupComponentsFilter;
+import static io.osdf.core.connection.cli.LoginCliProxy.loginCliProxy;
 
 @RequiredArgsConstructor
 public class InfoApiImpl implements InfoApi {
@@ -23,24 +24,21 @@ public class InfoApiImpl implements InfoApi {
     private final ClusterCli cli;
 
     public static InfoApi infoApi(OsdfPaths paths, ClusterCli cli) {
-        return new InfoApiImpl(paths, cli);
+        return loginCliProxy(new InfoApiImpl(paths, cli), cli);
     }
 
     @Override
     public void logs(String component, String pod) {
-        cli.login();
         new LogsCommand(paths, cli).show(component, pod);
     }
 
     @Override
     public void status(List<String> components, Boolean withHealthCheck) {
-        cli.login();
         new StatusCommand(paths, cli, printer(), withHealthCheck).run(components);
     }
 
     @Override
     public void healthcheck(String group, Integer timeout) {
-        cli.login();
         List<Application> apps = appLoader(paths)
                 .withDirFilter(groupComponentsFilter(paths, group))
                 .load(all(cli));
@@ -51,7 +49,6 @@ public class InfoApiImpl implements InfoApi {
 
     @Override
     public void showAll() {
-        cli.login();
         new ShowAllCommand(cli, printer()).run();
     }
 }

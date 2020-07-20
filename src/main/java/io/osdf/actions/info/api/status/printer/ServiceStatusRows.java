@@ -19,7 +19,6 @@ import static io.osdf.actions.info.healthcheck.PodsInfo.podsInfo;
 import static io.osdf.actions.info.status.service.ServiceStatus.NOT_FOUND;
 import static io.osdf.actions.info.status.service.ServiceStatus.READY;
 import static io.osdf.actions.info.status.service.ServiceStatusGetter.serviceStatusGetter;
-import static io.osdf.common.yaml.YamlObject.yaml;
 import static io.osdf.core.cluster.resource.properties.ResourceProperties.resourceProperties;
 import static java.util.Map.of;
 import static java.util.stream.IntStream.range;
@@ -80,7 +79,7 @@ public class ServiceStatusRows implements RowColumnsWithStatus {
     }
 
     private void addMainRow(ClusterDeployment deployment, ServiceStatus status) {
-        YamlObject yaml = yaml(service.files().getPath("deploy.yaml"));
+        YamlObject yaml = service.files().deployProperties();
         printer.addRow(green(service.files().name()),
                 green(formatVersions(service.coreDescription().getAppVersion(), yaml.get("app.version"))),
                 green(formatVersions(service.coreDescription().getConfigVersion(), yaml.get("config.version"))),
@@ -89,7 +88,7 @@ public class ServiceStatusRows implements RowColumnsWithStatus {
     }
 
     private void addNotFoundRow() {
-        YamlObject yaml = yaml(service.files().getPath("deploy.yaml"));
+        YamlObject yaml = service.files().deployProperties();
         printer.addRow(green(service.files().name()),
                 green(formatVersions("-", yaml.get("app.version"))),
                 green(formatVersions("-", yaml.get("config.version"))),

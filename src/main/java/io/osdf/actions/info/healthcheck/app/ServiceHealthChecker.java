@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import static io.microconfig.utils.Logger.error;
-import static io.osdf.common.yaml.YamlObject.yaml;
 import static java.util.Objects.requireNonNullElse;
 
 @RequiredArgsConstructor
@@ -40,7 +39,7 @@ public class ServiceHealthChecker implements AppHealthChecker{
     }
 
     private int timeout(ServiceApplication service) {
-        Integer timeoutInSec = yaml(service.files().getPath("deploy.yaml"))
+        Integer timeoutInSec = service.files().deployProperties()
                 .get("osdf.healthcheck.timeoutInSec");
         return requireNonNullElse(timeoutInSec, 60);
     }

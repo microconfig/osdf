@@ -1,7 +1,6 @@
 package io.osdf.settings.version;
 
 import io.osdf.common.exceptions.OSDFException;
-import io.osdf.settings.paths.OsdfPaths;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
@@ -9,7 +8,6 @@ import java.nio.file.Path;
 
 import static io.osdf.common.SettingsFile.settingsFile;
 import static io.osdf.common.utils.StringUtils.castToInteger;
-import static io.osdf.settings.OsdfConfig.osdfConfig;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode
@@ -30,10 +28,6 @@ public class OsdfVersion {
     public static OsdfVersion fromSettings(Path path) {
         String version = settingsFile(OsdfVersionFile.class, path).getSettings().getVersion();
         return fromString(version);
-    }
-
-    public static OsdfVersion fromConfigs(OsdfPaths paths) {
-        return fromString(osdfConfig(paths).version());
     }
 
     public static OsdfVersion fromString(String s) {

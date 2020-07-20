@@ -1,6 +1,7 @@
 package io.osdf.core.application.core.files;
 
 import io.osdf.common.exceptions.OSDFException;
+import io.osdf.common.yaml.YamlObject;
 import io.osdf.core.application.core.files.metadata.ApplicationMetadata;
 import io.osdf.core.cluster.resource.LocalClusterResource;
 import io.osdf.core.cluster.resource.LocalClusterResourceImpl;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static io.osdf.common.utils.YamlUtils.createFromFile;
+import static io.osdf.common.yaml.YamlObject.yaml;
 import static java.nio.file.Files.list;
 import static java.nio.file.Path.of;
 import static java.util.stream.Collectors.toUnmodifiableList;
@@ -45,6 +47,15 @@ public class ApplicationFilesImpl implements ApplicationFiles {
     @Override
     public ApplicationMetadata metadata() {
         return createFromFile(ApplicationMetadata.class, of(componentDir.root() + "/osdf-metadata.yaml"));
+    }
+
+    @Override
+    public YamlObject deployProperties() {
+        try {
+            return yaml(getPath("deploy.yaml"));
+        } catch (OSDFException e) {
+            throw new OSDFException("Kubernetes components must have deploy.yaml file");
+        }
     }
 
     @Override

@@ -1,12 +1,11 @@
 package io.osdf.actions.info.healthcheck;
 
 import io.osdf.actions.info.healthcheck.pod.PodHealthChecker;
+import io.osdf.common.yaml.YamlObject;
 import io.osdf.core.application.core.files.ApplicationFiles;
 import lombok.RequiredArgsConstructor;
 
 import static io.osdf.actions.info.healthcheck.pod.ReadinessPodHealthChecker.readinessHealthChecker;
-import static io.osdf.common.utils.YamlUtils.get;
-import static io.osdf.common.utils.YamlUtils.loadFromPath;
 import static java.util.Optional.ofNullable;
 
 @RequiredArgsConstructor
@@ -19,13 +18,12 @@ public class HealthCheckerFinder {
     }
 
     public PodHealthChecker find() {
-        Object deployFile = loadFromPath(files.getPath("deploy.yaml"));
-        return readinessHealthChecker(timeout(deployFile));
+        return readinessHealthChecker(timeout(files.deployProperties()));
     }
 
-    private int timeout(Object deployFile) {
+    private int timeout(YamlObject deployProperties) {
         if (timeout > 0) return timeout;
-        Integer timeoutInSec = get(deployFile, "osdf.start.waitSec");
+        Integer timeoutInSec = deployProperties.get("osdf.start.waitSec");
         return ofNullable(timeoutInSec).orElse(60);
     }
 }

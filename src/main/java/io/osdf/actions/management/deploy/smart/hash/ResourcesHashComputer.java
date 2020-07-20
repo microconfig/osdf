@@ -23,7 +23,7 @@ public class ResourcesHashComputer {
 
     public void insertIn(ApplicationFiles files) {
         String currentHash = currentHash(files);
-        if (!currentHash.equals(HASH_PLACEHOLDER)) return;
+        if (currentHash == null || !currentHash.equals(HASH_PLACEHOLDER)) return;
 
         computeAndInsertHash(files);
     }

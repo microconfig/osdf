@@ -4,9 +4,8 @@ import io.osdf.core.connection.context.ClusterProperties;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
-import static io.osdf.core.connection.context.ClusterProperties.properties;
-import static io.osdf.core.local.microconfig.property.PropertyGetter.propertyGetter;
 import static io.osdf.common.SettingsFile.settingsFile;
+import static io.osdf.core.connection.context.ClusterProperties.properties;
 
 @RequiredArgsConstructor
 public class OpenShiftAuthentication {
@@ -18,7 +17,7 @@ public class OpenShiftAuthentication {
 
     public static OpenShiftAuthentication openShiftAuthentication(OsdfPaths paths, OpenShiftCli oc) {
         OpenShiftCredentials credentials = settingsFile(OpenShiftCredentials.class, paths.settings().openshift()).getSettings();
-        ClusterProperties properties = properties(propertyGetter(paths));
+        ClusterProperties properties = properties(paths);
         return new OpenShiftAuthentication(properties.clusterUrl(), properties.project(), credentials, oc);
     }
 

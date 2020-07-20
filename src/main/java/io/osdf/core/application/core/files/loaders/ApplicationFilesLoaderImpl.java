@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static io.osdf.core.application.core.files.loaders.filters.ActiveComponentsFilter.activeComponentsFilter;
+import static io.osdf.core.application.core.files.loaders.filters.AppFilter.isApp;
 import static io.osdf.core.application.core.files.loaders.filters.RequiredComponentsFilter.requiredComponentsFilter;
 import static io.osdf.core.local.component.finder.MicroConfigComponentsFinder.componentsFinder;
 import static io.osdf.core.local.component.loader.ComponentsLoaderImpl.componentsLoader;
-import static java.nio.file.Files.exists;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
@@ -64,14 +64,10 @@ public class ApplicationFilesLoaderImpl implements ApplicationFilesLoader {
     }
 
     private boolean dirFilter(ComponentDir componentDir) {
-        return isApp(componentDir) && dirFilters.stream().allMatch(filter -> filter.test(componentDir));
+        return isApp().test(componentDir) && dirFilters.stream().allMatch(filter -> filter.test(componentDir));
     }
 
     private boolean serviceFilter(ApplicationFiles applicationFiles) {
         return appFilters.stream().allMatch(filter -> filter.test(applicationFiles));
-    }
-
-    private boolean isApp(ComponentDir componentDir) {
-        return exists(componentDir.getPath("resources"));
     }
 }
