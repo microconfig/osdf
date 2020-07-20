@@ -1,8 +1,10 @@
 package io.osdf.core.connection.cli;
 
+import io.osdf.common.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import static java.lang.ClassLoader.getSystemClassLoader;
@@ -23,6 +25,11 @@ public class LoginCliProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         cli.login();
-        return method.invoke(delegate, args);
+        try {
+            return method.invoke(delegate, args);
+        } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof OSDFException) throw e.getCause();
+            throw e;
+        }
     }
 }
