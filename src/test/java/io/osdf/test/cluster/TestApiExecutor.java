@@ -7,8 +7,10 @@ import lombok.Singular;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
+import static io.osdf.core.connection.cli.CliOutput.errorOutput;
 import static io.osdf.test.cluster.TestCliUtils.isUnknown;
 import static io.osdf.test.cluster.TestCliUtils.unknown;
 import static java.util.function.Predicate.not;
@@ -20,8 +22,13 @@ public class TestApiExecutor {
     private final List<Function<String, CliOutput>> executors;
     @Singular
     private final Map<String, Function<Matcher, CliOutput>> patterns;
+    private final Supplier<Boolean> existenceChecker;
 
     public CliOutput execute(String command) {
+        if (existenceChecker != null) {
+            if (!existenceChecker.get()) return errorOutput("not found", 1);
+        }
+
         CliOutput executorsOutput = executors.stream()
                 .map(api -> api.apply(command))
                 .filter(not(TestCliUtils::isUnknown))

@@ -2,8 +2,6 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: simple-service
-  labels:
-    configHash: <CONFIG_HASH>
 spec:
   selector:
     matchLabels:
@@ -11,7 +9,6 @@ spec:
   template:
     metadata:
       labels:
-        configHash: <CONFIG_HASH>
         application: simple-service
     spec:
       containers:
