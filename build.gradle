@@ -100,7 +100,7 @@ sonarqube {
         property "sonar.projectKey", "microconfig_osdf"
         property "sonar.sources", "src"
         property "sonar.binaries", "build/classes"
-        property "sonar.inclusions", "src/main/java/**/*.java"
+        property "sonar.exclusions", "src/test/java/**/*.java"
         property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     }
 }
