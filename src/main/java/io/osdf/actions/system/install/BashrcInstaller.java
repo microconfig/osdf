@@ -37,7 +37,7 @@ public class BashrcInstaller implements FileReplacer {
     }
 
     private String content() {
-        String newEntry = newEntry();
+        String newEntry = withMarkers(newEntry());
         if (!exists(dest)) {
             return newEntry;
         }
@@ -45,7 +45,7 @@ public class BashrcInstaller implements FileReplacer {
         if (shellrcContent.contains(newEntry)) {
             return shellrcContent;
         }
-        return shellrcContent + "\n" + newEntry;
+        return withoutOldEntry(shellrcContent) + "\n" + newEntry;
     }
 
     private String newEntry() {
@@ -55,7 +55,7 @@ public class BashrcInstaller implements FileReplacer {
     }
 
     private String autocomplete() {
-        String source = "source .osdf_completion";
+        String source = "source ~/.osdf_completion";
         if (dest.getFileName().toString().contains("zsh")) {
             return "autoload compinit && compinit -u\n" +
                     "autoload bashcompinit && bashcompinit\n" +
@@ -64,6 +64,17 @@ public class BashrcInstaller implements FileReplacer {
         return source;
     }
 
+    private String withoutOldEntry(String s) {
+        int start = s.indexOf("# osdf-start");
+        if (start == -1) return s;
+
+        int end = s.indexOf("\n", s.indexOf("# osdf-end"));
+        return s.substring(0, start) + s.substring(end + 1);
+    }
+
+    private String withMarkers(String s) {
+        return "# osdf-start\n" + s + "\n# osdf-end\n";
+    }
 
     @Override
     public void replace() {
