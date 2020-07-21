@@ -4,11 +4,14 @@ import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.application.core.description.CoreDescription;
 import io.osdf.core.application.core.files.ApplicationFiles;
 import io.osdf.test.cluster.api.ConfigMapApi;
+import io.osdf.test.cluster.api.ServiceApi;
 import org.junit.jupiter.api.Test;
 
 import static io.osdf.core.application.core.AbstractApplication.application;
+import static io.osdf.core.application.core.AbstractApplication.remoteApplication;
 import static io.osdf.test.cluster.api.ConfigMapApi.configMapApi;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static io.osdf.test.cluster.api.ServiceApi.serviceApi;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,5 +26,15 @@ class AbstractApplicationTest {
 
         assertThrows(OSDFException.class, () ->
                 application(configMapApi, files).loadDescription(CoreDescription.class, "core"));
+    }
+
+    @Test
+    void testDelete() {
+        ServiceApi serviceApi = serviceApi("test-app");
+        AbstractApplication app = remoteApplication("test-app", serviceApi);
+
+        app.delete();
+
+        assertTrue(serviceApi.isDeleted());
     }
 }

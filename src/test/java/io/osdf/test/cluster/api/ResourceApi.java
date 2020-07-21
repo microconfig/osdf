@@ -59,7 +59,7 @@ public class ResourceApi extends TestCli {
     private CliOutput delete(Matcher matcher) {
         String kind = matcher.group(1);
         String name = matcher.group(2);
-        if (!kind.equals(this.kind) || !name.equals(this.name)) return errorOutput("not found", 1);
+        if (!kind.equals(this.kind) || !name.equals(this.name)) return unknown();
 
         if (exists) exists = false;
         if (immutableError) immutableError = false;
