@@ -3,13 +3,17 @@ package io.osdf.common;
 import io.osdf.common.exceptions.PossibleBugException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
+import org.yaml.snakeyaml.Yaml;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.function.BiConsumer;
 
-import static io.osdf.common.utils.YamlUtils.createFromFile;
-import static io.osdf.common.utils.YamlUtils.dump;
+import static io.osdf.common.encryption.Encryptor.encryptor;
+import static io.osdf.common.utils.FileUtils.readAll;
+import static io.osdf.common.utils.FileUtils.writeStringToFile;
+import static io.osdf.common.utils.YamlUtils.createFromString;
 import static java.nio.file.Files.exists;
 
 @RequiredArgsConstructor
@@ -19,8 +23,17 @@ public class SettingsFile<T> {
     private final Path path;
 
     public static <T> SettingsFile<T> settingsFile(Class<T> clazz, Path path) {
-        T file = exists(path) ? createFromFile(clazz, path) : createEmpty(clazz);
-        return new SettingsFile<>(file, path);
+        T settings = exists(path) ? createFromString(clazz, decryptedContent(path)) : createEmpty(clazz);
+        return new SettingsFile<>(settings, path);
+    }
+
+    private static String decryptedContent(Path path) {
+        String content = readAll(path);
+        try {
+            return encryptor.decrypt(content);
+        } catch (EncryptionOperationNotPossibleException e) {
+            return content;
+        }
     }
 
     private static <T> T createEmpty(Class<T> clazz) {
@@ -36,6 +49,8 @@ public class SettingsFile<T> {
     }
 
     public void save() {
-        dump(settings, path);
+        String content = new Yaml().dump(settings);
+        String encryptedContent = encryptor.encrypt(content);
+        writeStringToFile(path, encryptedContent);
     }
 }
