@@ -10,7 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.function.BiConsumer;
 
-import static io.osdf.common.encryption.Encryptor.encryptor;
+import static io.osdf.common.encryption.Encryption.encryptor;
 import static io.osdf.common.utils.FileUtils.readAll;
 import static io.osdf.common.utils.FileUtils.writeStringToFile;
 import static io.osdf.common.utils.YamlUtils.createFromString;

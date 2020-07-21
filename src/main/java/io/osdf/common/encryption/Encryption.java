@@ -5,7 +5,7 @@ import org.jasypt.util.text.TextEncryptor;
 
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
-public class Encryptor {
+public class Encryption {
     public static final TextEncryptor encryptor = getEncryptor();
 
     private static TextEncryptor getEncryptor() {
