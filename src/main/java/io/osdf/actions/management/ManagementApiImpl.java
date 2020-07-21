@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import static io.microconfig.utils.Logger.announce;
+import static io.osdf.actions.management.clearapps.ClearAppsCommand.clearAppsCommand;
 import static io.osdf.actions.management.deletepod.PodDeleter.podDeleter;
 import static io.osdf.actions.management.deploy.AppsDeployCommand.deployCommand;
 import static io.osdf.actions.management.restart.DeploymentRestarter.deploymentRestarter;
@@ -59,5 +60,10 @@ public class ManagementApiImpl implements ManagementApi {
         activeRequiredAppsLoader(paths, components)
                 .load(all(cli))
                 .forEach(Application::delete);
+    }
+
+    @Override
+    public void clearApps() {
+        clearAppsCommand(cli, paths).clear();
     }
 }

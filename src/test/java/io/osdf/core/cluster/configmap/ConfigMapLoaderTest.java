@@ -1,4 +1,4 @@
-package io.osdf.core.application.core.description;
+package io.osdf.core.cluster.configmap;
 
 import io.osdf.test.cluster.api.ConfigMapApi;
 import lombok.Getter;
@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static io.osdf.core.application.core.description.DescriptionUploader.descriptionUploader;
+import static io.osdf.core.cluster.configmap.ConfigMapLoader.configMapLoader;
 import static io.osdf.test.cluster.api.ConfigMapApi.configMapApi;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class DescriptionUploaderTest {
+class ConfigMapLoaderTest {
     @Getter @Setter
     private static class SomeDescription {
         private String value;
@@ -21,7 +21,7 @@ class DescriptionUploaderTest {
     @Test
     void updateDescription() {
         ConfigMapApi configMapApi = configMapApi("name");
-        DescriptionUploader uploader = descriptionUploader(configMapApi);
+        ConfigMapLoader uploader = configMapLoader(configMapApi);
         int originalVersion = configMapApi.resourceVersion();
 
         uploader.upload("name", Map.of(
@@ -36,7 +36,7 @@ class DescriptionUploaderTest {
         ConfigMapApi configMapApi = configMapApi("name");
         configMapApi.exists(false);
 
-        DescriptionUploader uploader = descriptionUploader(configMapApi);
+        ConfigMapLoader uploader = configMapLoader(configMapApi);
 
         uploader.upload("name", Map.of(
                 "description", new SomeDescription()

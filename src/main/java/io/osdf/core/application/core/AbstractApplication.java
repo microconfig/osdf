@@ -4,27 +4,32 @@ import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.application.core.description.CoreDescription;
 import io.osdf.core.application.core.files.ApplicationFiles;
 import io.osdf.core.cluster.resource.ClusterResourceImpl;
-import io.osdf.core.connection.cli.CliOutput;
 import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
 
-import static io.osdf.common.utils.YamlUtils.createFromString;
+import static io.microconfig.utils.Logger.info;
+import static io.osdf.core.cluster.configmap.ConfigMapLoader.configMapLoader;
 import static io.osdf.core.cluster.resource.ClusterResourceImpl.clusterResource;
 
 @RequiredArgsConstructor
 public class AbstractApplication implements Application {
+    private final String name;
     private final ClusterCli cli;
     private final ApplicationFiles files;
 
     private CoreDescription coreDescription = null;
 
     public static AbstractApplication application(ClusterCli cli, ApplicationFiles files) {
-        return new AbstractApplication(cli, files);
+        return new AbstractApplication(files.name(), cli, files);
+    }
+
+    public static AbstractApplication remoteApplication(String name, ClusterCli cli) {
+        return new AbstractApplication(name, cli, null);
     }
 
     @Override
     public String name() {
-        return files.name();
+        return name;
     }
 
     @Override
@@ -34,6 +39,7 @@ public class AbstractApplication implements Application {
 
     @Override
     public ApplicationFiles files() {
+        if (files == null) throw new OSDFException("Application " + name + " is remote");
         return files;
     }
 
@@ -45,6 +51,7 @@ public class AbstractApplication implements Application {
                 .map(ClusterResourceImpl::fromOpenShiftNotation)
                 .forEach(resource -> resource.delete(cli));
         clusterResource("configmap", descriptionConfigMapName()).delete(cli);
+        info("Deleted " + name());
     }
 
     @Override
@@ -55,16 +62,7 @@ public class AbstractApplication implements Application {
     }
 
     public <T> T loadDescription(Class<T> descriptionClass, String key) {
-        CliOutput output = cli.execute("get configmap " + descriptionConfigMapName() + " -o custom-columns=\"config:.data." + key + "\"");
-        if (!output.ok()) {
-            if (output.getOutput().contains("not found")) throw new OSDFException("Application " + name() + " doesn't exist");
-            output.throwExceptionIfError();
-        }
-
-        String content = output
-                .getOutput()
-                .replaceFirst("config\n", "");
-        return createFromString(descriptionClass, content);
+        return configMapLoader(cli).load(descriptionConfigMapName(), key, descriptionClass);
     }
 
     public String descriptionConfigMapName() {

@@ -26,4 +26,7 @@ public interface ManagementApi {
 
     @ApiCommand(description = "Delete application from cluster", order = 5)
     void clearAll(@ConsoleParam(ComponentsParameter.class) List<String> components);
+
+    @ApiCommand(description = "Clear apps that were removed from configs", order = 6)
+    void clearApps();
 }
