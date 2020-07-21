@@ -47,4 +47,8 @@ public class ServiceApi extends TestCli {
                 .executor(deploymentApi::execute)
                 .build().execute(command);
     }
+
+    public boolean isDeleted() {
+        return !configMapApi.exists() && !deploymentApi.deploymentResourceApi().exists();
+    }
 }

@@ -11,7 +11,7 @@ import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
 
 import static io.osdf.core.application.core.AbstractApplication.application;
-import static io.osdf.core.application.core.description.DescriptionUploader.descriptionUploader;
+import static io.osdf.core.cluster.configmap.ConfigMapLoader.configMapLoader;
 import static io.osdf.core.cluster.deployment.ClusterDeploymentImpl.clusterDeployment;
 import static java.util.Map.of;
 
@@ -32,7 +32,7 @@ public class ServiceApplication implements Application {
     }
 
     public void uploadDescription() {
-        descriptionUploader(cli).upload(app.descriptionConfigMapName(), of(
+        configMapLoader(cli).upload(app.descriptionConfigMapName(), of(
                 "service", ServiceDescription.from(app.files()),
                 "core", CoreDescription.from(app.files())
         ));

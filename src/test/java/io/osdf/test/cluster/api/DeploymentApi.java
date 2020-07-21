@@ -28,6 +28,7 @@ public class DeploymentApi extends TestCli {
     private final String name;
     private final List<String> labels;
     private final PropertiesApi propertiesApi;
+    @Getter
     private final ResourceApi deploymentResourceApi;
 
     @Getter

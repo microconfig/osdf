@@ -1,4 +1,4 @@
-package io.osdf.core.application.core.description;
+package io.osdf.core.cluster.configmap;
 
 import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.connection.cli.CliOutput;
@@ -9,31 +9,44 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-import static io.osdf.common.utils.FileUtils.createDirectoriesIfNotExists;
+import static io.osdf.common.utils.FileUtils.createTempDirectory;
+import static io.osdf.common.utils.YamlUtils.createFromString;
 import static io.osdf.common.utils.YamlUtils.dump;
 import static java.nio.file.Path.of;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
-public class DescriptionUploader {
+public class ConfigMapLoader {
     private final ClusterCli cli;
 
-    public static DescriptionUploader descriptionUploader(ClusterCli cli) {
-        return new DescriptionUploader(cli);
+    public static ConfigMapLoader configMapLoader(ClusterCli cli) {
+        return new ConfigMapLoader(cli);
     }
 
-    public void upload(String name, Map<String, Object> descriptions) {
-        List<Path> files = createDescriptionFiles(name, descriptions);
+    public void upload(String name, Map<String, Object> dataObjects) {
+        List<Path> files = createFiles(name, dataObjects);
         deleteConfigMapIfExists(name);
         createConfigMap(name, files);
     }
 
-    private List<Path> createDescriptionFiles(String name, Map<String, Object> descriptions) {
-        Path tmpDir = of("/tmp/osdf/" + name);
-        createDirectoriesIfNotExists(tmpDir);
-        descriptions.forEach((filename, description) -> dump(description, of(tmpDir + "/" + filename)));
-        return descriptions.keySet().stream()
+    public <T> T load(String name, String key, Class<T> fileClass) {
+        CliOutput output = cli.execute("get configmap " + name + " -o custom-columns=\"config:.data." + key + "\"");
+        if (!output.ok()) {
+            if (output.getOutput().contains("not found")) throw new OSDFException("Configmap " + name + " doesn't exist");
+            output.throwExceptionIfError();
+        }
+
+        String content = output
+                .getOutput()
+                .replaceFirst("config\n", "");
+        return createFromString(fileClass, content);
+    }
+
+    private List<Path> createFiles(String name, Map<String, Object> dataObjects) {
+        Path tmpDir = createTempDirectory(name);
+        dataObjects.forEach((filename, dataObject) -> dump(dataObject, of(tmpDir + "/" + filename)));
+        return dataObjects.keySet().stream()
                 .map(filename -> of(tmpDir + "/" + filename))
                 .collect(toUnmodifiableList());
     }
