@@ -1,15 +1,12 @@
 package io.osdf.actions.system.install.migrations;
 
 import io.osdf.settings.paths.OsdfPaths;
-import io.osdf.settings.version.OsdfVersionFile;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import java.nio.file.Path;
 
 import static io.osdf.common.encryption.Encryption.encryptor;
 import static io.osdf.common.utils.FileUtils.readAll;
 import static io.osdf.common.utils.FileUtils.writeStringToFile;
-import static io.osdf.common.utils.YamlUtils.createFromFile;
 import static java.nio.file.Files.exists;
 
 public class EncryptionMigration implements Migration {
@@ -38,11 +35,6 @@ public class EncryptionMigration implements Migration {
     }
 
     private boolean encryptionNeeded(OsdfPaths paths) {
-        try {
-            createFromFile(OsdfVersionFile.class, paths.settings().osdf());
-            return true;
-        } catch (YAMLException e) {
-            return false;
-        }
+        return readAll(paths.settings().osdf()).toLowerCase().contains("version");
     }
 }

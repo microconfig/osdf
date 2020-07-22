@@ -2,11 +2,13 @@ package io.osdf.actions.system.install;
 
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
+import org.yaml.snakeyaml.Yaml;
 
 import java.nio.file.Path;
 
+import static io.osdf.common.encryption.Encryption.encryptor;
 import static io.osdf.common.utils.CommandLineExecutor.execute;
-import static io.osdf.common.utils.YamlUtils.dump;
+import static io.osdf.common.utils.FileUtils.writeStringToFile;
 import static java.nio.file.Path.of;
 
 @RequiredArgsConstructor
@@ -22,11 +24,12 @@ public class YamlFileReplacer implements FileReplacer {
 
     @Override
     public void prepare() {
-        dump(object, tmpPath);
+        String content = new Yaml().dump(object);
+        writeStringToFile(tmpPath, encryptor.encrypt(content));
     }
 
     @Override
     public void replace() {
-        execute("cp " + tmpPath + " " + dest);
+        execute("mv " + tmpPath + " " + dest);
     }
 }

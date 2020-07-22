@@ -46,6 +46,14 @@ public class FileUtils {
         }
     }
 
+    public static void delete(Path path) {
+        try {
+            Files.delete(path);
+        } catch (IOException e) {
+            //file probably doesn't exist
+        }
+    }
+
     public static void createDirectoryIfNotExists(Path dir) {
         if (!exists(dir)) {
             try {
