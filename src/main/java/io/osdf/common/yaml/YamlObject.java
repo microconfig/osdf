@@ -1,6 +1,7 @@
 package io.osdf.common.yaml;
 
 import lombok.RequiredArgsConstructor;
+import org.yaml.snakeyaml.Yaml;
 
 import java.nio.file.Path;
 import java.util.Map;
@@ -19,6 +20,10 @@ public class YamlObject {
     @SuppressWarnings("unchecked")
     public static YamlObject yaml(Object obj) {
         return new YamlObject((Map<String, Object>) obj);
+    }
+
+    public static YamlObject yaml(String content) {
+        return new YamlObject(new Yaml().load(content));
     }
 
     @SuppressWarnings("unchecked")

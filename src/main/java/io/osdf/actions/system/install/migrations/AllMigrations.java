@@ -5,7 +5,6 @@ import io.osdf.settings.paths.OsdfPaths;
 import java.util.List;
 
 import static io.osdf.actions.system.install.migrations.CreateClusterContext.createClusterContext;
-import static io.osdf.actions.system.install.migrations.EncryptionMigration.encryptionMigration;
 import static java.util.List.of;
 
 public class AllMigrations implements Migration {
@@ -19,6 +18,6 @@ public class AllMigrations implements Migration {
     }
 
     private List<Migration> migrations() {
-        return of(createClusterContext(), encryptionMigration());
+        return of(createClusterContext());
     }
 }
