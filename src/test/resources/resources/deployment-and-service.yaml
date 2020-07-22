@@ -1,0 +1,47 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: simple-service
+  labels:
+    configHash: <CONFIG_HASH>
+spec:
+  selector:
+    matchLabels:
+      application: simple-service
+  template:
+    metadata:
+      labels:
+        configHash: <CONFIG_HASH>
+        application: simple-service
+    spec:
+      containers:
+        - image: my-registry.com/my-repo/simple-service:<IMAGE_DIGEST:latest>
+          imagePullPolicy: Always
+          name: simple-service
+          ports:
+            - containerPort: 1970
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 2
+              memory: 1024M
+            limits:
+              cpu: 2
+              memory: 1024M
+      restartPolicy: Always
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: simple-service
+spec:
+  selector:
+    application: simple-service
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 8443
+      name: http-80
