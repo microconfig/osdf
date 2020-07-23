@@ -2,6 +2,7 @@ package io.osdf.actions.management;
 
 import io.osdf.actions.management.restart.DeploymentRestarter;
 import io.osdf.common.exceptions.OSDFException;
+import io.osdf.common.exceptions.StatusCodeException;
 import io.osdf.core.application.core.Application;
 import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.settings.paths.OsdfPaths;
@@ -33,6 +34,7 @@ public class ManagementApiImpl implements ManagementApi {
         if ("restricted".equals(mode) && smart) throw new OSDFException("Smart deploy is not possible for restricted deploy mode");
         boolean ok = deployCommand(paths, cli).deploy(serviceNames, smart);
         announce(ok ? "OK" : "Some apps have failed");
+        if (!ok) throw new StatusCodeException(1);
     }
 
     @Override
