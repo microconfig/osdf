@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import java.nio.file.Path;
 
 import static io.osdf.settings.paths.SettingsPaths.settingsPaths;
+import static java.lang.System.getenv;
 import static java.nio.file.Path.of;
 import static org.apache.commons.io.FileUtils.getUserDirectory;
 
@@ -13,6 +14,9 @@ public class OsdfPaths {
     private final Path root;
 
     public static OsdfPaths paths() {
+        String dirFromEnv = getenv("OSDF_WORKDIR");
+        if (dirFromEnv != null && !dirFromEnv.trim().isEmpty()) return new OsdfPaths(of(dirFromEnv));
+
         return new OsdfPaths(of(getUserDirectory() + "/.osdf"));
     }
 
