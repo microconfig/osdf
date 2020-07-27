@@ -39,7 +39,7 @@ public class ClusterDeploymentImpl implements ClusterDeployment {
                 .getOutputLines()
                 .stream()
                 .filter(line -> line.length() > 0)
-                .map(notation -> fromOpenShiftNotation(notation, name, cli))
+                .map(notation -> fromOpenShiftNotation(notation, cli))
                 .sorted()
                 .collect(toUnmodifiableList());
     }

@@ -20,15 +20,15 @@ class PodTest {
         OpenShiftCli oc = mock(OpenShiftCli.class);
         when(oc.execute("delete pod pod")).thenReturn(output("deleted"));
 
-        pod("pod", "component", oc).delete();
+        pod("pod", oc).delete();
         verify(oc).execute("delete pod pod");
     }
 
     @Test
     void testFromPods() {
         OpenShiftCli oc = mock(OpenShiftCli.class);
-        Pod pod1 = pod("pod1", "component", oc);
-        Pod pod2 = pod("pod2", "component", oc);
+        Pod pod1 = pod("pod1", oc);
+        Pod pod2 = pod("pod2", oc);
         List<Pod> pods = of(pod1, pod2);
         assertEquals(pod1, fromPods(pods, null));
         assertEquals(pod2, fromPods(pods, "1"));
