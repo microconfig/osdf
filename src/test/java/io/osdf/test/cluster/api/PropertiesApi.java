@@ -16,6 +16,7 @@ import static io.osdf.test.cluster.TestCliUtils.unknown;
 import static java.lang.String.join;
 import static java.util.Arrays.stream;
 import static java.util.regex.Pattern.compile;
+import static org.apache.commons.lang3.StringUtils.strip;
 
 @Accessors(fluent = true)
 @RequiredArgsConstructor
@@ -61,7 +62,7 @@ public class PropertiesApi extends TestCli {
     }
 
     private Map<String, String> getPropertiesInQuery(Matcher matcher) {
-        String query = matcher.group(3).replace("\"", "");
+        String query = strip(matcher.group(3), "\"");
         String[] fields = query.split(",");
         Map<String, String> queriedProperties = new HashMap<>();
         stream(fields)

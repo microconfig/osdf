@@ -18,7 +18,6 @@ public class LogsCommand {
     private final OsdfPaths paths;
     private final ClusterCli cli;
 
-
     public void show(String serviceName, String podName) {
         ClusterDeployment deployment = activeRequiredAppsLoader(paths, of(serviceName))
                 .load(service(cli)).stream()
@@ -31,6 +30,6 @@ public class LogsCommand {
             error("Pod " + podName + " not found");
             return;
         }
-        pod.logs();
+        pod.logs(serviceName);
     }
 }
