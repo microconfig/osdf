@@ -1,10 +1,13 @@
 package io.osdf.actions.info.status.service;
 
 import io.osdf.core.application.service.ServiceApplication;
+import io.osdf.core.cluster.deployment.ClusterDeployment;
 import io.osdf.core.cluster.resource.ClusterResource;
 import io.osdf.core.cluster.resource.properties.ResourceProperties;
 import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
 
 import static io.osdf.actions.info.status.service.ServiceStatus.*;
 import static io.osdf.common.utils.StringUtils.castToInteger;
@@ -21,16 +24,19 @@ public class ServiceStatusGetter {
     }
 
     public ServiceStatus statusOf(ServiceApplication service) {
-        if (!service.exists()) return NOT_FOUND;
-        ClusterResource clusterResource = service.deployment().toResource();
-        if (!clusterResource.exists(cli)) return NOT_FOUND;
+        Optional<ClusterDeployment> deployment = service.deployment();
+        if (deployment.isEmpty()) return NOT_FOUND;
 
-        ResourceProperties properties = resourceProperties(cli, clusterResource,
+        ClusterResource clusterResource = deployment.get().toResource();
+        Optional<ResourceProperties> propertiesOptional = resourceProperties(cli, clusterResource,
                 of("replicas", "spec.replicas",
                         "current", "status.replicas",
                         "available", "status.availableReplicas",
                         "unavailable", "status.unavailableReplicas",
                         "ready", "status.readyReplicas"));
+        if (propertiesOptional.isEmpty()) return NOT_FOUND;
+
+        ResourceProperties properties = propertiesOptional.get();
         Integer replicas = castToInteger(properties.get("replicas"));
         Integer current = castToInteger(properties.get("current"));
         Integer available = castToInteger(properties.get("available"));

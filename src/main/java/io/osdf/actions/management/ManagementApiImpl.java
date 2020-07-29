@@ -49,7 +49,7 @@ public class ManagementApiImpl implements ManagementApi {
     public void stop(List<String> components) {
         activeRequiredAppsLoader(paths, components)
                 .load(service(cli))
-                .forEach(service -> service.deployment().scale(0));
+                .forEach(service -> service.getDeploymentOrThrow().scale(0));
     }
 
     @Override

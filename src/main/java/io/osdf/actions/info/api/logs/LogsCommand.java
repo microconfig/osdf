@@ -23,7 +23,7 @@ public class LogsCommand {
                 .load(service(cli)).stream()
                 .findFirst()
                 .orElseThrow(() -> new OSDFException(serviceName + " not found"))
-                .deployment();
+                .getDeploymentOrThrow();
 
         Pod pod = fromPods(deployment.pods(), podName);
         if (pod == null) {

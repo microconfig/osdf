@@ -34,11 +34,10 @@ public class JobRunner {
     }
 
     private void cleanResources(JobApplication application) {
-        if (application.exists()) {
-            resourceDeleter(cli)
-                    .deleteOldResources(application.coreDescription(), application.files())
-                    .deleteConfigMaps(application.coreDescription());
-        }
+        application.coreDescription().ifPresent(coreDescription ->
+                resourceDeleter(cli)
+                        .deleteOldResources(coreDescription, application.files())
+                        .deleteConfigMaps(coreDescription));
         String jobName = application.files().metadata().getMainResource().getName();
         cli.execute("delete job " + jobName);
     }

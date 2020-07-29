@@ -30,7 +30,7 @@ public class PodDeleter {
                 .load(service(cli)).stream()
                 .findFirst()
                 .orElseThrow(() -> new OSDFException(componentName + " not found"));
-        podNames.forEach(podName -> deletePods(service.deployment(), podNames));
+        podNames.forEach(podName -> deletePods(service.getDeploymentOrThrow(), podNames));
     }
 
     private void deletePods(ClusterDeployment deployment, List<String> podNames) {

@@ -32,11 +32,10 @@ public class ServiceDeployer {
     }
 
     private void cleanResources(ServiceApplication application) {
-        if (application.exists()) {
-            resourceDeleter(cli)
-                    .deleteOldResources(application.coreDescription(), application.files())
-                    .deleteConfigMaps(application.coreDescription());
-        }
+        application.coreDescription().ifPresent(coreDescription ->
+                resourceDeleter(cli)
+                        .deleteOldResources(coreDescription, application.files())
+                        .deleteConfigMaps(coreDescription));
     }
 
     private void uploadResources(ApplicationFiles files) {

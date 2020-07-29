@@ -3,10 +3,12 @@ package io.osdf.actions.info.api.status.printer;
 import io.osdf.actions.info.printer.ColumnPrinter;
 import io.osdf.actions.info.status.job.JobStatus;
 import io.osdf.common.yaml.YamlObject;
+import io.osdf.core.application.core.description.CoreDescription;
 import io.osdf.core.application.job.JobApplication;
 import io.osdf.core.connection.cli.ClusterCli;
 
 import java.util.List;
+import java.util.Optional;
 
 import static io.microconfig.utils.ConsoleColor.*;
 import static io.osdf.actions.info.status.job.JobStatus.NOT_EXECUTED;
@@ -46,7 +48,8 @@ public class JobStatusRow implements RowColumnsWithStatus {
     }
 
     private boolean fetch() {
-        if (!jobApp.exists()) {
+        Optional<CoreDescription> coreDescription = jobApp.coreDescription();
+        if (coreDescription.isEmpty()) {
             addNotFoundRow();
             return false;
         }
@@ -54,8 +57,8 @@ public class JobStatusRow implements RowColumnsWithStatus {
         JobStatus jobStatus = jobStatusGetter(cli).statusOf(jobApp);
         YamlObject yaml = jobApp.files().deployProperties();
         printer.addRow(green(jobApp.files().name()),
-                green(formatVersions(jobApp.coreDescription().getAppVersion(), yaml.get("app.version"))),
-                green(formatVersions(jobApp.coreDescription().getConfigVersion(), yaml.get("config.version"))),
+                green(formatVersions(coreDescription.get().getAppVersion(), yaml.get("app.version"))),
+                green(formatVersions(coreDescription.get().getConfigVersion(), yaml.get("config.version"))),
                 coloredStatus(jobStatus),
                 green("-"));
         return jobStatus == SUCCEEDED;

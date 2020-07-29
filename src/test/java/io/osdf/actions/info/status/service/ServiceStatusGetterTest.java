@@ -5,13 +5,16 @@ import io.osdf.core.cluster.deployment.ClusterDeployment;
 import io.osdf.core.cluster.resource.ClusterResource;
 import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.test.cluster.api.PropertiesApi;
+import io.osdf.test.cluster.api.ResourceApi;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 import static io.osdf.actions.info.status.service.ServiceStatus.*;
 import static io.osdf.actions.info.status.service.ServiceStatusGetter.serviceStatusGetter;
 import static io.osdf.test.cluster.api.PropertiesApi.propertiesApi;
+import static io.osdf.test.cluster.api.ResourceApi.resourceApi;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -20,18 +23,16 @@ class ServiceStatusGetterTest {
     void notFoundIfServiceDoesntExist() {
         ServiceApplication service = service(false);
 
-        ServiceStatus serviceStatus = serviceStatusGetter(mock(ClusterCli.class)).statusOf(service);
-
-        assertEquals(NOT_FOUND, serviceStatus);
+        assertStatusEquals(NOT_FOUND, mock(ClusterCli.class), service);
     }
 
     @Test
-    void notFoundIfDeploymentDoesntExist() {
-        ServiceApplication service = serviceWithoutDeployment();
+    void notFound_IfDeploymentDoesntExist() {
+        ServiceApplication service = deployedService();
 
-        ServiceStatus serviceStatus = serviceStatusGetter(mock(ClusterCli.class)).statusOf(service);
+        ResourceApi resourceApi = resourceApi("kind", "name").exists(false);
 
-        assertEquals(NOT_FOUND, serviceStatus);
+        assertStatusEquals(NOT_FOUND, resourceApi, service);
     }
 
     @Test
@@ -42,9 +43,8 @@ class ServiceStatusGetterTest {
                 .add("spec.replicas", "1")
                 .add("status.replicas", "1")
                 .add("status.readyReplicas", "1");
-        ServiceStatus status = serviceStatusGetter(propertiesApi).statusOf(service);
 
-        assertEquals(READY, status);
+        assertStatusEquals(READY, propertiesApi, service);
     }
 
     @Test
@@ -55,9 +55,8 @@ class ServiceStatusGetterTest {
                 .add("spec.replicas", "1")
                 .add("status.replicas", "1")
                 .add("status.availableReplicas", "1");
-        ServiceStatus status = serviceStatusGetter(propertiesApi).statusOf(service);
 
-        assertEquals(RUNNING, status);
+        assertStatusEquals(RUNNING, propertiesApi, service);
     }
 
     @Test
@@ -67,9 +66,8 @@ class ServiceStatusGetterTest {
         PropertiesApi propertiesApi = propertiesApi("kind", "name")
                 .add("spec.replicas", "0")
                 .add("status.replicas", "0");
-        ServiceStatus status = serviceStatusGetter(propertiesApi).statusOf(service);
 
-        assertEquals(TURNED_OFF, status);
+        assertStatusEquals(TURNED_OFF, propertiesApi, service);
     }
 
     @Test
@@ -81,27 +79,12 @@ class ServiceStatusGetterTest {
                 .add("status.replicas", "2")
                 .add("status.availableReplicas", "1")
                 .add("status.unavailableReplicas", "1");
-        ServiceStatus status = serviceStatusGetter(propertiesApi).statusOf(service);
 
-        assertEquals(NOT_READY, status);
-    }
-
-
-    private ServiceApplication serviceWithoutDeployment() {
-        ClusterResource deploymentResource = mock(ClusterResource.class);
-        when(deploymentResource.exists(any())).thenReturn(false);
-
-        ClusterDeployment deployment = mock(ClusterDeployment.class);
-        when(deployment.toResource()).thenReturn(deploymentResource);
-
-        ServiceApplication service = service(true);
-        when(service.deployment()).thenReturn(deployment);
-        return service;
+        assertStatusEquals(NOT_READY, propertiesApi, service);
     }
 
     private ServiceApplication deployedService() {
         ClusterResource deploymentResource = mock(ClusterResource.class);
-        when(deploymentResource.exists(any())).thenReturn(true);
         when(deploymentResource.kind()).thenReturn("kind");
         when(deploymentResource.name()).thenReturn("name");
 
@@ -109,7 +92,7 @@ class ServiceStatusGetterTest {
         when(deployment.toResource()).thenReturn(deploymentResource);
 
         ServiceApplication service = service(true);
-        when(service.deployment()).thenReturn(deployment);
+        when(service.deployment()).thenReturn(Optional.of(deployment));
         return service;
     }
 
@@ -117,5 +100,9 @@ class ServiceStatusGetterTest {
         ServiceApplication service = mock(ServiceApplication.class);
         when(service.exists()).thenReturn(exists);
         return service;
+    }
+
+    private void assertStatusEquals(ServiceStatus expected, ClusterCli cli, ServiceApplication service) {
+        assertEquals(expected, serviceStatusGetter(cli).statusOf(service));
     }
 }

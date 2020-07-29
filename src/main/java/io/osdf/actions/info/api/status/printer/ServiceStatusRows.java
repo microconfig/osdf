@@ -4,6 +4,7 @@ import io.osdf.actions.info.healthcheck.PodsInfo;
 import io.osdf.actions.info.printer.ColumnPrinter;
 import io.osdf.actions.info.status.service.ServiceStatus;
 import io.osdf.common.yaml.YamlObject;
+import io.osdf.core.application.core.description.CoreDescription;
 import io.osdf.core.application.service.ServiceApplication;
 import io.osdf.core.cluster.deployment.ClusterDeployment;
 import io.osdf.core.cluster.pod.Pod;
@@ -12,6 +13,7 @@ import io.osdf.core.cluster.resource.properties.ResourceProperties;
 import io.osdf.core.connection.cli.ClusterCli;
 
 import java.util.List;
+import java.util.Optional;
 
 import static io.microconfig.utils.ConsoleColor.green;
 import static io.microconfig.utils.ConsoleColor.red;
@@ -61,28 +63,29 @@ public class ServiceStatusRows implements RowColumnsWithStatus {
     }
 
     private boolean fetch() {
-        if (!service.exists()) {
+        Optional<CoreDescription> coreDescription = service.coreDescription();
+        Optional<ClusterDeployment> deployment = service.deployment();
+        if (deployment.isEmpty() || coreDescription.isEmpty()) {
             addNotFoundRow();
             return false;
         }
 
-        ClusterDeployment deployment = service.deployment();
         ServiceStatus serviceStatus = serviceStatusGetter(cli).statusOf(service);
         if (withHealthCheck) {
-            PodsInfo podsInfo = podsInfo(deployment, service.files());
-            addMainRow(deployment, serviceStatus);
+            PodsInfo podsInfo = podsInfo(deployment.get(), service.files());
+            addMainRow(deployment.get(), serviceStatus, coreDescription.get());
             addPods(podsInfo.getPods(), podsInfo.getPodsHealth());
             return podsInfo.isHealthy() && serviceStatus == READY;
         }
-        addMainRow(deployment, serviceStatus);
+        addMainRow(deployment.get(), serviceStatus, coreDescription.get());
         return serviceStatus == READY;
     }
 
-    private void addMainRow(ClusterDeployment deployment, ServiceStatus status) {
+    private void addMainRow(ClusterDeployment deployment, ServiceStatus status, CoreDescription coreDescription) {
         YamlObject yaml = service.files().deployProperties();
         printer.addRow(green(service.files().name()),
-                green(formatVersions(service.coreDescription().getAppVersion(), yaml.get("app.version"))),
-                green(formatVersions(service.coreDescription().getConfigVersion(), yaml.get("config.version"))),
+                green(formatVersions(coreDescription.getAppVersion(), yaml.get("app.version"))),
+                green(formatVersions(coreDescription.getConfigVersion(), yaml.get("config.version"))),
                 coloredStatus(status),
                 green(replicas(deployment)));
     }
@@ -125,11 +128,13 @@ public class ServiceStatusRows implements RowColumnsWithStatus {
 
     private String replicas(ClusterDeployment deployment) {
         ClusterResource resource = deployment.toResource();
-        if (!resource.exists(cli)) return "-";
-        ResourceProperties properties = resourceProperties(cli, resource, of(
+        Optional<ResourceProperties> propertiesOptional = resourceProperties(cli, resource, of(
                 "available", "status.availableReplicas",
                 "replicas", "spec.replicas"
         ));
+        if (propertiesOptional.isEmpty()) return "?/?";
+
+        ResourceProperties properties = propertiesOptional.get();
         return (properties.get("available").equals("<none>") ? "0" : properties.get("available")) + "/" + properties.get("replicas");
     }
 }

@@ -1,10 +1,13 @@
 package io.osdf.actions.info.status.job;
 
 import io.osdf.core.application.job.JobApplication;
+import io.osdf.core.cluster.job.ClusterJob;
 import io.osdf.core.cluster.resource.ClusterResource;
 import io.osdf.core.cluster.resource.properties.ResourceProperties;
 import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
 
 import static io.osdf.actions.info.status.job.JobStatus.*;
 import static io.osdf.common.utils.StringUtils.castToInteger;
@@ -20,15 +23,18 @@ public class JobStatusGetter {
     }
 
     public JobStatus statusOf(JobApplication jobApp) {
-        if (!jobApp.exists()) return NOT_EXECUTED;
+        Optional<ClusterJob> job = jobApp.job();
+        if (job.isEmpty()) return NOT_EXECUTED;
 
-        ClusterResource clusterResource = jobApp.job().toResource();
-        if (!clusterResource.exists(cli)) return NOT_EXECUTED;
+        ClusterResource clusterResource = job.get().toResource();
 
-        ResourceProperties properties = resourceProperties(cli, clusterResource,
+        Optional<ResourceProperties> propertiesOptional = resourceProperties(cli, clusterResource,
                 of("failed", "status.failed",
                         "succeeded", "status.succeeded",
                         "active", "status.active"));
+        if (propertiesOptional.isEmpty()) return NOT_EXECUTED;
+
+        ResourceProperties properties = propertiesOptional.get();
         JobStatus status = UNKNOWN;
         if (valueGreaterThanZero(properties.get("active"))) status = ACTIVE;
         else if (valueGreaterThanZero(properties.get("succeeded"))) status = SUCCEEDED;
