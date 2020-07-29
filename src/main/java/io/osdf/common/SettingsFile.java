@@ -1,10 +1,12 @@
 package io.osdf.common;
 
+import io.osdf.common.exceptions.OSDFException;
 import io.osdf.common.exceptions.PossibleBugException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
@@ -23,8 +25,12 @@ public class SettingsFile<T> {
     private final Path path;
 
     public static <T> SettingsFile<T> settingsFile(Class<T> clazz, Path path) {
-        T settings = exists(path) ? createFromString(clazz, decryptedContent(path)) : createEmpty(clazz);
-        return new SettingsFile<>(settings, path);
+        try {
+            T settings = exists(path) ? createFromString(clazz, decryptedContent(path)) : createEmpty(clazz);
+            return new SettingsFile<>(settings, path);
+        } catch (YAMLException e) {
+            throw new OSDFException("Couldn't parse settings file at " + path + ". Check your encryption settings");
+        }
     }
 
     private static String decryptedContent(Path path) {
