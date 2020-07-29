@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import static io.osdf.common.SettingsFile.settingsFile;
 import static io.osdf.common.nexus.NexusClient.nexusClient;
 import static io.osdf.common.utils.CommandLineExecutor.execute;
+import static io.osdf.common.utils.FileUtils.delete;
 import static java.nio.file.Path.of;
 
 @RequiredArgsConstructor
@@ -30,7 +31,8 @@ public class NexusFetcher implements ConfigsFetcherStrategy {
     public void fetch(Path destination) {
         NexusFetcherSettings settings = file.getSettings();
         nexusClient(settings.getUrl(), settings.getCredentials()).download(settings.getArtifact(), CONFIGS_TMP_DOWNLOAD_PATH);
-        execute("rm -rf " + destination);
+
+        delete(destination);
         execute("unzip " + CONFIGS_TMP_DOWNLOAD_PATH + " -d " + destination);
     }
 

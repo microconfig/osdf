@@ -8,6 +8,7 @@ import java.nio.file.Path;
 
 import static io.osdf.common.SettingsFile.settingsFile;
 import static io.osdf.common.utils.CommandLineExecutor.execute;
+import static io.osdf.common.utils.FileUtils.delete;
 import static java.util.Objects.requireNonNullElse;
 
 @RequiredArgsConstructor
@@ -25,7 +26,7 @@ public class LocalFetcher implements ConfigsFetcherStrategy {
 
     @Override
     public void fetch(Path destination) {
-        execute("rm -rf " + destination);
+        delete(destination);
         execute("cp -r " + file.getSettings().getPath() + " " + destination);
     }
 

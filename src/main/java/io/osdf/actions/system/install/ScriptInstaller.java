@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import java.nio.file.Path;
 
 import static io.osdf.common.utils.CommandLineExecutor.execute;
+import static io.osdf.common.utils.FileUtils.move;
 import static io.osdf.common.utils.FileUtils.writeStringToFile;
 import static io.osdf.common.utils.JarUtils.pathToJava;
 import static java.nio.file.Path.of;
@@ -28,7 +29,7 @@ public class ScriptInstaller implements FileReplacer {
 
     @Override
     public void replace() {
-        execute("cp " + tmpPath + " " + paths.bin() + "/osdf");
+        move(tmpPath, of(paths.bin() + "/osdf"));
     }
 
     private String content() {

@@ -13,6 +13,7 @@ import static io.microconfig.core.configtypes.ConfigTypeFilters.eachConfigType;
 import static io.microconfig.core.properties.serializers.PropertySerializers.toFileIn;
 import static io.microconfig.core.properties.serializers.PropertySerializers.withConfigDiff;
 import static io.microconfig.core.properties.templates.TemplatesService.resolveTemplatesBy;
+import static io.osdf.common.utils.FileUtils.delete;
 import static io.osdf.core.local.microconfig.state.MicroConfigFilesState.of;
 import static io.osdf.common.utils.CommandLineExecutor.execute;
 import static io.osdf.common.utils.FileUtils.createDirectoryIfNotExists;
@@ -40,7 +41,8 @@ public class MicroConfig {
 
     public void generateSingleComponent(String component) {
         generateConfigs(env, singletonList(component), paths.configsPath(), of("/tmp/microconfig"));
-        execute("rm -rf " + paths.componentsPath() + "/" + component);
+
+        delete(of(paths.componentsPath() + "/" + component));
         execute("mv /tmp/microconfig/" + component + " " + paths.componentsPath() + "/" + component);
     }
 

@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Path;
 
 import static io.osdf.api.lib.ImportPrefix.importPrefix;
-import static io.osdf.common.utils.CommandLineExecutor.execute;
+import static io.osdf.common.utils.FileUtils.move;
 import static io.osdf.common.utils.FileUtils.writeStringToFile;
 import static io.osdf.core.local.component.MicroConfigComponents.microConfigComponents;
 import static java.lang.String.join;
@@ -91,7 +91,7 @@ public class AutoCompleteInstaller implements FileReplacer {
 
     @Override
     public void replace() {
-        execute("cp " + tmpPath + " " + dest);
+        move(tmpPath, dest);
     }
 }
 

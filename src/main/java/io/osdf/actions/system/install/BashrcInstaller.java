@@ -4,11 +4,10 @@ import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
+import java.util.List;
 
 import static io.osdf.common.utils.CommandLineExecutor.execute;
-import static io.osdf.common.utils.CommandLineExecutor.executeAndReadLines;
-import static io.osdf.common.utils.FileUtils.readAll;
-import static io.osdf.common.utils.FileUtils.writeStringToFile;
+import static io.osdf.common.utils.FileUtils.*;
 import static java.lang.System.getProperty;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Path.of;
@@ -21,7 +20,7 @@ public class BashrcInstaller implements FileReplacer {
     private final Path dest;
 
     public static BashrcInstaller bashrcInstaller(OsdfPaths paths) {
-        String shellPath = executeAndReadLines("echo $SHELL").get(0);
+        String shellPath = List.of(execute("echo $SHELL").split("\n")).get(0);
         String shellrc = shellPath.substring(shellPath.lastIndexOf("/") + 1) + "rc";
         if (shellrc.contains("bash") && getProperty("os.name").contains("Mac")) {
             return new BashrcInstaller(paths, of(paths.tmp() + "/bash_profile"),
@@ -78,6 +77,6 @@ public class BashrcInstaller implements FileReplacer {
 
     @Override
     public void replace() {
-        execute("cp " + tmpPath + " " + dest);
+        move(tmpPath, dest);
     }
 }

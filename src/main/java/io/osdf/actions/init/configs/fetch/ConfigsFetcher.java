@@ -1,14 +1,14 @@
 package io.osdf.actions.init.configs.fetch;
 
-import io.osdf.core.local.configs.ConfigsSource;
 import io.osdf.common.exceptions.OSDFException;
+import io.osdf.core.local.configs.ConfigsSource;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
 import static io.osdf.actions.init.configs.fetch.git.GitFetcher.gitFetcher;
 import static io.osdf.actions.init.configs.fetch.local.LocalFetcher.localFetcher;
 import static io.osdf.actions.init.configs.fetch.nexus.NexusFetcher.nexusFetcher;
-import static io.osdf.common.utils.CommandLineExecutor.execute;
+import static io.osdf.common.utils.FileUtils.delete;
 
 @RequiredArgsConstructor
 public class ConfigsFetcher {
@@ -23,7 +23,7 @@ public class ConfigsFetcher {
         ConfigsFetcherStrategy fetcherStrategy = fetchingStrategy();
         if (!fetcherStrategy.verifyAndLogErrors()) throw new OSDFException("Incomplete configs source configuration");
 
-        execute("rm -rf " + paths.configsDownloadPath());
+        delete(paths.configsDownloadPath());
         fetcherStrategy.fetch(paths.configsDownloadPath());
     }
 

@@ -4,7 +4,7 @@ import io.osdf.settings.paths.OsdfPaths;
 import io.osdf.settings.version.OsdfVersion;
 import lombok.RequiredArgsConstructor;
 
-import static io.osdf.common.utils.CommandLineExecutor.execute;
+import static io.osdf.common.utils.FileUtils.move;
 import static io.osdf.common.utils.FileUtils.writeStringToFile;
 import static java.nio.file.Path.of;
 
@@ -29,6 +29,6 @@ public class FakeJarInstaller implements JarInstaller {
 
     @Override
     public void replace() {
-        execute("mv " + paths.tmp() + "/osdf.jar " + paths.root() + "/osdf.jar");
+        move(of(paths.tmp() + "/osdf.jar"), of(paths.root() + "/osdf.jar"));
     }
 }

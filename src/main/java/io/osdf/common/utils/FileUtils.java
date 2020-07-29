@@ -2,14 +2,18 @@ package io.osdf.common.utils;
 
 import io.osdf.common.exceptions.PossibleBugException;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import static java.nio.file.Files.*;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
+import static java.util.Comparator.reverseOrder;
 
 public class FileUtils {
     public static String readAll(Path file) {
@@ -49,8 +53,20 @@ public class FileUtils {
     public static void delete(Path path) {
         try {
             Files.delete(path);
+        } catch (DirectoryNotEmptyException e) {
+            deleteDirectory(path);
         } catch (IOException e) {
             //file probably doesn't exist
+        }
+    }
+
+    private static void deleteDirectory(Path dir) {
+        try (Stream<Path> paths = walk(dir)) {
+            paths.sorted(reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        } catch (IOException e) {
+            throw new PossibleBugException("Can't delete directory " + dir, e);
         }
     }
 
@@ -68,7 +84,15 @@ public class FileUtils {
         try {
             return Files.createTempDirectory(prefix);
         } catch (IOException e) {
-            throw new PossibleBugException("Can't create temporary folder");
+            throw new PossibleBugException("Can't create temporary folder", e);
+        }
+    }
+
+    public static void move(Path source, Path target) {
+        try {
+            Files.move(source, target, REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new PossibleBugException("Can't move " + target, e);
         }
     }
 }
