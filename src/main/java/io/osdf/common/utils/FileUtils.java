@@ -95,4 +95,12 @@ public class FileUtils {
             throw new PossibleBugException("Can't move " + target, e);
         }
     }
+
+    public static void copy(Path source, Path target) {
+        try {
+            Files.copy(source, target, REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new PossibleBugException("Can't move " + target, e);
+        }
+    }
 }
