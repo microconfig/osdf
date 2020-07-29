@@ -6,9 +6,10 @@ import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
 
-import static io.osdf.settings.version.OsdfVersion.fromJarPath;
-import static io.osdf.common.utils.CommandLineExecutor.execute;
+import static io.osdf.common.utils.FileUtils.move;
 import static io.osdf.common.utils.JarUtils.jarPath;
+import static io.osdf.settings.version.OsdfVersion.fromJarPath;
+import static java.nio.file.Path.of;
 
 @RequiredArgsConstructor
 public class LocalJarInstaller implements JarInstaller {
@@ -26,11 +27,11 @@ public class LocalJarInstaller implements JarInstaller {
 
     @Override
     public void prepare() {
-        execute("cp " + jarPath + " " + paths.tmp() + "/osdf.jar");
+        move(jarPath, of(paths.tmp() + "/" + JAR_NAME));
     }
 
     @Override
     public void replace() {
-        execute("mv " + paths.tmp() + "/osdf.jar " + paths.root() + "/osdf.jar");
+        move(of(paths.tmp() + "/" + JAR_NAME), of(paths.root() + "/" + JAR_NAME));
     }
 }

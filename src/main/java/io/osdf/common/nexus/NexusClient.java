@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import static io.osdf.common.utils.CommandLineExecutor.execute;
 import static io.osdf.common.utils.StringUtils.withQuotes;
 import static java.nio.file.Files.deleteIfExists;
+import static java.util.List.of;
 
 @RequiredArgsConstructor
 public class NexusClient {
@@ -23,7 +24,7 @@ public class NexusClient {
 
     public void download(NexusArtifact artifact, Path destination) {
         String url = artifact.getDownloadUrl(nexusUrl);
-        execute(withCredentials("curl -k " + url + " --output " + destination));
+        executeDownloadCommand(destination, url);
         throwExceptionIfFileIsEmpty(destination);
     }
 
@@ -38,8 +39,13 @@ public class NexusClient {
         }
     }
 
-    private String withCredentials(String command) {
-        if (credentials == null) return command;
-        return command + " -u " + withQuotes(credentials.getCredentialsString());
+    private void executeDownloadCommand(Path destination, String url) {
+        String command = "curl -k " + url + " --output " + destination;
+        if (credentials == null) {
+            execute(command);
+        } else {
+            execute(command + " -u " + withQuotes(credentials.getCredentialsString()),
+                    of(credentials.getCredentialsString()));
+        }
     }
 }

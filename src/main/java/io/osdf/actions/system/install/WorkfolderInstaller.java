@@ -1,14 +1,14 @@
 package io.osdf.actions.system.install;
 
-import io.osdf.settings.paths.OsdfPaths;
 import io.osdf.common.utils.FileUtils;
+import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static io.osdf.common.utils.CommandLineExecutor.execute;
+import static io.osdf.common.utils.FileUtils.delete;
 import static java.util.List.of;
 
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class WorkfolderInstaller {
     }
 
     public boolean install(boolean clear) {
-        if (clear) execute("rm -rf " + paths.root());
+        if (clear) delete(paths.root());
         if (foldersExist()) {
             return false;
         }

@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import static io.osdf.common.SettingsFile.settingsFile;
 import static io.osdf.common.nexus.NexusArtifact.nexusArtifact;
 import static io.osdf.common.nexus.NexusClient.nexusClient;
-import static io.osdf.common.utils.CommandLineExecutor.execute;
+import static io.osdf.common.utils.FileUtils.move;
 import static io.osdf.settings.OsdfConfig.osdfConfig;
 import static java.nio.file.Path.of;
 
@@ -36,7 +36,7 @@ public class RemoteJarInstaller implements JarInstaller {
 
     @Override
     public void replace() {
-        execute("mv " + paths.tmp() + "/osdf.jar " + paths.root() + "/osdf.jar");
+        move(of(paths.tmp() + "/" + JAR_NAME), of(paths.root() + "/" + JAR_NAME));
     }
 
     private void downloadJar(OsdfVersion version) {
@@ -45,6 +45,6 @@ public class RemoteJarInstaller implements JarInstaller {
 
         String url = downloadProperties.url();
         NexusArtifact nexusArtifact = nexusArtifact(downloadProperties.group(), downloadProperties.artifact(), version.toString(), "jar");
-        nexusClient(url, credentials).download(nexusArtifact, of(paths.tmp() + "/osdf.jar"));
+        nexusClient(url, credentials).download(nexusArtifact, of(paths.tmp() + "/" + JAR_NAME));
     }
 }

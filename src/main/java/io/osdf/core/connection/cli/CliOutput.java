@@ -1,12 +1,12 @@
 package io.osdf.core.connection.cli;
 
 import io.osdf.common.exceptions.OSDFException;
+import io.osdf.common.exceptions.PossibleBugException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static java.lang.Thread.currentThread;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -38,7 +38,7 @@ public class CliOutput {
             return output(IOUtils.toString(process.getInputStream(), UTF_8.name()));
         } catch (IOException | InterruptedException e) {
             currentThread().interrupt();
-            throw new OSDFException("Couldn't execute command: " + command, e);
+            throw new PossibleBugException("Couldn't execute cli command", e);
         }
     }
 
@@ -54,12 +54,8 @@ public class CliOutput {
         return true;
     }
 
-    public void consumeOutput(Consumer<String> consumer) {
-        consumer.accept(getOutput());
-    }
-
     public CliOutput throwExceptionIfError() {
-        if (statusCode != 0) throw new OSDFException("Error executing command:\n" + errorOutput);
+        if (statusCode != 0) throw new OSDFException("Error executing cli command. Output:\n" + errorOutput);
         return this;
     }
 

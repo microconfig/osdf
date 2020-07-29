@@ -9,36 +9,35 @@ import java.util.List;
 import static io.microconfig.utils.Logger.error;
 import static java.lang.Thread.currentThread;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.List.of;
+import static java.util.Collections.emptyList;
 
 public class CommandLineExecutor {
     public static String execute(String command) {
-        return execute(command, false);
+        return execute(command, emptyList());
     }
 
-    public static List<String> executeAndReadLines(String command) {
-        return executeAndReadLines(command, false);
-    }
-
-    public static List<String> executeAndReadLines(String command, boolean allowErrors) {
-        return of(execute(command, allowErrors).split("\n"));
-    }
-
-    public static String execute(String command, boolean allowErrors) {
+    public static String execute(String command, List<String> credentials) {
         try {
             Process process = new ProcessBuilder("/bin/sh", "-c", command).start();
             process.waitFor();
 
             if (process.exitValue() != 0) {
                 String errorOutput = IOUtils.toString(process.getErrorStream(), UTF_8.name());
-                if (allowErrors) return errorOutput;
                 error(errorOutput);
-                throw new PossibleBugException("Non-zero exit code (" + process.exitValue() + ") of command: " + command);
+                throw new PossibleBugException("Non-zero exit code (" + process.exitValue() + ") of command: " + hideCredentials(command, credentials));
             }
             return IOUtils.toString(process.getInputStream(), UTF_8.name());
         } catch (IOException | InterruptedException e) {
             currentThread().interrupt();
-            throw new PossibleBugException("Couldn't execute command: " + command, e);
+            throw new PossibleBugException("Couldn't execute command: " + hideCredentials(command, credentials), e);
         }
+    }
+
+    private static String hideCredentials(String target, List<String> credentials) {
+        String result = target;
+        for (String credential : credentials) {
+            result = result.replace(credential, "***");
+        }
+        return result;
     }
 }

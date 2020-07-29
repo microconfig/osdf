@@ -7,7 +7,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.nio.file.Path;
 
 import static io.osdf.common.encryption.Encryption.encryptor;
-import static io.osdf.common.utils.CommandLineExecutor.execute;
+import static io.osdf.common.utils.FileUtils.move;
 import static io.osdf.common.utils.FileUtils.writeStringToFile;
 import static java.nio.file.Path.of;
 
@@ -30,6 +30,6 @@ public class YamlFileReplacer implements FileReplacer {
 
     @Override
     public void replace() {
-        execute("mv " + tmpPath + " " + dest);
+        move(tmpPath, dest);
     }
 }

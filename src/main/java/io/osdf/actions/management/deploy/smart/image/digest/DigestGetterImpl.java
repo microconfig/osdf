@@ -12,6 +12,7 @@ import static io.osdf.common.SettingsFile.settingsFile;
 import static io.osdf.common.utils.CommandLineExecutor.execute;
 import static io.osdf.common.utils.StringUtils.withQuotes;
 import static java.util.Arrays.stream;
+import static java.util.List.of;
 import static java.util.regex.Pattern.compile;
 
 @RequiredArgsConstructor
@@ -28,10 +29,11 @@ public class DigestGetterImpl implements DigestGetter {
     public String get(String imageUrl) {
         Image image = new Image(imageUrl);
 
+        String token = token(image.host());
         String output = execute("curl -k " +
-                "-H \"Authorization: Bearer " + token(image.host()) + "\" " +
+                "-H \"Authorization: Bearer " + token + "\" " +
                 "-H \"Accept: application/vnd.docker.distribution.manifest.v2+json\" " +
-                image.manifestUrl() + " -D -");
+                image.manifestUrl() + " -D -", of(token));
         String digestHeader = stream(output.split("\n"))
                 .filter(line -> line.contains("Docker-Content-Digest"))
                 .findFirst()
@@ -41,7 +43,8 @@ public class DigestGetterImpl implements DigestGetter {
     }
 
     private String token(String host) {
-        String output = execute("curl -k -u " + withQuotes(credentialsForUrl(host)) + " https://" + host + "/v2/token");
+        String credentials = credentialsForUrl(host);
+        String output = execute("curl -k -u " + withQuotes(credentials) + " https://" + host + "/v2/token", of(credentials));
         Matcher matcher = compile(".*\"(DockerToken.*)\".*").matcher(output);
         if (!matcher.matches()) throw new OSDFException("Unknown registry token format");
         return matcher.group(1);
