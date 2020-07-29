@@ -27,11 +27,11 @@ public class LocalJarInstaller implements JarInstaller {
 
     @Override
     public void prepare() {
-        move(jarPath, of(paths.tmp() + "/osdf.jar"));
+        move(jarPath, of(paths.tmp() + "/" + JAR_NAME));
     }
 
     @Override
     public void replace() {
-        move(of(paths.tmp() + "/osdf.jar"), of(paths.root() + "/osdf.jar"));
+        move(of(paths.tmp() + "/" + JAR_NAME), of(paths.root() + "/" + JAR_NAME));
     }
 }

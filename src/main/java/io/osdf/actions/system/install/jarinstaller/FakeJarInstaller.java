@@ -24,11 +24,11 @@ public class FakeJarInstaller implements JarInstaller {
 
     @Override
     public void prepare() {
-        writeStringToFile(of(paths.tmp() + "/osdf.jar"), "fake");
+        writeStringToFile(of(paths.tmp() + "/" + JAR_NAME), "fake");
     }
 
     @Override
     public void replace() {
-        move(of(paths.tmp() + "/osdf.jar"), of(paths.root() + "/osdf.jar"));
+        move(of(paths.tmp() + "/" + JAR_NAME), of(paths.root() + "/" + JAR_NAME));
     }
 }

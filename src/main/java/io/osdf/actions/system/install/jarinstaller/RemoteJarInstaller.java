@@ -36,7 +36,7 @@ public class RemoteJarInstaller implements JarInstaller {
 
     @Override
     public void replace() {
-        move(of(paths.tmp() + "/osdf.jar"), of(paths.root() + "/osdf.jar"));
+        move(of(paths.tmp() + "/" + JAR_NAME), of(paths.root() + "/" + JAR_NAME));
     }
 
     private void downloadJar(OsdfVersion version) {
@@ -45,6 +45,6 @@ public class RemoteJarInstaller implements JarInstaller {
 
         String url = downloadProperties.url();
         NexusArtifact nexusArtifact = nexusArtifact(downloadProperties.group(), downloadProperties.artifact(), version.toString(), "jar");
-        nexusClient(url, credentials).download(nexusArtifact, of(paths.tmp() + "/osdf.jar"));
+        nexusClient(url, credentials).download(nexusArtifact, of(paths.tmp() + "/" + JAR_NAME));
     }
 }
