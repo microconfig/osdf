@@ -3,6 +3,8 @@ package io.osdf.core.application.core;
 import io.osdf.core.application.core.description.CoreDescription;
 import io.osdf.core.application.core.files.ApplicationFiles;
 
+import java.util.Optional;
+
 public interface Application {
     String name();
 
@@ -12,5 +14,5 @@ public interface Application {
 
     ApplicationFiles files();
 
-    CoreDescription coreDescription();
+    Optional<CoreDescription> coreDescription();
 }

@@ -10,10 +10,13 @@ import io.osdf.core.cluster.deployment.ClusterDeployment;
 import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 import static io.osdf.core.application.core.AbstractApplication.application;
 import static io.osdf.core.cluster.configmap.ConfigMapLoader.configMapLoader;
 import static io.osdf.core.cluster.deployment.ClusterDeploymentImpl.clusterDeployment;
 import static java.util.Map.of;
+import static java.util.Optional.empty;
 
 @RequiredArgsConstructor
 public class ServiceApplication implements Application {
@@ -38,11 +41,18 @@ public class ServiceApplication implements Application {
         ));
     }
 
-    public ClusterDeployment deployment() {
-        if (deployment != null) return deployment;
-        ResourceDescription description = app.loadDescription(ServiceDescription.class, "service").getDeployment();
+    public Optional<ClusterDeployment> deployment() {
+        if (deployment != null) return Optional.of(deployment);
+        Optional<ServiceDescription> serviceDescription = app.loadDescription(ServiceDescription.class, "service");
+        if (serviceDescription.isEmpty()) return empty();
+
+        ResourceDescription description = serviceDescription.get().getDeployment();
         deployment = clusterDeployment(description.getName(), description.getKind(), cli);
-        return deployment;
+        return Optional.of(deployment);
+    }
+
+    public ClusterDeployment getDeploymentOrThrow() {
+        return deployment().orElseThrow(() -> new OSDFException(name() + " not found"));
     }
 
     @Override
@@ -66,7 +76,7 @@ public class ServiceApplication implements Application {
     }
 
     @Override
-    public CoreDescription coreDescription() {
+    public Optional<CoreDescription> coreDescription() {
         return app.coreDescription();
     }
 

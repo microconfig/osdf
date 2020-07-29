@@ -9,6 +9,7 @@ import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
 import static io.osdf.common.utils.StringUtils.castToInteger;
 import static io.osdf.common.yaml.YamlObject.yaml;
@@ -24,12 +25,13 @@ public class DeploymentRestarter {
     }
 
     public void restart(ServiceApplication application) {
-        ClusterDeployment deployment = application.deployment();
-        ResourceProperties properties = resourceProperties(cli, deployment.toResource(), of(
+        ClusterDeployment deployment = application.getDeploymentOrThrow();
+        Optional<ResourceProperties> properties = resourceProperties(cli, deployment.toResource(), of(
                 "replicas", "spec.replicas"
         ));
+        if (properties.isEmpty()) throw new OSDFException("Can't get number of replicas for " + deployment.name());
 
-        Integer replicas = castToInteger(properties.get("replicas"));
+        Integer replicas = castToInteger(properties.get().get("replicas"));
         if (replicas == null || replicas == 0) {
             scaleFromConfigs(deployment, application.files());
         } else {

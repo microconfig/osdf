@@ -3,12 +3,14 @@ package io.osdf.actions.info.healthcheck.app;
 import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.application.core.Application;
 import io.osdf.core.application.service.ServiceApplication;
+import io.osdf.core.cluster.deployment.ClusterDeployment;
 import io.osdf.core.cluster.resource.ClusterResource;
 import io.osdf.core.connection.cli.CliOutput;
 import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
 import static io.microconfig.utils.Logger.error;
 import static java.util.Objects.requireNonNullElse;
@@ -26,10 +28,11 @@ public class ServiceHealthChecker implements AppHealthChecker{
         if (!(app instanceof ServiceApplication)) throw new OSDFException(app.name() + " is not a service");
         ServiceApplication service = (ServiceApplication) app;
 
-        if (!service.exists()) return false;
+        Optional<ClusterDeployment> deployment = service.deployment();
+        if (deployment.isEmpty()) return false;
 
-        ClusterResource deployment = service.deployment().toResource();
-        CliOutput result = cli.execute("rollout status " + deployment.kind() + "/" + deployment.name(),
+        ClusterResource deploymentResource = deployment.get().toResource();
+        CliOutput result = cli.execute("rollout status " + deploymentResource.kind() + "/" + deploymentResource.name(),
                 timeout(service));
         if (!result.ok()) {
             List<String> outputLines = result.getOutputLines();

@@ -10,10 +10,13 @@ import io.osdf.core.cluster.job.ClusterJob;
 import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 import static io.osdf.core.application.core.AbstractApplication.application;
 import static io.osdf.core.cluster.configmap.ConfigMapLoader.configMapLoader;
 import static io.osdf.core.cluster.job.ClusterJobImpl.clusterJob;
 import static java.util.Map.of;
+import static java.util.Optional.empty;
 
 @RequiredArgsConstructor
 public class JobApplication implements Application {
@@ -38,13 +41,20 @@ public class JobApplication implements Application {
         ));
     }
 
-    public ClusterJob job() {
-        if (job != null) return job;
-        ResourceDescription description = app.loadDescription(JobDescription.class, "job").getJob();
+    public Optional<ClusterJob> job() {
+        if (job != null) return Optional.of(job);
+
+        Optional<JobDescription> jobDescription = app.loadDescription(JobDescription.class, "job");
+        if (jobDescription.isEmpty()) return empty();
+
+        ResourceDescription description = jobDescription.get().getJob();
         job = clusterJob(description.getName(), cli);
-        return job;
+        return Optional.of(job);
     }
 
+    public ClusterJob getJobOrThrow() {
+        return job().orElseThrow(() -> new OSDFException(name() + " not found"));
+    }
 
     @Override
     public String name() {
@@ -67,7 +77,7 @@ public class JobApplication implements Application {
     }
 
     @Override
-    public CoreDescription coreDescription() {
+    public Optional<CoreDescription> coreDescription() {
         return app.coreDescription();
     }
 }

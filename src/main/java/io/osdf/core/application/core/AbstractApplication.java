@@ -7,9 +7,12 @@ import io.osdf.core.cluster.resource.ClusterResourceImpl;
 import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 import static io.microconfig.utils.Logger.info;
 import static io.osdf.core.cluster.configmap.ConfigMapLoader.configMapLoader;
 import static io.osdf.core.cluster.resource.ClusterResourceImpl.clusterResource;
+import static java.util.Optional.*;
 
 @RequiredArgsConstructor
 public class AbstractApplication implements Application {
@@ -45,8 +48,9 @@ public class AbstractApplication implements Application {
 
     @Override
     public void delete() {
-        if (!exists()) return;
-        coreDescription()
+        Optional<CoreDescription> description = coreDescription();
+        if (description.isEmpty()) return;
+        description.get()
                 .getResources().stream()
                 .map(ClusterResourceImpl::fromOpenShiftNotation)
                 .forEach(resource -> resource.delete(cli));
@@ -55,14 +59,20 @@ public class AbstractApplication implements Application {
     }
 
     @Override
-    public CoreDescription coreDescription() {
-        if (coreDescription != null) return coreDescription;
-        coreDescription = loadDescription(CoreDescription.class, "core");
-        return coreDescription;
+    public Optional<CoreDescription> coreDescription() {
+        if (coreDescription != null) return of(coreDescription);
+
+        Optional<CoreDescription> description = loadDescription(CoreDescription.class, "core");
+        description.ifPresent(value -> coreDescription = value);
+        return description;
     }
 
-    public <T> T loadDescription(Class<T> descriptionClass, String key) {
-        return configMapLoader(cli).load(descriptionConfigMapName(), key, descriptionClass);
+    public <T> Optional<T> loadDescription(Class<T> descriptionClass, String key) {
+        try {
+            return of(configMapLoader(cli).load(descriptionConfigMapName(), key, descriptionClass));
+        } catch (OSDFException e) {
+            return empty();
+        }
     }
 
     public String descriptionConfigMapName() {
