@@ -1,16 +1,25 @@
 package io.osdf.api.lib;
 
-import io.osdf.api.lib.annotations.ApiCommand;
+import io.osdf.api.lib.annotations.ConsoleParam;
 import io.osdf.api.lib.annotations.Hidden;
 import io.osdf.api.lib.annotations.Import;
+import io.osdf.api.lib.parameter.CommandLineParameter;
+import io.osdf.api.lib.parameter.FlagParameter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.commons.cli.Option;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
-import static io.osdf.api.lib.ImportPrefix.importPrefix;
-import static io.osdf.common.utils.StringUtils.pad;
 import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.info;
+import static io.osdf.api.lib.ImportPrefix.importPrefix;
+import static io.osdf.api.lib.parameter.ParamType.OPTIONAL;
+import static io.osdf.common.utils.StringUtils.pad;
+import static java.lang.String.join;
 import static java.util.Arrays.stream;
 import static java.util.Comparator.comparingInt;
 
@@ -43,9 +52,30 @@ public class MainApiReader {
         return name.substring(0, 1).toUpperCase() + name.substring(1);
     }
 
+    @SneakyThrows
     private void printMethodDescription(String prefix, Method method) {
-        String description = method.getAnnotation(ApiCommand.class).description();
-        info(pad(" " + prefixedName(prefix, method), 50) + description);
+        List<String> descriptions = new ArrayList<>();
+
+        Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+        for (Annotation[] parameterAnnotation : parameterAnnotations) {
+            for (Annotation annotation : parameterAnnotation) {
+                if (!(annotation instanceof ConsoleParam)) continue;
+                ConsoleParam consoleParam = (ConsoleParam) annotation;
+                Class<? extends CommandLineParameter<?>> value = consoleParam.value();
+                CommandLineParameter<?> param = value.getConstructor().newInstance();
+                if (param instanceof FlagParameter) {
+                    Option option = param.toOption();
+                    descriptions.add("[--" + option.getLongOpt() + "/-" + option.getOpt() + "]");
+                } else {
+                    Option option = param.toOption();
+                    String argDescription = "-" + option.getOpt() + " " + option.getLongOpt();
+                    if (consoleParam.type().equals(OPTIONAL)) argDescription = "[" + argDescription + "]";
+                    descriptions.add(argDescription);
+                }
+            }
+        }
+
+        info(pad(" " + prefixedName(prefix, method), 30) + join(" ", descriptions));
     }
 
     private String prefixedName(String prefix, Method method) {
