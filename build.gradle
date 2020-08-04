@@ -113,7 +113,7 @@ dependencies {
     implementation 'commons-io:commons-io:2.5'
     implementation 'commons-cli:commons-cli:1.4'
     implementation 'commons-codec:commons-codec'
-    implementation 'io.microconfig:microconfig-cli:4.1.6:all'
+    implementation 'io.microconfig:microconfig-cli:4.1.7:all'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'org.jasypt:jasypt:1.9.3'
 
