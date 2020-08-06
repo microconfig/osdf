@@ -71,7 +71,9 @@ public class InitializationApiImpl implements InitializationApi {
 
     @Override
     public void configs(String env, String projVersion) {
-        configsUpdater(paths, cli).setConfigsParameters(env, projVersion);
+        configsUpdater(paths, cli)
+                .setConfigsParameters(env, projVersion)
+                .buildConfigs();
     }
 
     @Override
