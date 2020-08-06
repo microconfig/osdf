@@ -1,4 +1,4 @@
-package io.osdf.actions.configs.commands;
+package io.osdf.actions.configs.diff;
 
 import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.application.core.Application;
@@ -20,7 +20,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.newInputStream;
 
 @RequiredArgsConstructor
-public class PropertiesDiffCommand {
+public class DiffCommand {
     private final OsdfPaths paths;
 
     public void show(List<String> serviceNames) {

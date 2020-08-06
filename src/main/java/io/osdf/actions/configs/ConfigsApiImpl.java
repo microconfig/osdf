@@ -1,20 +1,17 @@
 package io.osdf.actions.configs;
 
-import io.osdf.actions.configs.commands.PropertiesDiffCommand;
+import io.osdf.actions.configs.diff.DiffCommand;
 import io.osdf.common.SettingsFile;
 import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.core.local.configs.ConfigsSettings;
-import io.osdf.core.local.configs.ConfigsSource;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.osdf.common.SettingsFile.settingsFile;
+import static io.osdf.actions.configs.versions.VersionsCommand.versionsCommand;
 import static io.osdf.actions.init.configs.ConfigsUpdater.configsUpdater;
-import static io.osdf.actions.init.configs.fetch.ConfigsFetcher.fetcher;
-import static io.osdf.core.local.microconfig.MicroConfig.microConfig;
-import static io.osdf.core.local.microconfig.property.PropertySetter.propertySetter;
+import static io.osdf.common.SettingsFile.settingsFile;
 
 @RequiredArgsConstructor
 public class ConfigsApiImpl implements ConfigsApi {
@@ -26,16 +23,15 @@ public class ConfigsApiImpl implements ConfigsApi {
     }
 
     @Override
-    public void propertiesDiff(List<String> components) {
-        new PropertiesDiffCommand(paths).show(components);
+    public void pull() {
+        configsUpdater(paths, cli).fetch();
     }
 
     @Override
-    public void changeVersion(String component, String version) {
-        propertySetter().setIfNecessary(paths.projectVersionPath(), "project.version", version);
-
-        String env = settingsFile(ConfigsSettings.class, paths.settings().configs()).getSettings().getEnv();
-        microConfig(env, paths).generateSingleComponent(component);
+    public void env(String env) {
+        configsUpdater(paths, cli)
+                .setConfigsParameters(env, null)
+                .buildConfigs();
     }
 
     @Override
@@ -46,15 +42,12 @@ public class ConfigsApiImpl implements ConfigsApi {
     }
 
     @Override
-    public void pull() {
-        configsUpdater(paths, cli).fetch();
+    public void versions(String configVersion, String projectVersion, String app) {
+        versionsCommand(paths, cli).setVersions(configVersion, projectVersion, app);
     }
 
     @Override
-    public void configVersion(String configVersion) {
-        ConfigsSource configsSource = settingsFile(ConfigsSettings.class, paths.settings().configs()).getSettings().getConfigsSource();
-        fetcher(configsSource, paths).setConfigVersion(configVersion);
-
-        configsUpdater(paths, cli).fetch();
+    public void diff(List<String> components) {
+        new DiffCommand(paths).show(components);
     }
 }

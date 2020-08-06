@@ -40,11 +40,11 @@ public class ConfigsUpdater {
         fetch();
     }
 
-    public void setConfigsParameters(String env, String projectVersion) {
+    public ConfigsUpdater setConfigsParameters(String env, String projectVersion) {
         settingsFile.setIfNotNull(ConfigsSettings::setEnv, env);
         settingsFile.setIfNotNull(ConfigsSettings::setProjectVersion, projectVersion);
         settingsFile.save();
-        buildConfigs();
+        return this;
     }
 
     public void fetch() {
@@ -61,7 +61,7 @@ public class ConfigsUpdater {
         }
     }
 
-    private void buildConfigs() {
+    public void buildConfigs() {
         ConfigsSettings settings = settingsFile.getSettings();
         if (settings.getEnv() == null) throw new OSDFException("Environment is not specified");
 

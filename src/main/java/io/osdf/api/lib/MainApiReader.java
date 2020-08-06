@@ -46,6 +46,7 @@ public class MainApiReader {
         ApiReader.reader(anImport.api())
                 .methods()
                 .forEach(method -> printMethodDescription(prefix, method));
+        info("");
     }
 
     private String capitalize(String name) {
