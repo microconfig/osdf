@@ -5,6 +5,7 @@ import io.osdf.actions.info.api.InfoApi;
 import io.osdf.actions.init.InitializationApi;
 import io.osdf.actions.management.ManagementApi;
 import io.osdf.actions.system.SystemApi;
+import io.osdf.api.lib.annotations.Hidden;
 import io.osdf.api.lib.annotations.Import;
 import io.osdf.api.lib.annotations.Named;
 
@@ -18,6 +19,7 @@ public interface MainApi {
     @Import(api = ConfigsApi.class, order = 3)
     void configs();
 
+    @Hidden
     @Named
     @Import(api = InitializationApi.class, order = 4)
     void init();
