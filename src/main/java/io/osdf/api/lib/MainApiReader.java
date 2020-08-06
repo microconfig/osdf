@@ -6,10 +6,8 @@ import io.osdf.api.lib.annotations.Import;
 import io.osdf.api.lib.parameter.CommandLineParameter;
 import io.osdf.api.lib.parameter.FlagParameter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.commons.cli.Option;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +15,9 @@ import java.util.List;
 import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.info;
 import static io.osdf.api.lib.ImportPrefix.importPrefix;
+import static io.osdf.api.lib.parameter.CommandLineParameter.createFrom;
 import static io.osdf.api.lib.parameter.ParamType.OPTIONAL;
+import static io.osdf.common.utils.ReflectionUtils.processAnnotation;
 import static io.osdf.common.utils.StringUtils.pad;
 import static java.lang.String.join;
 import static java.util.Arrays.stream;
@@ -52,30 +52,29 @@ public class MainApiReader {
         return name.substring(0, 1).toUpperCase() + name.substring(1);
     }
 
-    @SneakyThrows
     private void printMethodDescription(String prefix, Method method) {
         List<String> descriptions = new ArrayList<>();
 
-        Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-        for (Annotation[] parameterAnnotation : parameterAnnotations) {
-            for (Annotation annotation : parameterAnnotation) {
-                if (!(annotation instanceof ConsoleParam)) continue;
-                ConsoleParam consoleParam = (ConsoleParam) annotation;
-                Class<? extends CommandLineParameter<?>> value = consoleParam.value();
-                CommandLineParameter<?> param = value.getConstructor().newInstance();
-                if (param instanceof FlagParameter) {
-                    Option option = param.toOption();
-                    descriptions.add("[--" + option.getLongOpt() + "/-" + option.getOpt() + "]");
-                } else {
-                    Option option = param.toOption();
-                    String argDescription = "-" + option.getOpt() + " " + option.getLongOpt();
-                    if (consoleParam.type().equals(OPTIONAL)) argDescription = "[" + argDescription + "]";
-                    descriptions.add(argDescription);
-                }
+        processAnnotation(method, ConsoleParam.class, consoleParam -> {
+            CommandLineParameter<?> param = createFrom(consoleParam);
+            Option option = param.toOption();
+            if (param instanceof FlagParameter) {
+                descriptions.add(flagParamDescription(option));
+            } else {
+                descriptions.add(argParamDescription(consoleParam, option));
             }
-        }
+        });
 
         info(pad(" " + prefixedName(prefix, method), 30) + join(" ", descriptions));
+    }
+
+    private String flagParamDescription(Option option) {
+        return "[--" + option.getLongOpt() + "/-" + option.getOpt() + "]";
+    }
+
+    private String argParamDescription(ConsoleParam consoleParam, Option option) {
+        String argDescription = "-" + option.getOpt() + " " + option.getLongOpt();
+        return consoleParam.type() == OPTIONAL ? "[" + argDescription + "]" : argDescription;
     }
 
     private String prefixedName(String prefix, Method method) {
