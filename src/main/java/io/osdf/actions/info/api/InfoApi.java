@@ -1,26 +1,28 @@
 package io.osdf.actions.info.api;
 
-import io.osdf.api.lib.annotations.ApiCommand;
-import io.osdf.api.lib.annotations.ConsoleParam;
-import io.osdf.api.lib.annotations.Hidden;
-import io.osdf.api.parameters.*;
+import io.osdf.api.lib.annotations.Description;
+import io.osdf.api.lib.annotations.Public;
+import io.osdf.api.lib.annotations.parameters.Flag;
+import io.osdf.api.lib.annotations.parameters.Optional;
+import io.osdf.api.lib.annotations.parameters.Required;
 
 import java.util.List;
 
+@Public({"status", "logs", "healthcheck"})
 public interface InfoApi {
-    @ApiCommand(description = "Show status info of services from OpenShift", order = 1)
-    void status(@ConsoleParam(ComponentsParameter.class) List<String> components,
-                @ConsoleParam(HealthCheckParameter.class) Boolean withHealthCheck);
 
-    @ApiCommand(description = "Show logs of pod", order = 2)
-    void logs(@ConsoleParam(ComponentParameter.class) String component,
-              @ConsoleParam(PodParameter.class) String pod);
+    @Description("Show status info of services from OpenShift")
+    @Optional(n = "components", d = "Comma separated list of components")
+    @Flag(n = "healthcheck", d = "Check pods health. This option slows down status command")
+    void status(List<String> components, Boolean withHealthCheck);
 
-    @ApiCommand(description = "Get healthcheck from services", order = 3)
-    void healthcheck(@ConsoleParam(GroupParameter.class) String group,
-                     @ConsoleParam(HealthcheckTimeoutParameter.class) Integer timeout);
+    @Description("Show logs of pod")
+    @Required(n = "component", d = "Pod's service")
+    @Optional(n = "pod", d = "Pod name or number. Pod number - order of pod in <osdf status -h> output")
+    void logs(String component, String pod);
 
-    @Hidden
-    @ApiCommand(description = "Show all running services with their versions")
-    void showAll();
+    @Description("Get healthcheck from services")
+    @Optional(n = "group", d = "Microconfig components group")
+    @Optional(n = "timeout", d = "Maximum waiting time for healthy response")
+    void healthcheck(String group, Integer timeout);
 }

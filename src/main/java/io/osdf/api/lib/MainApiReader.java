@@ -1,11 +1,12 @@
 package io.osdf.api.lib;
 
+import io.osdf.api.lib.annotations.ApiGroup;
 import io.osdf.api.lib.annotations.ConsoleParam;
-import io.osdf.api.lib.annotations.Hidden;
-import io.osdf.api.lib.annotations.Import;
+import io.osdf.api.lib.annotations.Public;
 import io.osdf.api.lib.parameter.CommandLineParameter;
 import io.osdf.api.lib.parameter.FlagParameter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.commons.cli.Option;
 
 import java.lang.reflect.Method;
@@ -21,7 +22,6 @@ import static io.osdf.common.utils.ReflectionUtils.processAnnotation;
 import static io.osdf.common.utils.StringUtils.pad;
 import static java.lang.String.join;
 import static java.util.Arrays.stream;
-import static java.util.Comparator.comparingInt;
 
 @RequiredArgsConstructor
 public class MainApiReader {
@@ -32,18 +32,18 @@ public class MainApiReader {
     }
 
     public void printHelp() {
-        stream(apiClass.getMethods())
-                .filter(m -> m.getAnnotation(Hidden.class) == null)
-                .sorted(comparingInt(MainApiReader::importOrder))
+        String[] groups = apiClass.getAnnotation(Public.class).value();
+        stream(groups)
+                .map(this::methodByName)
                 .forEach(this::printHelpForImport);
     }
 
     private void printHelpForImport(Method importMethod) {
         announce(capitalize(importMethod.getName()));
 
-        Import anImport = importMethod.getAnnotation(Import.class);
+        ApiGroup anApiGroup = importMethod.getAnnotation(ApiGroup.class);
         String prefix = importPrefix(importMethod).toString();
-        ApiReader.reader(anImport.api())
+        ApiReader.reader(anApiGroup.value())
                 .methods()
                 .forEach(method -> printMethodDescription(prefix, method));
         info("");
@@ -82,8 +82,8 @@ public class MainApiReader {
         return prefix.isEmpty() ? method.getName() : prefix + " " + method.getName();
     }
 
-    private static int importOrder(Method method) {
-        Import anImport = method.getAnnotation(Import.class);
-        return anImport.order();
+    @SneakyThrows
+    private Method methodByName(String group) {
+        return apiClass.getDeclaredMethod(group);
     }
 }

@@ -1,6 +1,6 @@
 package io.osdf.api.lib;
 
-import io.osdf.api.lib.annotations.Import;
+import io.osdf.api.lib.annotations.ApiGroup;
 import io.osdf.common.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +21,7 @@ public class ApiCallFinder {
 
     public ApiCall find(List<String> args) {
         return stream(mainApiClass.getMethods())
-                .filter(method -> hasAnnotation(method, Import.class))
+                .filter(method -> hasAnnotation(method, ApiGroup.class))
                 .map(method -> resolve(method, args))
                 .filter(Objects::nonNull)
                 .findFirst()
@@ -32,7 +32,7 @@ public class ApiCallFinder {
         List<String> apiArgs = ImportPrefix.importPrefix(method).removePrefix(fullArgs);
         if (apiArgs.isEmpty()) return null;
 
-        Class<?> apiClass = method.getAnnotation(Import.class).api();
+        Class<?> apiClass = method.getAnnotation(ApiGroup.class).value();
         String methodName = apiArgs.get(0);
         List<String> methodArgs = apiArgs.subList(1, apiArgs.size());
         return createApiCall(apiClass, methodName, methodArgs);

@@ -2,7 +2,7 @@ package io.osdf.actions.system.install;
 
 import io.osdf.api.MainApi;
 import io.osdf.api.lib.annotations.Hidden;
-import io.osdf.api.lib.annotations.Import;
+import io.osdf.api.lib.annotations.ApiGroup;
 import io.osdf.common.exceptions.MicroConfigException;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
@@ -69,7 +69,7 @@ public class AutoCompleteInstaller implements FileReplacer {
         if (!prefix.isEmpty()) {
             return "\"" + prefix + "\"";
         }
-        return stream(method.getAnnotation(Import.class).api().getMethods())
+        return stream(method.getAnnotation(ApiGroup.class).value().getMethods())
                 .map(Method::getName)
                 .map(String::trim)
                 .collect(joining("\" \"", "\"", "\""));

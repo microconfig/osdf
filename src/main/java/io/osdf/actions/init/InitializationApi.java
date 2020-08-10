@@ -1,42 +1,48 @@
 package io.osdf.actions.init;
 
-import io.osdf.api.lib.annotations.ApiCommand;
-import io.osdf.api.lib.annotations.ConsoleParam;
-import io.osdf.api.parameters.*;
+import io.osdf.api.lib.annotations.Description;
+import io.osdf.api.lib.annotations.parameters.Flag;
+import io.osdf.api.lib.annotations.parameters.Optional;
+import io.osdf.api.lib.annotations.parameters.Required;
 import io.osdf.common.Credentials;
 import io.osdf.common.nexus.NexusArtifact;
 
 import java.nio.file.Path;
 
-import static io.osdf.api.lib.parameter.ParamType.REQUIRED;
-
 public interface InitializationApi {
-    @ApiCommand(description = "Set config parameters", order = 1)
-    void configs(@ConsoleParam(EnvParameter.class) String env,
-                 @ConsoleParam(ProjectVersionParameter.class) String projVersion);
+    @Description("Set config parameters")
+    @Optional(n = "env", d = "Env name")
+    @Optional(n = "pv/projectVersion", d = "Project version")
+    void configs(String env, String projVersion);
 
-    @ApiCommand(description = "Initialize git configs", order = 2)
-    void gitConfigs(@ConsoleParam(GitUrlParameter.class) String url,
-                    @ConsoleParam(ConfigVersionParameter.class) String branchOrTag);
+    @Description("Initialize git configs")
+    @Optional(n = "url", d = "Url with credentials")
+    @Optional(n = "version", d = "Git branch or tag")
+    void gitConfigs(String url, String branchOrTag);
 
-    @ApiCommand(description = "Initialize nexus configs", order = 3)
-    void nexusConfigs(@ConsoleParam(NexusUrlParameter.class) String url,
-                      @ConsoleParam(ConfigsNexusArtifactParameter.class) NexusArtifact artifact,
-                      @ConsoleParam(NexusCredentialsParameter.class) Credentials credentials);
+    @Description("Initialize nexus configs")
+    @Optional(n = "url", d = "Content url")
+    @Optional(n = "artifact", d = "Format - group:artifact:version or group:artifact:version:classifier", p = NexusArtifactParser.class)
+    @Optional(n = "credentials", d = "Format - user:pass", p = CredentialsParser.class)
+    void nexusConfigs(String url, NexusArtifact artifact, Credentials credentials);
 
-    @ApiCommand(description = "Initialize local configs", order = 4)
-    void localConfigs(@ConsoleParam(LocalConfigsParameter.class) Path path,
-                      @ConsoleParam(ConfigVersionParameter.class) String version);
+    @Description("Initialize local configs")
+    @Optional(n = "path", d = "Path to folder with configs. Must contain repo folder")
+    @Optional(n = "version", d = "Configs version")
+    void localConfigs(Path path, String version);
 
-    @ApiCommand(description = "Set OpenShift credentials", order = 5)
-    void openshift(@ConsoleParam(ClusterCredentialsParameter.class) Credentials credentials,
-                   @ConsoleParam(OpenShiftTokenParameter.class) String token,
-                   @ConsoleParam(LoginImmediatelyParameter.class) Boolean loginImmediately);
+    @Description("Set OpenShift credentials")
+    @Optional(n = "credentials", d = "Format - user:pass", p = CredentialsParser.class)
+    @Optional(n = "token", d = "Login using token")
+    @Flag(n = "login", d = "If set, try to login. Otherwise credentials will only be saved.")
+    void openshift(Credentials credentials, String token, Boolean loginImmediately);
 
-    @ApiCommand(description = "Set Kubernetes credentials", order = 6)
-    void kubernetes(@ConsoleParam(value = ClusterCredentialsParameter.class, type = REQUIRED) Credentials credentials);
+    @Description("Set Kubernetes credentials")
+    @Required(n = "credentials", d = "Format - user:pass", p = CredentialsParser.class)
+    void kubernetes(Credentials credentials);
 
-    @ApiCommand(description = "Set registry credentials", order = 7)
-    void registry(@ConsoleParam(value = RegistryUrlParameter.class, type = REQUIRED) String url,
-                  @ConsoleParam(value = RegistryCredentialsParameter.class, type = REQUIRED) Credentials credentials);
+    @Description("Set registry credentials")
+    @Required(n = "url", d = "Registry host")
+    @Required(n = "credentials", d = "Format - user:pass", p = CredentialsParser.class)
+    void registry(String url, Credentials credentials);
 }

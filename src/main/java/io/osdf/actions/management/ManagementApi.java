@@ -1,32 +1,38 @@
 package io.osdf.actions.management;
 
-import io.osdf.api.lib.annotations.ApiCommand;
-import io.osdf.api.lib.annotations.ConsoleParam;
-import io.osdf.api.parameters.*;
+import io.osdf.api.lib.annotations.Description;
+import io.osdf.api.lib.annotations.Public;
+import io.osdf.api.lib.annotations.parameters.Flag;
+import io.osdf.api.lib.annotations.parameters.Optional;
+import io.osdf.api.lib.annotations.parameters.Required;
 
 import java.util.List;
 
-import static io.osdf.api.lib.parameter.ParamType.REQUIRED;
-
+@Public({"deploy", "restart", "stop", "deletePod", "clearAll", "clearApps"})
 public interface ManagementApi {
-    @ApiCommand(description = "Deploy applications to OpenShift", order = 1)
-    void deploy(@ConsoleParam(ComponentsParameter.class) List<String> components,
-                @ConsoleParam(ModeParameter.class) String mode,
-                @ConsoleParam(SmartDeployParameter.class) Boolean smart);
 
-    @ApiCommand(description = "Restart services in OpenShift", order = 2)
-    void restart(@ConsoleParam(ComponentsParameter.class) List<String> components);
+    @Description("Deploy applications to OpenShift")
+    @Optional(n = "components", d = "Comma separated list of components")
+    @Flag(n = "smart", d = "If true, osdf will not redeploy unchanged services or rerun unchanged jobs")
+    void deploy(List<String> components, String mode, Boolean smart);
 
-    @ApiCommand(description = "Stop services in OpenShift", order = 3)
-    void stop(@ConsoleParam(ComponentsParameter.class) List<String> components);
+    @Description("Restart services in OpenShift")
+    @Optional(n = "components", d = "Comma separated list of components")
+    void restart(List<String> components);
 
-    @ApiCommand(description = "Delete pods", order = 4)
-    void deletePod(@ConsoleParam(value = ComponentParameter.class, type = REQUIRED) String component,
-                   @ConsoleParam(value = PodsParameter.class, type = REQUIRED) List<String> pods);
+    @Description("Stop services in OpenShift")
+    @Optional(n = "components", d = "Comma separated list of components")
+    void stop(List<String> components);
 
-    @ApiCommand(description = "Delete application from cluster", order = 5)
-    void clearAll(@ConsoleParam(ComponentsParameter.class) List<String> components);
+    @Description("Delete pods")
+    @Required(n = "component", d = "Pod's service")
+    @Required(n = "pods", d = "Comma separated list of pods names or their numbers. Pod number - order of pod in <osdf status -h> output")
+    void deletePod(String component, List<String> pods);
 
-    @ApiCommand(description = "Clear apps that were removed from configs", order = 6)
+    @Description("Delete application from cluster")
+    @Optional(n = "components", d = "Comma separated list of components")
+    void clearAll(List<String> components);
+
+    @Description("Clear apps that were removed from configs")
     void clearApps();
 }
