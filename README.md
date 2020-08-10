@@ -9,6 +9,27 @@ Store Kubernetes resources and application configs without copy-paste of common 
 It's higly recommended to get familliar with [microconfig](https://https://microconfig.io/) first.
 
 ## Overview
+
+Typical osdf app layout looks like this:
+```
+backend
+│   k8s.deploy
+│   application.yaml
+└───resources
+    │   deployment.yaml
+    │   service.yaml
+    |   ... other kubernetes resources
+```
+`k8s.deploy` contains deploy settings, e.g.:
+```
+osdf.configmap.main:  # create ConfigMap from application.yaml file
+  name: ${this@name}
+  files:
+    - application.yaml
+    
+osdf.healthcheck.timeoutInSec: 120  # timeout for service to start 
+```
+### Commands
 Deploy all applications
 ```
 ~ osdf deploy
@@ -32,6 +53,17 @@ Manage applications
 ~ osdf stop frontend
 ~ osdf restart frontend
 ```
+Show logs
+```
+~ osdf logs backend
+```
+Manage app versions, config versions and envs
+```
+~ osdf env dev                       # switch environment to dev
+~ osdf versions -cv develop -pv 1.1  # set config version to develop (git branch) and project version to 1.1
+~ osdf deploy                        # and deploy apps with these versions
+```
+
 
 ## Installation
 
