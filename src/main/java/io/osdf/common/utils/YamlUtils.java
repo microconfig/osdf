@@ -10,7 +10,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.valueOf;
@@ -41,7 +40,9 @@ public class YamlUtils {
         try {
             return new Yaml().load(new FileInputStream(path.toString()));
         } catch (FileNotFoundException e) {
-            throw new PossibleBugException("Couldn't load yaml from path " + path, e);
+            throw new PossibleBugException("File " + path + " expected, but not found", e);
+        } catch (RuntimeException e) {
+            throw new PossibleBugException("Couldn't parse or load yaml from path " + path, e);
         }
     }
 
@@ -63,36 +64,8 @@ public class YamlUtils {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> T get(Object yaml, String key) {
-        return (T) getObjectOrNull((Map<String, Object>) yaml, key.split("\\."));
-    }
-
     public static String getString(Map<String, Object> yaml, String... properties) {
         return valueOf(getObjectOrNull(yaml, properties));
-    }
-
-    public static Integer getInt(Map<String, Object> yaml, String... properties) {
-        return (Integer) getObjectOrNull(yaml, properties);
-    }
-
-    public static Double getDouble(Map<String, Object> yaml, String... properties) {
-        return (Double) getObjectOrNull(yaml, properties);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static List<Object> getList(Map<String, Object> yaml, String... properties) {
-        return (List<Object>) getObjectOrNull(yaml, properties);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static List<Map<String, Object>> getListOfMaps(Map<String, Object> yaml, String... properties) {
-        return (List<Map<String, Object>>) getObjectOrNull(yaml, properties);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static Map<String, Object> getMap(Map<String, Object> yaml, String... properties) {
-        return (Map<String, Object>) getObjectOrNull(yaml, properties);
     }
 
     public static Object getObjectOrNull(Map<String, Object> yaml, String... properties) {

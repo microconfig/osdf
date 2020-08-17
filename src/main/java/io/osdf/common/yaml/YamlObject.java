@@ -1,5 +1,6 @@
 package io.osdf.common.yaml;
 
+import io.osdf.common.exceptions.PossibleBugException;
 import lombok.RequiredArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 
@@ -23,7 +24,11 @@ public class YamlObject {
     }
 
     public static YamlObject yaml(String content) {
-        return new YamlObject(new Yaml().load(content));
+        try {
+            return new YamlObject(new Yaml().load(content));
+        } catch (RuntimeException e) {
+            throw new PossibleBugException("Couldn't parse yaml content", e);
+        }
     }
 
     @SuppressWarnings("unchecked")
