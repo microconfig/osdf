@@ -42,7 +42,7 @@ public class YamlUtils {
             return new Yaml().load(new FileInputStream(path.toString()));
         } catch (FileNotFoundException e) {
             throw new PossibleBugException("File " + path + " expected, but not found", e);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new PossibleBugException("Couldn't parse or load yaml from path " + path, e);
         }
     }
