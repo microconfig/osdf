@@ -16,8 +16,8 @@ public class ApplicationMetadata {
     private List<LocalResourceMetadata> resourcesMetadata;
     private LocalResourceMetadata mainResource;
 
-    public static ApplicationMetadata serviceMetadata(String type, List<LocalResourceMetadata> resourcesMetadata,
-                                                      LocalResourceMetadata mainResource) {
+    public static ApplicationMetadata appMetadata(String type, List<LocalResourceMetadata> resourcesMetadata,
+                                                  LocalResourceMetadata mainResource) {
         return new ApplicationMetadata(type, resourcesMetadata, mainResource);
     }
 }

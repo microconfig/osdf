@@ -9,13 +9,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.regex.Matcher;
+import java.util.stream.Stream;
 
 import static io.osdf.core.cluster.resource.ClusterResourceImpl.fromPath;
 import static io.osdf.core.connection.cli.CliOutput.errorOutput;
 import static io.osdf.core.connection.cli.CliOutput.output;
 import static io.osdf.test.cluster.TestCliUtils.unknown;
+import static java.nio.file.Files.isDirectory;
 import static java.util.concurrent.ThreadLocalRandom.current;
 
 @Accessors(fluent = true)
@@ -44,9 +48,10 @@ public class ResourceApi extends TestCli {
     }
 
     private CliOutput apply(Matcher matcher) {
-        Path resourcePath = Path.of(matcher.group(1));
-        ClusterResourceImpl resource = fromPath(resourcePath);
-        if (!resource.kind().equals(kind) || !resource.name().equals(name)) return output("ok");
+        Path resourcePathOrDir = Path.of(matcher.group(1));
+
+        ClusterResourceImpl resource = getLocalResource(resourcePathOrDir);
+        if (resource == null) return output("ok");
 
         if (exists && immutableError) {
             immutableError = false;
@@ -54,6 +59,21 @@ public class ResourceApi extends TestCli {
         }
         update();
         return output("ok");
+    }
+
+    private ClusterResourceImpl getLocalResource(Path resourcePathOrDir) {
+        if (!isDirectory(resourcePathOrDir)) return fromPath(resourcePathOrDir);
+
+        try (Stream<Path> resources = Files.list(resourcePathOrDir)) {
+            return resources
+                    .map(ClusterResourceImpl::fromPath)
+                    .filter(resource -> resource.kind().equals(kind))
+                    .filter(resource -> resource.name().equals(name))
+                    .findFirst()
+                    .orElse(null);
+        } catch (IOException e) {
+            throw new RuntimeException("Can't list resources in " + resourcePathOrDir, e);
+        }
     }
 
     private CliOutput delete(Matcher matcher) {

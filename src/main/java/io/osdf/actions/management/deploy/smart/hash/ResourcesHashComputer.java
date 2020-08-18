@@ -22,6 +22,8 @@ public class ResourcesHashComputer {
     }
 
     public void insertIn(ApplicationFiles files) {
+        if (files.metadata().getMainResource() == null) return;
+
         String currentHash = currentHash(files);
         if (currentHash == null || !currentHash.equals(HASH_PLACEHOLDER)) return;
 

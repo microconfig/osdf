@@ -6,7 +6,8 @@ import java.util.function.Predicate;
 
 public enum MetadataType {
     SERVICE(metadata -> metadata.getKind().equals("deployment") || metadata.getKind().equals("deploymentconfig")),
-    JOB(metadata -> metadata.getKind().equals("job"));
+    JOB(metadata -> metadata.getKind().equals("job")),
+    PLAIN(metadata -> false);
 
     private final Predicate<LocalResourceMetadata> condition;
 

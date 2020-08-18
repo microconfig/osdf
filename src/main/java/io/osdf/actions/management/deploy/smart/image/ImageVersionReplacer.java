@@ -28,6 +28,7 @@ public class ImageVersionReplacer {
     }
 
     public void replaceFor(ApplicationFiles files) {
+        if (files.metadata().getMainResource() == null) return;
         String mainResourceContent = readAll(of(files.metadata().getMainResource().getPath()));
 
         String versionEntry = findVersionEntry(mainResourceContent);

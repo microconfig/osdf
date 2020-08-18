@@ -57,8 +57,7 @@ public class AppsDeployCommand {
                 apps.parallelStream()
                         .map(app -> of(app, cli))
                         .allMatch(app -> {
-                            boolean deployOk = app.deploy();
-                            if (!deployOk) return statusWithLogging(false, app);
+                            if (!app.deploy()) return statusWithLogging(false, app);
 
                             return statusWithLogging(app.check(), app);
                         }));
