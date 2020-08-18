@@ -37,6 +37,6 @@ public class ScriptInstaller implements FileReplacer {
                 "then\n" +
                 "        trap '' SIGINT\n" +
                 "fi\n" +
-                pathToJava() + " -XX:TieredStopAtLevel=1 -jar " + paths.root() + "/osdf.jar ${@:1}";
+                pathToJava() + " -Djava.security.egd=file:/dev/./urandom -XX:TieredStopAtLevel=1 -jar " + paths.root() + "/osdf.jar ${@:1}";
     }
 }
