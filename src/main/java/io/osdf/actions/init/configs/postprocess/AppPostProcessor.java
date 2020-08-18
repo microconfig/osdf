@@ -1,7 +1,6 @@
 package io.osdf.actions.init.configs.postprocess;
 
 import io.osdf.actions.init.configs.postprocess.metadata.MetadataCreator;
-import io.osdf.actions.init.configs.postprocess.types.MetadataType;
 import io.osdf.common.exceptions.OSDFException;
 import io.osdf.common.yaml.YamlObject;
 import io.osdf.core.local.component.ComponentDir;
@@ -15,7 +14,6 @@ import static io.osdf.actions.init.configs.postprocess.metadata.MetadataCreatorI
 import static io.osdf.common.utils.FileUtils.*;
 import static io.osdf.common.yaml.YamlObject.yaml;
 import static java.nio.file.Files.list;
-import static java.util.Arrays.stream;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Stream.of;
 
@@ -30,7 +28,7 @@ public class AppPostProcessor {
     public void process(ComponentDir componentDir) {
         splitResources(componentDir);
         configMapCreator.createConfigMaps(componentDir);
-        stream(MetadataType.values()).forEach(type -> metadataCreator.create(type, componentDir));
+        metadataCreator.create(componentDir);
     }
 
     private void splitResources(ComponentDir componentDir) {
