@@ -1,6 +1,5 @@
 package io.osdf.actions.management.deploy;
 
-import io.osdf.actions.management.deploy.deployer.Deployable;
 import io.osdf.actions.management.deploy.smart.hash.ResourcesHashComputer;
 import io.osdf.actions.management.deploy.smart.image.ImageVersionReplacer;
 import io.osdf.core.application.core.Application;
@@ -10,23 +9,18 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.utils.ConsoleColor.green;
-import static io.microconfig.utils.ConsoleColor.red;
 import static io.microconfig.utils.Logger.announce;
-import static io.microconfig.utils.Logger.info;
-import static io.osdf.actions.management.deploy.deployer.Deployable.of;
+import static io.osdf.actions.management.deploy.GroupDeployer.groupDeployer;
 import static io.osdf.actions.management.deploy.groups.StartGroupSplitter.startGroupSplitter;
 import static io.osdf.actions.management.deploy.smart.UpToDateAppFilter.upToDateAppFilter;
 import static io.osdf.actions.management.deploy.smart.hash.ResourcesHashComputer.resourcesHashComputer;
 import static io.osdf.actions.management.deploy.smart.image.ImageVersionReplacer.imageVersionReplacer;
 import static io.osdf.actions.management.deploy.smart.image.digest.DigestGetterImpl.digestGetter;
-import static io.osdf.common.utils.ThreadUtils.runInParallel;
 import static io.osdf.core.application.core.AllApplications.all;
 import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
 import static io.osdf.settings.OsdfConfig.osdfConfig;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
 public class AppsDeployCommand {
@@ -46,26 +40,9 @@ public class AppsDeployCommand {
         List<Application> appsToDeploy = filterApps(smart, allApps);
         if (appsToDeploy.isEmpty()) return true;
 
-        Integer maxParallel = osdfConfig(paths).maxParallel();
+        GroupDeployer groupDeployer = groupDeployer(cli, osdfConfig(paths).maxParallel());
         List<List<Application>> groups = startGroupSplitter().split(appsToDeploy);
-        return groups.stream().allMatch(apps -> deployGroup(apps, maxParallel));
-    }
-
-    private boolean deployGroup(List<Application> apps, Integer maxParallel) {
-        announce("\nDeploying group - " + apps.stream().map(Application::name).collect(toUnmodifiableList()));
-        return runInParallel(maxParallel == null ? apps.size() : maxParallel, () ->
-                apps.parallelStream()
-                        .map(app -> of(app, cli))
-                        .allMatch(app -> {
-                            if (!app.deploy()) return statusWithLogging(false, app);
-
-                            return statusWithLogging(app.check(), app);
-                        }));
-    }
-
-    private boolean statusWithLogging(boolean status, Deployable app) {
-        info(app.name() + " " + (status ? green("OK") : red("FAILED")));
-        return status;
+        return groups.stream().allMatch(groupDeployer::deployGroup);
     }
 
     private List<Application> filterApps(boolean smart, List<Application> allApps) {
