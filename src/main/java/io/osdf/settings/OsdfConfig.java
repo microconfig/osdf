@@ -37,7 +37,11 @@ public class OsdfConfig {
     }
 
     public Integer maxParallel() {
-        return castToInteger(appProperty("osdf.deploy.maxParallel"));
+        try {
+            return castToInteger(appProperty("osdf.deploy.maxParallel"));
+        } catch (OSDFException e) {
+            return null;
+        }
     }
 
     private String appProperty(String key) {

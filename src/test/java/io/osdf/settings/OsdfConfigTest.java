@@ -5,8 +5,7 @@ import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.local.microconfig.property.PropertyGetter;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -19,6 +18,15 @@ class OsdfConfigTest {
 
         OsdfConfig config = new OsdfConfig(getter);
         assertThrows(OSDFException.class, config::group);
+    }
+
+    @Test
+    void returnDefaults_ifPropertiesComponentDoesntExist() {
+        PropertyGetter getter = mock(PropertyGetter.class);
+        when(getter.get(any(), any(), any())).thenThrow(new ComponentNotFoundException("osdf-config"));
+
+        OsdfConfig config = new OsdfConfig(getter);
+        assertEquals(null, config.maxParallel());
     }
 
     @Test
