@@ -115,14 +115,14 @@ public class ServiceStatusRowsGetter implements AppStatusRowsGetter {
         private final boolean exists;
 
         public ServiceObjects(ServiceApplication service) {
-            Optional<CoreDescription> coreDescription = service.coreDescription();
-            Optional<ClusterDeployment> deployment = service.deployment();
-            if (deployment.isEmpty() || coreDescription.isEmpty()) {
+            Optional<CoreDescription> coreDescriptionOptional = service.coreDescription();
+            Optional<ClusterDeployment> deploymentOptional = service.deployment();
+            if (deploymentOptional.isEmpty() || coreDescriptionOptional.isEmpty()) {
                 this.exists = false;
                 return;
             }
-            this.coreDescription = coreDescription.get();
-            this.deployment = deployment.get();
+            this.coreDescription = coreDescriptionOptional.get();
+            this.deployment = deploymentOptional.get();
             this.serviceStatus = serviceStatusGetter(cli).statusOf(service);
             this.files = service.files();
             this.exists = true;

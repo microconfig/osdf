@@ -32,11 +32,10 @@ public class PlainAppDeployer {
     }
 
     private void cleanResources(PlainApplication plainApp) {
-        plainApp.coreDescription().ifPresent(coreDescription -> {
-            resourceDeleter(cli)
-                    .deleteOldResources(coreDescription, plainApp.files())
-                    .deleteConfigMaps(coreDescription);
-        });
+        plainApp.coreDescription().ifPresent(coreDescription ->
+                resourceDeleter(cli)
+                        .deleteOldResources(coreDescription, plainApp.files())
+                        .deleteConfigMaps(coreDescription));
     }
 
     private void uploadResources(ApplicationFiles files) {
