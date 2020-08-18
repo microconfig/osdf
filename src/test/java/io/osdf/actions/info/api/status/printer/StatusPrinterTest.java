@@ -22,8 +22,6 @@ import static io.microconfig.utils.ConsoleColor.green;
 import static io.osdf.actions.info.api.status.printer.StatusPrinter.statusPrinter;
 import static io.osdf.actions.info.printer.ColumnPrinter.printer;
 import static io.osdf.actions.init.configs.postprocess.metadata.MetadataCreatorImpl.metadataCreator;
-import static io.osdf.actions.init.configs.postprocess.types.MetadataType.JOB;
-import static io.osdf.actions.init.configs.postprocess.types.MetadataType.SERVICE;
 import static io.osdf.core.application.core.files.ApplicationFilesImpl.applicationFiles;
 import static io.osdf.core.application.job.JobApplication.jobApp;
 import static io.osdf.core.application.service.ServiceApplication.serviceApplication;
@@ -33,7 +31,6 @@ import static io.osdf.test.cluster.api.JobAppApi.jobAppApi;
 import static io.osdf.test.cluster.api.ServiceApi.serviceApi;
 import static java.lang.System.setOut;
 import static java.nio.file.Files.createDirectories;
-import static java.util.Collections.emptyList;
 import static java.util.List.of;
 import static org.apache.commons.io.FileUtils.copyDirectory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,7 +45,7 @@ class StatusPrinterTest {
 
         String actual = getOutput(() ->
                 statusPrinter(serviceApi, printer(), false)
-                        .checkStatusAndPrint(of(service("test", serviceApi)), emptyList()));
+                        .checkStatusAndPrint(of(service("test", serviceApi))));
 
         ColumnPrinter printer = getPrinter();
         printer.addRow(green("test"), green("latest"), green("master"), green("READY"), green("2/2"));
@@ -62,7 +59,7 @@ class StatusPrinterTest {
         JobAppApi jobAppApi = jobAppApi("test");
 
         String actual = getOutput(() -> statusPrinter(jobAppApi, printer(), false)
-                .checkStatusAndPrint(emptyList(), of(job("test", jobAppApi))));
+                .checkStatusAndPrint(of(job("test", jobAppApi))));
 
         ColumnPrinter printer = getPrinter();
         printer.addRow(green("test"), green("latest"), green("master"), green("SUCCEEDED"), green("-"));
@@ -94,7 +91,7 @@ class StatusPrinterTest {
 
         MicroConfigComponentDir componentDir = componentDir(destination);
         ApplicationFiles files = applicationFiles(componentDir);
-        metadataCreator().create(SERVICE, componentDir);
+        metadataCreator().create(componentDir);
         return serviceApplication(files, cli);
     }
 
@@ -107,7 +104,7 @@ class StatusPrinterTest {
 
         MicroConfigComponentDir componentDir = componentDir(destination);
         ApplicationFiles files = applicationFiles(componentDir);
-        metadataCreator().create(JOB, componentDir);
+        metadataCreator().create(componentDir);
         return jobApp(files, cli);
     }
 }

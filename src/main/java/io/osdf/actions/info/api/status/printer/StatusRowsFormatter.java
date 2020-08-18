@@ -24,7 +24,7 @@ public class StatusRowsFormatter {
                 green(formatVersions(coreDescription.getAppVersion(), yaml.get("app.version"))),
                 green(formatVersions(coreDescription.getConfigVersion(), yaml.get("config.version"))),
                 coloredStatus,
-                replicas);
+                green(replicas));
     }
 
     public void addNotFoundRow(ApplicationFiles files, String coloredStatus) {

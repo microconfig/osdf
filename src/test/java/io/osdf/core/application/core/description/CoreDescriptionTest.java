@@ -40,7 +40,7 @@ class CoreDescriptionTest {
 
         MicroConfigComponentDir componentDir = componentDir(tempDir);
         ApplicationFiles files = applicationFiles(componentDir);
-        metadataCreator().create(SERVICE, componentDir);
+        metadataCreator().create(componentDir);
         return files;
     }
 }

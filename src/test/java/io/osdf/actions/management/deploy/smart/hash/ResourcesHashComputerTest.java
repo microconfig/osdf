@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import static io.osdf.actions.init.configs.postprocess.metadata.MetadataCreatorImpl.metadataCreator;
-import static io.osdf.actions.init.configs.postprocess.types.MetadataType.SERVICE;
 import static io.osdf.actions.management.deploy.smart.hash.ResourcesHashComputer.resourcesHashComputer;
 import static io.osdf.core.application.core.files.ApplicationFilesImpl.applicationFiles;
 import static io.osdf.core.local.component.MicroConfigComponentDir.componentDir;
@@ -49,7 +48,7 @@ class ResourcesHashComputerTest {
 
         MicroConfigComponentDir componentDir = componentDir(tempDir);
         ApplicationFiles files = applicationFiles(componentDir);
-        metadataCreator().create(SERVICE, componentDir);
+        metadataCreator().create(componentDir);
         return files;
     }
 }

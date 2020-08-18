@@ -63,7 +63,7 @@ class ImageVersionReplacerTest {
 
         MicroConfigComponentDir componentDir = componentDir(tempDir);
         ApplicationFiles files = applicationFiles(componentDir);
-        metadataCreator().create(SERVICE, componentDir);
+        metadataCreator().create(componentDir);
         return files;
     }
 
