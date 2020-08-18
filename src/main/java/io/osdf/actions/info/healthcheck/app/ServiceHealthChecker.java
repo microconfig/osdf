@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static io.microconfig.utils.Logger.error;
+import static io.osdf.common.utils.StringUtils.castToInteger;
 import static io.osdf.core.application.service.ServiceApplication.serviceApplication;
+import static java.lang.System.getenv;
 import static java.util.Objects.requireNonNullElse;
 
 @RequiredArgsConstructor
@@ -41,8 +43,17 @@ public class ServiceHealthChecker implements AppHealthChecker {
     }
 
     private int timeout(ServiceApplication service) {
+        Integer timeoutFromEnv = timeoutFromEnv();
+        if (timeoutFromEnv != null) return timeoutFromEnv;
+
         Integer timeoutInSec = service.files().deployProperties()
                 .get("osdf.healthcheck.timeoutInSec");
         return requireNonNullElse(timeoutInSec, 60);
+    }
+
+    private Integer timeoutFromEnv() {
+        String timeoutFromEnv = getenv("OSDF_HEALTHCHECK_TIMEOUT");
+        if (timeoutFromEnv != null) return castToInteger(timeoutFromEnv.trim());
+        return null;
     }
 }
