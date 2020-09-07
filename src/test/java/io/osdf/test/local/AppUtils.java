@@ -15,12 +15,16 @@ import static org.apache.commons.io.FileUtils.copyDirectory;
 
 public class AppUtils {
     public static ApplicationFiles applicationFilesFor(String name) {
+        return applicationFilesFor(name, "");
+    }
+
+    public static ApplicationFiles applicationFilesFor(String name, String subPath) {
         Path serviceDir = classpathFile("components/" + name);
-        MicroConfigComponentDir componentDir = null;
+        MicroConfigComponentDir componentDir;
         try {
-            Path tempDir = createTempDirectory(name);
-            copyDirectory(serviceDir.toFile(), tempDir.toFile());
-            componentDir = componentDir(tempDir);
+            Path destination = Path.of(createTempDirectory(name) + subPath);
+            copyDirectory(serviceDir.toFile(), destination.toFile());
+            componentDir = componentDir(destination);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't copy component " + name, e);
         }

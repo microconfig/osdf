@@ -6,6 +6,7 @@ import io.osdf.core.application.service.ServiceDescription;
 import io.osdf.core.connection.cli.CliOutput;
 import io.osdf.test.cluster.TestApiExecutor;
 import io.osdf.test.cluster.TestCli;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 
@@ -15,6 +16,7 @@ import static io.osdf.test.cluster.api.ConfigMapApi.configMapApi;
 import static io.osdf.test.cluster.api.DeploymentApi.deploymentApi;
 import static java.util.List.of;
 
+@Getter
 @RequiredArgsConstructor
 public class ServiceApi extends TestCli {
     private final ConfigMapApi configMapApi;

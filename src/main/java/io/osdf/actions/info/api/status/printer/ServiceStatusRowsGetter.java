@@ -22,6 +22,7 @@ import static io.microconfig.utils.ConsoleColor.red;
 import static io.osdf.actions.info.api.status.printer.RowColumnsWithStatusImpl.rowColumnsWithStatus;
 import static io.osdf.actions.info.api.status.printer.StatusRowsFormatter.formatter;
 import static io.osdf.actions.info.healthcheck.PodsInfo.podsInfo;
+import static io.osdf.actions.info.status.service.ServiceStatus.NOT_FOUND;
 import static io.osdf.actions.info.status.service.ServiceStatus.READY;
 import static io.osdf.actions.info.status.service.ServiceStatusGetter.serviceStatusGetter;
 import static io.osdf.core.cluster.resource.properties.ResourceProperties.resourceProperties;
@@ -115,16 +116,18 @@ public class ServiceStatusRowsGetter implements AppStatusRowsGetter {
         private final boolean exists;
 
         public ServiceObjects(ServiceApplication service) {
+            this.files = service.files();
+
             Optional<CoreDescription> coreDescriptionOptional = service.coreDescription();
             Optional<ClusterDeployment> deploymentOptional = service.deployment();
             if (deploymentOptional.isEmpty() || coreDescriptionOptional.isEmpty()) {
                 this.exists = false;
+                this.serviceStatus = NOT_FOUND;
                 return;
             }
             this.coreDescription = coreDescriptionOptional.get();
             this.deployment = deploymentOptional.get();
             this.serviceStatus = serviceStatusGetter(cli).statusOf(service);
-            this.files = service.files();
             this.exists = true;
         }
     }

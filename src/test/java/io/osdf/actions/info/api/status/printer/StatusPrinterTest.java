@@ -1,70 +1,70 @@
 package io.osdf.actions.info.api.status.printer;
 
 import io.osdf.actions.info.printer.ColumnPrinter;
+import io.osdf.core.application.core.Application;
 import io.osdf.core.application.core.files.ApplicationFiles;
 import io.osdf.core.application.job.JobApplication;
 import io.osdf.core.application.service.ServiceApplication;
 import io.osdf.core.connection.cli.ClusterCli;
-import io.osdf.core.local.component.MicroConfigComponentDir;
+import io.osdf.test.cluster.TestCli;
 import io.osdf.test.cluster.api.JobAppApi;
 import io.osdf.test.cluster.api.ServiceApi;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.file.Path;
+import java.util.List;
 
 import static io.microconfig.utils.ConsoleColor.green;
 import static io.osdf.actions.info.api.status.printer.StatusPrinter.statusPrinter;
 import static io.osdf.actions.info.printer.ColumnPrinter.printer;
-import static io.osdf.actions.init.configs.postprocess.metadata.MetadataCreatorImpl.metadataCreator;
-import static io.osdf.core.application.core.files.ApplicationFilesImpl.applicationFiles;
 import static io.osdf.core.application.job.JobApplication.jobApp;
 import static io.osdf.core.application.service.ServiceApplication.serviceApplication;
-import static io.osdf.core.local.component.MicroConfigComponentDir.componentDir;
-import static io.osdf.test.ClasspathReader.classpathFile;
 import static io.osdf.test.cluster.api.JobAppApi.jobAppApi;
 import static io.osdf.test.cluster.api.ServiceApi.serviceApi;
+import static io.osdf.test.local.AppUtils.applicationFilesFor;
 import static java.lang.System.setOut;
-import static java.nio.file.Files.createDirectories;
 import static java.util.List.of;
-import static org.apache.commons.io.FileUtils.copyDirectory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 class StatusPrinterTest {
-    @TempDir
-    Path tempDir;
-
     @Test
     void testServiceOk() {
         ServiceApi serviceApi = serviceApi("test");
 
-        String actual = getOutput(() ->
-                statusPrinter(serviceApi, printer(), false)
-                        .checkStatusAndPrint(of(service("test", serviceApi))));
+        assertAppStatusRows(serviceApi, service(serviceApi), of(
+                green("test"), green("latest"), green("master"), green("READY"), green("2/2")
+        ));
+    }
 
-        ColumnPrinter printer = getPrinter();
-        printer.addRow(green("test"), green("latest"), green("master"), green("READY"), green("2/2"));
-        String expected = getOutput(printer::print);
+    @Test
+    void testServiceNotFound() {
+        ServiceApi serviceApi = serviceApi("test");
+        serviceApi.getConfigMapApi().exists(false);
 
-        assertEquals(expected, actual);
+        assertAppStatusRows(serviceApi, service(serviceApi), of(
+                green("test"), green("- [latest]"), green("- [master]"), "NOT FOUND", green("-")
+        ));
     }
 
     @Test
     void testJobSucceeded() {
         JobAppApi jobAppApi = jobAppApi("test");
 
-        String actual = getOutput(() -> statusPrinter(jobAppApi, printer(), false)
-                .checkStatusAndPrint(of(job("test", jobAppApi))));
+        assertAppStatusRows(jobAppApi, job(jobAppApi), of(
+                green("test"), green("latest"), green("master"), green("SUCCEEDED"), green("-")
+        ));
+    }
+
+    void assertAppStatusRows(TestCli cli, Application app, List<String> row) {
+        String actual = getOutput(() ->
+                statusPrinter(cli, printer(), false)
+                        .checkStatusAndPrint(of(app)));
 
         ColumnPrinter printer = getPrinter();
-        printer.addRow(green("test"), green("latest"), green("master"), green("SUCCEEDED"), green("-"));
+        printer.addRow(row.toArray(String[]::new));
         String expected = getOutput(printer::print);
-
         assertEquals(expected, actual);
     }
 
@@ -82,29 +82,13 @@ class StatusPrinterTest {
         return printer;
     }
 
-    private ServiceApplication service(String name, ClusterCli cli) throws IOException {
-        Path serviceDir = classpathFile("components/simple-service");
-        Path destination = Path.of(tempDir + "/" + name);
-        createDirectories(destination);
-
-        copyDirectory(serviceDir.toFile(), destination.toFile());
-
-        MicroConfigComponentDir componentDir = componentDir(destination);
-        ApplicationFiles files = applicationFiles(componentDir);
-        metadataCreator().create(componentDir);
+    private ServiceApplication service(ClusterCli cli) {
+        ApplicationFiles files = applicationFilesFor("simple-service", "/test");
         return serviceApplication(files, cli);
     }
 
-    private JobApplication job(String name, ClusterCli cli) throws IOException {
-        Path serviceDir = classpathFile("components/simple-job");
-        Path destination = Path.of(tempDir + "/" + name);
-        createDirectories(destination);
-
-        copyDirectory(serviceDir.toFile(), destination.toFile());
-
-        MicroConfigComponentDir componentDir = componentDir(destination);
-        ApplicationFiles files = applicationFiles(componentDir);
-        metadataCreator().create(componentDir);
+    private JobApplication job(ClusterCli cli) {
+        ApplicationFiles files = applicationFilesFor("simple-job", "/test");
         return jobApp(files, cli);
     }
 }
