@@ -116,6 +116,7 @@ dependencies {
     implementation 'io.microconfig:microconfig-cli:4.2.0:all'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'org.jasypt:jasypt:1.9.3'
+    implementation 'org.zeroturnaround:zt-zip:1.14'
 
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
