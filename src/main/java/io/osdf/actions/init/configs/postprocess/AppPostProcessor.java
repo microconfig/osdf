@@ -16,6 +16,7 @@ import static io.osdf.common.yaml.YamlObject.yaml;
 import static java.nio.file.Files.list;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Stream.of;
+import static org.apache.commons.io.FilenameUtils.getExtension;
 
 public class AppPostProcessor {
     private final ConfigMapCreator configMapCreator = configMapCreator();
@@ -55,7 +56,9 @@ public class AppPostProcessor {
         YamlObject yaml = yaml(newFileContent);
         String kind = yaml.get("kind");
         String name = yaml.get("metadata.name");
-        Path newPath = Path.of(path.toString().replace(".yaml", "-" + kind + "-" + name + ".yaml"));
+
+        String extension = getExtension(path.toString());
+        Path newPath = Path.of(path.toString().replace("." + extension, "-" + kind + "-" + name + "." + extension));
         writeStringToFile(newPath, newFileContent);
     }
 }
