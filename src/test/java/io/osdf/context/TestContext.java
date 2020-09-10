@@ -18,6 +18,7 @@ import static io.osdf.settings.version.OsdfVersion.fromString;
 import static java.nio.file.Files.*;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.io.FileUtils.copyDirectory;
+import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.mockito.Mockito.mock;
 
 @RequiredArgsConstructor
@@ -42,7 +43,8 @@ public class TestContext {
 
     @SneakyThrows
     public void clear() {
-        deleteIfExists(paths.root());
+        deleteDirectory(configsPath().toFile());
+        deleteDirectory(paths.root().toFile());
     }
 
     @SneakyThrows
