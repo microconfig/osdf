@@ -10,6 +10,8 @@ import io.osdf.core.local.configs.ConfigsSettings;
 import io.osdf.core.local.configs.ConfigsSource;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import static io.microconfig.utils.Logger.warn;
 import static io.osdf.actions.init.configs.fetch.ConfigsFetcher.fetcher;
@@ -23,11 +25,15 @@ import static io.osdf.core.local.microconfig.MicroConfig.microConfig;
 import static io.osdf.core.local.microconfig.property.PropertySetter.propertySetter;
 import static java.util.Collections.emptyList;
 
+@Accessors(fluent = true)
 @RequiredArgsConstructor
 public class ConfigsUpdater {
     private final OsdfPaths paths;
     private final ClusterCli cli;
     private final SettingsFile<ConfigsSettings> settingsFile;
+
+    @Setter
+    private boolean logoutOnBuild = true;
 
     public static ConfigsUpdater configsUpdater(OsdfPaths paths, ClusterCli cli) {
         SettingsFile<ConfigsSettings> settingsFile = settingsFile(ConfigsSettings.class, paths.settings().configs());
@@ -72,7 +78,8 @@ public class ConfigsUpdater {
         componentsLoader()
                 .load(componentsFinder(paths.componentsPath()), isApp())
                 .forEach(appPostProcessor::process);
-        cli.logout();
+
+        if (logoutOnBuild) cli.logout();
         updateAutocomplete();
     }
 

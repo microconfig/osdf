@@ -14,6 +14,7 @@ import static io.microconfig.utils.Logger.announce;
 import static io.osdf.actions.management.clearapps.ClearAppsCommand.clearAppsCommand;
 import static io.osdf.actions.management.deletepod.PodDeleter.podDeleter;
 import static io.osdf.actions.management.deploy.AppsDeployCommand.deployCommand;
+import static io.osdf.actions.management.deploy.AutoPullHook.autoPullHook;
 import static io.osdf.actions.management.restart.DeploymentRestarter.deploymentRestarter;
 import static io.osdf.core.application.core.AllApplications.all;
 import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
@@ -31,6 +32,7 @@ public class ManagementApiImpl implements ManagementApi {
 
     @Override
     public void deploy(List<String> serviceNames, String mode, Boolean smart) {
+        autoPullHook(paths, cli).tryAutoPull();
         if ("restricted".equals(mode) && smart) throw new OSDFException("Smart deploy is not possible for restricted deploy mode");
         boolean ok = deployCommand(paths, cli).deploy(serviceNames, smart);
         announce(ok ? "OK" : "Some apps have failed");
