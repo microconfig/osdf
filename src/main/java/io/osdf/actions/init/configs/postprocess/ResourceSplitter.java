@@ -12,10 +12,13 @@ import static io.osdf.common.utils.FileUtils.*;
 import static io.osdf.common.yaml.YamlObject.yaml;
 import static java.nio.file.Files.list;
 import static java.util.function.Predicate.not;
+import static java.util.regex.Pattern.compile;
 import static java.util.stream.Stream.of;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 
 public class ResourceSplitter {
+    private final static String SEPARATOR = "(?m)^---$";
+
     public static ResourceSplitter resourceSplitter() {
         return new ResourceSplitter();
     }
@@ -30,11 +33,9 @@ public class ResourceSplitter {
 
     private void splitResource(Path path) {
         String content = readAll(path);
-        boolean containsSplitter = of(content.split("\n"))
-                .anyMatch(line -> line.trim().equals("---"));
-        if (!containsSplitter) return;
+        if (!compile(SEPARATOR).matcher(content).find()) return;
 
-        of(content.split("^---$"))
+        of(content.split(SEPARATOR))
                 .map(String::trim)
                 .filter(not(String::isEmpty))
                 .forEach(newFileContent -> createNewFile(path, newFileContent));
