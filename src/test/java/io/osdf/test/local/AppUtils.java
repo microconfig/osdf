@@ -19,6 +19,17 @@ public class AppUtils {
     }
 
     public static ApplicationFiles applicationFilesFor(String name, String subPath) {
+        MicroConfigComponentDir componentDir = componentDirFor(name, subPath);
+        ApplicationFiles files = applicationFiles(componentDir);
+        metadataCreator().create(componentDir);
+        return files;
+    }
+
+    public static MicroConfigComponentDir componentDirFor(String name) {
+        return componentDirFor(name, "");
+    }
+
+    public static MicroConfigComponentDir componentDirFor(String name, String subPath) {
         Path serviceDir = classpathFile("components/" + name);
         MicroConfigComponentDir componentDir;
         try {
@@ -28,9 +39,6 @@ public class AppUtils {
         } catch (IOException e) {
             throw new RuntimeException("Couldn't copy component " + name, e);
         }
-
-        ApplicationFiles files = applicationFiles(componentDir);
-        metadataCreator().create(componentDir);
-        return files;
+        return componentDir;
     }
 }
