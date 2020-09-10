@@ -26,6 +26,7 @@ public class AppPostProcessor {
     }
 
     public void process(ComponentDir componentDir) {
+        createDirectoryIfNotExists(componentDir.getPath("resources"));
         splitResources(componentDir);
         configMapCreator.createConfigMaps(componentDir);
         metadataCreator.create(componentDir);
