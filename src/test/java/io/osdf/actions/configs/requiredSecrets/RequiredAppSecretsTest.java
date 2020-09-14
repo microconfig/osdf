@@ -11,11 +11,11 @@ import static io.osdf.actions.configs.requiredSecrets.RequiredAppSecrets.require
 import static io.osdf.core.application.service.ServiceApplication.serviceApplication;
 import static io.osdf.test.local.AppUtils.applicationFilesFor;
 import static java.util.List.of;
+import static java.util.Set.copyOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 class RequiredAppSecretsTest {
-
     @Test
     void testList() {
         ApplicationFiles files = applicationFilesFor("simple-service");
@@ -23,6 +23,6 @@ class RequiredAppSecretsTest {
 
         List<String> secrets = requiredAppSecrets().listFor(of(service));
 
-        assertEquals(of("simple-service-secret", "simple-service-secret-2"), secrets);
+        assertEquals(copyOf(of("simple-service-secret", "simple-service-secret-2")), copyOf(secrets));
     }
 }
