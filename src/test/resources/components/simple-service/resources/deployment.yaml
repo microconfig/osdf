@@ -16,19 +16,14 @@ spec:
     spec:
       containers:
         - image: my-registry.com/my-repo/simple-service:<IMAGE_DIGEST:latest>
-          imagePullPolicy: Always
           name: simple-service
           ports:
             - containerPort: 1970
               protocol: TCP
-          resources:
-            requests:
-              cpu: 2
-              memory: 1024M
-            limits:
-              cpu: 2
-              memory: 1024M
-      restartPolicy: Always
-  replicas: 1
-  strategy:
-    type: RollingUpdate
+      volumes:
+        - name: secret
+          secret:
+            secretName: simple-service-secret
+        - name: secret-2
+          secret:
+            secretName: simple-service-secret-2
