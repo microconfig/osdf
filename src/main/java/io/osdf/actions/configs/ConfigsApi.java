@@ -2,6 +2,7 @@ package io.osdf.actions.configs;
 
 import io.osdf.api.lib.annotations.ApiCommand;
 import io.osdf.api.lib.annotations.ConsoleParam;
+import io.osdf.api.lib.annotations.Hidden;
 import io.osdf.api.parameters.*;
 
 import java.util.List;
@@ -23,4 +24,8 @@ public interface ConfigsApi {
 
     @ApiCommand(description = "Show properties difference", order = 5)
     void diff(@ConsoleParam(ComponentsParameter.class) List<String> components);
+
+    @Hidden
+    @ApiCommand(description = "Lists all secrets, required by apps", order = 6)
+    void requiredSecrets(@ConsoleParam(ComponentsParameter.class) List<String> components);
 }
