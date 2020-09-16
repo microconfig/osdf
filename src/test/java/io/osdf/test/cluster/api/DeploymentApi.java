@@ -13,7 +13,6 @@ import java.util.regex.Matcher;
 import static io.osdf.common.utils.StringUtils.castToInteger;
 import static io.osdf.core.connection.cli.CliOutput.errorOutput;
 import static io.osdf.core.connection.cli.CliOutput.output;
-import static io.osdf.test.cluster.api.PropertiesApi.propertiesApi;
 import static io.osdf.test.cluster.api.ResourceApi.resourceApi;
 import static java.lang.String.join;
 import static java.util.Arrays.stream;
@@ -27,6 +26,7 @@ public class DeploymentApi extends TestCli {
     private final String kind;
     private final String name;
     private final List<String> labels;
+    @Getter
     private final PropertiesApi propertiesApi;
     @Getter
     private final ResourceApi deploymentResourceApi;
@@ -37,7 +37,7 @@ public class DeploymentApi extends TestCli {
     public static DeploymentApi deploymentApi(String kind, String name) {
         List<String> labels = of("app:" + name);
 
-        PropertiesApi propertiesApi = propertiesApi(kind, name);
+        PropertiesApi propertiesApi = PropertiesApi.propertiesApi(kind, name);
         propertiesApi.add(kind.equals("deployment") ? "spec.selector.matchLabels" : "spec.selector", "map[" + labels.get(0) + "]");
         propertiesApi.add("spec.replicas", "2");
         propertiesApi.add("status.replicas", "2");
