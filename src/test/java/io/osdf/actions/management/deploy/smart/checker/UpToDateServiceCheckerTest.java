@@ -17,11 +17,13 @@ class UpToDateServiceCheckerTest {
     @Test
     void differentHashesCheck() {
         ServiceApi serviceApi = serviceApi("simple-service");
+        serviceApi.getDeploymentApi().propertiesApi().add("metadata.labels.configHash", "old-hash");
         ServiceApplication service = serviceApplication(applicationFilesFor("simple-service", "/simple-service"), serviceApi);
         ResourcesHashComputer resourcesHashComputer = mock(ResourcesHashComputer.class);
-        when(resourcesHashComputer.computeHash(any())).thenReturn("new-hash");
+        when(resourcesHashComputer.currentHash(any())).thenReturn("new-hash");
 
         boolean isUpToDate = new UpToDateServiceChecker(serviceApi, resourcesHashComputer).check(service);
+
         assertFalse(isUpToDate);
     }
 }
