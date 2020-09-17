@@ -14,31 +14,32 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ApiCallResolverTest {
     private final ApiEntrypointDefinition api = new ApiEntrypointDefinitionParserImpl().parse(ExampleMainApiClass.class);
+    private final ApiCallResolver apiCallResolver = apiCallResolver();
 
     @Test
     void resolveSuccessfully() {
-        ApiCall apiCall = apiCallResolver().resolve(api, of("example", "arg"));
+        ApiCall apiCall = apiCallResolver.resolve(api, of("example", "arg"));
 
         assertApiCall(apiCall, "example");
     }
 
     @Test
     void resolveWithPrefix() {
-        ApiCall apiCall = apiCallResolver().resolve(api, of("multi", "word", "example", "arg"));
+        ApiCall apiCall = apiCallResolver.resolve(api, of("multi", "word", "example", "arg"));
 
         assertApiCall(apiCall, "example");
     }
 
     @Test
     void resolveDashedMethodCall() {
-        ApiCall apiCall = apiCallResolver().resolve(api, of("camel-case", "arg"));
+        ApiCall apiCall = apiCallResolver.resolve(api, of("camel-case", "arg"));
 
         assertApiCall(apiCall, "camelCase");
     }
 
     @Test
     void failOnWrongMethod() {
-        assertThrows(ApiException.class, () -> apiCallResolver().resolve(api, of("unknownMethod", "arg")));
+        assertThrows(ApiException.class, () -> apiCallResolver.resolve(api, of("unknownMethod", "arg")));
     }
 
     private void assertApiCall(ApiCall apiCall, String camelCase) {

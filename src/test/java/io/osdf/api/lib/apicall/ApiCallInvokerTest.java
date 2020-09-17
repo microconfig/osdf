@@ -48,8 +48,9 @@ class ApiCallInvokerTest {
     @Test
     void passthroughForOsdfException() {
         ApiCall apiCall = resolve(of("example", "arg"));
+        ApiExceptionImpl impl = new ApiExceptionImpl(new OSDFException());
 
-        assertThrows(OSDFException.class, () -> apiCallInvoker.invoke(apiCall, new ApiExceptionImpl(new OSDFException())));
+        assertThrows(OSDFException.class, () -> apiCallInvoker.invoke(apiCall, impl));
     }
 
     private ApiCall resolve(List<String> args) {
