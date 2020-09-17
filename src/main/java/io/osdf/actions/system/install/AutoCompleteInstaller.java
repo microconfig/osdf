@@ -1,23 +1,19 @@
 package io.osdf.actions.system.install;
 
 import io.osdf.api.MainApi;
-import io.osdf.api.lib.annotations.Hidden;
-import io.osdf.api.lib.annotations.ApiGroup;
+import io.osdf.api.lib.definitionparsers.ApiEntrypointDefinitionParserImpl;
 import io.osdf.common.exceptions.MicroConfigException;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
-import java.lang.reflect.Method;
 import java.nio.file.Path;
+import java.util.List;
 
-import static io.osdf.api.lib.ImportPrefix.importPrefix;
 import static io.osdf.common.utils.FileUtils.move;
 import static io.osdf.common.utils.FileUtils.writeStringToFile;
 import static io.osdf.core.local.component.MicroConfigComponents.microConfigComponents;
 import static java.lang.String.join;
 import static java.nio.file.Path.of;
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.joining;
 import static org.apache.commons.io.FileUtils.getUserDirectoryPath;
 
 @RequiredArgsConstructor
@@ -58,21 +54,10 @@ public class AutoCompleteInstaller implements FileReplacer {
     }
 
     private String commands() {
-        return stream(MainApi.class.getMethods())
-                .filter(m -> m.getAnnotation(Hidden.class) == null)
-                .map(this::findCommandPrefixedName)
-                .collect(joining(" "));
-    }
-
-    private String findCommandPrefixedName(Method method) {
-        String prefix = importPrefix(method).toString();
-        if (!prefix.isEmpty()) {
-            return "\"" + prefix + "\"";
-        }
-        return stream(method.getAnnotation(ApiGroup.class).value().getMethods())
-                .map(Method::getName)
-                .map(String::trim)
-                .collect(joining("\" \"", "\"", "\""));
+        List<String> commands = new ApiEntrypointDefinitionParserImpl()
+                .parse(MainApi.class)
+                .commands();
+        return join(" ", commands);
     }
 
     private String components() {

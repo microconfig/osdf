@@ -1,5 +1,6 @@
 package io.osdf.api.lib;
 
+import io.osdf.api.MainApi;
 import io.osdf.context.TestContext;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +15,6 @@ class MainApiCallerTest {
     @Test
     void callSimpleMethod() {
         context.install();
-        mainApi(context.getPaths(), oc(context.getPaths())).call(of("help", "help"));
+        mainApi(context.getPaths(), oc(context.getPaths())).call(MainApi.class, of("help", "help"));
     }
 }

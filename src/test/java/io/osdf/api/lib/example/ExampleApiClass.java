@@ -1,19 +1,16 @@
 package io.osdf.api.lib.example;
 
-import io.osdf.api.lib.annotations.ApiCommand;
-import io.osdf.api.lib.annotations.ConsoleParam;
-import io.osdf.api.lib.parameter.ArgParameter;
+import io.osdf.api.lib.annotations.Arg;
+import io.osdf.api.lib.annotations.Description;
+import io.osdf.api.lib.annotations.Public;
 
+@Public({"example", "camelCase"})
 public interface ExampleApiClass {
-    class StringArg extends ArgParameter<String> {
-        public StringArg() {
-            super("first", "f", "description");
-        }
-    }
+    @Description("Example api method")
+    @Arg(optional = "first", d = "description")
+    void example(String arg);
 
-    @ApiCommand(description = "Example api method", order = 1)
-    void example(@ConsoleParam(StringArg.class) String arg);
-
-    @ApiCommand(description = "Example api method with two words name", order = 2)
-    void camelCase(@ConsoleParam(StringArg.class) String arg);
+    @Description("Example api method with two words name")
+    @Arg(optional = "first", d = "description")
+    void camelCase(String arg);
 }
