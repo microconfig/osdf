@@ -8,6 +8,7 @@ plugins {
 }
 
 group 'io.microconfig.osdf'
+
 version '1.5.20'
 
 sourceCompatibility = 11

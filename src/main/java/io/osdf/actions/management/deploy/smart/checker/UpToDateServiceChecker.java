@@ -19,10 +19,10 @@ import static java.util.Map.of;
 @RequiredArgsConstructor
 public class UpToDateServiceChecker implements UpToDateChecker {
     private final ClusterCli cli;
-    private final ResourcesHashComputer resourcesHashComputer = resourcesHashComputer();
+    private final ResourcesHashComputer resourcesHashComputer;
 
     public static UpToDateServiceChecker upToDateDeploymentChecker(ClusterCli cli) {
-        return new UpToDateServiceChecker(cli);
+        return new UpToDateServiceChecker(cli, resourcesHashComputer());
     }
 
     @Override
@@ -33,10 +33,12 @@ public class UpToDateServiceChecker implements UpToDateChecker {
         if (deployment.isEmpty()) return false;
 
         ClusterResource deploymentResource = deployment.get().toResource();
-        Optional<ResourceProperties> properties = resourceProperties(cli, deploymentResource, of("hash", "configHash"));
+        Optional<ResourceProperties> properties = resourceProperties(cli, deploymentResource, of("hash", "metadata.labels.configHash"));
         if (properties.isEmpty()) return false;
 
-        return properties.get().get("hash").equals(resourcesHashComputer.currentHash(service.files()));
+        String hash = properties.get().get("hash");
+        String currentHash = resourcesHashComputer.currentHash(service.files());
+        return hash.equals(currentHash);
     }
 
 }
