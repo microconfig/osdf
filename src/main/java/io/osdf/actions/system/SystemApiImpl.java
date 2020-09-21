@@ -4,8 +4,9 @@ import io.osdf.actions.system.install.jarinstaller.JarInstaller;
 import io.osdf.actions.system.state.CurrentStateCommand;
 import io.osdf.actions.system.update.UpdateSettings;
 import io.osdf.api.MainApi;
-import io.osdf.api.lib.ApiCall;
-import io.osdf.api.lib.ApiCallFinder;
+import io.osdf.api.lib.definitionparsers.ApiEntrypointDefinitionParserImpl;
+import io.osdf.api.lib.definitions.ApiEntrypointDefinition;
+import io.osdf.api.lib.definitions.MethodDefinition;
 import io.osdf.common.Credentials;
 import io.osdf.common.SettingsFile;
 import io.osdf.common.exceptions.OSDFException;
@@ -22,12 +23,12 @@ import static io.osdf.actions.system.install.jarinstaller.FakeJarInstaller.fakeJ
 import static io.osdf.actions.system.install.jarinstaller.LocalJarInstaller.jarInstaller;
 import static io.osdf.actions.system.install.migrations.AllMigrations.allMigrations;
 import static io.osdf.actions.system.update.UpdateCommand.updateCommand;
-import static io.osdf.api.lib.ApiMethodReader.apiMethodReader;
+import static io.osdf.api.lib.apicall.ApiCallResolver.apiCallResolver;
+import static io.osdf.api.lib.argmappers.ApacheFlagArgsMapper.flagArgMapper;
 import static io.osdf.common.SettingsFile.settingsFile;
 import static io.osdf.common.utils.JarUtils.isJar;
 import static io.osdf.settings.paths.OsdfPaths.paths;
 import static io.osdf.settings.version.OsdfVersion.fromString;
-import static java.lang.String.join;
 
 @RequiredArgsConstructor
 public class SystemApiImpl implements SystemApi {
@@ -52,10 +53,10 @@ public class SystemApiImpl implements SystemApi {
 
     @Override
     public void help(List<String> command) {
-        ApiCall apiCall = ApiCallFinder.finder(MainApi.class).find(command);
-        if (!apiCall.getArgs().isEmpty()) throw new OSDFException("Additional arguments for method are not allowed");
-
-        apiMethodReader(apiCall.getMethod(), join(" ", command)).printHelp();
+        ApiEntrypointDefinition apiEntrypointDefinition = new ApiEntrypointDefinitionParserImpl().parse(MainApi.class);
+        MethodDefinition methodDefinition = apiCallResolver().resolve(apiEntrypointDefinition, command).getMethodDefinition();
+        announce(methodDefinition.getDescription());
+        flagArgMapper(methodDefinition.getMethod().getName(), methodDefinition.getArgs()).printHelp();
     }
 
     @Override

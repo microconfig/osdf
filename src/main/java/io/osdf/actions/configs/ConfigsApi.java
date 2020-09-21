@@ -1,31 +1,35 @@
 package io.osdf.actions.configs;
 
-import io.osdf.api.lib.annotations.ApiCommand;
-import io.osdf.api.lib.annotations.ConsoleParam;
-import io.osdf.api.lib.annotations.Hidden;
-import io.osdf.api.parameters.*;
+import io.osdf.api.lib.annotations.Arg;
+import io.osdf.api.lib.annotations.Description;
+import io.osdf.api.lib.annotations.Public;
 
 import java.util.List;
 
+@Public({"pull", "env", "group", "versions", "diff"})
 public interface ConfigsApi {
-    @ApiCommand(description = "Pull up-to-date configs", order = 1)
+    @Description("Pull up-to-date configs")
     void pull();
 
-    @ApiCommand(description = "Set env", order = 2)
-    void env(@ConsoleParam(EnvParameter.class) String env);
+    @Description("Set env")
+    @Arg(required = "env", d = "Env name")
+    void env(String env);
 
-    @ApiCommand(description = "Set group", order = 3)
-    void group(@ConsoleParam(GroupParameter.class) String group);
+    @Description("Set group")
+    @Arg(required = "group", d = "Group name")
+    void group(String group);
 
-    @ApiCommand(description = "Set project and configs versions", order = 4)
-    void versions(@ConsoleParam(ConfigVersionParameter.class) String configVersion,
-                  @ConsoleParam(ProjectVersionParameter.class) String projectVersion,
-                  @ConsoleParam(ComponentParameter.class) String app);
+    @Description("Set project and configs versions")
+    @Arg(optional = "cv/configVersion", d = "Config version")
+    @Arg(optional = "pv/projectVersion", d = "Project version")
+    @Arg(optional = "component", d = "If specified, only this component will be affected")
+    void versions(String configVersion, String projectVersion, String app);
 
-    @ApiCommand(description = "Show properties difference", order = 5)
-    void diff(@ConsoleParam(ComponentsParameter.class) List<String> components);
+    @Description("Show properties difference")
+    @Arg(optional = "components", d = "Comma separated list of components")
+    void diff(List<String> components);
 
-    @Hidden
-    @ApiCommand(description = "Lists all secrets, required by apps", order = 6)
-    void requiredSecrets(@ConsoleParam(ComponentsParameter.class) List<String> components);
+    @Description("Lists all secrets, required by apps")
+    @Arg(optional = "components", d = "Comma separated list of components")
+    void requiredSecrets(List<String> components);
 }

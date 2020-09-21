@@ -1,7 +1,7 @@
 package io.osdf.actions.management;
 
 import io.osdf.actions.management.restart.DeploymentRestarter;
-import io.osdf.common.exceptions.OSDFException;
+import io.osdf.api.lib.annotations.Arg;
 import io.osdf.common.exceptions.StatusCodeException;
 import io.osdf.core.application.core.Application;
 import io.osdf.core.connection.cli.ClusterCli;
@@ -30,10 +30,10 @@ public class ManagementApiImpl implements ManagementApi {
         return loginCliProxy(new ManagementApiImpl(paths, cli), cli);
     }
 
+    @Arg(required = "components", d = "Comma separated list of components")
     @Override
-    public void deploy(List<String> serviceNames, String mode, Boolean smart) {
+    public void deploy(List<String> serviceNames, Boolean smart) {
         autoPullHook(paths, cli).tryAutoPull();
-        if ("restricted".equals(mode) && smart) throw new OSDFException("Smart deploy is not possible for restricted deploy mode");
         boolean ok = deployCommand(paths, cli).deploy(serviceNames, smart);
         announce(ok ? "OK" : "Some apps have failed");
         if (!ok) throw new StatusCodeException(1);

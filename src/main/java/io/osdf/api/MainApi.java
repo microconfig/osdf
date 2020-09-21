@@ -5,25 +5,25 @@ import io.osdf.actions.info.api.InfoApi;
 import io.osdf.actions.init.InitializationApi;
 import io.osdf.actions.management.ManagementApi;
 import io.osdf.actions.system.SystemApi;
-import io.osdf.api.lib.annotations.Hidden;
-import io.osdf.api.lib.annotations.Import;
+import io.osdf.api.lib.annotations.ApiGroup;
 import io.osdf.api.lib.annotations.Named;
+import io.osdf.api.lib.annotations.Public;
 
+@Public({"management", "info", "configs", "system"})
 public interface MainApi {
-    @Import(api = ManagementApi.class, order = 1)
+    @ApiGroup(ManagementApi.class)
     void management();
 
-    @Import(api = InfoApi.class, order = 2)
+    @ApiGroup(InfoApi.class)
     void info();
 
-    @Import(api = ConfigsApi.class, order = 3)
+    @ApiGroup(ConfigsApi.class)
     void configs();
 
-    @Hidden
     @Named
-    @Import(api = InitializationApi.class, order = 4)
+    @ApiGroup(InitializationApi.class)
     void init();
 
-    @Import(api = SystemApi.class, order = 5)
+    @ApiGroup(SystemApi.class)
     void system();
 }

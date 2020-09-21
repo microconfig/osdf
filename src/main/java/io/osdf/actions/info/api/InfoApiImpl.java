@@ -1,7 +1,6 @@
 package io.osdf.actions.info.api;
 
 import io.osdf.actions.info.api.logs.LogsCommand;
-import io.osdf.actions.info.api.showall.ShowAllCommand;
 import io.osdf.actions.info.api.status.StatusCommand;
 import io.osdf.common.exceptions.StatusCodeException;
 import io.osdf.core.application.core.Application;
@@ -45,10 +44,5 @@ public class InfoApiImpl implements InfoApi {
         List<Application> failedApps = deployStatusChecker(cli)
                 .findFailed(apps);
         if (!failedApps.isEmpty()) throw new StatusCodeException(1);
-    }
-
-    @Override
-    public void showAll() {
-        new ShowAllCommand(cli, printer()).run();
     }
 }
