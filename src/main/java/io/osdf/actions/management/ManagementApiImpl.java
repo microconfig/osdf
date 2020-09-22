@@ -30,7 +30,6 @@ public class ManagementApiImpl implements ManagementApi {
         return loginCliProxy(new ManagementApiImpl(paths, cli), cli);
     }
 
-    @Arg(required = "components", d = "Comma separated list of components")
     @Override
     public void deploy(List<String> serviceNames, Boolean smart) {
         autoPullHook(paths, cli).tryAutoPull();
