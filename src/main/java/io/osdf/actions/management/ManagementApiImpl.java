@@ -1,7 +1,6 @@
 package io.osdf.actions.management;
 
 import io.osdf.actions.management.restart.DeploymentRestarter;
-import io.osdf.api.lib.annotations.Arg;
 import io.osdf.common.exceptions.StatusCodeException;
 import io.osdf.core.application.core.Application;
 import io.osdf.core.connection.cli.ClusterCli;
