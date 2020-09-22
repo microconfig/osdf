@@ -56,14 +56,6 @@ public class YamlUtils {
         }
     }
 
-    public static String getOrNull(Map<String, Object> yaml, String... properties) {
-        try {
-            return getString(yaml, properties);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     public static String getString(Map<String, Object> yaml, String... properties) {
         return valueOf(getObjectOrNull(yaml, properties));
     }
