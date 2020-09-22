@@ -9,7 +9,7 @@ import java.util.List;
 @Public({"deploy", "restart", "stop", "deletePod", "clearAll", "clearApps"})
 public interface ManagementApi {
     @Description("Deploy applications to OpenShift")
-    @Arg(required = "components", d = "Comma separated list of components")
+    @Arg(optional = "components", d = "Comma separated list of components")
     @Arg(flag = "smart", d = "If true, osdf will not redeploy unchanged services or rerun unchanged jobs")
     void deploy(List<String> components, Boolean smart);
 

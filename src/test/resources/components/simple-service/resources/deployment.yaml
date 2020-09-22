@@ -27,3 +27,7 @@ spec:
         - name: secret-2
           secret:
             secretName: simple-service-secret-2
+        - name: optional-secret
+          secret:
+            secretName: optional-secret
+            optional: true

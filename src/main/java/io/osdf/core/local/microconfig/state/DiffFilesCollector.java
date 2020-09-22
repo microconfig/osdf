@@ -24,10 +24,14 @@ public class DiffFilesCollector {
         try (Stream<Path> files = walk(root)) {
             return files
                     .filter(p -> !isDirectory(p))
-                    .filter(p -> p.getFileName().toString().startsWith("diff-application"))
+                    .filter(p -> isAppOrDeploy(p.getFileName().toString()))
                     .collect(toUnmodifiableList());
         } catch (IOException e) {
             throw new OSDFException("Can't collect diff files in " + root, e);
         }
+    }
+
+    private boolean isAppOrDeploy(String name) {
+        return name.startsWith("diff-application") || name.startsWith("diff-deploy");
     }
 }
