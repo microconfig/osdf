@@ -4,6 +4,7 @@ import io.osdf.actions.system.install.jarinstaller.JarInstaller;
 import io.osdf.actions.system.state.CurrentStateCommand;
 import io.osdf.actions.system.update.UpdateSettings;
 import io.osdf.api.MainApi;
+import io.osdf.api.lib.ApiException;
 import io.osdf.api.lib.definitionparsers.ApiEntrypointDefinitionParserImpl;
 import io.osdf.api.lib.definitions.ApiEntrypointDefinition;
 import io.osdf.api.lib.definitions.MethodDefinition;
@@ -54,7 +55,8 @@ public class SystemApiImpl implements SystemApi {
     @Override
     public void help(List<String> command) {
         ApiEntrypointDefinition apiEntrypointDefinition = new ApiEntrypointDefinitionParserImpl().parse(MainApi.class);
-        MethodDefinition methodDefinition = apiCallResolver().resolve(apiEntrypointDefinition, command).getMethodDefinition();
+        MethodDefinition methodDefinition = resolveMethod(command, apiEntrypointDefinition);
+
         announce(methodDefinition.getDescription());
         flagArgMapper(methodDefinition.getMethod().getName(), methodDefinition.getArgs()).printHelp();
     }
@@ -75,5 +77,13 @@ public class SystemApiImpl implements SystemApi {
         JarInstaller jarInstaller = isJar() ? jarInstaller(paths) : fakeJarInstaller(paths, fromString("1.0.0"));
         osdfInstaller(paths, jarInstaller, clearState, noBashRc).install();
         announce("Installed " + jarInstaller.version());
+    }
+
+    private MethodDefinition resolveMethod(List<String> command, ApiEntrypointDefinition apiEntrypointDefinition) {
+        try {
+            return apiCallResolver().resolve(apiEntrypointDefinition, command).getMethodDefinition();
+        } catch (ApiException e) {
+            throw new OSDFException(e.getMessage());
+        }
     }
 }
