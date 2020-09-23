@@ -6,7 +6,6 @@ import io.osdf.core.application.core.files.metadata.LocalResourceMetadata;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import static io.osdf.common.yaml.YamlObject.yaml;
@@ -36,8 +35,14 @@ public class RequiredAppSecrets {
         List<Object> volumes = yaml.get("spec.template.spec.volumes");
         return volumes.stream()
                 .map(YamlObject::yaml)
+                .filter(volume -> volume.<String>get("secret.secretName") != null)
+                .filter(this::isNotOptional)
                 .map(volume -> volume.<String>get("secret.secretName"))
-                .filter(Objects::nonNull)
                 .collect(toUnmodifiableSet());
+    }
+
+    private boolean isNotOptional(YamlObject volume) {
+        Boolean isOptional = volume.<Boolean>get("secret.optional");
+        return isOptional == null || !isOptional;
     }
 }
