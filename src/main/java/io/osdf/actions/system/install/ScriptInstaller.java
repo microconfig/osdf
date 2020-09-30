@@ -33,7 +33,8 @@ public class ScriptInstaller implements FileReplacer {
     }
 
     private String content() {
-        return "if [ $# -gt 0  ] && [ $1 == \"logs\" ]\n" +
+        return "#!/bin/bash\n" +
+                "if [ $# -gt 0  ] && [ $1 == \"logs\" ]\n" +
                 "then\n" +
                 "        trap '' SIGINT\n" +
                 "fi\n" +

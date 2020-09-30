@@ -1,0 +1,2 @@
+app.version: ${process::versions@project.version}
+config.version: ${process::versions@config.version}

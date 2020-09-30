@@ -1,0 +1,4 @@
+server.port: 8080
+management.health:
+  livenesstate.enabled: true
+  readinessstate.enabled: true

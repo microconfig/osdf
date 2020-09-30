@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${this@name}
+  labels:
+    configHash: <CONFIG_HASH>
+spec:
+  selector:
+    matchLabels:
+      app: ${this@name}
+  template:
+    metadata:
+      labels:
+        app: ${this@name}
+        configHash: <CONFIG_HASH>
+    spec:
+      containers:
+        - name: ${this@name}
+          image: ${this@name}:${this@image.version}
+          ports:
+            - containerPort: ${this@server.port}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${this@name}
+spec:
+  selector:
+    app: ${this@name}
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: ${this@server.port}

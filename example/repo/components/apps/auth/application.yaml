@@ -1,0 +1,3 @@
+#include spring-settings
+
+resource-server.enabled: false

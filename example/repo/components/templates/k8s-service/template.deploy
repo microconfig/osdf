@@ -1,0 +1,6 @@
+#include versions
+
+mc.template.service: ${k8s-service@configDir}/deployment-and-service.yaml -> resources/deployment-and-service.yaml
+
+image.version: ${this@app.version}
+server.port: ${app::this@server.port:8080}
