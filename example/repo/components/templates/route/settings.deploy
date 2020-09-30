@@ -1,0 +1,1 @@
+mc.template.route: ${route@configDir}/route.yaml -> resources/route.yaml

@@ -1,0 +1,5 @@
+main:
+  components:
+    - backend
+    - frontend
+    - auth

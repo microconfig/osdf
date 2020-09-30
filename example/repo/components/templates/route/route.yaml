@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Route
+metadata:
+  name: frontend
+spec:
+  host: ${this@route.prefix:}my-host.com
+  to:
+    kind: Service
+    name: ${this@name}

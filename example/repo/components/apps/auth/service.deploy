@@ -1,0 +1,9 @@
+#include k8s-service
+
+mc.template.logback: ${this@configDir}/logback.xml -> logback.xml
+
+osdf.configmap.auth:
+  name: auth
+  files:
+    - application.yaml
+    - logback.xml

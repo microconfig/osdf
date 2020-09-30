@@ -1,0 +1,3 @@
+#include spring-settings
+
+cron.cache-warmup: 0 0 * * * *
