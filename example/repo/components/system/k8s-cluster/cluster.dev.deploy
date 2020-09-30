@@ -1,0 +1,2 @@
+project: dev
+cluster.url.api: my-host:1234
