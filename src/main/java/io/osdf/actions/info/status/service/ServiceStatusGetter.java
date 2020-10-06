@@ -42,9 +42,9 @@ public class ServiceStatusGetter {
         Integer available = castToInteger(properties.get("available"));
         Integer unavailable = castToInteger(properties.get("unavailable"));
         Integer ready = castToInteger(properties.get("ready"));
-        if (replicas == null || current == null) return FAILED;
+        if (replicas == null) return FAILED;
 
-        return chooseStatus(replicas, current, requireNonNullElse(available, 0),
+        return chooseStatus(replicas, requireNonNullElse(current, 0), requireNonNullElse(available, 0),
                 requireNonNullElse(unavailable, 0), requireNonNullElse(ready, 0));
     }
 

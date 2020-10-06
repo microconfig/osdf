@@ -1,0 +1,5 @@
+app.version: latest
+config.version: custom
+
+data:
+  key: value

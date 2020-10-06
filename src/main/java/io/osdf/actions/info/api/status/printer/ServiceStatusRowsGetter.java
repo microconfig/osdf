@@ -22,8 +22,7 @@ import static io.microconfig.utils.ConsoleColor.red;
 import static io.osdf.actions.info.api.status.printer.RowColumnsWithStatusImpl.rowColumnsWithStatus;
 import static io.osdf.actions.info.api.status.printer.StatusRowsFormatter.formatter;
 import static io.osdf.actions.info.healthcheck.PodsInfo.podsInfo;
-import static io.osdf.actions.info.status.service.ServiceStatus.NOT_FOUND;
-import static io.osdf.actions.info.status.service.ServiceStatus.READY;
+import static io.osdf.actions.info.status.service.ServiceStatus.*;
 import static io.osdf.actions.info.status.service.ServiceStatusGetter.serviceStatusGetter;
 import static io.osdf.core.cluster.resource.properties.ResourceProperties.resourceProperties;
 import static java.util.Map.of;
@@ -60,7 +59,7 @@ public class ServiceStatusRowsGetter implements AppStatusRowsGetter {
             return addMainRowWithPods(serviceObjects, formatter);
         }
         formatter.addMainRow(service.files(), serviceObjects.coreDescription, coloredStatus(serviceStatus), replicas(serviceObjects.deployment));
-        return serviceStatus == READY;
+        return serviceStatus == READY || serviceStatus == TURNED_OFF;
     }
 
     private boolean addMainRowWithPods(ServiceObjects serviceObjects, StatusRowsFormatter formatter) {
