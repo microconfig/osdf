@@ -1,0 +1,11 @@
+enabled: true
+d: 4
+e: 5
+---
+a:
+  b~if(enabled):
+    c~if(d): ~set(e)
+---
+a:
+  b:
+    c: 5

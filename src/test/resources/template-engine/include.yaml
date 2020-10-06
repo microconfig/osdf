@@ -1,0 +1,16 @@
+others:
+  alice: 3
+  bob: 2
+closeFriends:
+  gary: 7
+---
+people:
+  eve: 5
+  friends: ~include(closeFriends)
+  others: ~include
+---
+people:
+  eve: 5
+  alice: 3
+  bob: 2
+  gary: 7

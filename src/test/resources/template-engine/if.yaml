@@ -1,0 +1,8 @@
+exist: 1
+---
+a:
+  b~if(exist): 2
+  c~if(!exist): 3
+---
+a:
+  b: 2

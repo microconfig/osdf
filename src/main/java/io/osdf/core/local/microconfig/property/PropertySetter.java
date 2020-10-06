@@ -8,8 +8,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Scanner;
 
-import static java.nio.file.Files.newInputStream;
-import static java.nio.file.Files.writeString;
+import static java.nio.file.Files.*;
 
 @NoArgsConstructor
 public class PropertySetter {
@@ -18,6 +17,7 @@ public class PropertySetter {
     }
 
     public void setIfNecessary(Path file, String key, String newValue) {
+        if (!exists(file)) return;
         if (newValue == null) return;
         String result = readAndModify(file, key, newValue);
         save(file, result);

@@ -1,6 +1,7 @@
 package io.osdf.common.yaml;
 
 import io.osdf.common.exceptions.PossibleBugException;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.yaml.snakeyaml.Yaml;
 
@@ -12,6 +13,7 @@ import static io.osdf.common.utils.YamlUtils.loadFromPath;
 
 @RequiredArgsConstructor
 public class YamlObject {
+    @Getter
     private final Map<String, Object> yaml;
 
     public static YamlObject yaml(Path path) {

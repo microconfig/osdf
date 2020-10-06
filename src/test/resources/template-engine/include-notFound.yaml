@@ -1,0 +1,8 @@
+nothing: null
+---
+people:
+  eve: 5
+  friends: ~include(closeFriends)
+---
+people:
+  eve: 5

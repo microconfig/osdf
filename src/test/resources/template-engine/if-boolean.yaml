@@ -1,0 +1,8 @@
+enabled: false
+---
+a:
+  b~if(enabled): 2
+  c~if(!enabled): 3
+---
+a:
+  c: 3

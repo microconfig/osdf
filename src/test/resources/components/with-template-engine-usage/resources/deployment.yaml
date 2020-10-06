@@ -1,0 +1,4 @@
+kind: FakeResource
+metadata:
+  name: fake
+data: ~set

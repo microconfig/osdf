@@ -1,0 +1,17 @@
+many:
+  - alice: 3
+  - bob: 2
+single:
+  kate: 6
+---
+people:
+  - eve: 5
+  - ~add(many)
+  - ~add(single)
+  - ~add(unknown)
+---
+people:
+  - eve: 5
+  - alice: 3
+  - bob: 2
+  - kate: 6
