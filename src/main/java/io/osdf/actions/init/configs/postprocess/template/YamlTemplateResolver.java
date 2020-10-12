@@ -44,7 +44,7 @@ public class YamlTemplateResolver {
             String value = (String) valueObj;
             if (includeKey(newMap, actualKey, value)) continue;
             if (setKey(newMap, actualKey, value)) continue;
-            newMap.put(key, valueObj);
+            newMap.put(actualKey, valueObj);
         }
         newMap.replaceAll((k, v) -> resolveObject(v, depth + 1));
         return new HashMap<>(newMap);

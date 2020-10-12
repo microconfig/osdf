@@ -3,6 +3,8 @@ exist: 1
 a:
   b~if(exist): 2
   c~if(!exist): 3
+  string~if(exist): abc
 ---
 a:
   b: 2
+  string: abc
