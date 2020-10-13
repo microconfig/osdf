@@ -8,6 +8,7 @@ import static io.osdf.settings.version.OsdfVersion.fromString;
 public class OsdfVersionParser implements ArgParser<OsdfVersion> {
     @Override
     public OsdfVersion parse(String arg) {
+        if (arg == null) return null;
         return fromString(arg);
     }
 }
