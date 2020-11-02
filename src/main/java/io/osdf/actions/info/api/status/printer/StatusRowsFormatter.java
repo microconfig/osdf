@@ -21,8 +21,8 @@ public class StatusRowsFormatter {
     public void addMainRow(ApplicationFiles files, CoreDescription coreDescription, String coloredStatus, String replicas) {
         YamlObject yaml = files.deployProperties();
         printer.addRow(green(files.name()),
-                green(formatVersions(coreDescription.getAppVersion(), yaml.get("app.version"))),
-                green(formatVersions(coreDescription.getConfigVersion(), yaml.get("config.version"))),
+                green(formatVersions(coreDescription.getAppVersion(), yaml.getString("app.version"))),
+                green(formatVersions(coreDescription.getConfigVersion(), yaml.getString("config.version"))),
                 coloredStatus,
                 green(replicas));
     }
@@ -30,8 +30,8 @@ public class StatusRowsFormatter {
     public void addNotFoundRow(ApplicationFiles files, String coloredStatus) {
         YamlObject yaml = files.deployProperties();
         printer.addRow(green(files.name()),
-                green(formatVersions("-", yaml.get("app.version"))),
-                green(formatVersions("-", yaml.get("config.version"))),
+                green(formatVersions("-", yaml.getString("app.version"))),
+                green(formatVersions("-", yaml.getString("config.version"))),
                 coloredStatus,
                 green("-"));
     }

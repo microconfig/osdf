@@ -10,6 +10,7 @@ import java.util.Map;
 
 import static io.osdf.common.utils.YamlUtils.getObjectOrNull;
 import static io.osdf.common.utils.YamlUtils.loadFromPath;
+import static java.lang.String.valueOf;
 
 @RequiredArgsConstructor
 public class YamlObject {
@@ -36,5 +37,9 @@ public class YamlObject {
     @SuppressWarnings("unchecked")
     public <T> T get(String key) {
         return (T) getObjectOrNull(yaml, key.split("\\."));
+    }
+
+    public String getString(String key) {
+        return valueOf(getObjectOrNull(yaml, key.split("\\.")));
     }
 }
