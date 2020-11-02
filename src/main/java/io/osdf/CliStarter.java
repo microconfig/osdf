@@ -13,6 +13,7 @@ import static io.osdf.common.exceptions.tracker.BugTracker.bugTracker;
 import static io.osdf.settings.paths.OsdfPaths.paths;
 import static io.microconfig.utils.Logger.error;
 import static java.lang.System.exit;
+import static java.lang.System.getenv;
 
 @RequiredArgsConstructor
 public class CliStarter {
@@ -24,11 +25,11 @@ public class CliStarter {
         } catch (StatusCodeException e) {
             exit(e.getStatusCode());
         } catch (PossibleBugException e) {
-            error(e.getMessage());
+            printException(e);
             saveException(args, paths, e);
             exit(1);
         } catch (OSDFException e) {
-            error(e.getMessage() != null ? e.getMessage() : e.getCause().getMessage());
+            printException(e);
             exit(1);
         } catch (Exception e) {
             error("Bug!");
@@ -40,5 +41,12 @@ public class CliStarter {
 
     private static void saveException(String[] args, OsdfPaths paths, Exception e) {
         bugTracker(paths.root()).save(args.length > 0 ? args[0] : "", e);
+    }
+
+    private static void printException(Exception e) {
+        if ("true".equals(getenv("OSDF_STACKTRACE"))) {
+            e.printStackTrace();
+        }
+        error(e.getMessage() != null ? e.getMessage() : e.getCause().getMessage());
     }
 }

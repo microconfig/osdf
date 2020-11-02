@@ -1,6 +1,5 @@
 package io.osdf.common.utils;
 
-import io.osdf.common.exceptions.OSDFException;
 import io.osdf.common.exceptions.PossibleBugException;
 
 import java.util.concurrent.ExecutionException;
@@ -42,7 +41,7 @@ public class ThreadUtils {
             while(cause.getCause() != null && cause.getCause() != cause) {
                 cause = cause.getCause();
             }
-            throw new OSDFException("Error during parallel execution: " + cause.getClass().getSimpleName() + " " + cause.getMessage());
+            throw new PossibleBugException("Error during parallel execution: " + cause.getClass().getSimpleName() + " " + cause.getMessage());
         } finally {
             if (forkJoinPool != null) {
                 forkJoinPool.shutdown();
