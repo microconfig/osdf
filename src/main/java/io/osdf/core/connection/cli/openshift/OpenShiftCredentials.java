@@ -44,6 +44,6 @@ public class OpenShiftCredentials {
     public String toString() {
         if (token == null && credentials == null) return "Not configured";
         if (credentials != null) return "User: " + credentials.getUsername();
-        return "Token: " + token.substring(0, 5) + "...";
+        return "Token: ***";
     }
 }
