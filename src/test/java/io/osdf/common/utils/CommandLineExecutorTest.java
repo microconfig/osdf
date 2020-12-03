@@ -1,6 +1,6 @@
 package io.osdf.common.utils;
 
-import io.osdf.common.exceptions.PossibleBugException;
+import io.osdf.common.exceptions.OSDFException;
 import org.junit.jupiter.api.Test;
 
 import static io.osdf.common.utils.CommandLineExecutor.execute;
@@ -12,7 +12,7 @@ class CommandLineExecutorTest {
     void testCredentialsHiding() {
         try {
             execute("unknown command user:password", of("user", "password"));
-        } catch (PossibleBugException e) {
+        } catch (OSDFException e) {
             assertFalse(e.getMessage().contains("user"));
             assertFalse(e.getMessage().contains("password"));
         }
