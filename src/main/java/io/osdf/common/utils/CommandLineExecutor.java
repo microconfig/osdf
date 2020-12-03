@@ -1,5 +1,6 @@
 package io.osdf.common.utils;
 
+import io.osdf.common.exceptions.OSDFException;
 import io.osdf.common.exceptions.PossibleBugException;
 import org.apache.commons.io.IOUtils;
 
@@ -24,7 +25,7 @@ public class CommandLineExecutor {
             if (process.exitValue() != 0) {
                 String errorOutput = IOUtils.toString(process.getErrorStream(), UTF_8.name());
                 error(errorOutput);
-                throw new PossibleBugException("Non-zero exit code (" + process.exitValue() + ") of command: " + hideCredentials(command, credentials));
+                throw new OSDFException("Non-zero exit code (" + process.exitValue() + ") of command: " + hideCredentials(command, credentials));
             }
             return IOUtils.toString(process.getInputStream(), UTF_8.name());
         } catch (IOException | InterruptedException e) {

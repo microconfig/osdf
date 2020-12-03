@@ -29,7 +29,7 @@ public class ResourceTemplatePostProcessor {
         try (Stream<Path> resources = list(componentDir.getPath("resources"))) {
             resources.forEach(resource -> doPostProcess(resource, resolver));
         } catch (IOException e) {
-            throw new PossibleBugException("Couldn't list resources in " + componentDir.name() + " component");
+            throw new PossibleBugException("Couldn't list resources in " + componentDir.name() + " component", e);
         }
     }
 
