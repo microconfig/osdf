@@ -1,5 +1,6 @@
 package io.osdf.api;
 
+import io.osdf.actions.chaos.ChaosApi;
 import io.osdf.actions.configs.ConfigsApi;
 import io.osdf.actions.info.api.InfoApi;
 import io.osdf.actions.init.InitializationApi;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static io.osdf.actions.chaos.ChaosApiImpl.chaosApi;
 import static io.osdf.actions.configs.ConfigsApiImpl.configsApi;
 import static io.osdf.actions.info.api.InfoApiImpl.infoApi;
 import static io.osdf.actions.init.InitializationApiImpl.initializationApi;
@@ -44,6 +46,7 @@ public class MainApiCaller implements ApiCaller {
                     .addImpl(ManagementApi.class, managementApi(paths, cli))
                     .addImpl(InfoApi.class, infoApi(paths, cli))
                     .addImpl(SystemApi.class, systemApi(paths))
+                    .addImpl(ChaosApi.class, chaosApi(paths, cli))
                     .build().call(apiEntrypointClass, args);
         } catch (ApiException e) {
             throw new OSDFException(e.getMessage());

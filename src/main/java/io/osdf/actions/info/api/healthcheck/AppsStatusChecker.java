@@ -3,6 +3,8 @@ package io.osdf.actions.info.api.healthcheck;
 import io.osdf.core.application.core.Application;
 import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.util.List;
 
@@ -14,15 +16,18 @@ import static io.osdf.common.utils.ThreadUtils.runInParallel;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
+@Accessors(fluent = true)
 @RequiredArgsConstructor
 public class AppsStatusChecker {
     private final ClusterCli cli;
+    @Setter
+    private boolean logReadiness = true;
 
     public static AppsStatusChecker deployStatusChecker(ClusterCli cli) {
         return new AppsStatusChecker(cli);
     }
 
-    public List<Application> findFailed(List<Application> apps) {
+    public List<Application> findFailed(List<? extends Application> apps) {
         return runInParallel(apps.size(),
                 () -> apps
                         .parallelStream()
@@ -33,7 +38,9 @@ public class AppsStatusChecker {
 
     private boolean isReady(Application app) {
         boolean ok = of(app, cli).check(app);
-        info(app.name() + " " + (ok ? green("OK") : red("FAILED")));
+        if (logReadiness) {
+            info(app.name() + " " + (ok ? green("OK") : red("FAILED")));
+        }
         return ok;
     }
 }
