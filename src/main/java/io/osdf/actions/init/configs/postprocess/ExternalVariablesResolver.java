@@ -1,4 +1,4 @@
-package io.osdf.actions.init.configs.preprocess;
+package io.osdf.actions.init.configs.postprocess;
 
 import io.osdf.common.exceptions.OSDFException;
 import io.osdf.common.exceptions.PossibleBugException;
@@ -57,8 +57,9 @@ public class ExternalVariablesResolver {
     private String getValue(String content, int startInd, int commaInd, int endInd) {
         String key = content.substring(startInd + 1, commaInd == -1 ? endInd : commaInd).trim();
         String defaultValue = commaInd != -1 ? content.substring(commaInd + 1, endInd).trim() : null;
-        return Stream.of(variables.get(key), defaultValue)
+        return Stream.of(variables.<Object>get(key), defaultValue)
                 .filter(Objects::nonNull)
+                .map(String::valueOf)
                 .findFirst()
                 .orElseThrow(() -> new OSDFException("External variable required for " + key));
     }

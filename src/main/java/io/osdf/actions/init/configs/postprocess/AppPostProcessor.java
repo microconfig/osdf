@@ -2,7 +2,6 @@ package io.osdf.actions.init.configs.postprocess;
 
 import io.osdf.actions.init.configs.postprocess.metadata.MetadataCreator;
 import io.osdf.actions.init.configs.postprocess.template.ResourceTemplatePostProcessor;
-import io.osdf.actions.init.configs.preprocess.ExternalVariablesResolver;
 import io.osdf.core.local.component.ComponentDir;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,7 @@ import static io.osdf.actions.init.configs.postprocess.ConfigMapCreator.configMa
 import static io.osdf.actions.init.configs.postprocess.ResourceSplitter.resourceSplitter;
 import static io.osdf.actions.init.configs.postprocess.template.ResourceTemplatePostProcessor.resourceTemplatePostProcessor;
 import static io.osdf.actions.init.configs.postprocess.metadata.MetadataCreatorImpl.metadataCreator;
-import static io.osdf.actions.init.configs.preprocess.ExternalVariablesResolver.externalVariablesResolver;
+import static io.osdf.actions.init.configs.postprocess.ExternalVariablesResolver.externalVariablesResolver;
 import static io.osdf.common.utils.FileUtils.createDirectoryIfNotExists;
 
 @RequiredArgsConstructor
