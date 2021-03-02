@@ -10,10 +10,7 @@ public class ConfigsSettings {
     private String env;
     private String projectVersion;
     private String group;
-
-    public boolean verify() {
-        return configsSource != null && env != null;
-    }
+    private String externalPath;
 
     @Override
     public String toString() {
@@ -23,6 +20,8 @@ public class ConfigsSettings {
                 (projectVersion == null ? "" :
                         "Project version: " + projectVersion + "\n") +
                 (group == null ? "" :
-                        "Group: " + group + "\n");
+                        "Group: " + group + "\n") +
+                (externalPath == null ? "" :
+                        "External variables: " + externalPath + "\n");
     }
 }

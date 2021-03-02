@@ -46,9 +46,10 @@ public class ConfigsUpdater {
         fetch();
     }
 
-    public ConfigsUpdater setConfigsParameters(String env, String projectVersion) {
+    public ConfigsUpdater setConfigsParameters(String env, String projectVersion, String externalPath) {
         settingsFile.setIfNotNull(ConfigsSettings::setEnv, env);
         settingsFile.setIfNotNull(ConfigsSettings::setProjectVersion, projectVersion);
+        settingsFile.setIfNotNull(ConfigsSettings::setExternalPath, externalPath);
         settingsFile.save();
         return this;
     }
@@ -74,7 +75,7 @@ public class ConfigsUpdater {
         propertySetter().setIfNecessary(paths.projectVersionPath(), "project.version", settings.getProjectVersion());
         microConfig(settings.getEnv(), paths).generateConfigs(emptyList());
 
-        AppPostProcessor appPostProcessor = componentPostProcessor();
+        AppPostProcessor appPostProcessor = componentPostProcessor(paths);
         componentsLoader()
                 .load(componentsFinder(paths.componentsPath()), isApp())
                 .forEach(appPostProcessor::process);

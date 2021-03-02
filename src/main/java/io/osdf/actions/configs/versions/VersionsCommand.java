@@ -36,7 +36,7 @@ public class VersionsCommand {
     private void setVersionsForAllApps(String configVersion, String projectVersion) {
         setConfigVersion(configVersion);
         configsUpdater(paths, cli)
-                .setConfigsParameters(null, projectVersion)
+                .setConfigsParameters(null, projectVersion, null)
                 .fetch();
     }
 
@@ -49,7 +49,7 @@ public class VersionsCommand {
 
         ComponentDir componentDir = componentsLoader()
                 .loadOne(app, componentsFinder(paths.componentsPath()));
-        componentPostProcessor().process(componentDir);
+        componentPostProcessor(paths).process(componentDir);
     }
 
     private void setConfigVersion(String configVersion) {

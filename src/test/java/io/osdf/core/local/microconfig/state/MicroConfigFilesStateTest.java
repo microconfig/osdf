@@ -29,7 +29,7 @@ class MicroConfigFilesStateTest {
     void testOldFilesAndFoldersGetDeleted() throws IOException {
         Path pathToDeployConfig = of(context.getPaths().configsPath() + "/components/apps/simple-service/os.deploy");
         writeString(pathToDeployConfig, "some: value");
-        initializationApi(context.getPaths(), mock(ClusterCli.class)).configs(null, null);
+        initializationApi(context.getPaths(), mock(ClusterCli.class)).configs(null, null, null);
 
         assertTrue(exists(of(context.getPaths().componentsPath() + "/simple-service/application.yaml")));
         assertFalse(exists(of(context.getPaths().componentsPath() + "/simple-service/openshift")));
