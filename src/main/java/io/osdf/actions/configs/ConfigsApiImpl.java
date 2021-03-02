@@ -36,7 +36,7 @@ public class ConfigsApiImpl implements ConfigsApi {
     @Override
     public void env(String env) {
         configsUpdater(paths, cli)
-                .setConfigsParameters(env, null)
+                .setConfigsParameters(env, null, null)
                 .buildConfigs();
     }
 

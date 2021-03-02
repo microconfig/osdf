@@ -13,7 +13,8 @@ public interface InitializationApi {
     @Description("Set config parameters")
     @Arg(optional = "env", d = "Env name")
     @Arg(optional = "pv/projectVersion", d = "Project version")
-    void configs(String env, String projVersion);
+    @Arg(optional = "ext/external", d = "External variables path to yaml file")
+    void configs(String env, String projVersion, String externalPath);
 
     @Description("Initialize git configs")
     @Arg(optional = "url", d = "Url with credentials")

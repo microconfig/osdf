@@ -58,7 +58,7 @@ public class TestContext {
         prepareConfigs();
         initializationApi(paths, mock(ClusterCli.class)).openshift(of("user:pass"), null, false);
         initializationApi(paths, mock(ClusterCli.class)).localConfigs(configsPath(), null);
-        initializationApi(paths, mock(ClusterCli.class)).configs("dev", null);
+        initializationApi(paths, mock(ClusterCli.class)).configs("dev", null, null);
     }
 
     @SneakyThrows

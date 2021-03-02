@@ -70,9 +70,9 @@ public class InitializationApiImpl implements InitializationApi {
     }
 
     @Override
-    public void configs(String env, String projVersion) {
+    public void configs(String env, String projVersion, String externalPath) {
         configsUpdater(paths, cli)
-                .setConfigsParameters(env, projVersion)
+                .setConfigsParameters(env, projVersion, externalPath)
                 .buildConfigs();
     }
 
