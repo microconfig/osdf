@@ -7,6 +7,8 @@ import io.osdf.core.cluster.resource.ClusterResource;
 import io.osdf.core.connection.cli.CliOutput;
 import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,9 +19,12 @@ import static io.osdf.core.application.service.ServiceApplication.serviceApplica
 import static java.lang.System.getenv;
 import static java.util.Objects.requireNonNullElse;
 
+@Accessors(fluent = true)
 @RequiredArgsConstructor
 public class ServiceHealthChecker implements AppHealthChecker {
     private final ClusterCli cli;
+    @Setter
+    private int customTimeout = 0;
 
     public static ServiceHealthChecker serviceHealthChecker(ClusterCli cli) {
         return new ServiceHealthChecker(cli);
@@ -43,6 +48,8 @@ public class ServiceHealthChecker implements AppHealthChecker {
     }
 
     private int timeout(ServiceApplication service) {
+        if (customTimeout != 0) return customTimeout;
+
         Integer timeoutFromEnv = timeoutFromEnv();
         if (timeoutFromEnv != null) return timeoutFromEnv;
 

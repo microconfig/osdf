@@ -22,7 +22,7 @@ public class AppsStatusChecker {
         return new AppsStatusChecker(cli);
     }
 
-    public List<Application> findFailed(List<Application> apps) {
+    public List<Application> findFailed(List<? extends Application> apps) {
         return runInParallel(apps.size(),
                 () -> apps
                         .parallelStream()

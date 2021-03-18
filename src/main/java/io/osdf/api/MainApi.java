@@ -1,5 +1,6 @@
 package io.osdf.api;
 
+import io.osdf.actions.chaos.ChaosApi;
 import io.osdf.actions.configs.ConfigsApi;
 import io.osdf.actions.info.api.InfoApi;
 import io.osdf.actions.init.InitializationApi;
@@ -26,4 +27,8 @@ public interface MainApi {
 
     @ApiGroup(SystemApi.class)
     void system();
+
+    @Named
+    @ApiGroup(ChaosApi.class)
+    void chaos();
 }
