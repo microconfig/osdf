@@ -1,17 +1,17 @@
 package io.osdf;
 
 import io.osdf.api.OsdfStarter;
-import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.common.exceptions.OSDFException;
 import io.osdf.common.exceptions.PossibleBugException;
 import io.osdf.common.exceptions.StatusCodeException;
+import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
-import static io.osdf.core.connection.context.MainClusterContext.mainClusterContext;
-import static io.osdf.common.exceptions.tracker.BugTracker.bugTracker;
-import static io.osdf.settings.paths.OsdfPaths.paths;
 import static io.microconfig.utils.Logger.error;
+import static io.osdf.common.exceptions.tracker.BugTracker.bugTracker;
+import static io.osdf.core.connection.context.MainClusterContext.mainClusterContext;
+import static io.osdf.settings.paths.OsdfPaths.paths;
 import static java.lang.System.exit;
 import static java.lang.System.getenv;
 

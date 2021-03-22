@@ -1,5 +1,7 @@
 package io.osdf.actions.chaos.checks;
 
-public interface Checker {
+import io.osdf.actions.chaos.events.EventSource;
+
+public interface Checker extends EventSource {
     CheckerResponse check();
 }

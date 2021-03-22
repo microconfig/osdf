@@ -2,6 +2,7 @@ package io.osdf.actions.chaos.scenario;
 
 import io.osdf.actions.chaos.assaults.Assault;
 import io.osdf.actions.chaos.checks.Checker;
+import io.osdf.actions.chaos.events.EventStorage;
 import io.osdf.common.yaml.YamlObject;
 import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.core.local.component.ComponentDir;
@@ -19,17 +20,18 @@ import static io.osdf.common.yaml.YamlObject.yaml;
 public class ScenarioLoader {
     private final ClusterCli cli;
     private final OsdfPaths paths;
-    
-    public static ScenarioLoader scenarioLoader(ClusterCli cli, OsdfPaths paths) {
-        return new ScenarioLoader(cli, paths);
+    private final EventStorage storage;
+
+    public static ScenarioLoader scenarioLoader(ClusterCli cli, OsdfPaths paths, EventStorage storage) {
+        return new ScenarioLoader(cli, paths, storage);
     }
 
     public Scenario load(ComponentDir componentDir) {
         YamlObject scenario = yaml(componentDir.getPath("application.yaml"));
         int durationInSec = durationFromString(scenario.get("scenario.duration"));
         int warmupInSec = durationFromString(scenario.get("scenario.warmup"));
-        List<Assault> assaults = assaultsLoader(cli, paths).load(scenario.get("scenario.assaults"));
-        List<Checker> checkers = checkersLoader(cli, paths).load(scenario.get("scenario.checks"));
+        List<Assault> assaults = assaultsLoader(cli, paths, storage).load(scenario.get("scenario.assaults"));
+        List<Checker> checkers = checkersLoader(cli, paths, storage).load(scenario.get("scenario.checks"));
         return new Scenario(durationInSec, warmupInSec, assaults, checkers);
     }
 }

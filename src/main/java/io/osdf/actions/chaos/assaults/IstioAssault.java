@@ -1,5 +1,6 @@
 package io.osdf.actions.chaos.assaults;
 
+import io.osdf.actions.chaos.events.EventSender;
 import io.osdf.actions.management.deploy.deployer.plain.PlainAppDeployer;
 import io.osdf.core.application.plain.PlainApplication;
 import io.osdf.core.connection.cli.ClusterCli;
@@ -8,7 +9,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static io.microconfig.utils.Logger.info;
+import static io.osdf.actions.chaos.events.EventLevel.CHAOS;
+import static io.osdf.actions.chaos.events.empty.EmptyEventSender.emptyEventSender;
 import static io.osdf.actions.management.deploy.deployer.plain.PlainAppDeployer.plainAppDeployer;
 import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
 import static io.osdf.core.application.plain.PlainApplicationMapper.plain;
@@ -17,6 +19,7 @@ import static io.osdf.core.application.plain.PlainApplicationMapper.plain;
 public class IstioAssault implements Assault {
     private final PlainAppDeployer deployer;
     private final List<PlainApplication> istioApps;
+    private EventSender events = emptyEventSender();
 
     @SuppressWarnings("unchecked")
     public static IstioAssault istioAssault(Object description, ClusterCli cli, OsdfPaths paths) {
@@ -29,7 +32,7 @@ public class IstioAssault implements Assault {
     public void start() {
         istioApps.forEach(istioApp -> {
             deployer.deploy(istioApp);
-            info(istioApp.name() + " deployed");
+            events.send(istioApp.name() + " deployed", CHAOS, istioApp.name());
         });
     }
 
@@ -37,7 +40,13 @@ public class IstioAssault implements Assault {
     public void stop() {
         istioApps.forEach(istioApp -> {
             istioApp.delete();
-            info(istioApp.name() + " deleted");
+            events.send(istioApp.name() + " deleted", CHAOS, istioApp.name());
         });
+    }
+
+    @Override
+    public IstioAssault setEventSender(EventSender sender) {
+        this.events = sender.newSender("istio assault");
+        return this;
     }
 }

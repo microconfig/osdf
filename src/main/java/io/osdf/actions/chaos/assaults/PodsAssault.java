@@ -1,5 +1,7 @@
 package io.osdf.actions.chaos.assaults;
 
+import io.osdf.actions.chaos.events.EventSender;
+import io.osdf.common.yaml.YamlObject;
 import io.osdf.core.application.service.ServiceApplication;
 import io.osdf.core.cluster.pod.Pod;
 import io.osdf.core.connection.cli.ClusterCli;
@@ -7,12 +9,13 @@ import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
-import static io.microconfig.utils.Logger.info;
+import static io.osdf.actions.chaos.events.EventLevel.CHAOS;
+import static io.osdf.actions.chaos.events.empty.EmptyEventSender.emptyEventSender;
 import static io.osdf.actions.chaos.utils.TimeUtils.durationFromString;
 import static io.osdf.common.utils.ThreadUtils.sleepSec;
+import static io.osdf.common.yaml.YamlObject.yaml;
 import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
 import static io.osdf.core.application.service.ServiceApplicationMapper.service;
 import static java.lang.Math.floorMod;
@@ -25,11 +28,12 @@ public class PodsAssault implements Assault {
 
     private volatile Thread thread = null;
     private volatile boolean stopped = false;
+    private EventSender events = emptyEventSender();
 
     @SuppressWarnings("unchecked")
     public static PodsAssault podsAssault(Object description, ClusterCli cli, OsdfPaths paths) {
-        List<ServiceApplication> apps = activeRequiredAppsLoader(paths, null).load(service(cli));
-        Map<String, String> assault = (Map<String, String>) ((List<Object>) description).get(0);
+        YamlObject assault = yaml(((List<Object>) description).get(0));
+        List<ServiceApplication> apps = activeRequiredAppsLoader(paths, assault.get("services")).load(service(cli));
         return new PodsAssault(apps, durationFromString(assault.get("period")));
     }
 
@@ -37,7 +41,7 @@ public class PodsAssault implements Assault {
     public void start() {
         thread = new Thread(runnable());
         thread.start();
-        info("Started pods assault");
+        events.send("Started pods assault", CHAOS);
     }
 
     @Override
@@ -48,7 +52,7 @@ public class PodsAssault implements Assault {
         } catch (InterruptedException e) {
             currentThread().interrupt();
         }
-        info("Stopped pods assault");
+        events.send("Stopped pods assault", CHAOS);
     }
 
     private Runnable runnable() {
@@ -59,15 +63,21 @@ public class PodsAssault implements Assault {
                 apps.get(appInd).deployment().ifPresent(deployment -> {
                     List<Pod> pods = deployment.pods();
                     if (pods.size() == 0) {
-                        info("No pods found for deployment " + deployment.name());
+                        events.send("No pods found for deployment " + deployment.name(), CHAOS, deployment.name());
                         return;
                     }
                     int podInd = floorMod(random.nextInt(), pods.size());
                     pods.get(podInd).delete();
-                    info("Deleted pod " + pods.get(podInd).getName());
+                    events.send("Deleted pod " + pods.get(podInd).getName(), CHAOS, deployment.name());
                 });
                 sleepSec(periodInSec);
             }
         };
+    }
+
+    @Override
+    public PodsAssault setEventSender(EventSender sender) {
+        events = sender.newSender("pods assault");
+        return this;
     }
 }

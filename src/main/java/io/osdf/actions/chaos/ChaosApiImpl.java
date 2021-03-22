@@ -1,5 +1,6 @@
 package io.osdf.actions.chaos;
 
+import io.osdf.actions.chaos.events.EventStorage;
 import io.osdf.actions.chaos.scenario.Scenario;
 import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.connection.cli.ClusterCli;
@@ -7,6 +8,8 @@ import io.osdf.core.local.component.ComponentDir;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
+import static io.osdf.actions.chaos.events.EventStorageImpl.eventStorage;
+import static io.osdf.actions.chaos.events.listeners.LoggerEventListener.logger;
 import static io.osdf.actions.chaos.runner.ChaosRunner.chaosRunner;
 import static io.osdf.actions.chaos.scenario.ScenarioLoader.scenarioLoader;
 import static io.osdf.core.connection.cli.LoginCliProxy.loginCliProxy;
@@ -28,7 +31,8 @@ public class ChaosApiImpl implements ChaosApi {
                 .load(componentsFinder(paths.componentsPath()), t -> t.name().equals(component)).stream()
                 .findFirst()
                 .orElseThrow(() -> new OSDFException("Component " + component + " not found"));
-        Scenario scenario = scenarioLoader(cli, paths).load(scenarioComponent);
+        EventStorage storage = eventStorage().with(logger());
+        Scenario scenario = scenarioLoader(cli, paths, storage).load(scenarioComponent);
         chaosRunner().run(scenario);
     }
 }
