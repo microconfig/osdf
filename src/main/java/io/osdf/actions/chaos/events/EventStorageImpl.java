@@ -16,8 +16,8 @@ public class EventStorageImpl implements EventStorage {
     }
 
     @Override
-    public List<Event> events() {
-        return events;
+    public synchronized List<Event> events() {
+        return new ArrayList<>(events);
     }
 
     @Override

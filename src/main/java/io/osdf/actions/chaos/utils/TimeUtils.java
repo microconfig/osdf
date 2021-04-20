@@ -2,10 +2,14 @@ package io.osdf.actions.chaos.utils;
 
 import io.osdf.common.exceptions.OSDFException;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import static java.lang.Integer.parseInt;
+import static java.time.Instant.ofEpochMilli;
+import static java.time.LocalDateTime.ofInstant;
 import static java.util.Map.of;
+import static java.util.TimeZone.getDefault;
 
 public class TimeUtils {
     private final static Map<String, Integer> DURATION_SUFFIXES = of(
@@ -21,6 +25,10 @@ public class TimeUtils {
                 .filter(duration -> duration > 0)
                 .findFirst()
                 .orElseThrow(() -> new OSDFException("Unknown duration format"));
+    }
+
+    public static LocalDateTime fromTimestamp(long timestamp) {
+        return ofInstant(ofEpochMilli(timestamp), getDefault().toZoneId());
     }
 
     private static int parseDuration(String durationString, String suffix, int multiplier) {

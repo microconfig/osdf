@@ -2,112 +2,88 @@ package io.osdf.actions.chaos.events.listeners;
 
 import io.osdf.actions.chaos.events.Event;
 import io.osdf.actions.chaos.events.EventLevel;
+import io.osdf.actions.chaos.state.ChaosPaths;
+import io.osdf.common.exceptions.PossibleBugException;
+import lombok.RequiredArgsConstructor;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 import static io.osdf.actions.chaos.events.EventLevel.DEBUG;
 import static io.osdf.actions.chaos.events.listeners.ConsoleColors.colorize;
 import static java.lang.Math.floorMod;
+import static java.lang.String.format;
+import static java.nio.file.Files.write;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
 import static java.util.List.of;
 import static java.util.stream.Collectors.joining;
 
+@RequiredArgsConstructor
 public class LoggerEventListener implements EventListener {
     private final static EventLevel LOG_LEVEL = DEBUG;
 
-    public static LoggerEventListener logger() {
-        return new LoggerEventListener();
+    private final Path logFile;
+
+    public static LoggerEventListener logger(ChaosPaths paths) {
+        return new LoggerEventListener(paths.log());
     }
 
     @Override
-    public void process(Event event) {
+    public synchronized void process(Event event) {
         if (event.level().compareTo(LOG_LEVEL) < 0) return;
-        System.out.printf("%tT [%s %s%s] - %s%n", event.time(), colorize(event.level().toString()), colorize(event.source()), labelsString(event.labels()), event.message());
+
+        System.out.print(logString(event, true));
+        writeToLogFile(event);
     }
 
-    private String labelsString(List<String> labels) {
+    private void writeToLogFile(Event event) {
+        try {
+            write(logFile, logString(event, false).getBytes(), CREATE, APPEND);
+        } catch (IOException e) {
+            throw new PossibleBugException("Can't append to log file " + logFile, e);
+        }
+    }
+
+    private String logString(Event event, boolean withColor) {
+        return format("%tT [%s %s%s] - %s%n",
+                event.time(),
+                colorize(event.level().toString(), withColor),
+                colorize(event.source(), withColor),
+                labelsString(event.labels(), withColor),
+                event.message());
+    }
+
+    private String labelsString(List<String> labels, boolean withColor) {
         if (labels.isEmpty()) return "";
-        return "{" + labels.stream().map(ConsoleColors::colorize).collect(joining(",")) + "}";
+        return "{" + labels.stream().map(label -> colorize(label, withColor)).collect(joining(",")) + "}";
     }
 }
 
 class ConsoleColors {
-    // Reset
     public static final String RESET = "\033[0m";  // Text Reset
 
-    // Regular Colors
-    public static final String BLACK = "\033[0;30m";   // BLACK
-    public static final String RED = "\033[0;31m";     // RED
-    public static final String GREEN = "\033[0;32m";   // GREEN
-    public static final String YELLOW = "\033[0;33m";  // YELLOW
-    public static final String BLUE = "\033[0;34m";    // BLUE
-    public static final String PURPLE = "\033[0;35m";  // PURPLE
-    public static final String CYAN = "\033[0;36m";    // CYAN
-    public static final String WHITE = "\033[0;37m";   // WHITE
+    public static final String RED = "\033[0;31m";
+    public static final String GREEN = "\033[0;32m";
+    public static final String YELLOW = "\033[0;33m";
+    public static final String BLUE = "\033[0;34m";
+    public static final String PURPLE = "\033[0;35m";
+    public static final String CYAN = "\033[0;36m";
 
-    // Bold
-    public static final String BLACK_BOLD = "\033[1;30m";  // BLACK
-    public static final String RED_BOLD = "\033[1;31m";    // RED
-    public static final String GREEN_BOLD = "\033[1;32m";  // GREEN
-    public static final String YELLOW_BOLD = "\033[1;33m"; // YELLOW
-    public static final String BLUE_BOLD = "\033[1;34m";   // BLUE
-    public static final String PURPLE_BOLD = "\033[1;35m"; // PURPLE
-    public static final String CYAN_BOLD = "\033[1;36m";   // CYAN
-    public static final String WHITE_BOLD = "\033[1;37m";  // WHITE
-
-    // Underline
-    public static final String BLACK_UNDERLINED = "\033[4;30m";  // BLACK
-    public static final String RED_UNDERLINED = "\033[4;31m";    // RED
-    public static final String GREEN_UNDERLINED = "\033[4;32m";  // GREEN
-    public static final String YELLOW_UNDERLINED = "\033[4;33m"; // YELLOW
-    public static final String BLUE_UNDERLINED = "\033[4;34m";   // BLUE
-    public static final String PURPLE_UNDERLINED = "\033[4;35m"; // PURPLE
-    public static final String CYAN_UNDERLINED = "\033[4;36m";   // CYAN
-    public static final String WHITE_UNDERLINED = "\033[4;37m";  // WHITE
-
-    // Background
-    public static final String BLACK_BACKGROUND = "\033[40m";  // BLACK
-    public static final String RED_BACKGROUND = "\033[41m";    // RED
-    public static final String GREEN_BACKGROUND = "\033[42m";  // GREEN
-    public static final String YELLOW_BACKGROUND = "\033[43m"; // YELLOW
-    public static final String BLUE_BACKGROUND = "\033[44m";   // BLUE
-    public static final String PURPLE_BACKGROUND = "\033[45m"; // PURPLE
-    public static final String CYAN_BACKGROUND = "\033[46m";   // CYAN
-    public static final String WHITE_BACKGROUND = "\033[47m";  // WHITE
-
-    // High Intensity
-    public static final String BLACK_BRIGHT = "\033[0;90m";  // BLACK
-    public static final String RED_BRIGHT = "\033[0;91m";    // RED
-    public static final String GREEN_BRIGHT = "\033[0;92m";  // GREEN
-    public static final String YELLOW_BRIGHT = "\033[0;93m"; // YELLOW
-    public static final String BLUE_BRIGHT = "\033[0;94m";   // BLUE
-    public static final String PURPLE_BRIGHT = "\033[0;95m"; // PURPLE
-    public static final String CYAN_BRIGHT = "\033[0;96m";   // CYAN
-    public static final String WHITE_BRIGHT = "\033[0;97m";  // WHITE
-
-    // Bold High Intensity
-    public static final String BLACK_BOLD_BRIGHT = "\033[1;90m"; // BLACK
-    public static final String RED_BOLD_BRIGHT = "\033[1;91m";   // RED
-    public static final String GREEN_BOLD_BRIGHT = "\033[1;92m"; // GREEN
-    public static final String YELLOW_BOLD_BRIGHT = "\033[1;93m";// YELLOW
-    public static final String BLUE_BOLD_BRIGHT = "\033[1;94m";  // BLUE
-    public static final String PURPLE_BOLD_BRIGHT = "\033[1;95m";// PURPLE
-    public static final String CYAN_BOLD_BRIGHT = "\033[1;96m";  // CYAN
-    public static final String WHITE_BOLD_BRIGHT = "\033[1;97m"; // WHITE
-
-    // High Intensity backgrounds
-    public static final String BLACK_BACKGROUND_BRIGHT = "\033[0;100m";// BLACK
-    public static final String RED_BACKGROUND_BRIGHT = "\033[0;101m";// RED
-    public static final String GREEN_BACKGROUND_BRIGHT = "\033[0;102m";// GREEN
-    public static final String YELLOW_BACKGROUND_BRIGHT = "\033[0;103m";// YELLOW
-    public static final String BLUE_BACKGROUND_BRIGHT = "\033[0;104m";// BLUE
-    public static final String PURPLE_BACKGROUND_BRIGHT = "\033[0;105m"; // PURPLE
-    public static final String CYAN_BACKGROUND_BRIGHT = "\033[0;106m";  // CYAN
-    public static final String WHITE_BACKGROUND_BRIGHT = "\033[0;107m";   // WHITE
+    public static final String RED_BOLD = "\033[1;31m";
+    public static final String GREEN_BOLD = "\033[1;32m";
+    public static final String YELLOW_BOLD = "\033[1;33m";
+    public static final String BLUE_BOLD = "\033[1;34m";
+    public static final String PURPLE_BOLD = "\033[1;35m";
+    public static final String CYAN_BOLD = "\033[1;36m";
 
     public static final List<String> colors = of(RED, GREEN, YELLOW, BLUE, PURPLE, CYAN,
             RED_BOLD, GREEN_BOLD, YELLOW_BOLD, BLUE_BOLD, PURPLE_BOLD, CYAN_BOLD);
 
-    public static String colorize(String str) {
+    public static String colorize(String str, boolean apply) {
+        if (!apply) return str;
         int ind = floorMod(str.hashCode(), colors.size());
         return colors.get(ind) + str + RESET;
     }

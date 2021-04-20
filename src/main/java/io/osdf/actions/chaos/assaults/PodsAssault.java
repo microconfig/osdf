@@ -1,5 +1,6 @@
 package io.osdf.actions.chaos.assaults;
 
+import io.osdf.actions.chaos.ChaosContext;
 import io.osdf.actions.chaos.events.EventSender;
 import io.osdf.common.yaml.YamlObject;
 import io.osdf.core.application.service.ServiceApplication;
@@ -26,15 +27,17 @@ public class PodsAssault implements Assault {
     private final List<ServiceApplication> apps;
     private final int periodInSec;
 
+    private final EventSender events;
+
     private volatile Thread thread = null;
     private volatile boolean stopped = false;
-    private EventSender events = emptyEventSender();
 
     @SuppressWarnings("unchecked")
-    public static PodsAssault podsAssault(Object description, ClusterCli cli, OsdfPaths paths) {
+    public static PodsAssault podsAssault(Object description, ChaosContext chaosContext) {
         YamlObject assault = yaml(((List<Object>) description).get(0));
-        List<ServiceApplication> apps = activeRequiredAppsLoader(paths, assault.get("services")).load(service(cli));
-        return new PodsAssault(apps, durationFromString(assault.get("period")));
+        List<ServiceApplication> apps = activeRequiredAppsLoader(chaosContext.paths(), assault.get("services"))
+                .load(service(chaosContext.cli()));
+        return new PodsAssault(apps, durationFromString(assault.get("period")), chaosContext.eventStorage().sender("pods assault"));
     }
 
     @Override
@@ -73,11 +76,5 @@ public class PodsAssault implements Assault {
                 sleepSec(periodInSec);
             }
         };
-    }
-
-    @Override
-    public PodsAssault setEventSender(EventSender sender) {
-        events = sender.newSender("pods assault");
-        return this;
     }
 }

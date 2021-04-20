@@ -9,4 +9,10 @@ public interface ChaosApi {
     @Description("Run chaos test")
     @Arg(required = "component", d = "Component with chaos description")
     void run(String component);
+
+    @Description("Show chaos test state")
+    void state();
+
+    @Description("Clear all hanging assaults")
+    void clearAssaults();
 }

@@ -1,5 +1,6 @@
 package io.osdf.actions.chaos.events;
 
+import io.osdf.actions.chaos.utils.TimeUtils;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -9,9 +10,9 @@ import java.util.List;
 
 import static io.osdf.actions.chaos.events.EventLevel.INFO;
 import static io.osdf.actions.chaos.events.EventLevel.valueOf;
+import static io.osdf.actions.chaos.utils.TimeUtils.fromTimestamp;
 import static java.time.Instant.ofEpochMilli;
-import static java.time.LocalDateTime.now;
-import static java.time.LocalDateTime.ofInstant;
+import static java.time.LocalDateTime.*;
 import static java.util.TimeZone.getDefault;
 
 @Data
@@ -33,10 +34,8 @@ public class Event {
     }
 
     public static Event event(EventDto eventDto) {
-        LocalDateTime time = ofInstant(ofEpochMilli(eventDto.getTimestampMs()),
-                getDefault().toZoneId());
         return new Event()
-                .time(time)
+                .time(fromTimestamp(eventDto.getTimestampMs()))
                 .source(eventDto.getSource())
                 .level(valueOf(eventDto.getLevel()))
                 .labels(eventDto.getLabels())

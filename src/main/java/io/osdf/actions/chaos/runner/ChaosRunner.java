@@ -1,35 +1,44 @@
 package io.osdf.actions.chaos.runner;
 
+import io.osdf.actions.chaos.ChaosContext;
 import io.osdf.actions.chaos.assaults.Assault;
 import io.osdf.actions.chaos.checks.Checker;
+import io.osdf.actions.chaos.events.EventDto;
 import io.osdf.actions.chaos.events.EventSender;
-import io.osdf.actions.chaos.events.EventStorage;
+import io.osdf.actions.chaos.report.ChaosReport;
 import io.osdf.actions.chaos.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 
-import static io.osdf.actions.chaos.events.EventLevel.CHAOS;
-import static io.osdf.actions.chaos.events.EventLevel.INFO;
-import static io.osdf.actions.chaos.events.EventStorageImpl.eventStorage;
-import static io.osdf.actions.chaos.events.listeners.LoggerEventListener.logger;
+import java.util.stream.Collectors;
+
+import static io.osdf.actions.chaos.events.EventLevel.*;
+import static io.osdf.actions.chaos.report.ChaosReport.chaosReport;
+import static io.osdf.actions.chaos.state.ChaosPhase.*;
+import static io.osdf.actions.chaos.utils.MapperUtils.dump;
 import static io.osdf.common.utils.ThreadUtils.calcSecFrom;
 import static io.osdf.common.utils.ThreadUtils.sleepSec;
 import static java.lang.System.currentTimeMillis;
 
 @RequiredArgsConstructor
 public class ChaosRunner {
-    private final EventStorage storage;
+    private final ChaosContext chaosContext;
     private final EventSender events;
 
-    public static ChaosRunner chaosRunner() {
-        EventStorage storage = eventStorage().with(logger());
-        return new ChaosRunner(storage, storage.sender("osdf"));
+    public static ChaosRunner chaosRunner(ChaosContext chaosContext) {
+        return new ChaosRunner(chaosContext, chaosContext.eventStorage().sender("osdf"));
     }
 
     public void run(Scenario scenario) {
+        chaosContext.chaosStateManager().setState(WARMUP);
         events.send("Waiting " + scenario.warmupInSec() / 60 + "m to warm up", CHAOS);
         warmup(scenario);
+
+        chaosContext.chaosStateManager().setState(RUNNING);
         events.send("Starting " + scenario.durationInSec() / 60 + "m chaos test", CHAOS);
         mainPhase(scenario);
+
+        chaosContext.chaosStateManager().setState(FINISHED);
+        events.send("Finished chaos test", CHAOS);
     }
 
     private void warmup(Scenario scenario) {
@@ -48,8 +57,19 @@ public class ChaosRunner {
             events.send("Checking cluster health", INFO);
             scenario.checkers().forEach(Checker::check);
             events.send("Checks completed", INFO);
+            saveReport();
             sleepSec(30);
         }
     }
 
+    private void saveReport() {
+        long startTime = currentTimeMillis();
+        ChaosReport chaosReport = chaosReport(
+                chaosContext.eventStorage().events().stream()
+                        .map(EventDto::fromEvent)
+                        .collect(Collectors.toUnmodifiableList())
+        );
+        dump(chaosReport, chaosContext.chaosStateManager().chaosPaths().report());
+        events.send("Took " + (currentTimeMillis() - startTime) + "ms to save report", DEBUG, "system");
+    }
 }

@@ -1,9 +1,11 @@
 package io.osdf.actions.chaos.assaults;
 
-import io.osdf.actions.chaos.events.EventSource;
-
-public interface Assault extends EventSource {
+public interface Assault {
     void start();
 
     void stop();
+
+    default void clear() {
+        //no clearing needed
+    }
 }

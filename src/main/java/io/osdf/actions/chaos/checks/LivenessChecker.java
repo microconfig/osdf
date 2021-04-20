@@ -1,5 +1,6 @@
 package io.osdf.actions.chaos.checks;
 
+import io.osdf.actions.chaos.ChaosContext;
 import io.osdf.actions.chaos.events.EventSender;
 import io.osdf.core.application.core.Application;
 import io.osdf.core.application.service.ServiceApplication;
@@ -29,11 +30,12 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 public class LivenessChecker implements Checker {
     private final ClusterCli cli;
     private final List<ServiceApplication> apps;
-    private EventSender events = emptyEventSender();
+    private final EventSender events;
 
-    public static LivenessChecker basicChecker(Map<String, Object> description, ClusterCli cli, OsdfPaths paths) {
-        List<ServiceApplication> apps = activeRequiredAppsLoader(paths, null).load(service(cli));
-        return new LivenessChecker(cli, apps);
+    public static LivenessChecker livenessChecker(Object description, ChaosContext chaosContext) {
+        List<ServiceApplication> apps = activeRequiredAppsLoader(chaosContext.paths(), null)
+                .load(service(chaosContext.cli()));
+        return new LivenessChecker(chaosContext.cli(), apps, chaosContext.eventStorage().sender("liveness checker"));
     }
 
     @Override
@@ -74,11 +76,5 @@ public class LivenessChecker implements Checker {
 
     private List<String> appNames(List<ServiceApplication> failed) {
         return failed.stream().map(Application::name).collect(toUnmodifiableList());
-    }
-
-    @Override
-    public LivenessChecker setEventSender(EventSender sender) {
-        events = sender.newSender("liveness check");
-        return this;
     }
 }

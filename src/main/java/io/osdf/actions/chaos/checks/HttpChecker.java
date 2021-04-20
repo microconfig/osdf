@@ -2,6 +2,7 @@ package io.osdf.actions.chaos.checks;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.osdf.actions.chaos.ChaosContext;
 import io.osdf.actions.chaos.events.Event;
 import io.osdf.actions.chaos.events.EventDto;
 import io.osdf.actions.chaos.events.EventSender;
@@ -21,10 +22,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @RequiredArgsConstructor
 public class HttpChecker implements Checker {
     private final String url;
-    private EventSender events = emptyEventSender();
+    private final EventSender events;
 
-    public static HttpChecker httpChecker(Map<String, Object> description) {
-        return new HttpChecker((String) description.get("url"));
+    @SuppressWarnings("unchecked")
+    public static HttpChecker httpChecker(Object description, ChaosContext chaosContext) {
+        return new HttpChecker(((Map<String, String>) description).get("url"), chaosContext.eventStorage().sender("http checker"));
     }
 
     @Override
@@ -54,11 +56,5 @@ public class HttpChecker implements Checker {
 
     private String body(HttpURLConnection connection, int responseCode) throws IOException {
         return IOUtils.toString(responseCode == 200 ? connection.getInputStream() : connection.getErrorStream(), UTF_8);
-    }
-
-    @Override
-    public HttpChecker setEventSender(EventSender sender) {
-        events = sender.newSender("http checker");
-        return this;
     }
 }
