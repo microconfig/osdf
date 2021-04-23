@@ -7,16 +7,13 @@ import io.osdf.core.application.service.ServiceApplication;
 import io.osdf.core.cluster.deployment.ClusterDeployment;
 import io.osdf.core.cluster.resource.properties.ResourceProperties;
 import io.osdf.core.connection.cli.ClusterCli;
-import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static io.osdf.actions.chaos.events.EventLevel.ERROR;
 import static io.osdf.actions.chaos.events.EventLevel.INFO;
-import static io.osdf.actions.chaos.events.empty.EmptyEventSender.emptyEventSender;
 import static io.osdf.common.utils.StringUtils.castToInteger;
 import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
 import static io.osdf.core.application.service.ServiceApplicationMapper.service;

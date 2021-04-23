@@ -1,6 +1,5 @@
 package io.osdf.actions.chaos.events;
 
-import io.osdf.actions.chaos.utils.TimeUtils;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -11,9 +10,7 @@ import java.util.List;
 import static io.osdf.actions.chaos.events.EventLevel.INFO;
 import static io.osdf.actions.chaos.events.EventLevel.valueOf;
 import static io.osdf.actions.chaos.utils.TimeUtils.fromTimestamp;
-import static java.time.Instant.ofEpochMilli;
-import static java.time.LocalDateTime.*;
-import static java.util.TimeZone.getDefault;
+import static java.time.LocalDateTime.now;
 
 @Data
 @Accessors(fluent = true)

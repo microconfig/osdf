@@ -1,22 +1,12 @@
 package io.osdf.actions.chaos.assaults;
 
 import io.osdf.actions.chaos.ChaosContext;
-import io.osdf.actions.chaos.events.EventStorage;
-import io.osdf.actions.chaos.state.ChaosStateManager;
-import io.osdf.core.connection.cli.ClusterCli;
-import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
-import static io.osdf.actions.chaos.assaults.ComponentsAssault.componentsAssault;
-import static io.osdf.actions.chaos.assaults.DeleteResourceAssault.deleteResourceAssault;
-import static io.osdf.actions.chaos.assaults.DeployAssault.deployAssault;
-import static io.osdf.actions.chaos.assaults.PodsAssault.podsAssault;
 import static java.util.Map.of;
 import static java.util.stream.Collectors.toUnmodifiableList;
 

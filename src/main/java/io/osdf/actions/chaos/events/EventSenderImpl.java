@@ -2,8 +2,6 @@ package io.osdf.actions.chaos.events;
 
 import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDateTime;
-
 import static io.osdf.actions.chaos.events.Event.newEvent;
 import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;

@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 import static io.osdf.actions.chaos.events.EventLevel.DEBUG;

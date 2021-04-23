@@ -3,12 +3,8 @@ package io.osdf.actions.chaos.scenario;
 import io.osdf.actions.chaos.ChaosContext;
 import io.osdf.actions.chaos.assaults.Assault;
 import io.osdf.actions.chaos.checks.Checker;
-import io.osdf.actions.chaos.events.EventStorage;
-import io.osdf.actions.chaos.state.ChaosStateManager;
 import io.osdf.common.yaml.YamlObject;
-import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.core.local.component.ComponentDir;
-import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

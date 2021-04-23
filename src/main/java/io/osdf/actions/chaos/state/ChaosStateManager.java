@@ -1,6 +1,5 @@
 package io.osdf.actions.chaos.state;
 
-import io.osdf.actions.chaos.report.ChaosReport;
 import io.osdf.actions.chaos.report.ReportReader;
 import io.osdf.common.SettingsFile;
 import io.osdf.common.yaml.YamlObject;
@@ -9,7 +8,6 @@ import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
 import static io.osdf.actions.chaos.state.ChaosPhase.STARTING;
-import static io.osdf.actions.chaos.utils.MapperUtils.createFromPath;
 import static io.osdf.common.SettingsFile.settingsFile;
 import static io.osdf.common.utils.FileUtils.*;
 import static io.osdf.common.yaml.YamlObject.yaml;

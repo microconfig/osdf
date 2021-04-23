@@ -1,16 +1,12 @@
 package io.osdf.actions.chaos.checks;
 
 import io.osdf.actions.chaos.ChaosContext;
-import io.osdf.actions.chaos.assaults.*;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-import static io.osdf.actions.chaos.checks.HttpChecker.httpChecker;
-import static io.osdf.actions.chaos.checks.LivenessChecker.livenessChecker;
 import static java.util.Map.of;
 import static java.util.stream.Collectors.toUnmodifiableList;
 

@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import static io.osdf.actions.chaos.events.EventLevel.ERROR;
-import static io.osdf.actions.chaos.events.empty.EmptyEventSender.emptyEventSender;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @RequiredArgsConstructor
