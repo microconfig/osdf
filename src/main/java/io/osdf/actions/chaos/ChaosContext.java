@@ -1,8 +1,8 @@
 package io.osdf.actions.chaos;
 
-import io.osdf.actions.chaos.events.EventStorage;
 import io.osdf.actions.chaos.state.ChaosStateManager;
 import io.osdf.core.connection.cli.ClusterCli;
+import io.osdf.core.events.EventStorage;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.Builder;
 import lombok.Getter;

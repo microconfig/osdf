@@ -1,5 +1,6 @@
 package io.osdf.actions.info.healthcheck.app;
 
+import io.osdf.actions.management.deploy.deployer.AppHealth;
 import io.osdf.core.application.core.Application;
 import io.osdf.core.application.job.JobApplication;
 import io.osdf.core.application.plain.PlainApplication;
@@ -21,5 +22,5 @@ public interface AppHealthChecker {
         ));
     }
 
-    boolean check(Application application);
+    AppHealth check(Application application);
 }

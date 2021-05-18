@@ -4,6 +4,7 @@ import io.osdf.actions.management.restart.DeploymentRestarter;
 import io.osdf.common.exceptions.StatusCodeException;
 import io.osdf.core.application.core.Application;
 import io.osdf.core.connection.cli.ClusterCli;
+import io.osdf.core.events.EventStorage;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +20,10 @@ import static io.osdf.core.application.core.AllApplications.all;
 import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
 import static io.osdf.core.application.service.ServiceApplicationMapper.service;
 import static io.osdf.core.connection.cli.LoginCliProxy.loginCliProxy;
+import static io.osdf.core.events.EventLevel.DEBUG;
+import static io.osdf.core.events.EventLevel.INFO;
+import static io.osdf.core.events.EventStorageImpl.eventStorage;
+import static io.osdf.core.events.listeners.LoggerEventListener.logger;
 
 @RequiredArgsConstructor
 public class ManagementApiImpl implements ManagementApi {
@@ -32,7 +37,8 @@ public class ManagementApiImpl implements ManagementApi {
     @Override
     public void deploy(List<String> serviceNames, Boolean smart) {
         autoPullHook(paths, cli).tryAutoPull();
-        boolean ok = deployCommand(paths, cli).deploy(serviceNames, smart);
+        EventStorage eventStorage = eventStorage().with(logger(DEBUG));
+        boolean ok = deployCommand(paths, cli, eventStorage.sender("deploy"), INFO).deploy(serviceNames, smart);
         announce(ok ? "OK" : "Some apps have failed");
         if (!ok) throw new StatusCodeException(1);
     }

@@ -1,9 +1,9 @@
 package io.osdf.core.connection.cli.kubernetes;
 
-import io.osdf.core.connection.cli.BaseClusterCli;
-import io.osdf.core.connection.cli.ClusterCli;
-import io.osdf.core.connection.cli.CliOutput;
 import io.osdf.common.exceptions.OSDFException;
+import io.osdf.core.connection.cli.BaseClusterCli;
+import io.osdf.core.connection.cli.CliOutput;
+import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
 
 import static io.osdf.core.connection.cli.BaseClusterCli.baseClusterCLI;

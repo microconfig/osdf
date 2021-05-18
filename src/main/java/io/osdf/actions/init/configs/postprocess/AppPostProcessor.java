@@ -7,10 +7,10 @@ import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
 import static io.osdf.actions.init.configs.postprocess.ConfigMapCreator.configMapCreator;
-import static io.osdf.actions.init.configs.postprocess.ResourceSplitter.resourceSplitter;
-import static io.osdf.actions.init.configs.postprocess.template.ResourceTemplatePostProcessor.resourceTemplatePostProcessor;
-import static io.osdf.actions.init.configs.postprocess.metadata.MetadataCreatorImpl.metadataCreator;
 import static io.osdf.actions.init.configs.postprocess.ExternalVariablesResolver.externalVariablesResolver;
+import static io.osdf.actions.init.configs.postprocess.ResourceSplitter.resourceSplitter;
+import static io.osdf.actions.init.configs.postprocess.metadata.MetadataCreatorImpl.metadataCreator;
+import static io.osdf.actions.init.configs.postprocess.template.ResourceTemplatePostProcessor.resourceTemplatePostProcessor;
 import static io.osdf.common.utils.FileUtils.createDirectoryIfNotExists;
 
 @RequiredArgsConstructor

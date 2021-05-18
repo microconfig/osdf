@@ -1,8 +1,8 @@
-package io.osdf.actions.chaos.events;
+package io.osdf.core.events;
 
 import lombok.RequiredArgsConstructor;
 
-import static io.osdf.actions.chaos.events.Event.newEvent;
+import static io.osdf.core.events.Event.newEvent;
 import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
 
@@ -36,10 +36,5 @@ public class EventSenderImpl implements EventSender {
                 .level(level)
                 .labels(asList(labels));
         send();
-    }
-
-    @Override
-    public EventSender newSender(String source) {
-        return eventSender(storage, source);
     }
 }

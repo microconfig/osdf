@@ -1,4 +1,4 @@
-package io.osdf.actions.chaos.events;
+package io.osdf.core.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

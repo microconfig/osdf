@@ -2,7 +2,6 @@ package io.osdf.core.application.core.files.loaders;
 
 import io.osdf.core.application.core.files.ApplicationFiles;
 import io.osdf.core.application.core.files.ApplicationFilesImpl;
-import io.osdf.core.application.core.files.loaders.filters.HiddenComponentsFilter;
 import io.osdf.core.local.component.ComponentDir;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;

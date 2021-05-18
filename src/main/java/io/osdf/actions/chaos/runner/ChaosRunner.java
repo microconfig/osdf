@@ -3,20 +3,20 @@ package io.osdf.actions.chaos.runner;
 import io.osdf.actions.chaos.ChaosContext;
 import io.osdf.actions.chaos.assaults.Assault;
 import io.osdf.actions.chaos.checks.Checker;
-import io.osdf.actions.chaos.events.EventDto;
-import io.osdf.actions.chaos.events.EventSender;
 import io.osdf.actions.chaos.report.ChaosReport;
 import io.osdf.actions.chaos.scenario.Scenario;
+import io.osdf.core.events.EventDto;
+import io.osdf.core.events.EventSender;
 import lombok.RequiredArgsConstructor;
 
 import java.util.stream.Collectors;
 
-import static io.osdf.actions.chaos.events.EventLevel.*;
 import static io.osdf.actions.chaos.report.ChaosReport.chaosReport;
 import static io.osdf.actions.chaos.state.ChaosPhase.*;
 import static io.osdf.actions.chaos.utils.MapperUtils.dump;
 import static io.osdf.common.utils.ThreadUtils.calcSecFrom;
 import static io.osdf.common.utils.ThreadUtils.sleepSec;
+import static io.osdf.core.events.EventLevel.*;
 import static java.lang.System.currentTimeMillis;
 
 @RequiredArgsConstructor

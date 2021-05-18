@@ -3,9 +3,9 @@ package io.osdf.actions.chaos.checks;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.osdf.actions.chaos.ChaosContext;
-import io.osdf.actions.chaos.events.Event;
-import io.osdf.actions.chaos.events.EventDto;
-import io.osdf.actions.chaos.events.EventSender;
+import io.osdf.core.events.Event;
+import io.osdf.core.events.EventDto;
+import io.osdf.core.events.EventSender;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 
@@ -15,7 +15,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-import static io.osdf.actions.chaos.events.EventLevel.ERROR;
+import static io.osdf.core.events.EventLevel.ERROR;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @RequiredArgsConstructor

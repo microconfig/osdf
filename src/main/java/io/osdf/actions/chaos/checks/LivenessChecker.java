@@ -1,23 +1,23 @@
 package io.osdf.actions.chaos.checks;
 
 import io.osdf.actions.chaos.ChaosContext;
-import io.osdf.actions.chaos.events.EventSender;
 import io.osdf.core.application.core.Application;
 import io.osdf.core.application.service.ServiceApplication;
 import io.osdf.core.cluster.deployment.ClusterDeployment;
 import io.osdf.core.cluster.resource.properties.ResourceProperties;
 import io.osdf.core.connection.cli.ClusterCli;
+import io.osdf.core.events.EventSender;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
 
-import static io.osdf.actions.chaos.events.EventLevel.ERROR;
-import static io.osdf.actions.chaos.events.EventLevel.INFO;
 import static io.osdf.common.utils.StringUtils.castToInteger;
 import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
 import static io.osdf.core.application.service.ServiceApplicationMapper.service;
 import static io.osdf.core.cluster.resource.properties.ResourceProperties.resourceProperties;
+import static io.osdf.core.events.EventLevel.ERROR;
+import static io.osdf.core.events.EventLevel.INFO;
 import static java.util.Map.of;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toList;

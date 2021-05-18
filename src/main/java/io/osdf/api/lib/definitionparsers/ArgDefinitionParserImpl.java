@@ -1,11 +1,11 @@
 package io.osdf.api.lib.definitionparsers;
 
 import io.osdf.api.lib.ApiException;
-import io.osdf.api.lib.definitions.ArgType;
 import io.osdf.api.lib.annotations.Arg;
 import io.osdf.api.lib.argparsers.ArgParser;
 import io.osdf.api.lib.argparsers.DefaultParser;
 import io.osdf.api.lib.definitions.ArgDefinition;
+import io.osdf.api.lib.definitions.ArgType;
 import lombok.Getter;
 
 import java.lang.annotation.Annotation;

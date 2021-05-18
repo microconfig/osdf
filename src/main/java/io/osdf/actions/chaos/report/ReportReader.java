@@ -1,7 +1,7 @@
 package io.osdf.actions.chaos.report;
 
-import io.osdf.actions.chaos.events.EventDto;
 import io.osdf.actions.chaos.state.ChaosStateManager;
+import io.osdf.core.events.EventDto;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;

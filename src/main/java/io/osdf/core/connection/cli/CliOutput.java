@@ -2,6 +2,7 @@ package io.osdf.core.connection.cli;
 
 import io.osdf.common.exceptions.OSDFException;
 import io.osdf.common.exceptions.PossibleBugException;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 
@@ -15,8 +16,11 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 @RequiredArgsConstructor
 public class CliOutput {
+    public static int TIMEOUT_STATUS_CODE = -1;
+
     private final String errorOutput;
     private final String standardOutput;
+    @Getter
     private final int statusCode;
 
     public static CliOutput output(String standardOutput) {
@@ -30,7 +34,7 @@ public class CliOutput {
     public static CliOutput outputOf(String command, int timeout) {
         try {
             Process process = new ProcessBuilder("/bin/sh", "-c", command).start();
-            if (!waitExecution(timeout, process)) return errorOutput("Timed out", 1);
+            if (!waitExecution(timeout, process)) return errorOutput("Timed out", TIMEOUT_STATUS_CODE);
 
             if (process.exitValue() != 0) {
                 return errorOutput(IOUtils.toString(process.getErrorStream(), UTF_8.name()), process.exitValue());

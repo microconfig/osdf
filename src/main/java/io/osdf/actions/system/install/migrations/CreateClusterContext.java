@@ -1,11 +1,11 @@
 package io.osdf.actions.system.install.migrations;
 
+import io.osdf.common.SettingsFile;
 import io.osdf.core.connection.context.ClusterContextSettings;
 import io.osdf.settings.paths.OsdfPaths;
-import io.osdf.common.SettingsFile;
 
-import static io.osdf.core.connection.context.ClusterType.OPENSHIFT;
 import static io.osdf.common.SettingsFile.settingsFile;
+import static io.osdf.core.connection.context.ClusterType.OPENSHIFT;
 import static java.nio.file.Files.exists;
 
 public class CreateClusterContext implements Migration {

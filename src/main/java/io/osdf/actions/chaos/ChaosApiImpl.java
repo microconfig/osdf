@@ -1,24 +1,25 @@
 package io.osdf.actions.chaos;
 
 import io.osdf.actions.chaos.assaults.Assault;
-import io.osdf.actions.chaos.events.EventStorage;
 import io.osdf.actions.chaos.scenario.Scenario;
 import io.osdf.actions.chaos.state.ChaosStateManager;
 import io.osdf.common.yaml.YamlObject;
 import io.osdf.core.connection.cli.ClusterCli;
+import io.osdf.core.events.EventStorage;
 import io.osdf.core.local.component.ComponentDir;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
 import static io.osdf.actions.chaos.assaults.AssaultsLoader.assaultsLoader;
-import static io.osdf.actions.chaos.events.EventStorageImpl.eventStorage;
-import static io.osdf.actions.chaos.events.listeners.LoggerEventListener.logger;
 import static io.osdf.actions.chaos.runner.ChaosRunner.chaosRunner;
 import static io.osdf.actions.chaos.scenario.ScenarioLoader.scenarioLoader;
 import static io.osdf.actions.chaos.state.ChaosPhase.FINISHED;
 import static io.osdf.actions.chaos.state.ChaosStateManager.chaosStateManager;
 import static io.osdf.actions.chaos.state.ChaosStatePrinter.chaosStatePrinter;
 import static io.osdf.core.connection.cli.LoginCliProxy.loginCliProxy;
+import static io.osdf.core.events.EventLevel.DEBUG;
+import static io.osdf.core.events.EventStorageImpl.eventStorage;
+import static io.osdf.core.events.listeners.LoggerEventListener.logger;
 import static io.osdf.core.local.component.finder.MicroConfigComponentsFinder.componentsFinder;
 import static io.osdf.core.local.component.loader.ComponentsLoaderImpl.componentsLoader;
 
@@ -59,7 +60,7 @@ public class ChaosApiImpl implements ChaosApi {
     }
 
     private ChaosContext chaosContext(ChaosStateManager chaosStateManager) {
-        EventStorage storage = eventStorage().with(logger(paths.chaos()));
+        EventStorage storage = eventStorage().with(logger(DEBUG, paths.chaos()));
         return ChaosContext.builder()
                 .cli(cli)
                 .paths(paths)

@@ -1,13 +1,13 @@
 package io.osdf.actions.chaos.assaults;
 
 import io.osdf.actions.chaos.ChaosContext;
-import io.osdf.actions.chaos.events.EventSender;
 import io.osdf.actions.management.deploy.AppsDeployCommand;
+import io.osdf.core.events.EventSender;
 import lombok.RequiredArgsConstructor;
 
-import static io.osdf.actions.chaos.events.EventLevel.CHAOS;
-import static io.osdf.actions.chaos.events.EventLevel.ERROR;
 import static io.osdf.actions.management.deploy.AppsDeployCommand.deployCommand;
+import static io.osdf.core.events.EventLevel.CHAOS;
+import static io.osdf.core.events.EventLevel.ERROR;
 import static java.lang.Thread.currentThread;
 
 @RequiredArgsConstructor
@@ -18,7 +18,8 @@ public class DeployAssault implements Assault {
     private volatile Thread thread = null;
 
     public static DeployAssault deployAssault(Object description, ChaosContext chaosContext) {
-        return new DeployAssault(deployCommand(chaosContext.paths(), chaosContext.cli()), chaosContext.eventStorage().sender("deploy assault"));
+        EventSender eventSender = chaosContext.eventStorage().sender("deploy assault");
+        return new DeployAssault(deployCommand(chaosContext.paths(), chaosContext.cli(), eventSender, CHAOS), eventSender);
     }
 
     @Override

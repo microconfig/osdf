@@ -1,44 +1,48 @@
-package io.osdf.actions.chaos.events.listeners;
+package io.osdf.core.events.listeners;
 
-import io.osdf.actions.chaos.events.Event;
-import io.osdf.actions.chaos.events.EventLevel;
 import io.osdf.actions.chaos.state.ChaosPaths;
 import io.osdf.common.exceptions.PossibleBugException;
+import io.osdf.core.events.Event;
+import io.osdf.core.events.EventLevel;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
-import static io.osdf.actions.chaos.events.EventLevel.DEBUG;
-import static io.osdf.actions.chaos.events.listeners.ConsoleColors.colorize;
+import static io.osdf.core.events.listeners.ConsoleColors.colorize;
 import static java.lang.Math.floorMod;
 import static java.lang.String.format;
 import static java.nio.file.Files.write;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.util.List.of;
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.joining;
 
 @RequiredArgsConstructor
 public class LoggerEventListener implements EventListener {
-    private final static EventLevel LOG_LEVEL = DEBUG;
-
+    private final EventLevel logLevel;
     private final Path logFile;
 
-    public static LoggerEventListener logger(ChaosPaths paths) {
-        return new LoggerEventListener(paths.log());
+    public static LoggerEventListener logger(EventLevel logLevel, ChaosPaths paths) {
+        return new LoggerEventListener(logLevel, paths.log());
+    }
+
+    public static LoggerEventListener logger(EventLevel logLevel) {
+        return new LoggerEventListener(logLevel, null);
     }
 
     @Override
     public synchronized void process(Event event) {
-        if (event.level().compareTo(LOG_LEVEL) < 0) return;
+        if (event.level().compareTo(logLevel) < 0) return;
 
         System.out.print(logString(event, true));
         writeToLogFile(event);
     }
 
     private void writeToLogFile(Event event) {
+        if (isNull(logFile)) return;
         try {
             write(logFile, logString(event, false).getBytes(), CREATE, APPEND);
         } catch (IOException e) {
@@ -82,6 +86,7 @@ class ConsoleColors {
             RED_BOLD, GREEN_BOLD, YELLOW_BOLD, BLUE_BOLD, PURPLE_BOLD, CYAN_BOLD);
 
     public static String colorize(String str, boolean apply) {
+        if ("error".equalsIgnoreCase(str)) return RED_BOLD;
         if (!apply) return str;
         int ind = floorMod(str.hashCode(), colors.size());
         return colors.get(ind) + str + RESET;

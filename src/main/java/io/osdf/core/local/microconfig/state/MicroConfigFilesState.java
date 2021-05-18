@@ -10,7 +10,8 @@ import java.nio.file.Path;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static java.nio.file.Files.*;
+import static java.nio.file.Files.isDirectory;
+import static java.nio.file.Files.walk;
 import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.toSet;
 

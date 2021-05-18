@@ -1,6 +1,6 @@
-package io.osdf.actions.chaos.events;
+package io.osdf.core.events;
 
-import io.osdf.actions.chaos.events.listeners.EventListener;
+import io.osdf.core.events.listeners.EventListener;
 
 import java.util.List;
 

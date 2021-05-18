@@ -1,11 +1,11 @@
-package io.osdf.actions.chaos.events;
+package io.osdf.core.events;
 
-import io.osdf.actions.chaos.events.listeners.EventListener;
+import io.osdf.core.events.listeners.EventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.osdf.actions.chaos.events.EventSenderImpl.eventSender;
+import static io.osdf.core.events.EventSenderImpl.eventSender;
 
 public class EventStorageImpl implements EventStorage {
     private final List<Event> events = new ArrayList<>();

@@ -1,4 +1,4 @@
-package io.osdf.actions.chaos.events;
+package io.osdf.core.events;
 
 public interface EventSender {
     void send();
@@ -6,6 +6,4 @@ public interface EventSender {
     void send(Event event);
 
     void send(String message, EventLevel level, String... labels);
-
-    EventSender newSender(String source);
 }

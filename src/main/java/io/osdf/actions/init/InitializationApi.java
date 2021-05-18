@@ -1,7 +1,7 @@
 package io.osdf.actions.init;
 
-import io.osdf.api.lib.annotations.Description;
 import io.osdf.api.lib.annotations.Arg;
+import io.osdf.api.lib.annotations.Description;
 import io.osdf.api.parsers.CredentialsParser;
 import io.osdf.api.parsers.NexusArtifactParser;
 import io.osdf.common.Credentials;

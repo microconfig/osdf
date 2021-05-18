@@ -4,7 +4,6 @@ import io.osdf.actions.info.api.logs.LogsCommand;
 import io.osdf.actions.info.api.status.StatusCommand;
 import io.osdf.common.exceptions.StatusCodeException;
 import io.osdf.core.application.core.Application;
-import io.osdf.core.application.core.files.loaders.filters.HiddenComponentsFilter;
 import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;

@@ -1,21 +1,21 @@
 package io.osdf.actions.chaos.assaults;
 
 import io.osdf.actions.chaos.ChaosContext;
-import io.osdf.actions.chaos.events.EventSender;
 import io.osdf.common.yaml.YamlObject;
 import io.osdf.core.application.service.ServiceApplication;
 import io.osdf.core.cluster.pod.Pod;
+import io.osdf.core.events.EventSender;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Random;
 
-import static io.osdf.actions.chaos.events.EventLevel.CHAOS;
 import static io.osdf.actions.chaos.utils.TimeUtils.durationFromString;
 import static io.osdf.common.utils.ThreadUtils.sleepSec;
 import static io.osdf.common.yaml.YamlObject.yaml;
 import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.activeRequiredAppsLoader;
 import static io.osdf.core.application.service.ServiceApplicationMapper.service;
+import static io.osdf.core.events.EventLevel.CHAOS;
 import static java.lang.Math.floorMod;
 import static java.lang.Thread.currentThread;
 

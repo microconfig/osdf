@@ -1,5 +1,6 @@
 package io.osdf.actions.management.deploy.deployer.job;
 
+import io.osdf.actions.management.deploy.deployer.AppHealth;
 import io.osdf.actions.management.deploy.deployer.Deployable;
 import io.osdf.core.application.job.JobApplication;
 import io.osdf.core.connection.cli.ClusterCli;
@@ -28,7 +29,7 @@ public class DeployableJob implements Deployable {
     }
 
     @Override
-    public boolean check() {
+    public AppHealth check() {
         return jobHealthChecker(cli).check(jobApp);
     }
 }

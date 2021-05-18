@@ -1,19 +1,19 @@
 package io.osdf.actions.chaos.assaults;
 
 import io.osdf.actions.chaos.ChaosContext;
-import io.osdf.actions.chaos.events.EventSender;
 import io.osdf.actions.chaos.state.AssaultInfoManager;
 import io.osdf.core.application.core.files.ApplicationFiles;
 import io.osdf.core.cluster.resource.LocalClusterResource;
 import io.osdf.core.connection.cli.ClusterCli;
+import io.osdf.core.events.EventSender;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
 
-import static io.osdf.actions.chaos.events.EventLevel.CHAOS;
 import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.appLoader;
 import static io.osdf.core.application.core.files.loaders.filters.RequiredComponentsFilter.requiredComponentsFilter;
+import static io.osdf.core.events.EventLevel.CHAOS;
 import static java.util.List.of;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toUnmodifiableList;

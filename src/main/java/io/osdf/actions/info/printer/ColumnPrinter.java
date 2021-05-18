@@ -8,9 +8,10 @@ import java.util.List;
 import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 
-import static io.osdf.common.utils.StringUtils.*;
 import static io.microconfig.utils.Logger.announce;
 import static io.microconfig.utils.Logger.info;
+import static io.osdf.common.utils.StringUtils.coloredStringLength;
+import static io.osdf.common.utils.StringUtils.coloredStringPad;
 import static java.lang.Math.max;
 import static java.util.List.of;
 import static java.util.stream.Collectors.joining;

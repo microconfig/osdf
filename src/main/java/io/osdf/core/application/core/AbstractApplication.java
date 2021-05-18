@@ -12,7 +12,8 @@ import java.util.Optional;
 import static io.microconfig.utils.Logger.info;
 import static io.osdf.core.cluster.configmap.ConfigMapLoader.configMapLoader;
 import static io.osdf.core.cluster.resource.ClusterResourceImpl.clusterResource;
-import static java.util.Optional.*;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 
 @RequiredArgsConstructor
 public class AbstractApplication implements Application {

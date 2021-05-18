@@ -1,5 +1,6 @@
 package io.osdf.actions.info.healthcheck.app;
 
+import io.osdf.actions.management.deploy.deployer.AppHealth;
 import io.osdf.core.application.core.Application;
 import io.osdf.core.application.job.JobApplication;
 import io.osdf.core.cluster.job.ClusterJob;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import java.nio.file.Path;
 import java.util.Optional;
 
+import static io.osdf.actions.management.deploy.deployer.AppHealth.ERROR;
+import static io.osdf.actions.management.deploy.deployer.AppHealth.OK;
 import static io.osdf.common.utils.StringUtils.castToInteger;
 import static io.osdf.common.yaml.YamlObject.yaml;
 import static io.osdf.core.application.job.JobApplication.jobApp;
@@ -24,13 +27,13 @@ public class JobHealthChecker implements AppHealthChecker {
     }
 
     @Override
-    public boolean check(Application app) {
+    public AppHealth check(Application app) {
         JobApplication jobApp = jobApp(app);
         Optional<ClusterJob> job = jobApp.job();
-        if (job.isEmpty()) return false;
+        if (job.isEmpty()) return ERROR;
 
         return cli.execute("wait --for=condition=complete --timeout=" + timeout(jobApp) + "s job/" + job.get().name())
-                .ok();
+                .ok() ? OK : ERROR;
     }
 
     private int timeout(JobApplication jobApp) {

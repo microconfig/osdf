@@ -1,4 +1,4 @@
-package io.osdf.actions.chaos.events;
+package io.osdf.core.events;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -7,9 +7,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.osdf.actions.chaos.events.EventLevel.INFO;
-import static io.osdf.actions.chaos.events.EventLevel.valueOf;
 import static io.osdf.actions.chaos.utils.TimeUtils.fromTimestamp;
+import static io.osdf.core.events.EventLevel.INFO;
+import static io.osdf.core.events.EventLevel.valueOf;
 import static java.time.LocalDateTime.now;
 
 @Data

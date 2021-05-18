@@ -1,7 +1,7 @@
 package io.osdf.actions.info.api.showall;
 
-import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.actions.info.printer.ColumnPrinter;
+import io.osdf.core.connection.cli.ClusterCli;
 import lombok.RequiredArgsConstructor;
 
 import static java.util.stream.Stream.of;

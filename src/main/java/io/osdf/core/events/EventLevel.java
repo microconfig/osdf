@@ -1,4 +1,4 @@
-package io.osdf.actions.chaos.events;
+package io.osdf.core.events;
 
 public enum EventLevel implements Comparable<EventLevel> {
     DEBUG,

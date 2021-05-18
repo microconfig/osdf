@@ -1,8 +1,8 @@
 package io.osdf.actions.info.api;
 
+import io.osdf.api.lib.annotations.Arg;
 import io.osdf.api.lib.annotations.Description;
 import io.osdf.api.lib.annotations.Public;
-import io.osdf.api.lib.annotations.Arg;
 
 import java.util.List;
 

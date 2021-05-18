@@ -1,6 +1,6 @@
 package io.osdf.actions.chaos.report;
 
-import io.osdf.actions.chaos.events.EventDto;
+import io.osdf.core.events.EventDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

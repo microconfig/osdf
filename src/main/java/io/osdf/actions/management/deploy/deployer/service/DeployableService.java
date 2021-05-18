@@ -1,5 +1,6 @@
 package io.osdf.actions.management.deploy.deployer.service;
 
+import io.osdf.actions.management.deploy.deployer.AppHealth;
 import io.osdf.actions.management.deploy.deployer.Deployable;
 import io.osdf.core.application.service.ServiceApplication;
 import io.osdf.core.connection.cli.ClusterCli;
@@ -29,7 +30,7 @@ public class DeployableService implements Deployable {
     }
 
     @Override
-    public boolean check() {
+    public AppHealth check() {
         return serviceHealthChecker(cli).check(service);
     }
 }
