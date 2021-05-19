@@ -4,7 +4,7 @@ import io.osdf.actions.management.restart.DeploymentRestarter;
 import io.osdf.common.exceptions.StatusCodeException;
 import io.osdf.core.application.core.Application;
 import io.osdf.core.connection.cli.ClusterCli;
-import io.osdf.core.events.EventStorage;
+import io.osdf.core.events.EventSender;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
@@ -37,8 +37,11 @@ public class ManagementApiImpl implements ManagementApi {
     @Override
     public void deploy(List<String> serviceNames, Boolean smart, String type) {
         autoPullHook(paths, cli).tryAutoPull();
-        EventStorage eventStorage = eventStorage().with(logger(DEBUG));
-        boolean ok = deployCommand(paths, cli, eventStorage.sender("deploy"), INFO).deploy(serviceNames, smart, type);
+        EventSender eventsSender = eventStorage()
+                .with(logger(DEBUG))
+                .sender("deploy");
+        boolean ok = deployCommand(paths, cli, eventsSender, INFO)
+                .deploy(serviceNames, smart, type);
         announce(ok ? "OK" : "Some apps have failed");
         if (!ok) throw new StatusCodeException(1);
     }

@@ -1,10 +1,11 @@
 package io.osdf.actions.management.deploy;
 
+import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.application.core.Application;
+import io.osdf.core.local.component.ComponentDir;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -34,10 +35,20 @@ public class DeployTypeAppsFilter {
     }
 
     private Map<String, Object> typeSettings(String type) {
-        Path settingsPath = componentsFinder(paths.componentsPath())
-                .findByName("deploy-settings")
-                .getPath("application.yaml");
-        return yaml(settingsPath).get("deploy.types." + type);
+        ComponentDir deploySettingsComponent = deploySettingsComponent();
+        if (deploySettingsComponent == null) return null;
+
+        return yaml(deploySettingsComponent.getPath("application.yaml"))
+                .get("deploy.types." + type);
+    }
+
+    private ComponentDir deploySettingsComponent() {
+        try {
+            return componentsFinder(paths.componentsPath())
+                    .findByName("deploy-settings");
+        } catch (OSDFException e) {
+            return null;
+        }
     }
 
     @SuppressWarnings("unchecked")

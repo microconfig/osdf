@@ -18,19 +18,17 @@ import static io.osdf.actions.management.deploy.deployer.Deployable.of;
 import static io.osdf.common.utils.ThreadUtils.runInParallel;
 import static io.osdf.core.events.EventLevel.INFO;
 import static java.lang.System.currentTimeMillis;
-import static java.lang.System.getenv;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 @RequiredArgsConstructor
 public class GroupDeployer {
     private final ClusterCli cli;
     private final Integer maxParallel;
-    private final boolean waitIfTimeout;
     private final EventSender events;
     private final EventLevel level;
 
     public static GroupDeployer groupDeployer(ClusterCli cli, Integer maxParallel, EventSender events, EventLevel level) {
-        return new GroupDeployer(cli, maxParallel, !"false".equals(getenv("OSDF_DEPLOY_FAILFAST")), events, level);
+        return new GroupDeployer(cli, maxParallel, events, level);
     }
 
     public boolean deployGroup(List<Application> apps) {
@@ -40,7 +38,7 @@ public class GroupDeployer {
                 .map(app -> of(app, cli))
                 .allMatch(app -> deployAndReturnStatus(app, timedOutApps) != AppHealth.ERROR)
         );
-        if (!waitIfTimeout || timedOutApps.isEmpty()) return result;
+        if (timedOutApps.isEmpty()) return result;
         events.send("Checking health of timed out apps", INFO);
         return timedOutApps.stream()
                 .allMatch(app -> checkHealth(app) == OK);

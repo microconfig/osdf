@@ -4,5 +4,5 @@ public enum EventLevel implements Comparable<EventLevel> {
     DEBUG,
     INFO,
     CHAOS,
-    ERROR;
+    ERROR
 }
