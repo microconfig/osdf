@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static io.osdf.actions.management.deploy.DeployTypeAppsFilter.deployTypeAppsFilter;
 import static io.osdf.actions.management.deploy.GroupDeployer.groupDeployer;
 import static io.osdf.actions.management.deploy.groups.StartGroupSplitter.startGroupSplitter;
 import static io.osdf.actions.management.deploy.smart.UpToDateAppFilter.upToDateAppFilter;
@@ -35,13 +36,14 @@ public class AppsDeployCommand {
         return new AppsDeployCommand(paths, cli, eventSender, level);
     }
 
-    public boolean deploy(List<String> requiredServiceNames, boolean smart) {
+    public boolean deploy(List<String> requiredServiceNames, boolean smart, String type) {
         List<Application> allApps = activeRequiredAppsLoader(paths, requiredServiceNames).load(all(cli));
-        if (allApps.isEmpty()) return true;
+        List<Application> appsForType = deployTypeAppsFilter(paths).filter(allApps, type);
+        if (appsForType.isEmpty()) return true;
 
-        preprocessServices(allApps);
+        preprocessServices(appsForType);
 
-        List<Application> appsToDeploy = filterApps(smart, allApps);
+        List<Application> appsToDeploy = filterApps(smart, appsForType);
         if (appsToDeploy.isEmpty()) return true;
 
         GroupDeployer groupDeployer = groupDeployer(cli, osdfConfig(paths).maxParallel(), events, level);

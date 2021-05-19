@@ -31,7 +31,7 @@ public class DeployAssault implements Assault {
 
     private Runnable runnable() {
         return () -> {
-            boolean ok = deployCommand.deploy(null, false);
+            boolean ok = deployCommand.deploy(null, false, "chaos");
             if (ok) {
                 events.send("Finished deploy", CHAOS);
             } else {

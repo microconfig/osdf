@@ -35,10 +35,10 @@ public class ManagementApiImpl implements ManagementApi {
     }
 
     @Override
-    public void deploy(List<String> serviceNames, Boolean smart) {
+    public void deploy(List<String> serviceNames, Boolean smart, String type) {
         autoPullHook(paths, cli).tryAutoPull();
         EventStorage eventStorage = eventStorage().with(logger(DEBUG));
-        boolean ok = deployCommand(paths, cli, eventStorage.sender("deploy"), INFO).deploy(serviceNames, smart);
+        boolean ok = deployCommand(paths, cli, eventStorage.sender("deploy"), INFO).deploy(serviceNames, smart, type);
         announce(ok ? "OK" : "Some apps have failed");
         if (!ok) throw new StatusCodeException(1);
     }
