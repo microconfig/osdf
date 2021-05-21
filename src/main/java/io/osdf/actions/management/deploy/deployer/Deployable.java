@@ -26,5 +26,5 @@ public interface Deployable {
 
     boolean deploy();
 
-    boolean check();
+    AppHealth check();
 }

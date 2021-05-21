@@ -1,5 +1,6 @@
 package io.osdf.actions.management.deploy.deployer.plain;
 
+import io.osdf.actions.management.deploy.deployer.AppHealth;
 import io.osdf.actions.management.deploy.deployer.Deployable;
 import io.osdf.core.application.plain.PlainApplication;
 import io.osdf.core.connection.cli.ClusterCli;
@@ -28,7 +29,7 @@ public class DeployablePlainApp implements Deployable {
     }
 
     @Override
-    public boolean check() {
+    public AppHealth check() {
         return plainAppHealthChecker().check(plainApp);
     }
 }

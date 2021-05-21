@@ -1,7 +1,7 @@
 package io.osdf.actions.init.configs.fetch.nexus;
 
-import io.osdf.common.nexus.NexusArtifact;
 import io.osdf.common.Credentials;
+import io.osdf.common.nexus.NexusArtifact;
 import lombok.Getter;
 import lombok.Setter;
 

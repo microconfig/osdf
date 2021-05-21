@@ -1,6 +1,8 @@
 package io.osdf.core.connection.context;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter

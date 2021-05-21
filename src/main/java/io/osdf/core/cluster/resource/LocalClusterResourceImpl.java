@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import java.nio.file.Path;
 import java.util.Objects;
 
-import static io.osdf.core.cluster.resource.ClusterResourceImpl.fromPath;
 import static io.microconfig.utils.Logger.info;
+import static io.osdf.core.cluster.resource.ClusterResourceImpl.fromPath;
 import static java.util.Objects.hash;
 
 @RequiredArgsConstructor

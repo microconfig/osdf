@@ -1,5 +1,6 @@
 package io.osdf.settings.paths;
 
+import io.osdf.actions.chaos.state.ChaosPaths;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
@@ -48,10 +49,6 @@ public class OsdfPaths {
         return of(root() + "/buildConfigs");
     }
 
-    public Path systemComponentsPath() {
-        return of(root() + "/system");
-    }
-
     public Path projectVersionPath() {
         return of(configsPath() + "/components/system/versions/project-version.proc");
     }
@@ -62,5 +59,9 @@ public class OsdfPaths {
 
     public SettingsPaths settings() {
         return settingsPaths(settingsRoot());
+    }
+
+    public ChaosPaths chaos() {
+        return new ChaosPaths(of(root() + "/chaos"));
     }
 }

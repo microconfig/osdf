@@ -1,8 +1,8 @@
 package io.osdf.core.local.component.finder;
 
+import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.local.component.ComponentDir;
 import io.osdf.core.local.component.MicroConfigComponentDir;
-import io.osdf.common.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static io.osdf.core.local.component.MicroConfigComponentDir.*;
+import static io.osdf.core.local.component.MicroConfigComponentDir.componentDir;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Files.list;
 import static java.nio.file.Path.of;

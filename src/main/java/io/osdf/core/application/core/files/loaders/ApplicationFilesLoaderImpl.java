@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 
 import static io.osdf.core.application.core.files.loaders.filters.ActiveComponentsFilter.activeComponentsFilter;
 import static io.osdf.core.application.core.files.loaders.filters.AppFilter.isApp;
+import static io.osdf.core.application.core.files.loaders.filters.HiddenComponentsFilter.hiddenComponentsFilter;
 import static io.osdf.core.application.core.files.loaders.filters.RequiredComponentsFilter.requiredComponentsFilter;
 import static io.osdf.core.local.component.finder.MicroConfigComponentsFinder.componentsFinder;
 import static io.osdf.core.local.component.loader.ComponentsLoaderImpl.componentsLoader;
@@ -30,7 +31,8 @@ public class ApplicationFilesLoaderImpl implements ApplicationFilesLoader {
     public static ApplicationFilesLoaderImpl activeRequiredAppsLoader(OsdfPaths paths, List<String> requiredNames) {
         return new ApplicationFilesLoaderImpl(paths)
                 .withDirFilter(activeComponentsFilter(paths))
-                .withDirFilter(requiredComponentsFilter(requiredNames));
+                .withDirFilter(requiredComponentsFilter(requiredNames))
+                .withAppFilter(hiddenComponentsFilter());
     }
 
     @Override
@@ -48,6 +50,7 @@ public class ApplicationFilesLoaderImpl implements ApplicationFilesLoader {
         return componentsLoader()
                 .load(componentsFinder(paths.componentsPath()), this::dirFilter).stream()
                 .map(ApplicationFilesImpl::applicationFiles)
+                .filter(this::serviceFilter)
                 .filter(appMapper::check)
                 .map(appMapper::map)
                 .collect(toUnmodifiableList());

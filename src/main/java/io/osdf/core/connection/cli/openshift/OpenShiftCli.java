@@ -1,9 +1,9 @@
 package io.osdf.core.connection.cli.openshift;
 
-import io.osdf.core.connection.cli.BaseClusterCli;
-import io.osdf.core.connection.cli.ClusterCli;
-import io.osdf.core.connection.cli.CliOutput;
 import io.osdf.common.exceptions.OSDFException;
+import io.osdf.core.connection.cli.BaseClusterCli;
+import io.osdf.core.connection.cli.CliOutput;
+import io.osdf.core.connection.cli.ClusterCli;
 import io.osdf.settings.paths.OsdfPaths;
 import lombok.RequiredArgsConstructor;
 

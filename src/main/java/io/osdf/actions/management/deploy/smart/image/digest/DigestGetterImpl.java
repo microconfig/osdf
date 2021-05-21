@@ -37,7 +37,7 @@ public class DigestGetterImpl implements DigestGetter {
         String digestHeader = stream(output.split("\n"))
                 .filter(line -> line.contains("Docker-Content-Digest"))
                 .findFirst()
-                .orElseThrow(() -> new OSDFException("Digest was not for " + image.host()))
+                .orElseThrow(() -> new OSDFException("Digest was not found for " + image.host()))
                 .strip();
         return digestHeader.split(" ")[1];
     }

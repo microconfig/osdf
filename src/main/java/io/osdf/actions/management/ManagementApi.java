@@ -11,7 +11,8 @@ public interface ManagementApi {
     @Description("Deploy applications to OpenShift")
     @Arg(optional = "components", d = "Comma separated list of components")
     @Arg(flag = "smart", d = "If true, osdf will not redeploy unchanged services or rerun unchanged jobs")
-    void deploy(List<String> components, Boolean smart);
+    @Arg(optional = "type", d = "Deploy type")
+    void deploy(List<String> components, Boolean smart, String type);
 
     @Description("Restart services in OpenShift")
     @Arg(optional = "components", d = "Comma separated list of components")

@@ -1,10 +1,13 @@
 package io.osdf.core.connection.cli.openshift;
 
 import io.osdf.common.Credentials;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import static io.osdf.common.utils.StringUtils.withQuotes;
 import static io.microconfig.utils.StringUtils.isEmpty;
+import static io.osdf.common.utils.StringUtils.withQuotes;
 
 @Getter
 @Setter

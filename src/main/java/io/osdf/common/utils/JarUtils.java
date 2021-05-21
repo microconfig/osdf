@@ -1,7 +1,7 @@
 package io.osdf.common.utils;
 
-import io.osdf.common.exceptions.PossibleBugException;
 import io.osdf.actions.system.install.OsdfInstaller;
+import io.osdf.common.exceptions.PossibleBugException;
 
 import java.net.URI;
 import java.net.URISyntaxException;

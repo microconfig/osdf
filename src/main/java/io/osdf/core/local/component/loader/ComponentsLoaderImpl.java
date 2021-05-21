@@ -1,8 +1,8 @@
 package io.osdf.core.local.component.loader;
 
+import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.local.component.ComponentDir;
 import io.osdf.core.local.component.finder.ComponentsFinder;
-import io.osdf.common.exceptions.OSDFException;
 
 import java.util.List;
 import java.util.function.Predicate;

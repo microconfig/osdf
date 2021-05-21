@@ -29,6 +29,7 @@ public class SettingsFile<T> {
             T settings = exists(path) ? createFromString(clazz, decryptedContent(path)) : createEmpty(clazz);
             return new SettingsFile<>(settings, path);
         } catch (YAMLException e) {
+            e.printStackTrace();
             throw new OSDFException("Couldn't parse settings file at " + path + ". Check your encryption settings");
         }
     }

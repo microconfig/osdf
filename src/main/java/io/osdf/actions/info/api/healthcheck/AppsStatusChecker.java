@@ -10,6 +10,7 @@ import static io.microconfig.utils.ConsoleColor.green;
 import static io.microconfig.utils.ConsoleColor.red;
 import static io.microconfig.utils.Logger.info;
 import static io.osdf.actions.info.healthcheck.app.AppHealthChecker.of;
+import static io.osdf.actions.management.deploy.deployer.AppHealth.OK;
 import static io.osdf.common.utils.ThreadUtils.runInParallel;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toUnmodifiableList;
@@ -22,7 +23,7 @@ public class AppsStatusChecker {
         return new AppsStatusChecker(cli);
     }
 
-    public List<Application> findFailed(List<Application> apps) {
+    public List<Application> findFailed(List<? extends Application> apps) {
         return runInParallel(apps.size(),
                 () -> apps
                         .parallelStream()
@@ -32,7 +33,7 @@ public class AppsStatusChecker {
     }
 
     private boolean isReady(Application app) {
-        boolean ok = of(app, cli).check(app);
+        boolean ok = of(app, cli).check(app) == OK;
         info(app.name() + " " + (ok ? green("OK") : red("FAILED")));
         return ok;
     }

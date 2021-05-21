@@ -15,6 +15,7 @@ import static io.osdf.actions.info.printer.ColumnPrinter.printer;
 import static io.osdf.core.application.core.AllApplications.all;
 import static io.osdf.core.application.core.files.loaders.ApplicationFilesLoaderImpl.appLoader;
 import static io.osdf.core.application.core.files.loaders.filters.GroupComponentsFilter.groupComponentsFilter;
+import static io.osdf.core.application.core.files.loaders.filters.HiddenComponentsFilter.hiddenComponentsFilter;
 import static io.osdf.core.connection.cli.LoginCliProxy.loginCliProxy;
 
 @RequiredArgsConstructor
@@ -40,6 +41,7 @@ public class InfoApiImpl implements InfoApi {
     public void healthcheck(String group, Integer timeout) {
         List<Application> apps = appLoader(paths)
                 .withDirFilter(groupComponentsFilter(paths, group))
+                .withAppFilter(hiddenComponentsFilter())
                 .load(all(cli));
         List<Application> failedApps = deployStatusChecker(cli)
                 .findFailed(apps);

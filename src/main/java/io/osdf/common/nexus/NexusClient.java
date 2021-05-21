@@ -1,7 +1,7 @@
 package io.osdf.common.nexus;
 
-import io.osdf.common.exceptions.OSDFException;
 import io.osdf.common.Credentials;
+import io.osdf.common.exceptions.OSDFException;
 import lombok.RequiredArgsConstructor;
 
 import java.io.File;
