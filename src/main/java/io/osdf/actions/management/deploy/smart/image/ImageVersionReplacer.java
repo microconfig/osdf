@@ -3,10 +3,8 @@ package io.osdf.actions.management.deploy.smart.image;
 import io.osdf.actions.management.deploy.smart.image.digest.DigestGetter;
 import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.application.core.files.ApplicationFiles;
-import io.osdf.core.application.core.files.metadata.LocalResourceMetadata;
 import lombok.RequiredArgsConstructor;
 
-import java.nio.file.Path;
 import java.util.regex.Matcher;
 
 import static io.osdf.common.utils.FileUtils.readAll;
@@ -26,26 +24,24 @@ public class ImageVersionReplacer {
     }
 
     public void replaceFor(ApplicationFiles files) {
-        if (files.metadata().getMainResource() == null) return;
-        String mainResourceContent = readAll(of(files.metadata().getMainResource().getPath()));
-
-        ParsedEntry entry = findEntry(mainResourceContent);
-        if (entry == null) return;
-
         Boolean continueOnError = requireNonNullElse(
                 files.deployProperties().get("osdf.replaceVersionWithDigest.continueOnError"), false
         );
 
-        Path resourcePath = of(files.metadata().getMainResource().getPath());
-        getDigestAndReplace(resourcePath, entry, continueOnError);
+        files.resources().forEach(resource -> {
+            String newContent = replaceEntries(readAll(resource.path()), continueOnError);
+            writeStringToFile(resource.path(), newContent);
+        });
     }
 
-    private void getDigestAndReplace(Path path, ParsedEntry entry, boolean continueOnError) {
-        String digest = getDigest(entry.trueUrl(), continueOnError);
-        if (digest == null) return;
+    private String replaceEntries(String content, boolean continueOnError) {
+        while (true) {
+            ParsedEntry entry = findEntry(content);
+            if (entry == null) return content;
 
-        String newContent = readAll(path).replace(entry.url, entry.urlWithDigest(digest));
-        writeStringToFile(path, newContent);
+            String digest = getDigest(entry.trueUrl(), continueOnError);
+            content = content.replace(entry.url, digest == null ? entry.trueUrl() : entry.urlWithDigest(digest));
+        }
     }
 
     private ParsedEntry findEntry(String content) {
