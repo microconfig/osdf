@@ -20,7 +20,10 @@ public class UpToDatePlainAppChecker implements UpToDateChecker {
         Optional<PlainAppDescription> description = plainApp.loadDescription(PlainAppDescription.class, "plain");
         if (description.isEmpty()) return false;
 
+        String remoteHash = description.get().getConfigHash();
+        if (remoteHash == null) return false;
+
         String localHash = resourcesHashComputer().currentHash(app.files());
-        return description.get().getConfigHash().equals(localHash);
+        return remoteHash.equals(localHash);
     }
 }
