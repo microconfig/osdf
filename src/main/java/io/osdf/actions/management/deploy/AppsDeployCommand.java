@@ -68,8 +68,7 @@ public class AppsDeployCommand {
         ResourcesHashComputer resourcesHashComputer = resourcesHashComputer();
         ImageVersionReplacer tagReplacer = imageVersionReplacer(digestGetter(paths));
 
-        apps.forEach(service -> resourcesHashComputer.insertIn(service.files()));
         apps.forEach(service -> tagReplacer.replaceFor(service.files()));
+        apps.forEach(service -> resourcesHashComputer.insertIn(service.files()));
     }
-
 }

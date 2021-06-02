@@ -1,15 +1,15 @@
 package io.osdf.actions.management.deploy.smart.hash;
 
 import io.osdf.common.utils.FileUtils;
+import io.osdf.common.yaml.YamlObject;
 import io.osdf.core.application.core.files.ApplicationFiles;
 import io.osdf.core.cluster.resource.LocalClusterResource;
 import lombok.RequiredArgsConstructor;
 
-import java.nio.file.Path;
+import java.util.Objects;
 
 import static io.osdf.common.utils.FileUtils.readAll;
 import static io.osdf.common.utils.FileUtils.writeStringToFile;
-import static io.osdf.common.yaml.YamlObject.yaml;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
@@ -22,8 +22,6 @@ public class ResourcesHashComputer {
     }
 
     public void insertIn(ApplicationFiles files) {
-        if (files.metadata().getMainResource() == null) return;
-
         String currentHash = currentHash(files);
         if (currentHash == null || !currentHash.equals(HASH_PLACEHOLDER)) return;
 
@@ -31,15 +29,19 @@ public class ResourcesHashComputer {
     }
 
     public String currentHash(ApplicationFiles files) {
-        String resourcePath = files.metadata()
-                .getMainResource()
-                .getPath();
-        return yaml(Path.of(resourcePath)).get("metadata.labels.configHash");
+        return files.resources()
+                .stream()
+                .map(LocalClusterResource::path)
+                .map(YamlObject::yaml)
+                .map(yaml -> yaml.<String>get("metadata.labels.configHash"))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
     }
 
     private void computeAndInsertHash(ApplicationFiles files) {
         String hash = computeHash(files);
-        insertHash(Path.of(files.metadata().getMainResource().getPath()), hash);
+        insertHash(files, hash);
     }
 
     public String computeHash(ApplicationFiles files) {
@@ -51,8 +53,10 @@ public class ResourcesHashComputer {
         );
     }
 
-    private void insertHash(Path path, String hash) {
-        String newContent = readAll(path).replace(HASH_PLACEHOLDER, hash);
-        writeStringToFile(path, newContent);
+    private void insertHash(ApplicationFiles files, String hash) {
+        files.resources().forEach(resource -> {
+            String newContent = readAll(resource.path()).replace(HASH_PLACEHOLDER, hash);
+            writeStringToFile(resource.path(), newContent);
+        });
     }
 }

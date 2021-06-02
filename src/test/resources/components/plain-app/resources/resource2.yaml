@@ -1,0 +1,6 @@
+kind: FakeResource
+metadata:
+  name: fake
+body:
+  randomValue: <CONFIG_HASH>
+  image: url/image:<IMAGE_DIGEST:version>

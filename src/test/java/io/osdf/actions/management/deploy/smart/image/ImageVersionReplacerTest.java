@@ -45,6 +45,17 @@ class ImageVersionReplacerTest {
         assertThrows(OSDFException.class, () -> replacer.replaceFor(files));
     }
 
+    @Test
+    void replaceAll() throws IOException {
+        ImageVersionReplacer replacer = imageVersionReplacer(digestGetter());
+        ApplicationFiles files = applicationFilesFor("plain-app");
+
+        replacer.replaceFor(files);
+
+        assertTrue(readString(files.getPath("resources/resource1.yaml")).contains("@sha256:digest"));
+        assertTrue(readString(files.getPath("resources/resource2.yaml")).contains("@sha256:digest"));
+    }
+
     private DigestGetter digestGetter() {
         DigestGetter digestGetter = mock(DigestGetter.class);
         when(digestGetter.get(anyString())).thenReturn("sha256:digest");

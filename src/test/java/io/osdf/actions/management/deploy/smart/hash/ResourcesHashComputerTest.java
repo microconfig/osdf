@@ -31,4 +31,14 @@ class ResourcesHashComputerTest {
         String contentAfterInsertion = readString(files.getPath("resources/deployment.yaml"));
         assertEquals(originalContent, contentAfterInsertion);
     }
+
+    @Test
+    void replaceAll() throws IOException {
+        ApplicationFiles files = applicationFilesFor("plain-app");
+
+        resourcesHashComputer().insertIn(files);
+
+        assertFalse(readString(files.getPath("resources/resource1.yaml")).contains("<CONFIG_HASH>"));
+        assertFalse(readString(files.getPath("resources/resource2.yaml")).contains("<CONFIG_HASH>"));
+    }
 }
