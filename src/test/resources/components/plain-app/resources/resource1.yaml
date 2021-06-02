@@ -1,0 +1,9 @@
+kind: FakeResource
+metadata:
+  name: fake
+  labels:
+    configHash: <CONFIG_HASH>
+body:
+  image: url/image:<IMAGE_DIGEST:version>
+  sameImage: url/image:<IMAGE_DIGEST:version>
+  image2: url/image2:<IMAGE_DIGEST:version>
