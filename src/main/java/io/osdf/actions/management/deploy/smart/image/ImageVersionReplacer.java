@@ -9,8 +9,6 @@ import java.util.regex.Matcher;
 
 import static io.osdf.common.utils.FileUtils.readAll;
 import static io.osdf.common.utils.FileUtils.writeStringToFile;
-import static io.osdf.common.yaml.YamlObject.yaml;
-import static java.nio.file.Path.of;
 import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNullElse;
 import static java.util.regex.Pattern.compile;

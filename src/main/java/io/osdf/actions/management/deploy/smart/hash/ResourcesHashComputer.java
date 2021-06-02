@@ -6,12 +6,10 @@ import io.osdf.core.application.core.files.ApplicationFiles;
 import io.osdf.core.cluster.resource.LocalClusterResource;
 import lombok.RequiredArgsConstructor;
 
-import java.nio.file.Path;
 import java.util.Objects;
 
 import static io.osdf.common.utils.FileUtils.readAll;
 import static io.osdf.common.utils.FileUtils.writeStringToFile;
-import static io.osdf.common.yaml.YamlObject.yaml;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 

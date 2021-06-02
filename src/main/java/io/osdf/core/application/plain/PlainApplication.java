@@ -5,7 +5,6 @@ import io.osdf.core.application.core.AbstractApplication;
 import io.osdf.core.application.core.Application;
 import io.osdf.core.application.core.description.CoreDescription;
 import io.osdf.core.application.core.files.ApplicationFiles;
-import io.osdf.core.application.service.ServiceApplication;
 import io.osdf.core.connection.cli.ClusterCli;
 
 import static io.osdf.core.cluster.configmap.ConfigMapLoader.configMapLoader;
