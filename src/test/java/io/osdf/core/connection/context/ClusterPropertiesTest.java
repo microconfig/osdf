@@ -1,6 +1,7 @@
 package io.osdf.core.connection.context;
 
 import io.microconfig.core.properties.repository.ComponentNotFoundException;
+import io.osdf.actions.init.configs.postprocess.ExternalVariablesResolver;
 import io.osdf.common.exceptions.OSDFException;
 import io.osdf.core.local.microconfig.property.PropertyGetter;
 import org.junit.jupiter.api.Test;
@@ -14,9 +15,10 @@ class ClusterPropertiesTest {
     @Test
     void throw_OSDFException_ifPropertiesComponentDoesntExist() {
         PropertyGetter getter = mock(PropertyGetter.class);
+        ExternalVariablesResolver externalVariablesResolver = mock(ExternalVariablesResolver.class);
         when(getter.get(any(), any(), any())).thenThrow(new ComponentNotFoundException("k8s-cluster"));
 
-        ClusterProperties clusterProperties = new ClusterProperties(getter);
+        ClusterProperties clusterProperties = new ClusterProperties(getter, externalVariablesResolver);
         assertThrows(OSDFException.class, clusterProperties::clusterUrl);
     }
 }
