@@ -42,6 +42,11 @@ public class ExternalVariablesResolver {
 
     private void injectVariables(Path file) {
         String content = readAll(file);
+        String resolvedContent = resolveVariables(content);
+        writeStringToFile(file, resolvedContent);
+    }
+
+    public String resolveVariables(String content) {
         while (true) {
             int ind = content.indexOf("~external(");
             if (ind == -1) break;
@@ -51,7 +56,7 @@ public class ExternalVariablesResolver {
             String value = getValue(content, startInd, commaInd, endInd);
             content = content.replace(content.substring(ind, endInd + 1), value);
         }
-        writeStringToFile(file, content);
+        return content;
     }
 
     private String getValue(String content, int startInd, int commaInd, int endInd) {
